@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\PayloadTypes;
+use App\Enums\UsernameTypes;
+
 return [
 
     /*
@@ -165,12 +168,15 @@ return [
         /*
          * Package Service Providers...
          */
+        Laravel\Sanctum\SanctumServiceProvider::class,
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
         /*
          * Application Service Providers...
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
+        App\Providers\RepositoryServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
@@ -226,6 +232,10 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+
+        //Enums
+        'PayloadTypes' => PayloadTypes::class,
+        'UsernameTypes' => UsernameTypes::class,
 
     ],
 
