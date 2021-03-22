@@ -176,7 +176,7 @@
   </component>
   <component name="RunManager" selected="PHP Script.AuthController.php">
     <configuration name="phpunit.xml" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
-      <TestRunner configuration_file="$PROJECT_DIR$/phpunit.xml" scope="XML" />
+      <TestRunner scope="XML" />
       <method v="2" />
     </configuration>
     <configuration name="AuthController.php" type="PhpLocalRunConfigurationType" factoryName="PHP Console" temporary="true" path="$PROJECT_DIR$/app/Http/Controllers/AuthController.php">
