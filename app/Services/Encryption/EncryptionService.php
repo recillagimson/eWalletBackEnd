@@ -2,15 +2,22 @@
 namespace App\Services\Encryption;
 
 use App\Enums\PayloadTypes;
-use App\Models\Payload;
+use App\Repositories\Payload\IPayloadRepository;
 use Illuminate\Support\Str;
 
 class EncryptionService implements IEncryptionService {
 
+    public IPayloadRepository $payloads;
+
+    public function __construct(IPayloadRepository $payloads)
+    {
+        $this->payloads = $payloads;
+    }
+
     public function encrypt($data)
     {
         $passPhrase = Str::random(16);
-        $newPayload = Payload::create([
+        $newPayload = $this->payloads->create([
             'payloadType' => PayloadTypes::Request,
             'passPhrase' => $passPhrase
         ]);
@@ -19,6 +26,7 @@ class EncryptionService implements IEncryptionService {
         $salt = openssl_random_pseudo_bytes(8);
         $salted = '';
         $dx = '';
+
         while (strlen($salted) < 48) {
             $dx = md5($dx.$passPhrase.$salt, true);
             $salted .= $dx;
@@ -36,7 +44,7 @@ class EncryptionService implements IEncryptionService {
 
     public function decrypt($data, $reqId)
     {
-        $payload = Payload::find($reqId);
+        $payload = $this->payloads->get($reqId);
         if(!$payload) return null;
 
         $jsondata = json_decode($data, true);
@@ -54,7 +62,7 @@ class EncryptionService implements IEncryptionService {
         $key = substr($result, 0, 32);
         $data = openssl_decrypt($ct, 'aes-256-cbc', $key, true, $iv);
 
-        $payload->delete();
+        $this->payloads->delete($payload);
         return json_decode($data, true);
     }
 }

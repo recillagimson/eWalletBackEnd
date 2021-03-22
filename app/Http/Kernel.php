@@ -5,6 +5,7 @@ namespace App\Http;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\DecryptRequest;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\EnsureFormData;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;
@@ -46,7 +47,6 @@ class Kernel extends HttpKernel
         ConvertEmptyStringsToNull::class,
 
         //Custom Middlewares
-        DecryptRequest::class,
     ];
 
     /**
@@ -89,5 +89,7 @@ class Kernel extends HttpKernel
         'signed' => ValidateSignature::class,
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
+        'form-data' => EnsureFormData::class,
+        'decrypt.request' => DecryptRequest::class,
     ];
 }

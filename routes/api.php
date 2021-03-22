@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\PayloadController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,11 +16,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('/auth')->group(function (){
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+Route::prefix('/clients')->middleware(['form-data'])->group(function (){
+    Route::post('/token', [ClientController::class, 'getToken']);
 });
 
 Route::middleware('auth:sanctum')->group(function (){
+    Route::prefix('/payload')->group(function() {
+        Route::get('/generate', [PayloadController::class, 'generate']);
+        Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
+    });
 
+    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login']);
+    });
 });

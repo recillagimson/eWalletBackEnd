@@ -22,7 +22,7 @@ class AuthController extends Controller
      * Registers a user
      *
      * @param RegisterUserRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function register(RegisterUserRequest $request): JsonResponse
     {
@@ -39,7 +39,7 @@ class AuthController extends Controller
      * @param LoginRequest $request
      * @return JsonResponse
      */
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request): JsonResponse
     {
         $login = $request->validated();
         $ip = $request->ip();
@@ -53,5 +53,4 @@ class AuthController extends Controller
         ];
         return response()->json($response, Response::HTTP_OK);
     }
-
 }

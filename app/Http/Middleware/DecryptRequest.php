@@ -9,31 +9,39 @@ use Illuminate\Http\Response;
 
 class DecryptRequest
 {
-    private $encryptionService;
+    private IEncryptionService $encryptionService;
 
     public function __construct(IEncryptionService $encService)
     {
         $this->encryptionService = $encService;
     }
     /**
-     * Handle an incoming request.
+     * Handle an incoming encrypted request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param Request $request
+     * @param Closure $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
-        if($request->has('payload') && $request->filled('payload'))
+        $method = $request->method();
+
+        if($method === 'POST' || $method === 'PUT')
         {
-            $reqId = $request->input('id');
-            $data = $request->input('payload');
+            if($request->has('payload') && $request->filled('payload'))
+            {
+                $reqId = $request->input('id');
+                $data = $request->input('payload');
 
-            $decryptedData = $this->encryptionService->decrypt($data, $reqId);
-            if(!$decryptedData) return response(Response::HTTP_UNPROCESSABLE_ENTITY);
+                $decryptedData = $this->encryptionService->decrypt($data, $reqId);
+                if(!$decryptedData) return response('',Response::HTTP_UNPROCESSABLE_ENTITY);
 
-            $requestData = json_decode($decryptedData, true);
-            $request->replace($requestData);
+                $requestData = json_decode($decryptedData, true);
+                $request->replace($requestData);
+                return $next($request);
+            }
+
+            return response('',Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return $next($request);

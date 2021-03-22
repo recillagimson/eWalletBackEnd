@@ -2,6 +2,7 @@
 
 use App\Enums\PayloadTypes;
 use App\Enums\UsernameTypes;
+use App\Enums\TokenNames;
 
 return [
 
@@ -236,6 +237,7 @@ return [
         //Enums
         'PayloadTypes' => PayloadTypes::class,
         'UsernameTypes' => UsernameTypes::class,
+        'TokenNames' => TokenNames::class,
 
     ],
 

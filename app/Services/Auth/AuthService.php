@@ -2,9 +2,9 @@
 
 namespace App\Services\Auth;
 
+use App\Enums\TokenNames;
+use App\Repositories\Client\IClientRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -14,11 +14,13 @@ use Laravel\Sanctum\NewAccessToken;
 class AuthService implements IAuthService
 {
     public IUserAccountRepository $userAccounts;
+    public IClientRepository $clients;
 
-    public function __construct(IUserAccountRepository $userAccts)
+    public function __construct(IUserAccountRepository $userAccts,
+       IClientRepository $clients)
     {
         $this->userAccounts = $userAccts;
-
+        $this->clients = $clients;
     }
 
 
@@ -46,35 +48,57 @@ class AuthService implements IAuthService
      */
     public function login(string $usernameField, array $creds, string $ip): NewAccessToken
     {
-        $throttleKey = $this->throttleKey($creds, $usernameField, $ip);
-        if($this->isRateLimited($throttleKey)) {
-            throw ValidationException::withMessages([
-                $usernameField => 'Account has been locked out. Due to subsequent failed attempts.'
-            ]);
-        }
-
-        if(!Auth::attempt($creds)) {
-            RateLimiter::hit($throttleKey);
-
-            throw ValidationException::withMessages([
-                $usernameField => 'Login Failed.'
-            ]);
-        }
+        $throttleKey = $this->throttleKey($creds[$usernameField], $ip);
+        $this->ensureAccountIsNotLockedOut($throttleKey);
 
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        if(!$user) {
-            Auth::logout();
-            throw new ModelNotFoundException();
+        $passwordMatched = Hash::check($creds['password'], $user->password);
+
+        if(!$user || !$passwordMatched) {
+            RateLimiter::hit($throttleKey);
+            $this->loginFailed();
         }
 
-        $user->tokens()->delete();
+        $user->tokens()->where('name', '=', TokenNames::webToken)->delete();
         RateLimiter::clear($throttleKey);
-        return $user->createToken('access_token');
+
+        return $user->createToken(TokenNames::webToken);
     }
 
-    private function throttleKey(array $creds, string $usernameField, string $ip): string
+    /**
+     * Authenticates Client Applications
+     *
+     * @param string $clientId
+     * @param string $clientSecret
+     * @return NewAccessToken
+     * @throws ValidationException
+     */
+    public function clientLogin(string $clientId, string $clientSecret): NewAccessToken
     {
-        return Str::lower($creds[$usernameField].'|'.$ip);
+        $client = $this->clients->getClient($clientId);
+
+        if(!$client || !Hash::check($clientSecret, $client->client_secret))
+        {
+            throw ValidationException::withMessages([
+                'client' => 'Invalid Client Credentials'
+            ]);
+        }
+
+        return $client->createToken(TokenNames::clientToken);
+    }
+
+    private function ensureAccountIsNotLockedOut(string $throttleKey)
+    {
+        if($this->isRateLimited($throttleKey)) {
+            throw ValidationException::withMessages([
+                'account' => 'Account has been locked out. Due to subsequent failed attempts.'
+            ]);
+        }
+    }
+
+    private function throttleKey(string $username, string $ip): string
+    {
+        return Str::lower($username.'|'.$ip);
     }
 
     private function isRateLimited(string $throttleKey): bool
@@ -86,5 +110,10 @@ class AuthService implements IAuthService
         return true;
     }
 
-
+    private function loginFailed()
+    {
+        throw ValidationException::withMessages([
+            'account' => 'Login Failed.'
+        ]);
+    }
 }

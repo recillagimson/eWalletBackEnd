@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="Added endpoints for register and login without payload encryption" />
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption">
+      <change afterPath="$PROJECT_DIR$/app/Enums/TokenNames.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Repositories/Client/ClientRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Repositories/Client/IClientRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Repositories/Payload/IPayloadRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Repositories/Payload/PayloadRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Kernel.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Kernel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Middleware/DecryptRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Middleware/DecryptRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Providers/RepositoryServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Providers/RepositoryServiceProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Providers/RouteServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Providers/RouteServiceProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/auth.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/auth.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -155,6 +177,9 @@
     </include_path>
   </component>
   <component name="ProjectId" id="1ptFpy0cT50be6DoePx5U3Ijltp" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -164,15 +189,20 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/vendor" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="php.override.implement.member.chooser.php.doc" value="NONE" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="reference.webide.settings.project.settings.php" />
     <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="F:\Github\Exceture\SquidPay\SPV3PlusBE\app\Enums" />
+    </key>
   </component>
   <component name="RunManager" selected="PHP Script.AuthController.php">
     <configuration name="phpunit.xml" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
@@ -198,6 +228,7 @@
       <updated>1615994667511</updated>
       <workItem from="1615994670781" duration="470000" />
       <workItem from="1615995161809" duration="21107000" />
+      <workItem from="1616414194059" duration="18501000" />
     </task>
     <task id="LOCAL-00001" summary="Added endpoints for register and login without payload encryption">
       <created>1616009107809</created>
@@ -231,7 +262,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -240,7 +283,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added endpoints for register and login without payload encryption" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added endpoints for register and login without payload encryption" />
+    <MESSAGE value="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption" />
+    <option name="LAST_COMMIT_MESSAGE" value="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
