@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PrepaidLoad extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+    use UsesUuid, SoftDeletes;
 
     /**
      * The table associated with the model.

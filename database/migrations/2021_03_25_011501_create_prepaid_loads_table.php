@@ -14,7 +14,7 @@ class CreatePrepaidLoadsTable extends Migration
     public function up()
     {
         Schema::create('prepaid_loads', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('old_prepaid_load_id');
             $table->string('prepaid_type')->unique();
             $table->string('reward_keyword')->unique();
