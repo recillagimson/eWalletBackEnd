@@ -36,8 +36,7 @@ class DecryptRequest
                 $decryptedData = $this->encryptionService->decrypt($data, $reqId);
                 if(!$decryptedData) return response('',Response::HTTP_UNPROCESSABLE_ENTITY);
 
-                $requestData = json_decode($decryptedData, true);
-                $request->replace($requestData);
+                $request->replace($decryptedData);
                 return $next($request);
             }
 

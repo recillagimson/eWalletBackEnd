@@ -7,5 +7,5 @@ use App\Repositories\IRepository;
 
 interface IUserAccountRepository extends IRepository
 {
-    public function getByUsername(string $usernameField, string $email): UserAccount;
+    public function getByUsername(string $usernameField, string $email);
 }

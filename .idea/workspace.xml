@@ -1,27 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption">
-      <change afterPath="$PROJECT_DIR$/app/Enums/TokenNames.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Repositories/Client/ClientRepository.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Repositories/Client/IClientRepository.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Repositories/Payload/IPayloadRepository.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Repositories/Payload/PayloadRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-40 SVC-41 #comment Added client apps authentication and payload encryption endpoints">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Enums/UsernameTypes.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/UsernameTypes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Exceptions/Handler.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Exceptions/Handler.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Kernel.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Kernel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/PayloadController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/PayloadController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Middleware/DecryptRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Middleware/DecryptRequest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Providers/RepositoryServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Providers/RepositoryServiceProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Providers/RouteServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Providers/RouteServiceProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/LoginRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/LoginRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/UserAccount.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/UserAccount.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Repositories/UserAccount/IUserAccountRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/UserAccount/IUserAccountRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Repositories/UserAccount/UserAccountRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/UserAccount/UserAccountRepository.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/auth.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/auth.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Encryption/IEncryptionService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Encryption/IEncryptionService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -49,7 +43,10 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
-  <component name="PhpDebugGeneral" listening_started="true" />
+  <component name="PackageJsonUpdateNotifier">
+    <dismissed value="$PROJECT_DIR$/package.json" />
+  </component>
+  <component name="PhpDebugGeneral" listening_started="true" notify_if_session_was_finished_without_being_paused="false" />
   <component name="PhpServers">
     <servers>
       <server host="127.0.0.1" id="d8520bf3-a643-4663-8da6-24b14c1ee5ab" name="127.0.0.1" port="8000" />
@@ -228,7 +225,10 @@
       <updated>1615994667511</updated>
       <workItem from="1615994670781" duration="470000" />
       <workItem from="1615995161809" duration="21107000" />
-      <workItem from="1616414194059" duration="18501000" />
+      <workItem from="1616414194059" duration="25416000" />
+      <workItem from="1616492247735" duration="3834000" />
+      <workItem from="1616544594357" duration="4911000" />
+      <workItem from="1616563822856" duration="14570000" />
     </task>
     <task id="LOCAL-00001" summary="Added endpoints for register and login without payload encryption">
       <created>1616009107809</created>
@@ -251,7 +251,21 @@
       <option name="project" value="LOCAL" />
       <updated>1616009146530</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption">
+      <created>1616433330698</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1616433330698</updated>
+    </task>
+    <task id="LOCAL-00005" summary="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption">
+      <created>1616433894904</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1616433894904</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

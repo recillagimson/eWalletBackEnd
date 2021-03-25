@@ -12,8 +12,8 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         parent::__construct($model);
     }
 
-    public function getByUsername(string $usernameField, string $email): UserAccount
+    public function getByUsername(string $usernameField, string $email)
     {
-        return $this->model->where($usernameField, '=', $email)->firstOrFail();
+        return $this->model->where($usernameField, '=', $email)->first();
     }
 }

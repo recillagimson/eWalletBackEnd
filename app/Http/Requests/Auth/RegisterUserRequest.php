@@ -12,7 +12,7 @@ class RegisterUserRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -22,11 +22,11 @@ class RegisterUserRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'mobileNumber' => 'sometimes|required|max:20|unique:useraccounts,mobileNumber',
-            'email' => 'sometimes|required|max:50|email|unique:useraccounts,email',
+            'mobile_number' => 'required_without:email|max:20|unique:user_accounts,mobileNumber',
+            'email' => 'required_without:mobile_number|max:50|email|unique:user_accounts,email',
             'password' => [
                 'required',
                 'min:8',
