@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Payload;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\App;
 
-class LoginRequest extends FormRequest
+class DecryptRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
-        return true;
+        return App::environment('local');
     }
 
     /**
@@ -21,12 +22,11 @@ class LoginRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'email' => 'required_without:mobile_number|email',
-            'mobile_number' => 'required_without:email',
-            'password' => 'required'
+            'id' => 'required',
+            'payload' => 'required|json'
         ];
     }
 }

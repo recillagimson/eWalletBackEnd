@@ -5,5 +5,5 @@ namespace App\Enums;
 class UsernameTypes
 {
     const Email = 'email';
-    const MobileNumber = 'mobileNumber';
+    const MobileNumber = 'mobile_number';
 }

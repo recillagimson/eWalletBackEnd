@@ -14,20 +14,13 @@ class UserAccount extends Authenticatable
     use SoftDeletes, HasApiTokens, HasFactory;
 
     /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'userAccounts';
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
         'email',
-        'mobileNumber',
+        'mobile_number',
         'password',
     ];
 

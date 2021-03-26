@@ -52,8 +52,9 @@ class AuthService implements IAuthService
         $this->ensureAccountIsNotLockedOut($throttleKey);
 
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        $passwordMatched = Hash::check($creds['password'], $user->password);
+        if(!$user) $this->loginFailed();
 
+        $passwordMatched = Hash::check($creds['password'], $user->password);
         if(!$user || !$passwordMatched) {
             RateLimiter::hit($throttleKey);
             $this->loginFailed();
@@ -84,6 +85,7 @@ class AuthService implements IAuthService
             ]);
         }
 
+        $client->tokens()->delete();
         return $client->createToken(TokenNames::clientToken);
     }
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PayloadController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\App;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,12 +17,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+if(App::environment('local'))
+{
+    Route::prefix('/utils')->group(function(){
+        Route::post('/encrypt', [PayloadController::class, 'encrypt']);
+        Route::post('/decrypt', [PayloadController::class, 'decrypt']);
+    });
+}
+
 Route::prefix('/clients')->middleware(['form-data'])->group(function (){
     Route::post('/token', [ClientController::class, 'getToken']);
 });
 
 Route::middleware('auth:sanctum')->group(function (){
-    Route::prefix('/payload')->group(function() {
+    Route::prefix('/payloads')->group(function() {
         Route::get('/generate', [PayloadController::class, 'generate']);
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });

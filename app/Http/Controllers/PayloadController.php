@@ -3,18 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PayloadTypes;
+use App\Http\Requests\Payload\DecryptRequest;
+use App\Http\Requests\Payload\EncryptRequest;
 use App\Models\Payload;
-use App\Repositories\Payload\IPayloadRepository;
+use App\Services\Encryption\IEncryptionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 class PayloadController extends Controller
 {
-    public IPayloadRepository $payloads;
+    public IEncryptionService $encryptionService;
 
-    public function __construct(IPayloadRepository $payloads)
+    public function __construct(IEncryptionService $encryptionService)
     {
-        $this->payloads = $payloads;
+        $this->encryptionService = $encryptionService;
     }
 
     /**
@@ -27,7 +30,7 @@ class PayloadController extends Controller
     {
         $passPhrase = Str::random(16);
 
-        $newPayload = $this->payloads->create([
+        $newPayload = $this->encryptionService->payloads->create([
             'payloadType' => PayloadTypes::Request,
             'passPhrase' => $passPhrase
         ]);
@@ -44,7 +47,35 @@ class PayloadController extends Controller
      */
     public function getResponseKey(Payload $payload): JsonResponse
     {
-        $this->payloads->delete($payload);
+        $this->encryptionService->payloads->delete($payload);
         return response()->json(['id' => $payload->id, 'passPhrase' => $payload->passPhrase], 200);
+    }
+
+    /**
+     * Utility to encrypt json. Only available for local
+     * environment.
+     *
+     * @param EncryptRequest $request
+     * @return JsonResponse
+     */
+    public function encrypt(EncryptRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $responseData = $this->encryptionService->encrypt($data['payload'], $data['passPhrase']);
+        return response()->json($responseData, Response::HTTP_OK);
+    }
+
+    /**
+     * Utility to decrypt json. Only available for local
+     * environment.
+     *
+     * @param DecryptRequest $request
+     * @return JsonResponse
+     */
+    public function decrypt(DecryptRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $responseData = $this->encryptionService->decrypt($data['payload'], $data['id']);
+        return response()->json($responseData, Response::HTTP_OK);
     }
 }
