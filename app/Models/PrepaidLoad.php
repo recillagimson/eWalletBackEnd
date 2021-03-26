@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PrepaidLoad extends Model
 {
-    use HasFactory;
-    use UsesUuid, SoftDeletes;
+    use UsesUuid, HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.

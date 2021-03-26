@@ -1,7 +1,7 @@
 <?php
 namespace App\Services\PrepaidLoad;
 
-use App\Repositories\Payload\IPrepaidLoadRepository;
+use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
 
 class PrepaidLoadService implements IPrepaidLoadService {
 
@@ -12,4 +12,14 @@ class PrepaidLoadService implements IPrepaidLoadService {
         $this->prepaidLoads = $prepaidLoads;
     }
 
+     /**
+     * Load Globe
+     *
+     * @param array $items
+     * @return string
+     */
+    public function loadGlobe(array $items): string
+    {
+        return json_encode($items);
+    }
 }

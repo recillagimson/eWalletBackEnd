@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PayloadController;
+use App\Http\Controllers\PrepaidLoadController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -38,5 +39,8 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+    });
+    Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
+        Route::post('/globe', [PrepaidLoadController::class, 'loadGlobe']);
     });
 });
