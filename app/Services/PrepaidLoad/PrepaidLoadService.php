@@ -16,10 +16,10 @@ class PrepaidLoadService implements IPrepaidLoadService {
      * Load Globe
      *
      * @param array $items
-     * @return string
+     * @return array
      */
-    public function loadGlobe(array $items): string
+    public function loadGlobe(array $items): array
     {
-        return json_encode($items);
+        return $items;
     }
 }
