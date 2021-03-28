@@ -23,7 +23,7 @@ class PrepaidLoadController extends Controller
 
 
      /**
-     * Authenticate a user
+     * Load Globe
      *
      * @param GlobeRequest $request
      * @return JsonResponse
@@ -36,7 +36,12 @@ class PrepaidLoadController extends Controller
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
-    public function showGlobePromos() {
+    /**
+     * Show list of Globe promos
+     *
+     * @return JsonResponse
+     */
+    public function showGlobePromos(): JsonResponse {
         $getAllGlobePromos = $this->prepaidLoadService->prepaidLoads->getAll();
         $encryptedResponse = $this->encryptionService->encrypt($getAllGlobePromos->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
