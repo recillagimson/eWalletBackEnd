@@ -23,7 +23,13 @@ class PrepaidLoadService implements IPrepaidLoadService {
         return $items;
     }
 
-    public function createGlobePostBody() {
+    /**
+     * Post body request
+     *
+     * @param array $items
+     * @return array
+     */
+    public function createGlobePostBody(array $items): array {
         $body = [
             [
                 "outboundRewardRequest" => [
