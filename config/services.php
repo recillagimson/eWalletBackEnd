@@ -31,6 +31,7 @@ return [
     ],
     'load' => [
         'globe' => [
+            'url' => env('GLOBE_URL'),
             'id' => env('GLOBE_APP_ID'),
             'secret' => env('GLOBE_APP_SECRET'),
             'rewards_token' => env('GLOBE_REWARDS_TOKEN'),
