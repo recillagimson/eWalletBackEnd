@@ -33,9 +33,7 @@ class PrepaidLoadController extends Controller
         $details = $request->validated();
         $loadGlobe = $this->prepaidLoadService->loadGlobe($details);
         $encryptedResponse = $this->encryptionService->encrypt($loadGlobe);
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
-        
-        // return response()->json($this->prepaidLoadService->loadGlobe($details), Response::HTTP_OK);
+        return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
     public function showGlobePromos() {

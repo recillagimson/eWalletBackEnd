@@ -2,6 +2,7 @@
 namespace App\Services\PrepaidLoad;
 
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
+use Illuminate\Support\Facades\Http;
 
 class PrepaidLoadService implements IPrepaidLoadService {
 
@@ -20,7 +21,12 @@ class PrepaidLoadService implements IPrepaidLoadService {
      */
     public function loadGlobe(array $items): array
     {
-        return $items;
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+        ])->post(config('services.load.globe.url').'/rewards/v1/transactions/send', 
+        $this->createGlobePostBody($items));
+
+        return array($response);
     }
 
     /**
@@ -29,15 +35,15 @@ class PrepaidLoadService implements IPrepaidLoadService {
      * @param array $items
      * @return array
      */
-    public function createGlobePostBody(array $items): array {
+    private function createGlobePostBody(array $items): array {
         $body = [
             [
                 "outboundRewardRequest" => [
                     "app_id" => config('services.load.globe.id'),
                     "app_secret" => config('services.load.globe.secret'),
                     "rewards_token" => config('services.load.globe.rewards_token'),
-                    "address" => "9271051129",
-                    "promo" => "SQPLOAD100"
+                    "address" => $items['mobile_number'],
+                    "promo" => $items['promo']
                 ]
             ]
         ];
