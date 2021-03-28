@@ -29,5 +29,11 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
+    'load' => [
+        'globe' => [
+            'id' => env('GLOBE_APP_ID'),
+            'secret' => env('GLOBE_APP_SECRET'),
+            'rewards_token' => env('GLOBE_REWARDS_TOKEN'),
+        ],
+    ]
 ];

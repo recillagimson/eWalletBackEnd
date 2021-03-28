@@ -22,4 +22,20 @@ class PrepaidLoadService implements IPrepaidLoadService {
     {
         return $items;
     }
+
+    public function createGlobePostBody() {
+        $body = [
+            [
+                "outboundRewardRequest" => [
+                    "app_id" => config('services.load.globe.id'),
+                    "app_secret" => config('services.load.globe.secret'),
+                    "rewards_token" => config('services.load.globe.rewards_token'),
+                    "address" => "9271051129",
+                    "promo" => "SQPLOAD100"
+                ]
+            ]
+        ];
+
+        return $body;
+    }
 }
