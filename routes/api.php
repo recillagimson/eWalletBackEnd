@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::post('/login', [AuthController::class, 'login']);
     });
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
+        Route::get('/globe', [PrepaidLoadController::class, 'showGlobePromos']);
         Route::post('/globe', [PrepaidLoadController::class, 'loadGlobe']);
     });
 });

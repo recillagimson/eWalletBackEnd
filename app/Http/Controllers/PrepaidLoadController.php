@@ -37,4 +37,10 @@ class PrepaidLoadController extends Controller
         
         // return response()->json($this->prepaidLoadService->loadGlobe($details), Response::HTTP_OK);
     }
+
+    public function showGlobePromos() {
+        $getAllGlobePromos = $this->prepaidLoadService->prepaidLoads->getAll();
+        $encryptedResponse = $this->encryptionService->encrypt($getAllGlobePromos->toArray());
+        return response()->json($encryptedResponse, Response::HTTP_OK);
+    }
 }
