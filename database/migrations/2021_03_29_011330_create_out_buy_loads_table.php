@@ -15,8 +15,8 @@ class CreateOutBuyLoadsTable extends Migration
     {
         Schema::create('out_buy_loads', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->unsignedBigInteger('user_account_id');
-            $table->foreign('user_account_id')->references('id')->on('users');
+            $table->uuid('user_account_id');
+            $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->uuid('prepaid_load_id');
             $table->foreign('prepaid_load_id')->references('id')->on('prepaid_loads');
             $table->decimal('total_amount', 10, 3);
