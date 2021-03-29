@@ -27,7 +27,7 @@ class PrepaidGlobePromoSeeder extends Seeder
                 'old_prepaid_load_id'=> "",
                 'prepaid_type'=> "",
                 'reward_keyword'=> "SQPLOAD1000",
-                'amax_keyword'=> "LD",
+                'amax_keyword'=> "LD1000",
                 'amount'=> 1000,
                 'status'=> 0
             ],
@@ -35,7 +35,7 @@ class PrepaidGlobePromoSeeder extends Seeder
                 'old_prepaid_load_id'=> "",
                 'prepaid_type'=> "",
                 'reward_keyword'=> "SQPLOAD500",
-                'amax_keyword'=> "LD",
+                'amax_keyword'=> "LD500",
                 'amount'=> 500,
                 'status'=> 0
             ],
@@ -43,7 +43,7 @@ class PrepaidGlobePromoSeeder extends Seeder
                 'old_prepaid_load_id'=> "",
                 'prepaid_type'=> "",
                 'reward_keyword'=> "SQPLOAD300",
-                'amax_keyword'=> "LD",
+                'amax_keyword'=> "LD300",
                 'amount'=> 300,
                 'status'=> 0
             ],
@@ -51,7 +51,7 @@ class PrepaidGlobePromoSeeder extends Seeder
                 'old_prepaid_load_id'=> "",
                 'prepaid_type'=> "",
                 'reward_keyword'=> "SQPLOAD100",
-                'amax_keyword'=> "LD",
+                'amax_keyword'=> "LD100",
                 'amount'=> 100,
                 'status'=> 0
             ],
@@ -139,7 +139,7 @@ class PrepaidGlobePromoSeeder extends Seeder
                 'old_prepaid_load_id'=> "",
                 'prepaid_type'=> "",
                 'reward_keyword'=> "SQPGOSURF999",
-                'amax_keyword'=> "GOSURF999",
+                'amax_keyword'=> "SQPGOSURF999",
                 'amount'=> 999,
                 'status'=> 0
             ],
@@ -179,7 +179,7 @@ class PrepaidGlobePromoSeeder extends Seeder
                 'old_prepaid_load_id'=> "",
                 'prepaid_type'=> "",
                 'reward_keyword'=> "SQPLOAD10",
-                'amax_keyword'=> "LD",
+                'amax_keyword'=> "LD10",
                 'amount'=> 10,
                 'status'=> 0
             ],
