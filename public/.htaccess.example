@@ -4,7 +4,7 @@
     </IfModule>
 
     #uncomment this if deploying on a subdirectory
-    #RewriteBase 'path to public folder'
+    #RewriteBase /spv3plusbe/public
 
     RewriteEngine On
 
