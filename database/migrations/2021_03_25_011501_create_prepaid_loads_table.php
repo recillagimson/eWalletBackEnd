@@ -17,6 +17,7 @@ class CreatePrepaidLoadsTable extends Migration
             $table->uuid('id')->primary();
             $table->string('old_prepaid_load_id');
             $table->string('prepaid_type');
+            $table->string('network')->nullable();
             $table->string('reward_keyword')->unique();
             $table->string('amax_keyword')->unique();
             $table->decimal('amount', 10, 3);

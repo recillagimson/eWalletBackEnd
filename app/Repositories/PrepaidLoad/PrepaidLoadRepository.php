@@ -11,4 +11,9 @@ class PrepaidLoadRepository extends Repository implements IPrepaidLoadRepository
     {
         parent::__construct($model);
     }
+
+    public function getByRewardKeyword(string $rewardKeyword)
+    {
+        return $this->model->where('reward_keyword', '=', $rewardKeyword)->first();
+    }
 }
