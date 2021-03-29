@@ -54,10 +54,14 @@ class AppServiceProvider extends ServiceProvider
             ->give(function() {
                 $request = app(Request::class);
                 $encryptionService = $this->app->make(IEncryptionService::class);
-                $data = collect($encryptionService->decrypt($request->payload, $request->id, false));
 
-                if($data->has(UsernameTypes::MobileNumber))
-                    return $this->app->get(SmsService::class);
+                if($request->has('payload'))
+                {
+                    $data = collect($encryptionService->decrypt($request->payload, $request->id, false));
+
+                    if($data->has(UsernameTypes::MobileNumber))
+                        return $this->app->get(SmsService::class);
+                }
 
                 return $this->app->get(EmailService::class);
             });
