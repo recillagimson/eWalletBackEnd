@@ -34,6 +34,9 @@ return [
     */
 
     'mailers' => [
+        'sendgrid' => [
+            'apiKey' => env('MAIL_SENDGRID_API_KEY'),
+        ],
         'smtp' => [
             'transport' => 'smtp',
             'host' => env('MAIL_HOST', 'smtp.mailgun.org'),

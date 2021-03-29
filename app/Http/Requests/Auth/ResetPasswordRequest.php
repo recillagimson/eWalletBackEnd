@@ -2,17 +2,18 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\UsernameTypes;
 use App\Rules\IsPasswordValid;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterUserRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
@@ -22,11 +23,11 @@ class RegisterUserRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'mobile_number' => 'required_without:email|max:20|unique:user_accounts,mobile_number',
-            'email' => 'required_without:mobile_number|max:50|email|unique:user_accounts,email',
+            'email' => 'required_without:'.UsernameTypes::MobileNumber.'|email',
+            'mobile_number' => 'required_without:'.UsernameTypes::Email,
             'password' => [
                 'required',
                 'min:8',
@@ -37,5 +38,4 @@ class RegisterUserRequest extends FormRequest
             'password_confirmation' => 'required|min:8|max:16',
         ];
     }
-
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\OtpTypes;
 use App\Enums\PayloadTypes;
 use App\Enums\UsernameTypes;
 use App\Enums\TokenNames;
@@ -238,6 +239,7 @@ return [
         'PayloadTypes' => PayloadTypes::class,
         'UsernameTypes' => UsernameTypes::class,
         'TokenNames' => TokenNames::class,
+        'OtpTypes' => OtpTypes::class,
 
     ],
 
