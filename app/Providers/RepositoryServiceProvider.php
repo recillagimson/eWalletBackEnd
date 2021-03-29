@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
+use App\Repositories\OtpRepository\IOtpRepository;
+use App\Repositories\OtpRepository\OtpRepository;
 use App\Repositories\Payload\IPayloadRepository;
 use App\Repositories\Payload\PayloadRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -19,9 +21,15 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        //Encryption Repositories
         $this->app->bind(IPayloadRepository::class, PayloadRepository::class);
+
+        //Authentication Repositories
         $this->app->bind(IUserAccountRepository::class, UserAccountRepository::class);
         $this->app->bind(IClientRepository::class, ClientRepository::class);
+
+        //Utilities Repositories
+        $this->app->bind(IOtpRepository::class, OtpRepository::class);
     }
 
     /**
