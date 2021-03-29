@@ -1,7 +1,7 @@
 <?php
 namespace App\Services\OutBuyLoad;
 
-use App\Repositories\PrepaidLoad\IOutBuyLoadRepository;
+use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 
 class OutBuyLoadService implements IOutBuyLoadService {
 

@@ -36,10 +36,10 @@ class PrepaidLoadController extends Controller
         $details = $request->validated();
         $loadGlobe = $this->prepaidLoadService->loadGlobe($details);
         // on fail
-        $getPromoDetails = $this->outBuyLoadService->outBuyLoads->getByRewardKeyword($details['promo']);
-        $inputOutBuyLoad = $this->inputOutBuyLoad($getPromoDetails);
-        $createOutBuyLoad = $this->prepaidLoadService->prepaidLoads->create($inputOutBuyLoad);
-        $encryptedResponse = $this->encryptionService->encrypt($loadGlobe);
+        $getPromoDetails = $this->prepaidLoadService->prepaidLoads->getByRewardKeyword($details['promo']);
+        $inputOutBuyLoad = $this->inputOutBuyLoad($getPromoDetails, $details);
+        $createOutBuyLoad = $this->outBuyLoadService->outBuyLoads->create($inputOutBuyLoad);
+        $encryptedResponse = $this->encryptionService->encrypt(array($createOutBuyLoad));
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
@@ -56,12 +56,13 @@ class PrepaidLoadController extends Controller
 
     /**
      * input body array
-     * @param array $promos
+     * @param object $promos
+     * @param array $details
      * @return object
      */
-    private function inputOutBuyLoad(array $promos): object {
+    private function inputOutBuyLoad(object $promos, array $details): array {
         $body = array(
-                    'user_account_id'=>'',
+                    'user_account_id'=>$details['user_id'],
                     'prepaid_load_id'=>$promos->id,
                     'total_amount'=>$promos->amount,
                     // 'transaction_date'=>'',
