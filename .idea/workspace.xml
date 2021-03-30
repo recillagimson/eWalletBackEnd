@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="added test seeder for client table">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="added hashing of client secret in client seeder">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/seeders/Test/Auth/ClientSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeders/Test/Auth/ClientSeeder.php" afterDir="false" />
     </list>
@@ -307,7 +307,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617110383899</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="added hashing of client secret in client seeder">
+      <created>1617110505680</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1617110505680</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -346,7 +353,8 @@
     <MESSAGE value="added endpoints for fixed passphrase encryption/decryption" />
     <MESSAGE value="make sendgrid into a facade for autoloading issues and added validation of generated otp." />
     <MESSAGE value="added test seeder for client table" />
-    <option name="LAST_COMMIT_MESSAGE" value="added test seeder for client table" />
+    <MESSAGE value="added hashing of client secret in client seeder" />
+    <option name="LAST_COMMIT_MESSAGE" value="added hashing of client secret in client seeder" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
