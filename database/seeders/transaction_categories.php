@@ -13,10 +13,6 @@ class transaction_categories extends Seeder
      */
     public function run()
     {
-        transaction_categories::table('users')->insert([
-            'name' => str_random(8),
-            'email' => str_random(12).'@mail.com',
-            'password' => bcrypt('123456')
-        ]);
+   
     }
 }
