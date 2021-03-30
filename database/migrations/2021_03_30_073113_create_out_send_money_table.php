@@ -29,7 +29,7 @@ class CreateOutSendMoneyTable extends Migration
             $table->uuid('transction_category_id');
             $table->string('transaction_remarks', 100);
             $table->uuid('user_created');
-            $table->uuid('uses_updated');
+            $table->uuid('user_updated');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
             $table->softDeletes();
