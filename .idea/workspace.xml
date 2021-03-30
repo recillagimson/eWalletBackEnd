@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="added endpoints for fixed passphrase encryption/decryption">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="added test seeder for client table">
+      <change afterPath="$PROJECT_DIR$/database/seeders/Test/Auth/ClientSeeder.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/seeders/DatabaseSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeders/DatabaseSeeder.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -295,7 +295,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617068269758</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="make sendgrid into a facade for autoloading issues and added validation of generated otp.">
+      <created>1617107101724</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1617107101724</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -332,7 +339,9 @@
     <MESSAGE value="SVC-42 #comment Added forgot password, otp verification &amp; reset password endpoints" />
     <MESSAGE value="fixed error on null payloads on client app login endpoint" />
     <MESSAGE value="added endpoints for fixed passphrase encryption/decryption" />
-    <option name="LAST_COMMIT_MESSAGE" value="added endpoints for fixed passphrase encryption/decryption" />
+    <MESSAGE value="make sendgrid into a facade for autoloading issues and added validation of generated otp." />
+    <MESSAGE value="added test seeder for client table" />
+    <option name="LAST_COMMIT_MESSAGE" value="added test seeder for client table" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
