@@ -8,7 +8,6 @@ use App\Mail\Auth\PasswordRecoveryEmail;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use SendGrid;
-use SendGrid\Mail\Mail as SendGridMail;
 
 class EmailService implements INotificationService
 {
@@ -25,7 +24,7 @@ class EmailService implements INotificationService
 
     public function sendPasswordVerification(string $to, string $otp)
     {
-        $mail = new SendGridMail();
+        $mail = app('SendGridMail');
         $mail->setFrom($this->fromAddress, $this->fromName);
         $mail->setSubject('SquidPay - Account Password Recovery Verification');
         $mail->addTo($to);

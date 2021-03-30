@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="fixed error on null payloads on client app login endpoint">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="added endpoints for fixed passphrase encryption/decryption">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/PayloadController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/PayloadController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Encryption/IEncryptionService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Encryption/IEncryptionService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -289,7 +288,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617026035743</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="added endpoints for fixed passphrase encryption/decryption">
+      <created>1617068269758</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1617068269758</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -306,7 +312,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="SVC-42" />
+                        <option value="master" />
                       </list>
                     </value>
                   </entry>
@@ -325,7 +331,8 @@
     <MESSAGE value="SVC-40 SVC-41 #comment Added request and response encryption on login &amp; register endpoint. Also added utility endpoint for encrypting / decrypting requests/responses to be used by developers" />
     <MESSAGE value="SVC-42 #comment Added forgot password, otp verification &amp; reset password endpoints" />
     <MESSAGE value="fixed error on null payloads on client app login endpoint" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed error on null payloads on client app login endpoint" />
+    <MESSAGE value="added endpoints for fixed passphrase encryption/decryption" />
+    <option name="LAST_COMMIT_MESSAGE" value="added endpoints for fixed passphrase encryption/decryption" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
