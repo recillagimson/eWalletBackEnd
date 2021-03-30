@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="added hashing of client secret in client seeder">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="added migration to temporary set nullable on fields without values yet">
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_03_30_133426_reupdate_user_accounts_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_03_30_133949_rename_columns_in_user_accounts.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/seeders/Test/Auth/ClientSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeders/Test/Auth/ClientSeeder.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2021_03_30_065541_update_user_accounts_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2021_03_30_065541_update_user_accounts_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/seeders/insert_transaction_categories.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeders/insert_transaction_categories.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -314,7 +317,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617110505680</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="modified client seeder to use eloquent orm">
+      <created>1617110673984</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1617110673984</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -354,7 +364,9 @@
     <MESSAGE value="make sendgrid into a facade for autoloading issues and added validation of generated otp." />
     <MESSAGE value="added test seeder for client table" />
     <MESSAGE value="added hashing of client secret in client seeder" />
-    <option name="LAST_COMMIT_MESSAGE" value="added hashing of client secret in client seeder" />
+    <MESSAGE value="modified client seeder to use eloquent orm" />
+    <MESSAGE value="added migration to temporary set nullable on fields without values yet" />
+    <option name="LAST_COMMIT_MESSAGE" value="added migration to temporary set nullable on fields without values yet" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

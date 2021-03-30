@@ -40,11 +40,8 @@ class UpdateUserAccountsTable extends Migration
     public function down()
     {
         Schema::table('user_accounts', function($table) {
-
             $table->renameColumn('pin_code', 'pinCode');
             $table->renameColumn('isadmin', 'isAdmin');
-
-
         });
     }
 }
