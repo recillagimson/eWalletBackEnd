@@ -23,6 +23,9 @@ if(App::environment('local'))
     Route::prefix('/utils')->group(function(){
         Route::post('/encrypt', [PayloadController::class, 'encrypt']);
         Route::post('/decrypt', [PayloadController::class, 'decrypt']);
+
+        Route::post('/encrypt/fixed', [PayloadController::class, 'encryptFixed']);
+        Route::post('/decrypt/fixed', [PayloadController::class, 'decryptFixed']);
     });
 }
 
@@ -39,6 +42,9 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
+        Route::post('/reset/password', [AuthController::class, 'resetPassword']);
+        Route::post('/verify', [AuthController::class, 'verify']);
     });
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
         Route::get('/globe', [PrepaidLoadController::class, 'showGlobePromos']);

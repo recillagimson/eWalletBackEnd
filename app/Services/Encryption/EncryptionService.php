@@ -46,6 +46,12 @@ class EncryptionService implements IEncryptionService {
         return json_decode($data, true);
     }
 
+    public function decryptFixed(string $encryptedData, string $passPhrase)
+    {
+        $data = $this->decryptBase($encryptedData, $passPhrase);
+        return json_decode($data, true);
+    }
+
     private function encryptBase(string $passPhrase, array $data): array
     {
         $salt = openssl_random_pseudo_bytes(8);

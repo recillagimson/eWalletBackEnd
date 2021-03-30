@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-40 SVC-41 #comment Added client apps authentication and payload encryption endpoints">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="fixed error on null payloads on client app login endpoint">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Enums/UsernameTypes.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/UsernameTypes.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Exceptions/Handler.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Exceptions/Handler.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/PayloadController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/PayloadController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Middleware/DecryptRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Middleware/DecryptRequest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/LoginRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/LoginRequest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/UserAccount.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/UserAccount.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Repositories/UserAccount/IUserAccountRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/UserAccount/IUserAccountRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Repositories/UserAccount/UserAccountRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/UserAccount/UserAccountRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Encryption/IEncryptionService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Encryption/IEncryptionService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
@@ -25,12 +15,14 @@
   </component>
   <component name="ComposerSettings" doNotAsk="true" synchronizationState="SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
-    <execution />
+    <execution>
+      <executable path="composer" />
+    </execution>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="V3-165" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -171,6 +163,9 @@
       <path value="$PROJECT_DIR$/vendor/doctrine/dbal" />
       <path value="$PROJECT_DIR$/vendor/doctrine/event-manager" />
       <path value="$PROJECT_DIR$/vendor/justinrainbow/json-schema" />
+      <path value="$PROJECT_DIR$/vendor/sendgrid/sendgrid" />
+      <path value="$PROJECT_DIR$/vendor/sendgrid/php-http-client" />
+      <path value="$PROJECT_DIR$/vendor/starkbank/ecdsa" />
     </include_path>
   </component>
   <component name="ProjectId" id="1ptFpy0cT50be6DoePx5U3Ijltp" />
@@ -186,7 +181,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/public" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -197,6 +192,9 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\Github\Exceture\SquidPay\SPV3PlusBE\public" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="F:\Github\Exceture\SquidPay\SPV3PlusBE\app\Enums" />
     </key>
@@ -228,7 +226,12 @@
       <workItem from="1616414194059" duration="25416000" />
       <workItem from="1616492247735" duration="3834000" />
       <workItem from="1616544594357" duration="4911000" />
-      <workItem from="1616563822856" duration="14570000" />
+      <workItem from="1616563822856" duration="46546000" />
+      <workItem from="1616725947387" duration="362000" />
+      <workItem from="1616726325907" duration="4136000" />
+      <workItem from="1616740838092" duration="12803000" />
+      <workItem from="1616983837352" duration="16898000" />
+      <workItem from="1617023436226" duration="417000" />
     </task>
     <task id="LOCAL-00001" summary="Added endpoints for register and login without payload encryption">
       <created>1616009107809</created>
@@ -265,7 +268,28 @@
       <option name="project" value="LOCAL" />
       <updated>1616433894904</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="SVC-40 SVC-41 #comment Added request and response encryption on login &amp; register endpoint. Also added utility endpoint for encrypting / decrypting requests/responses to be used by developers">
+      <created>1616638726177</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1616638726177</updated>
+    </task>
+    <task id="LOCAL-00007" summary="SVC-40 SVC-41 #comment Added request and response encryption on login &amp; register endpoint. Also added utility endpoint for encrypting / decrypting requests/responses to be used by developers">
+      <created>1616638741812</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1616638741812</updated>
+    </task>
+    <task id="LOCAL-00008" summary="fixed error on null payloads on client app login endpoint">
+      <created>1617026035743</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1617026035743</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -282,7 +306,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="master" />
+                        <option value="SVC-42" />
                       </list>
                     </value>
                   </entry>
@@ -298,7 +322,10 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added endpoints for register and login without payload encryption" />
     <MESSAGE value="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption" />
-    <option name="LAST_COMMIT_MESSAGE" value="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption" />
+    <MESSAGE value="SVC-40 SVC-41 #comment Added request and response encryption on login &amp; register endpoint. Also added utility endpoint for encrypting / decrypting requests/responses to be used by developers" />
+    <MESSAGE value="SVC-42 #comment Added forgot password, otp verification &amp; reset password endpoints" />
+    <MESSAGE value="fixed error on null payloads on client app login endpoint" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed error on null payloads on client app login endpoint" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

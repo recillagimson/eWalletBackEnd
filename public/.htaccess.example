@@ -3,7 +3,9 @@
         Options -MultiViews -Indexes
     </IfModule>
 
-    RewriteBase /spv3plusbe/public
+    #uncomment this if deploying on a subdirectory
+    #RewriteBase /spv3plusbe/public
+
     RewriteEngine On
 
     # Handle Authorization Header

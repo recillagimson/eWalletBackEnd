@@ -10,4 +10,5 @@ use App\Repositories\Payload\IPayloadRepository;
 interface IEncryptionService {
     public function encrypt($data, string $passPhrase = null);
     public function decrypt(string $data, string $reqId, bool $deletePayload = true);
+    public function decryptFixed(string $encryptedData, string $passPhrase);
 }

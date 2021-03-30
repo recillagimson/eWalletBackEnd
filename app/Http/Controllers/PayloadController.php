@@ -8,12 +8,15 @@ use App\Http\Requests\Payload\EncryptRequest;
 use App\Models\Payload;
 use App\Services\Encryption\IEncryptionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 class PayloadController extends Controller
 {
     public IEncryptionService $encryptionService;
+    public string $fixedPassPhrase = "SquidPay";
+
 
     public function __construct(IEncryptionService $encryptionService)
     {
@@ -77,5 +80,32 @@ class PayloadController extends Controller
         $data = $request->validated();
         $responseData = $this->encryptionService->decrypt($data['payload'], $data['id']);
         return response()->json($responseData, Response::HTTP_OK);
+    }
+
+
+    /**
+     * Encrypt with fixed passphrase
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function encryptFixed(Request $request): JsonResponse
+    {
+        $data = $request->input();
+        $encryptedData = $this->encryptionService->encrypt(json_encode($data), $this->fixedPassPhrase);
+        return response()->json($encryptedData, Response::HTTP_OK);
+    }
+
+    /**
+     * Decrypt with fixed passphrase
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function decryptFixed(Request $request): JsonResponse
+    {
+        $encryptedData = $request->input();
+        $data = $this->encryptionService->decryptFixed(json_encode($encryptedData), $this->fixedPassPhrase);
+        return response()->json($data, Response::HTTP_OK);
     }
 }
