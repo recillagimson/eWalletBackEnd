@@ -15,17 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('transaction_categories')->insert(
-            
-        [
-        'id' =>'0ec41025-9131-11eb-b44f-1c1b0d14e211',
-        'old_transaction_category_id' => null,
-        'name' => 'WITHDRAWUBPINSTAPAY',
-        'description' => 'Withdraw Cash via UBP Instapay',
-        'user_created' => 'Migration Team'
-        ]
-    
-    );
+        $this->call([
+            insert_transaction_categories::class,
+        ]); 
     }
 }
-
