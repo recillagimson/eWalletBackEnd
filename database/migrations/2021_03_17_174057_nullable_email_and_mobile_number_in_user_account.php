@@ -16,7 +16,6 @@ class NullableEmailAndMobileNumberInUserAccount extends Migration
         Schema::table('userAccounts', function (Blueprint $table) {
             $table->dropIndex('useraccounts_email_unique');
             $table->dropIndex('useraccounts_mobilenumber_unique');
-
             $table->string('email', '50')->nullable()->change();
             $table->string('mobileNumber', '20')->nullable()->change();
         });
