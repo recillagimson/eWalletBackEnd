@@ -4,6 +4,7 @@ namespace Database\Seeders\Test\Auth;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ClientSeeder extends Seeder
 {
@@ -16,7 +17,7 @@ class ClientSeeder extends Seeder
     {
         DB::table('clients')->insert([
            'client_id' => 'spa-client',
-           'client_secret' => 'secret'
+           'client_secret' => Hash::make('secret')
         ]);
     }
 }
