@@ -3,6 +3,7 @@
         Options -MultiViews -Indexes
     </IfModule>
 
+    RewriteBase /spv3plusbe/public
     RewriteEngine On
 
     # Handle Authorization Header
