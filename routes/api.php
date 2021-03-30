@@ -22,6 +22,9 @@ if(App::environment('local'))
     Route::prefix('/utils')->group(function(){
         Route::post('/encrypt', [PayloadController::class, 'encrypt']);
         Route::post('/decrypt', [PayloadController::class, 'decrypt']);
+
+        Route::post('/encrypt/fixed', [PayloadController::class, 'encryptFixed']);
+        Route::post('/decrypt/fixed', [PayloadController::class, 'decryptFixed']);
     });
 }
 
