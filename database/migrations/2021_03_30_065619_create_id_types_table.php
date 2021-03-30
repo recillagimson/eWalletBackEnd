@@ -19,7 +19,7 @@ class CreateIdTypesTable extends Migration
             $table->boolean('swirecommended')->default(false);
             $table->boolean('status')->default(true);
             $table->uuid('user_created');
-            $table->uuid('uses_updated');
+            $table->uuid('user_updated');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
             $table->softDeletes();
