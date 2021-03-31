@@ -13,7 +13,6 @@ class insert_transaction_categories extends Seeder
      */
     public function run()
     {
-
   
             DB::table('transaction_categories')->insert([
 
