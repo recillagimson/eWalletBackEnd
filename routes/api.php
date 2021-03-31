@@ -40,6 +40,8 @@ Route::middleware('auth:sanctum')->group(function (){
     });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
+        Route::get('/user', [AuthController::class, 'getUser']);
+
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);

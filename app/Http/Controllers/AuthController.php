@@ -8,6 +8,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
+use App\Models\UserAccount;
 use App\Services\Auth\IAuthService;
 use App\Services\Encryption\IEncryptionService;
 use Illuminate\Http\JsonResponse;
@@ -107,6 +108,19 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $this->authService->resetPassword($usernameField, $data[$usernameField], $data['password']);
         return response()->json(null, Response::HTTP_OK);
+    }
+
+    /**
+     * Get the authenticated user
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getUser(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if(!$user instanceof UserAccount) return response()->json(null, Response::HTTP_UNAUTHORIZED);
+        return response()->json($request->user(), Response::HTTP_OK);
     }
 
     private function getUsernameField(Request $request): string
