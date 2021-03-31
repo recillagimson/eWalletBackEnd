@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\AddMoney\IWebBankRepository;
+use App\Repositories\AddMoney\WebBankRepository;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\OtpRepository\IOtpRepository;
@@ -30,6 +32,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Utilities Repositories
         $this->app->bind(IOtpRepository::class, OtpRepository::class);
+
+        //Add Money Repositories
+        $this->app->bind(IWebBankRepository::class, WebBankRepository::class);
     }
 
     /**

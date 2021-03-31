@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DragonPayAddMoneyController;
 use App\Http\Controllers\PayloadController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
@@ -38,11 +39,19 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });
 
-    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
+    // Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
+    Route::prefix('/auth')->group(function (){
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
         Route::post('/verify', [AuthController::class, 'verify']);
+    });
+});
+
+Route::prefix('/webbanking')->group(function (){
+    Route::post('/addmoney', [DragonPayAddMoneyController::class, 'addMoney']);
+    Route::any('/postback', function () {
+        return $_GET;
     });
 });

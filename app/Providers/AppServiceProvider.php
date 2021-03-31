@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Enums\UsernameTypes;
+use App\Services\AddMoney\DragonPay\IWebBankingService;
+use App\Services\AddMoney\DragonPay\WebBankingService;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
 use App\Services\Encryption\EncryptionService;
@@ -35,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEncryptionService::class, EncryptionService::class);
         $this->bindNotificationService();
 
+        // ADD MONEY SERVICES
+        $this->app->bind(IWebBankingService::class, WebBankingService::class);
     }
 
     /**
