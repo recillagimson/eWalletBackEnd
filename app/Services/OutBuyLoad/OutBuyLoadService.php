@@ -50,7 +50,7 @@ class OutBuyLoadService implements IOutBuyLoadService
                     'prepaid_load_id'=>$promos->id,
                     'total_amount'=>$promos->amount,
                     'transaction_date'=>Carbon::now(),
-                    // 'transaction_category_id',
+                    'transaction_category_id'=>'0ec43830-9131-11eb-b44f-1c1b0d14e211',
                     'transaction_remarks'=>'',
                 );
         return $body;
