@@ -234,12 +234,14 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'SendGridMail' => \SendGrid\Mail\Mail::class,
 
         //Enums
         'PayloadTypes' => PayloadTypes::class,
         'UsernameTypes' => UsernameTypes::class,
         'TokenNames' => TokenNames::class,
         'OtpTypes' => OtpTypes::class,
+
 
     ],
 

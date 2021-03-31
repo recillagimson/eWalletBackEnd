@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="fixed error on null payloads on client app login endpoint">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="added migration to temporary set nullable on fields without values yet">
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_03_30_133426_reupdate_user_accounts_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_03_30_133949_rename_columns_in_user_accounts.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/PayloadController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/PayloadController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Encryption/EncryptionService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Encryption/IEncryptionService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Encryption/IEncryptionService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2021_03_30_065541_update_user_accounts_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2021_03_30_065541_update_user_accounts_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/seeders/insert_transaction_categories.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeders/insert_transaction_categories.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -289,7 +289,42 @@
       <option name="project" value="LOCAL" />
       <updated>1617026035743</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="added endpoints for fixed passphrase encryption/decryption">
+      <created>1617068269758</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1617068269758</updated>
+    </task>
+    <task id="LOCAL-00010" summary="make sendgrid into a facade for autoloading issues and added validation of generated otp.">
+      <created>1617107101724</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1617107101724</updated>
+    </task>
+    <task id="LOCAL-00011" summary="added test seeder for client table">
+      <created>1617110383899</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1617110383899</updated>
+    </task>
+    <task id="LOCAL-00012" summary="added hashing of client secret in client seeder">
+      <created>1617110505680</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1617110505680</updated>
+    </task>
+    <task id="LOCAL-00013" summary="modified client seeder to use eloquent orm">
+      <created>1617110673984</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1617110673984</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -306,7 +341,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="SVC-42" />
+                        <option value="master" />
                       </list>
                     </value>
                   </entry>
@@ -325,7 +360,13 @@
     <MESSAGE value="SVC-40 SVC-41 #comment Added request and response encryption on login &amp; register endpoint. Also added utility endpoint for encrypting / decrypting requests/responses to be used by developers" />
     <MESSAGE value="SVC-42 #comment Added forgot password, otp verification &amp; reset password endpoints" />
     <MESSAGE value="fixed error on null payloads on client app login endpoint" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed error on null payloads on client app login endpoint" />
+    <MESSAGE value="added endpoints for fixed passphrase encryption/decryption" />
+    <MESSAGE value="make sendgrid into a facade for autoloading issues and added validation of generated otp." />
+    <MESSAGE value="added test seeder for client table" />
+    <MESSAGE value="added hashing of client secret in client seeder" />
+    <MESSAGE value="modified client seeder to use eloquent orm" />
+    <MESSAGE value="added migration to temporary set nullable on fields without values yet" />
+    <option name="LAST_COMMIT_MESSAGE" value="added migration to temporary set nullable on fields without values yet" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

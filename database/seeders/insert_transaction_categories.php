@@ -3,8 +3,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class insert_transaction_categories extends Seeder
 {
@@ -15,6 +13,7 @@ class insert_transaction_categories extends Seeder
      */
     public function run()
     {
+
   
             DB::table('transaction_categories')->insert([
 
@@ -35,4 +34,5 @@ class insert_transaction_categories extends Seeder
             ]);
     }
     
+
 }
