@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-<<<<<<< database/seeders/DatabaseSeeder.php
+
             insert_billers::class,
             insert_countries::class,
             insert_currencies::class,
@@ -25,10 +25,9 @@ class DatabaseSeeder extends Seeder
             insert_transaction_categories::class,
             insert_source_of_funds::class,
             insert_signup_hosts::class,
-             ClientSeeder::class,
             insert_transaction_categories::class,
-           
+            ClientSeeder::class,
         ]);
->>>>>>> database/seeders/DatabaseSeeder.php
+
     }
 }
