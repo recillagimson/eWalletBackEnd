@@ -10,6 +10,10 @@ use App\Repositories\Payload\IPayloadRepository;
 use App\Repositories\Payload\PayloadRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccount\UserAccountRepository;
+use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
+use App\Repositories\PrepaidLoad\PrepaidLoadRepository;
+use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
+use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -30,6 +34,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Utilities Repositories
         $this->app->bind(IOtpRepository::class, OtpRepository::class);
+
+        $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
+        $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
     }
 
     /**
