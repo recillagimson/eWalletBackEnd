@@ -1,10 +1,8 @@
 <?php
 namespace Database\Seeders;
 
+use Database\Seeders\Test\Auth\ClientSeeder;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,6 +14,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+<<<<<<< database/seeders/DatabaseSeeder.php
             insert_billers::class,
             insert_countries::class,
             insert_currencies::class,
@@ -26,6 +25,10 @@ class DatabaseSeeder extends Seeder
             insert_transaction_categories::class,
             insert_source_of_funds::class,
             insert_signup_hosts::class,
-        ]); 
+             ClientSeeder::class,
+            insert_transaction_categories::class,
+           
+        ]);
+>>>>>>> database/seeders/DatabaseSeeder.php
     }
 }

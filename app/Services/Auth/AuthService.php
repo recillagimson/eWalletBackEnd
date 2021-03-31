@@ -112,6 +112,7 @@ class AuthService implements IAuthService
         if(!$user) $this->accountDoesntExist();
 
         $otp = $this->otpService->generate(OtpTypes::passwordRecovery.':'.$user->id);
+        if(!$otp->status) $this->invalidOtp($otp->message);
         $userArray = $user->toArray();
         $this->notificationService->sendPasswordVerification($userArray[$usernameField], $otp->token);
     }
