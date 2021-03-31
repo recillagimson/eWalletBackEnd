@@ -27,7 +27,7 @@ class OutBuyLoad extends Model
         'user_account_id',
         'prepaid_load_id',
         'total_amount',
-        // 'transaction_date',
+        'transaction_date',
         // 'transaction_category_id',
         'transaction_remarks',
     ];

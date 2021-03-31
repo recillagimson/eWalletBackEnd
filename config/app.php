@@ -240,6 +240,7 @@ return [
         'UsernameTypes' => UsernameTypes::class,
         'TokenNames' => TokenNames::class,
         'OtpTypes' => OtpTypes::class,
+        'NetworkTypes' => NetworkTypes::class,
 
     ],
 

@@ -4,7 +4,7 @@ namespace App\Http\Requests\PrepaidLoad;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GlobeRequest extends FormRequest
+class PrepaidLoadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,8 @@ class GlobeRequest extends FormRequest
         return [
             'user_id'=> 'required',
             'mobile_number' => 'required',
-            'promo' => 'required'
+            'promo' => 'required',
+            'network_type'=> 'required'
         ];
     }
 }

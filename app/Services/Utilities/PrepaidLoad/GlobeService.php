@@ -1,16 +1,21 @@
 <?php
-namespace App\Services\PrepaidLoad;
+namespace App\Services\Utilities\PrepaidLoad;
 
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
+use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use Illuminate\Support\Facades\Http;
+use App\Enums\NetworkTypes;
 
-class PrepaidLoadService implements IPrepaidLoadService {
+class GlobeService implements IPrepaidLoadService {
 
     public IPrepaidLoadRepository $prepaidLoads;
+    public IOutBuyLoadRepository $outBuyLoads;
 
-    public function __construct(IPrepaidLoadRepository $prepaidLoads)
+    public function __construct(IPrepaidLoadRepository $prepaidLoads, 
+                                IOutBuyLoadRepository $outBuyLoads)
     {
         $this->prepaidLoads = $prepaidLoads;
+        $this->outBuyLoads = $outBuyLoads;
     }
 
      /**
@@ -19,7 +24,7 @@ class PrepaidLoadService implements IPrepaidLoadService {
      * @param array $items
      * @return array
      */
-    public function loadGlobe(array $items): array
+    public function load(array $items): array
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
@@ -49,5 +54,15 @@ class PrepaidLoadService implements IPrepaidLoadService {
         ];
 
         return $body;
+    }
+
+      /**
+     * Show list of promos
+     *
+     * @return array
+     */
+    public function showNetworkPromos(): array {
+        $getAllGlobePromos = $this->prepaidLoads->getByNetworkType(NetworkTypes::Globe);
+        return $getAllGlobePromos->toArray();
     }
 }

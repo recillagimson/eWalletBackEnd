@@ -16,4 +16,9 @@ class PrepaidLoadRepository extends Repository implements IPrepaidLoadRepository
     {
         return $this->model->where('reward_keyword', '=', $rewardKeyword)->first();
     }
+
+    public function getByNetworkType(string $network)
+    {
+        return $this->model->where('network', '=', $network)->get();
+    }
 }
