@@ -1,10 +1,10 @@
-.<?php
+<?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateLenghtofTitleinNotifications extends Migration
+class UpdateBillersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class UpdateLenghtofTitleinNotifications extends Migration
      */
     public function up()
     {
-        Schema::table('notifications', function (Blueprint $table) {
-            $table->string('description', '50')->nullable()->change();
+        Schema::table('billers', function (Blueprint $table) {
+     
+            $table->string('user_updated')->nullable()->change();
         });
     }
 
@@ -25,8 +26,8 @@ class UpdateLenghtofTitleinNotifications extends Migration
      */
     public function down()
     {
-        Schema::table('notifications', function (Blueprint $table) {
-            $table->string('description', '20')->nullable()->change();
+        Schema::table('billers', function (Blueprint $table) {
+            $table->string('user_updated')->change();
         });
     }
 }
