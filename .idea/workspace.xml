@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-40 SVC-41 SVC-42 adding password policies #ongoing">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="fixed out_buy_loads table issue in migration">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2021_03_29_011330_create_out_buy_loads_table.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/LoginRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/LoginRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/ResetPasswordRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/ResetPasswordRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Rules/IsPasswordValid.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Rules/IsPasswordValid.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/auth.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/auth.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +23,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="SVC-40" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -332,7 +336,21 @@
       <option name="project" value="LOCAL" />
       <updated>1617112148328</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="fixed out_buy_loads table issue in migration">
+      <created>1617216921026</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1617216921026</updated>
+    </task>
+    <task id="LOCAL-00016" summary="fixed out_buy_loads table issue in migration">
+      <created>1617216962141</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1617216962141</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -354,7 +372,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="SVC-40" />
+                        <option value="SVC-41" />
                       </list>
                     </value>
                   </entry>
@@ -379,7 +397,8 @@
     <MESSAGE value="added hashing of client secret in client seeder" />
     <MESSAGE value="modified client seeder to use eloquent orm" />
     <MESSAGE value="added migration to temporary set nullable on fields without values yet" />
-    <option name="LAST_COMMIT_MESSAGE" value="added migration to temporary set nullable on fields without values yet" />
+    <MESSAGE value="fixed out_buy_loads table issue in migration" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed out_buy_loads table issue in migration" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
