@@ -22,12 +22,11 @@ class DatabaseSeeder extends Seeder
             insert_maritial_Status::class,
             insert_nationalities::class,
             insert_natures_of_work::class,
-            insert_transaction_categories::class,
             insert_source_of_funds::class,
             insert_signup_hosts::class,
-            insert_transaction_categories::class,
+            insert_prepaid_loads::class,
             ClientSeeder::class,
-        ]);
+        ]); 
 
     }
 }
