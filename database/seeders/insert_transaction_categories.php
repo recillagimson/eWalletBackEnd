@@ -15,7 +15,7 @@ class insert_transaction_categories extends Seeder
      */
     public function run()
     {
-
+  
             DB::table('transaction_categories')->insert([
 
                 ['id' => '0ec41025-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','name' => 'WITHDRAWUBPINSTAPAY','description' => 'Withdraw Cash via UBP Instapay','status' => '1','user_created' => 'Migration Team'],
@@ -33,4 +33,6 @@ class insert_transaction_categories extends Seeder
                 ['id' => '0ec43738-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','name' => 'POSFORMAT','description' => 'POS Format Card','status' => '1','user_created' => 'Migration Team']
                 
             ]);
+    }
+    
 }
