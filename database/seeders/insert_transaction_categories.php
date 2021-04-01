@@ -28,7 +28,8 @@ class insert_transaction_categories extends Seeder
                 ['id' => '0ec4362b-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','name' => 'POSPAYMERCHANT','description' => 'POS Pay Merchant','status' => '1','user_created' => 'Migration Team'],
                 ['id' => '0ec43688-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','name' => 'POSPAYDRIVER','description' => 'POS Pay Driver','status' => '1','user_created' => 'Migration Team'],
                 ['id' => '0ec436e0-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','name' => 'POSADDFUNDS','description' => 'POS Add Funds to Card','status' => '1','user_created' => 'Migration Team'],
-                ['id' => '0ec43738-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','name' => 'POSFORMAT','description' => 'POS Format Card','status' => '1','user_created' => 'Migration Team']
+                ['id' => '0ec43738-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','name' => 'POSFORMAT','description' => 'POS Format Card','status' => '1','user_created' => 'Migration Team'],
+                ['id' => '0ec43830-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','name' => 'BUYLOAD','description' => 'Buy Prepaid Load','status' => '1','user_created' => 'Migration Team']
                 
             ]);
     }

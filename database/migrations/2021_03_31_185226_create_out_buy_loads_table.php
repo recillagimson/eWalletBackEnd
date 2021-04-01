@@ -19,6 +19,8 @@ class CreateOutBuyLoadsTable extends Migration
             $table->uuid('prepaid_load_id');
             $table->decimal('total_amount', 10, 3);
             $table->timestamp('transaction_date')->nullable();
+            $table->uuid('transaction_category_id');
+            $table->foreign('transaction_category_id')->references('id')->on('transaction_categories');
             $table->string('transaction_remarks');
             $table->uuid('user_created')->nullable();
             $table->uuid('user_updated')->nullable();
