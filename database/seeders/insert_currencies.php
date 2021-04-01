@@ -15,7 +15,7 @@ class insert_currencies extends Seeder
      */
     public function run()
     {
-        
+        DB::table('currencies')->delete();
             DB::table('currencies')->insert([
                 ['id' =>"0ed21e2c-9131-11eb-b44f-1c1b0d14e211",'description' =>"UAE Dirham",'code' =>"AED",'status' =>"1",'user_created' =>"Migration Team"],
                 ['id' =>"0ed24251-9131-11eb-b44f-1c1b0d14e211",'description' =>"Afghani",'code' =>"AFN",'status' =>"1",'user_created' =>"Migration Team"],
