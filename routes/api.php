@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });
 
-    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
+    Route::prefix('/auth')->group(function (){
         Route::get('/user', [AuthController::class, 'getUser']);
 
         Route::post('/register', [AuthController::class, 'register']);

@@ -16,12 +16,15 @@ class CreateInReceiveMoneyTable extends Migration
         Schema::create('in_receive_money', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_account_id');
+            $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->uuid('sender_id');
+            $table->foreign('sender_id')->references('id')->on('user_accounts');
             $table->string('reference_number', 50)->unique();
             $table->decimal('amount', 10, 3);
-            $table->boolean('status');
+            $table->boolean('status')->nullable();
             $table->datetime('transaction_date');
-            $table->uuid('transction_category_id');
+            // $table->uuid('transction_category_id');
+            // $table->foreign('transction_category_id')->references('id')->on('user_accounts');
             $table->string('transaction_remarks', 100);
             $table->uuid('user_created');
             $table->uuid('user_updated');
