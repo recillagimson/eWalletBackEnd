@@ -16,6 +16,7 @@ class insert_maritial_status extends Seeder
     public function run()
     {
         
+        DB::table('maritial_status')->delete();
             DB::table('maritial_status')->insert([
 
                 ['id' =>"0ec5afee-9131-11eb-b44f-1c1b0d14e211",'description' =>"Single",'legend' =>"S",'status' =>"1",'user_created' =>"Migration Team"],
