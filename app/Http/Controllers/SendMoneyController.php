@@ -37,7 +37,7 @@ class SendMoneyController extends Controller
     {       
         $fillRequest = $request->validated();
         $username = $this->getUsernameField($request);
-        $senderID = '3f94e2a7-f3f0-40c8-a88f-3027fcdc7135';
+        $senderID = '57f2cc72-6471-4baf-bd40-47bf4d455e64';
         $receiverID = $this->sendMoneyService->getUserID($username, $fillRequest);
         $isSelf = $this->sendMoneyService->isSelf($senderID, $receiverID);
         $isEnough = $this->sendMoneyService->validateAmount($senderID, $fillRequest);
@@ -45,10 +45,12 @@ class SendMoneyController extends Controller
         if($isSelf){ $this->sendMoneyService->errorMessage('receiver','not allowed to send money to your account'); }
         if(!$isEnough){ $this->sendMoneyService->errorMessage('amount', 'not enough balance'); }
 
-        $senderNewBalance = $this->sendMoneyService->subtractSenderBalance($senderID, $fillRequest);
-        $receiverNewBalance = $this->sendMoneyService->addReceiverBalance($receiverID, $fillRequest);
+        $senderBalance = $this->sendMoneyService->subtractSenderBalance($senderID, $fillRequest);
+        $receiverBalance = $this->sendMoneyService->addReceiverBalance($receiverID, $fillRequest);
+        $this->sendMoneyService->outSendMoney($senderID, $receiverID, $fillRequest);
+        $this->sendMoneyService->inReceiveMoney($senderID, $receiverID, $fillRequest);
 
-        return response()->json(['Sender Balance | ' . $senderNewBalance,'Receiver Balance | ' . $receiverNewBalance], Response::HTTP_OK);
+        return response()->json(['Successfully sent money', 'Sender Money | ' . $senderBalance, 'Receiver Money | ' . $receiverBalance], Response::HTTP_OK);
     }
 
     private function getUsernameField(Request $request): string

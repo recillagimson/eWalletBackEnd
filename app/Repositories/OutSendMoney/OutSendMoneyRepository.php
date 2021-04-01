@@ -12,15 +12,4 @@ class OutSendMoneyRepository extends Repository implements IOutSendMoneyReposito
         parent::__construct($model);
     }
 
-    public function getSenderBalance(string $userID)
-    {
-        
-        return 10000;
-    }
-
-    public function getReceiverBalance(string $userID)
-    {
-        return $dummyBalance;
-    }
-
 }

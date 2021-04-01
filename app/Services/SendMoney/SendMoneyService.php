@@ -1,23 +1,22 @@
 <?php
 namespace App\Services\SendMoney;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
-use App\Repositories\InSendMoney\IInSendMoneyRepository;
+use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Response;
 
 class SendMoneyService implements ISendMoneyService
 {
     public IOutSendMoneyRepository $outSendMoney;
-    public IInSendMoneyRepository $inSendMoney;
+    public IInReceiveMoneyRepository $inReceiveMoney;
     public IUserAccountRepository $userAccounts;
     public IUserBalanceInfoRepository $userBalanceInfo;
 
-    public function __construct(IOutSendMoneyRepository $outSendMoney, IInSendMoneyRepository $inSendMoney,IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo)
+    public function __construct(IOutSendMoneyRepository $outSendMoney, IInReceiveMoneyRepository $inReceiveMoney,IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo)
     {
         $this->outSendMoney = $outSendMoney;
-        $this->inSendMoney = $inSendMoney;
+        $this->inReceiveMoney = $inReceiveMoney;
         $this->userAccounts = $userAccts;
         $this->userBalanceInfo = $userBalanceInfo;
     }
@@ -59,12 +58,34 @@ class SendMoneyService implements ISendMoneyService
         return $newBalance;
     }
 
-    public function outSendMoney(string $senderID, string $receiverID, array $fillRequest){
-
+    public function outSendMoney(string $senderID, string $receiverID, array $fillRequest) 
+    {
+        $this->outSendMoney->create([
+            'user_account_id' => $senderID,
+            'receiver_id' => $receiverID,
+            'reference_number' => '',
+            'amount' => $fillRequest['amount'],
+            'service_fee' => 15,
+            // 'service_fee_id' => '',
+            'total_amount' => $fillRequest['amount'] + 15,
+            // 'purpose_of_transfer_id' => '',
+            'message' => $fillRequest['message'],
+            'status' => false,
+            'transaction_date' => date('Y-m-d H:i:s'),
+            'transaction_remarks' => ''
+        ]);
     }
 
-    public function inSendMoney(string $senderID, string $receiverID, array $fillRequest){
-        
+    public function inReceiveMoney(string $senderID, string $receiverID, array $fillRequest){
+        $this->inReceiveMoney->create([
+            'user_account_id' => $receiverID,
+            'sender_id' => $senderID,
+            'reference_number' => '',
+            'amount' => $fillRequest['amount'],
+            'status' => false,
+            'transaction_date' => date('Y-m-d H:i:s'),
+            'transaction_remarks' => ''
+        ]);
     }
     
     public function errorMessage(string $header, string $message) 
