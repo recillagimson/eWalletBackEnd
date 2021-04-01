@@ -55,10 +55,10 @@ Route::middleware('auth:sanctum')->group(function (){
     });
 
     Route::prefix('/news')->middleware(['decrypt.request'])->group(function (){
-        Route::get('/', [NewsAndUpdateController::class, 'index']);
-        Route::post('/', [NewsAndUpdateController::class, 'createRecord']);
-        Route::get('/{id}', [NewsAndUpdateController::class, 'show']);
-        Route::put('/{id}', [NewsAndUpdateController::class, 'update']);
-        Route::delete('/{id}', [NewsAndUpdateController::class, 'delete']);
+        Route::get('/', [NewsAndUpdateController::class, 'GetAll']);
+        Route::post('/', [NewsAndUpdateController::class, 'create']);
+        Route::get('/{news}', [NewsAndUpdateController::class, 'show']);
+        Route::put('/{news}', [NewsAndUpdateController::class, 'update']);
+        Route::delete('/{news}', [NewsAndUpdateController::class, 'delete']);
     });
 });
