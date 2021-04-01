@@ -15,7 +15,7 @@ class insert_source_of_funds extends Seeder
      */
     public function run()
     {
-  
+        DB::table('source_of_funds')->delete();
             DB::table('source_of_funds')->insert([
 
                 ['id' =>"0ed7b3a8-9131-11eb-b44f-1c1b0d14e211",'description' =>"Allowance",'status' =>"1",'user_created' =>"Migration Team"],
