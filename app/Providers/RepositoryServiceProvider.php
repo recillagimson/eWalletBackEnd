@@ -16,6 +16,12 @@ use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
+use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
+use App\Repositories\OutSendMoney\OutSendMoneyRepository;
+use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
+use App\Repositories\InReceiveMoney\InReceiveMoneyRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -42,6 +48,11 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
+
+        //Send Money Repositories
+        $this->app->bind(IInReceiveMoneyRepository::class, InReceiveMoneyRepository::class);
+        $this->app->bind(IOutSendMoneyRepository::class, OutSendMoneyRepository::class);
+        $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
     }
 
     /**

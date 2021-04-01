@@ -5,6 +5,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\SendMoneyController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -62,3 +63,5 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::delete('/{news}', [NewsAndUpdateController::class, 'delete']);
     });
 });
+
+    Route::get('/sendmoney', [SendMoneyController::class, 'sendMoney']);

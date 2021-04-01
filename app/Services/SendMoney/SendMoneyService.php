@@ -25,32 +25,41 @@ class SendMoneyService implements ISendMoneyService
         return $user['id'];
     }
 
-    public function validateAmount(string $userID, array $fillRequest)
+    public function isSelf(string $senderID, string $receiverID)
     {
-        $senderBalance = $this->userBalanceInfo->getUserBalance($userID);
-
-        if($senderBalance >= $fillRequest['amount']){
-            return true;
-        }
+        if($senderID == $receiverID) { return true; }
         return false;
     }
 
-    public function notEnoughBalance() 
+    public function validateAmount(string $userID, array $fillRequest)
     {
-        throw ValidationException::withMessages([
-            'amount' => 'not enough balance'
-        ]);
+        $balance = $this->userBalanceInfo->getUserBalance($userID);
+        if($balance >= $fillRequest['amount']){ return true; }
+        return false;
     }
 
-    public function subtractSenderBalance(string $senderID, string $receiverID, array $fillRequest){
+    public function subtractSenderBalance(string $senderID, array $fillRequest){
         $senderBalance = $this->userBalanceInfo->getUserBalance($senderID);
         $newBalance = $senderBalance - $fillRequest['amount'];
-
         $this->userBalanceInfo->updateUserBalance($senderID, $newBalance);
+
         return $newBalance;
     }
 
+    public function addReceiverBalance(string $receiverID, array $fillRequest){
+        $senderBalance = $this->userBalanceInfo->getUserBalance($receiverID);
+        $newBalance = $senderBalance + $fillRequest['amount'];
+        $this->userBalanceInfo->updateUserBalance($receiverID, $newBalance);
+        
+        return $newBalance;
+    }
     
-  
+    public function errorMessage(string $message) 
+    {
+        throw ValidationException::withMessages([
+            'amount' => $message
+        ]);
+    }
+
 
 }

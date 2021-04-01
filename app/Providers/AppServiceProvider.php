@@ -21,6 +21,8 @@ use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
+use App\Services\SendMoney\ISendMoneyService;
+use App\Services\SendMoney\SendMoneyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
@@ -42,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEncryptionService::class, EncryptionService::class);
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
+        $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
 
