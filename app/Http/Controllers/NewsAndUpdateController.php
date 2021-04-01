@@ -30,7 +30,7 @@ class NewsAndUpdateController extends Controller
     public function index(): JsonResponse {
         $records = $this->newsAndUpdatesService->index();
 
-        $encryptedResponse = $this->encryptionService->encrypt(array($records));
+        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
@@ -44,7 +44,7 @@ class NewsAndUpdateController extends Controller
         $details = $request->validated();
         $createRecord = $this->newsAndUpdatesService->createRecord($details);
 
-        $encryptedResponse = $this->encryptionService->encrypt(array($createRecord));
+        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
@@ -57,7 +57,7 @@ class NewsAndUpdateController extends Controller
     public function show(string $id): JsonResponse {
         $showRecord = $this->newsAndUpdatesService->show($id);
 
-        $encryptedResponse = $this->encryptionService->encrypt(array($showRecord));
+        $encryptedResponse = $this->encryptionService->encrypt($showRecord->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
