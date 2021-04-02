@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\SendMoney\SendMoneyRequest;
-use App\Http\Requests\SendMoney\CheckBalanceRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use App\Services\SendMoney\ISendMoneyService;
@@ -22,7 +21,6 @@ class SendMoneyController extends Controller
     /**
      * Send money request
      *
-     * 
      * @param SendMoneyRequest $request
      * @param array $fillRequest
      * @param string $username
@@ -37,7 +35,7 @@ class SendMoneyController extends Controller
     {       
         $fillRequest = $request->validated();
         $username = $this->getUsernameField($request);
-        $senderID = '57f2cc72-6471-4baf-bd40-47bf4d455e64';
+        $senderID = '24653000-b5dc-4c76-b697-5b7b9c2b19e3';
         $receiverID = $this->sendMoneyService->getUserID($username, $fillRequest);
         $isSelf = $this->sendMoneyService->isSelf($senderID, $receiverID);
         $isEnough = $this->sendMoneyService->validateAmount($senderID, $fillRequest);
@@ -52,6 +50,7 @@ class SendMoneyController extends Controller
 
         return response()->json(['Successfully sent money', 'Sender Money | ' . $senderBalance, 'Receiver Money | ' . $receiverBalance], Response::HTTP_OK);
     }
+
 
     private function getUsernameField(Request $request): string
     {

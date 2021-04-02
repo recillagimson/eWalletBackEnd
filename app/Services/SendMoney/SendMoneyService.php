@@ -69,7 +69,7 @@ class SendMoneyService implements ISendMoneyService
         $this->outSendMoney->create([
             'user_account_id' => $senderID,
             'receiver_id' => $receiverID,
-            'reference_number' => $this->generateRefNo(),
+            'reference_number' => $this->generateRefNo(0),
             'amount' => $fillRequest['amount'],
             'service_fee' => 15,
             // 'service_fee_id' => '',
@@ -78,7 +78,10 @@ class SendMoneyService implements ISendMoneyService
             'message' => $fillRequest['message'],
             'status' => false,
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transaction_remarks' => ''
+            // 'transaction_category_id' => '',
+            'transaction_remarks' => '',
+            'user_created' => $senderID,
+            'user_updated' => ''
         ]);
     }
 
@@ -87,19 +90,22 @@ class SendMoneyService implements ISendMoneyService
         $this->inReceiveMoney->create([
             'user_account_id' => $receiverID,
             'sender_id' => $senderID,
-            'reference_number' => $this->generateRefNo(),
+            'reference_number' => $this->generateRefNo(1),
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
-            'status' => false,
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transaction_remarks' => ''
+            // 'transaction_category_id' => '',
+            'transaction_remarks' => '',
+            'status' => false,
+            'user_created' => $senderID,
+            'user_updated' => ''
         ]);
     }
     
 
-    public function generateRefNo()
+    public function generateRefNo(int $adjust)
     {
-        $index = $this->outSendMoney->getLastID();
+        $index = $this->outSendMoney->getLastID() - $adjust;
         $index++;
         return 'SM'.str_pad($index, 7, "0", STR_PAD_LEFT);
     }

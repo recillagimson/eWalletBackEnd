@@ -18,6 +18,5 @@ interface ISendMoneyService{
     public function isSelf(string $senderID, string $receiverID);
     public function outSendMoney(string $senderID, string $receiverID, array $fillRequest);
     public function inReceiveMoney(string $senderID, string $receiverID, array $fillRequest);
-    public function generateRefNo();
 }
     

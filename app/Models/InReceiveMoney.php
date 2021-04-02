@@ -20,9 +20,12 @@ class InReceiveMoney extends Model
         'reference_number',
         'amount',
         'message',
-        'status',
         'transaction_date',
-        'transaction_remarks'
+        // 'transaction_category_id',
+        'transaction_remarks',
+        'status',
+        'user_created',
+        'user_updated',
     ];
 
     

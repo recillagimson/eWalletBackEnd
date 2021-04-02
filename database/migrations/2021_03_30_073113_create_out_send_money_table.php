@@ -19,7 +19,7 @@ class CreateOutSendMoneyTable extends Migration
             $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->uuid('receiver_id');
             $table->foreign('receiver_id')->references('id')->on('user_accounts');
-            $table->string('reference_number', 50)->nullable();
+            $table->string('reference_number', 50);
             $table->decimal('amount', 10, 3);
             $table->decimal('service_fee', 10, 3);
             // $table->uuid('service_fee_id');
@@ -30,8 +30,8 @@ class CreateOutSendMoneyTable extends Migration
             $table->string('message', 50)->nullable();
             $table->boolean('status')->nullable();
             $table->datetime('transaction_date');
-            // $table->uuid('transction_category_id');
-            // $table->foreign('transction_category_id')->references('id')->on('purposes_of_transfer');
+            // $table->uuid('transaction_category_id');
+            // $table->foreign('transaction_category_id')->references('id')->on('purposes_of_transfer');
             $table->string('transaction_remarks', 100)->nullable();
             $table->uuid('user_created')->nullable();
             $table->uuid('user_updated')->nullable();

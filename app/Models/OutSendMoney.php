@@ -21,11 +21,16 @@ class OutSendMoney extends Model
         'reference_number',
         'amount',
         'service_fee',
+        // 'service_fee_id',
         'total_amount',
+        // 'purpose_of_transfer_id',
         'message',
         'status',
         'transaction_date',
-        'transaction_remarks'
+        // 'transaction_category_id',
+        'transaction_remarks',
+        'user_created',
+        'user_updated'
     ];
 
 }
