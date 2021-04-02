@@ -21,11 +21,13 @@ class SendMoneyService implements ISendMoneyService
         $this->userBalanceInfo = $userBalanceInfo;
     }
 
+
     public function getUserID(string $usernameField, array $fillRequest)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $fillRequest[$usernameField]);
         return $user['id'];
     }
+
 
     public function isSelf(string $senderID, string $receiverID)
     {
@@ -33,12 +35,14 @@ class SendMoneyService implements ISendMoneyService
         return false;
     }
 
+
     public function validateAmount(string $userID, array $fillRequest)
     {
         $balance = $this->userBalanceInfo->getUserBalance($userID);
         if($balance >= $fillRequest['amount']){ return true; }
         return false;
     }
+
 
     public function subtractSenderBalance(string $senderID, array $fillRequest)
     {
@@ -49,6 +53,7 @@ class SendMoneyService implements ISendMoneyService
         return $newBalance;
     }
 
+
     public function addReceiverBalance(string $receiverID, array $fillRequest)
     {
         $senderBalance = $this->userBalanceInfo->getUserBalance($receiverID);
@@ -58,12 +63,13 @@ class SendMoneyService implements ISendMoneyService
         return $newBalance;
     }
 
+
     public function outSendMoney(string $senderID, string $receiverID, array $fillRequest) 
     {
         $this->outSendMoney->create([
             'user_account_id' => $senderID,
             'receiver_id' => $receiverID,
-            'reference_number' => '',
+            'reference_number' => $this->generateRefNo(),
             'amount' => $fillRequest['amount'],
             'service_fee' => 15,
             // 'service_fee_id' => '',
@@ -76,18 +82,28 @@ class SendMoneyService implements ISendMoneyService
         ]);
     }
 
+
     public function inReceiveMoney(string $senderID, string $receiverID, array $fillRequest){
         $this->inReceiveMoney->create([
             'user_account_id' => $receiverID,
             'sender_id' => $senderID,
-            'reference_number' => '',
+            'reference_number' => $this->generateRefNo(),
             'amount' => $fillRequest['amount'],
+            'message' => $fillRequest['message'],
             'status' => false,
             'transaction_date' => date('Y-m-d H:i:s'),
             'transaction_remarks' => ''
         ]);
     }
     
+
+    public function generateRefNo()
+    {
+        $index = $this->outSendMoney->getLastID();
+        $index++;
+        return 'SM'.str_pad($index, 7, "0", STR_PAD_LEFT);
+    }
+
     public function errorMessage(string $header, string $message) 
     {
         throw ValidationException::withMessages([

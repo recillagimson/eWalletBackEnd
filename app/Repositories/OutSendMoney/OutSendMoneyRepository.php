@@ -12,4 +12,9 @@ class OutSendMoneyRepository extends Repository implements IOutSendMoneyReposito
         parent::__construct($model);
     }
 
-}
+    public function getLastID()
+    {
+        return $this->model->select('id')->orderByDesc('id')->pluck('id')->first();
+    }
+
+}   

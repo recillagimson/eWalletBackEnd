@@ -6,5 +6,6 @@ use App\Models\OutSendMoney;
 
 interface IOutSendMoneyRepository extends IRepository
 {
-   
+    public function getLastID();
 }
+
