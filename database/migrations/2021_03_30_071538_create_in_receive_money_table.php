@@ -14,21 +14,17 @@ class CreateInReceiveMoneyTable extends Migration
     public function up()
     {
         Schema::create('in_receive_money', function (Blueprint $table) {
-            $table->uuid('id')->primary();;
+            $table->uuid('id')->primary();
             $table->uuid('user_account_id');
-            $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->uuid('sender_id');
-            $table->foreign('sender_id')->references('id')->on('user_accounts');
-            $table->string('reference_number', 50)->nullable();
+            $table->string('reference_number', 50)->unique();
             $table->decimal('amount', 10, 3);
-            // $table->string('message', 50)->nullable();
+            $table->boolean('status');
             $table->datetime('transaction_date');
-            $table->uuid('transaction_category_id');
-            $table->foreign('transaction_category_id')->references('id')->on('transaction_categories');
+            $table->uuid('transction_category_id');
             $table->string('transaction_remarks', 100);
-            $table->boolean('status')->nullable();
-            $table->uuid('user_created')->nullable();
-            $table->uuid('user_updated')->nullable();
+            $table->uuid('user_created');
+            $table->uuid('user_updated');
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
             $table->softDeletes();
@@ -43,6 +39,5 @@ class CreateInReceiveMoneyTable extends Migration
     public function down()
     {
         Schema::dropIfExists('in_receive_money');
-        
     }
 }
