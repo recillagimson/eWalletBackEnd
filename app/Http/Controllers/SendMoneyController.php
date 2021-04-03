@@ -32,14 +32,16 @@ class SendMoneyController extends Controller
      * @throws ValidationException
      */
     public function sendMoney(SendMoneyRequest $request): JsonResponse
-    {       
+    {
         $fillRequest = $request->validated();
         $username = $this->getUsernameField($request);
-        $senderID = '24653000-b5dc-4c76-b697-5b7b9c2b19e3';
+        $senderID = 'd1131997-a043-4dda-8b5c-fa8d26358dc1';
         $receiverID = $this->sendMoneyService->getUserID($username, $fillRequest);
+
         $isSelf = $this->sendMoneyService->isSelf($senderID, $receiverID);
         $isEnough = $this->sendMoneyService->validateAmount($senderID, $fillRequest);
-
+        $fillRequest['refNo'] = $this->sendMoneyService->generateRefNo();
+        
         if($isSelf){ $this->sendMoneyService->errorMessage('receiver','not allowed to send money to your account'); }
         if(!$isEnough){ $this->sendMoneyService->errorMessage('amount', 'not enough balance'); }
 

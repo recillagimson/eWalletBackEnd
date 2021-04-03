@@ -60,7 +60,7 @@ class SendMoneyService implements ISendMoneyService
         $newBalance = $senderBalance + $fillRequest['amount'];
         $this->userBalanceInfo->updateUserBalance($receiverID, $newBalance);
         
-        return $newBalance;
+         
     }
 
 
@@ -69,7 +69,7 @@ class SendMoneyService implements ISendMoneyService
         $this->outSendMoney->create([
             'user_account_id' => $senderID,
             'receiver_id' => $receiverID,
-            'reference_number' => $this->generateRefNo(0),
+            'reference_number' => $fillRequest['refNo'],
             'amount' => $fillRequest['amount'],
             'service_fee' => 15,
             // 'service_fee_id' => '',
@@ -78,9 +78,9 @@ class SendMoneyService implements ISendMoneyService
             'message' => $fillRequest['message'],
             'status' => false,
             'transaction_date' => date('Y-m-d H:i:s'),
-            // 'transaction_category_id' => '',
+            'transaction_category_id' => '1a86b905-929a-11eb-9663-1c1b0d14e211',
             'transaction_remarks' => '',
-            'user_created' => $senderID,
+            'user_created' => '',
             'user_updated' => ''
         ]);
     }
@@ -90,22 +90,23 @@ class SendMoneyService implements ISendMoneyService
         $this->inReceiveMoney->create([
             'user_account_id' => $receiverID,
             'sender_id' => $senderID,
-            'reference_number' => $this->generateRefNo(1),
+            'reference_number' => $fillRequest['refNo'],
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
             'transaction_date' => date('Y-m-d H:i:s'),
-            // 'transaction_category_id' => '',
+            'transaction_category_id' => '1a86b905-929a-11eb-9663-1c1b0d14e211',
             'transaction_remarks' => '',
             'status' => false,
-            'user_created' => $senderID,
+            'user_created' => '',
             'user_updated' => ''
         ]);
     }
     
 
-    public function generateRefNo(int $adjust)
+    public function generateRefNo()
     {
-        $index = $this->outSendMoney->getLastID() - $adjust;
+        $index = $this->outSendMoney->getLastRefNo();
+        $index = substr($index, 2);
         $index++;
         return 'SM'.str_pad($index, 7, "0", STR_PAD_LEFT);
     }

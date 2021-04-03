@@ -14,7 +14,7 @@ class CreateInReceiveMoneyTable extends Migration
     public function up()
     {
         Schema::create('in_receive_money', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->uuid('id')->primary();;
             $table->uuid('user_account_id');
             $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->uuid('sender_id');
@@ -23,8 +23,8 @@ class CreateInReceiveMoneyTable extends Migration
             $table->decimal('amount', 10, 3);
             // $table->string('message', 50)->nullable();
             $table->datetime('transaction_date');
-            // $table->uuid('transaction_category_id');
-            // $table->foreign('transaction_category_id')->references('id')->on('transction_category');
+            $table->uuid('transaction_category_id');
+            $table->foreign('transaction_category_id')->references('id')->on('transaction_categories');
             $table->string('transaction_remarks', 100);
             $table->boolean('status')->nullable();
             $table->uuid('user_created')->nullable();

@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             insert_source_of_funds::class,
             insert_signup_hosts::class,
             insert_prepaid_loads::class,
+            insert_transaction_categories::class,
             ClientSeeder::class,
         ]); 
 

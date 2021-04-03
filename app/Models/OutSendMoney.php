@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OutSendMoney extends Model
 {
-    use HasFactory;
+    use HasFactory, UsesUuid, SoftDeletes;
 
 
     /**
@@ -27,7 +29,7 @@ class OutSendMoney extends Model
         'message',
         'status',
         'transaction_date',
-        // 'transaction_category_id',
+        'transaction_category_id',
         'transaction_remarks',
         'user_created',
         'user_updated'

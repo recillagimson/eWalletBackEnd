@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InReceiveMoney extends Model
 {
-    use HasFactory;
+   use HasFactory, UsesUuid, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,7 +23,7 @@ class InReceiveMoney extends Model
         'amount',
         'message',
         'transaction_date',
-        // 'transaction_category_id',
+        'transaction_category_id',
         'transaction_remarks',
         'status',
         'user_created',

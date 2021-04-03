@@ -14,7 +14,7 @@ class CreateOutSendMoneyTable extends Migration
     public function up()
     {
         Schema::create('out_send_money', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->uuid('id')->primary();
             $table->uuid('user_account_id');
             $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->uuid('receiver_id');
@@ -30,8 +30,8 @@ class CreateOutSendMoneyTable extends Migration
             $table->string('message', 50)->nullable();
             $table->boolean('status')->nullable();
             $table->datetime('transaction_date');
-            // $table->uuid('transaction_category_id');
-            // $table->foreign('transaction_category_id')->references('id')->on('purposes_of_transfer');
+            $table->uuid('transaction_category_id');
+            $table->foreign('transaction_category_id')->references('id')->on('transaction_categories');
             $table->string('transaction_remarks', 100)->nullable();
             $table->uuid('user_created')->nullable();
             $table->uuid('user_updated')->nullable();
