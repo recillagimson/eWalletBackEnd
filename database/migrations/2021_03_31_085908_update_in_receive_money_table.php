@@ -15,7 +15,7 @@ class UpdateInReceiveMoneyTable extends Migration
     {
         Schema::table('in_receive_money', function (Blueprint $table) {
      
-            $table->string('message', 50)->nullable()->after('amount');
+            $table->string('message', 50)->after('amount');
             $table->string('status', 20)->change();
         });
     }
