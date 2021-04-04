@@ -39,5 +39,6 @@ class CreateInReceiveMoneyTable extends Migration
     public function down()
     {
         Schema::dropIfExists('in_receive_money');
+        
     }
 }
