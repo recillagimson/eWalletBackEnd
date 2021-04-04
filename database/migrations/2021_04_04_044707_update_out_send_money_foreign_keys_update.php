@@ -23,6 +23,8 @@ class UpdateOutSendMoneyForeignKeysUpdate extends Migration
             $table->string('transaction_remarks', 100)->nullable()->change();
             $table->uuid('user_created', 100)->nullable()->change();
             $table->uuid('user_updated', 100)->nullable()->change();
+            $table->uuid('service_fee_id')->nullable()->change();
+            $table->uuid('purpose_of_transfer_id')->nullable()->change();
         });
     }
 
@@ -39,6 +41,8 @@ class UpdateOutSendMoneyForeignKeysUpdate extends Migration
             $table->string('transaction_remarks', 100)->change();
             $table->uuid('user_created', 100)->change();
             $table->uuid('user_updated', 100)->change();
+            $table->uuid('service_fee_id')->change();
+            $table->uuid('purpose_of_transfer_id')->change();
         });
     }
 }

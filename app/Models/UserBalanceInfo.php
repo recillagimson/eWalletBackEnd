@@ -9,14 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserBalanceInfo extends Model
 {
-    use HasFactory, UsesUuid, SoftDeletes;
-     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'available_balance'
-    ];
+    use HasFactory;
+
 
 }

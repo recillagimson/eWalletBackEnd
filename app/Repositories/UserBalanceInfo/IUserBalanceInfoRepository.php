@@ -2,7 +2,6 @@
 namespace App\Repositories\UserBalanceInfo;
 
 use App\Repositories\IRepository;
-use App\Models\UserBalanceInfo;
 
 interface IUserBalanceInfoRepository extends IRepository
 {

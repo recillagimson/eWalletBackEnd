@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserBalanceInfo extends Migration
+class CreateUserBalanceInfoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateUserBalanceInfo extends Migration
      */
     public function up()
     {
-        Schema::create('user_balance_info', function (Blueprint $table) {
+        Schema::create('user_balance_infos', function (Blueprint $table) {
             $table->uuid('id');
             $table->uuid('user_account_id');
             $table->foreign('user_account_id')->references('id')->on('user_accounts');

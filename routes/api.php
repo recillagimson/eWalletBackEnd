@@ -62,6 +62,10 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::put('/{news}', [NewsAndUpdateController::class, 'update']);
         Route::delete('/{news}', [NewsAndUpdateController::class, 'delete']);
     });
+
+    Route::prefix('/sendmoney')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/sendmoney', [SendMoneyController::class, 'sendMoney']);
+    });
 });
 
-    Route::get('/sendmoney', [SendMoneyController::class, 'sendMoney']);
+    

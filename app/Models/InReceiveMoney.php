@@ -23,7 +23,7 @@ class InReceiveMoney extends Model
         'amount',
         'message',
         'transaction_date',
-        'transaction_category_id',
+        'transction_category_id',
         'transaction_remarks',
         'status',
         'user_created',

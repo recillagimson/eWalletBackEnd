@@ -49,8 +49,6 @@ class SendMoneyService implements ISendMoneyService
         $senderBalance = $this->userBalanceInfo->getUserBalance($senderID);
         $newBalance = $senderBalance - $fillRequest['amount'];
         $this->userBalanceInfo->updateUserBalance($senderID, $newBalance);
-
-        return $newBalance;
     }
 
 
@@ -59,14 +57,12 @@ class SendMoneyService implements ISendMoneyService
         $senderBalance = $this->userBalanceInfo->getUserBalance($receiverID);
         $newBalance = $senderBalance + $fillRequest['amount'];
         $this->userBalanceInfo->updateUserBalance($receiverID, $newBalance);
-        
-         
     }
 
 
     public function outSendMoney(string $senderID, string $receiverID, array $fillRequest) 
     {
-        $this->outSendMoney->create([
+        return $this->outSendMoney->create([
             'user_account_id' => $senderID,
             'receiver_id' => $receiverID,
             'reference_number' => $fillRequest['refNo'],
@@ -78,7 +74,7 @@ class SendMoneyService implements ISendMoneyService
             'message' => $fillRequest['message'],
             'status' => false,
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transaction_category_id' => '1a86b905-929a-11eb-9663-1c1b0d14e211',
+            'transction_category_id' => '1a86b905-929a-11eb-9663-1c1b0d14e211',
             'transaction_remarks' => '',
             'user_created' => '',
             'user_updated' => ''
@@ -87,14 +83,14 @@ class SendMoneyService implements ISendMoneyService
 
 
     public function inReceiveMoney(string $senderID, string $receiverID, array $fillRequest){
-        $this->inReceiveMoney->create([
+        return $this->inReceiveMoney->create([
             'user_account_id' => $receiverID,
             'sender_id' => $senderID,
             'reference_number' => $fillRequest['refNo'],
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transaction_category_id' => '1a86b905-929a-11eb-9663-1c1b0d14e211',
+            'transction_category_id' => '1a86b905-929a-11eb-9663-1c1b0d14e211',
             'transaction_remarks' => '',
             'status' => false,
             'user_created' => '',
