@@ -5,6 +5,7 @@ namespace App\Services\OutBuyLoad;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use Carbon\Carbon;
 
@@ -14,16 +15,19 @@ class OutBuyLoadService implements IOutBuyLoadService
     public IPrepaidLoadRepository $prepaidLoads;
     public IOutBuyLoadRepository $outBuyLoads;
     private IUserAccountRepository $userAccountRepository;
+    private ITransactionCategoryRepository $transactionCategoryRepository;
 
     public function __construct(IPrepaidLoadService $prepaidLoadService,
                                 IPrepaidLoadRepository $prepaidLoads, 
                                 IOutBuyLoadRepository $outBuyLoads,
-                                IUserAccountRepository $userAccountRepository)
+                                IUserAccountRepository $userAccountRepository,
+                                ITransactionCategoryRepository $transactionCategoryRepository)
     {
         $this->prepaidLoadService = $prepaidLoadService;
         $this->prepaidLoads = $prepaidLoads;
         $this->outBuyLoads = $outBuyLoads;
         $this->userAccountRepository = $userAccountRepository;
+        $this->transactionCategoryRepository = $transactionCategoryRepository;
     }
 
     public function load(array $details)
@@ -33,7 +37,8 @@ class OutBuyLoadService implements IOutBuyLoadService
 
     public function createRecord(array $details, object $request) {
         $getPromoDetails = $this->prepaidLoads->getByRewardKeyword($details['promo']);
-        $inputOutBuyLoad = $this->inputOutBuyLoad($getPromoDetails, $details, $request->user());
+        $transactionCategoryName = $this->transactionCategoryRepository->getByName('CXLOAD');
+        $inputOutBuyLoad = $this->inputOutBuyLoad($getPromoDetails, $details, $request->user(), $transactionCategoryName);
         $createOutBuyLoad = $this->outBuyLoads->create($inputOutBuyLoad);
         $createOutBuyLoad->user_account_detail = $this->userAccountRepository->get($createOutBuyLoad->user_account_id);
 
@@ -44,13 +49,13 @@ class OutBuyLoadService implements IOutBuyLoadService
         return $this->prepaidLoadService->showNetworkPromos();
     }
 
-    private function inputOutBuyLoad(object $promos, array $details, object $user): array {
+    private function inputOutBuyLoad(object $promos, array $details, object $user, object $transactionCategoryName): array {
         $body = array(
                     'user_account_id'=>$user->id,
                     'prepaid_load_id'=>$promos->id,
                     'total_amount'=>$promos->amount,
                     'transaction_date'=>Carbon::now(),
-                    'transaction_category_id'=>'edf4d5d0-9299-11eb-9663-1c1b0d14e211',
+                    'transaction_category_id'=>$transactionCategoryName->id,
                     'transaction_remarks'=>'',
                 );
         return $body;

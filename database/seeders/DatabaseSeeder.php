@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             insert_signup_hosts::class,
             insert_prepaid_loads::class,
             ClientSeeder::class,
+            insert_transaction_categories::class,
         ]); 
 
     }
