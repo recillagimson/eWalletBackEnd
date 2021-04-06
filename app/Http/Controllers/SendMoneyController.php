@@ -58,7 +58,7 @@ class SendMoneyController extends Controller
         return response()->json([$encryptedResponseOutSendMoney, $encryptedResponseInReceiveMoney], Response::HTTP_CREATED);
     }
 
-
+    
     private function getUsernameField(Request $request): string
     {
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
