@@ -16,6 +16,7 @@ class insert_prepaid_loads extends Seeder
     public function run()
     {
         
+        DB::table('prepaid_loads')->delete();
             DB::table('prepaid_loads')->insert([
                 
                 ['id' =>"7b7668c5-91c8-11eb-8d33-1c1b0d14e211",'prepaid_type' =>"E-LOAD",'network' =>"GLOBE",'reward_keyword' =>"SQPLOAD1000",'amax_keyword' =>"LD",'amount' =>"1000",'status' =>"1",'user_created' =>"Migration Team"],

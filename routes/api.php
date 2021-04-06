@@ -6,6 +6,7 @@ use App\Http\Controllers\DragonPayAddMoneyController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\HelpCenterController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -61,6 +62,13 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::get('/{news}', [NewsAndUpdateController::class, 'show']);
         Route::put('/{news}', [NewsAndUpdateController::class, 'update']);
         Route::delete('/{news}', [NewsAndUpdateController::class, 'delete']);
+    });
+    Route::prefix('/help_center')->middleware(['decrypt.request'])->group(function (){
+        Route::get('/', [HelpCenterController::class, 'GetAll']);
+        Route::post('/', [HelpCenterController::class, 'create']);
+        Route::get('/{helpCenter}', [HelpCenterController::class, 'show']);
+        Route::put('/{helpCenter}', [HelpCenterController::class, 'update']);
+        Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
     });
 });
 
