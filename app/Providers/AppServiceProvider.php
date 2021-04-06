@@ -6,6 +6,8 @@ use App\Enums\UsernameTypes;
 use App\Services\AddMoney\DragonPay\IWebBankingService;
 use App\Services\AddMoney\DragonPay\WebBankingService;
 use App\Enums\NetworkTypes;
+use App\Services\AddMoney\DragonPay\PostBack\HandlePostBackService;
+use App\Services\AddMoney\DragonPay\PostBack\IHandlePostBackService;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
@@ -23,6 +25,8 @@ use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
@@ -44,11 +48,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEncryptionService::class, EncryptionService::class);
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
+        $this->app->bind(IReferenceNumberService::class, ReferenceNumberService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
 
         // ADD MONEY SERVICES
         $this->app->bind(IWebBankingService::class, WebBankingService::class);
+        $this->app->bind(IHandlePostBackService::class, HandlePostBackService::class);
     }
 
     /**

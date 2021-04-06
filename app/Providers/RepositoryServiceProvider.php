@@ -20,6 +20,14 @@ use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\ServiceFee\ServiceFeeRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\TransactionCategory\TransactionCategoryRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
+use App\Repositories\UserDetail\IUserDetailRepository;
+use App\Repositories\UserDetail\UserDetailRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -47,10 +55,13 @@ class RepositoryServiceProvider extends ServiceProvider
         //Utilities Repositories
         $this->app->bind(IOtpRepository::class, OtpRepository::class);
 
-        //Add Money Repositories
         $this->app->bind(IWebBankRepository::class, WebBankRepository::class);
         $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
+        $this->app->bind(IUserDetailRepository::class, UserDetailRepository::class);
+        $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
+        $this->app->bind(ITransactionCategoryRepository::class, TransactionCategoryRepository::class);
+        $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
     }
 
     /**

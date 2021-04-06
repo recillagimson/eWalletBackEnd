@@ -46,6 +46,14 @@ class Handler extends ExceptionHandler
             return response()->json(['message' => 'Not Found!'], 404);
         }
 
+        if ($e instanceof RecordUpdateException) {
+            return $e->render($request);
+        }
+
+        if ($e instanceof TierLimitException) {
+            return $e->render($request);
+        }
+
         return parent::render($request, $e);
     }
 }

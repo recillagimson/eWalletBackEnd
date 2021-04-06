@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::put('/{news}', [NewsAndUpdateController::class, 'update']);
         Route::delete('/{news}', [NewsAndUpdateController::class, 'delete']);
     });
+
     Route::prefix('/help_center')->middleware(['decrypt.request'])->group(function (){
         Route::get('/', [HelpCenterController::class, 'GetAll']);
         Route::post('/', [HelpCenterController::class, 'create']);
@@ -70,11 +71,13 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::put('/{helpCenter}', [HelpCenterController::class, 'update']);
         Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
     });
+
+    Route::prefix('/webbanking')->middleware(['decrypt.request'])->group(function (){
+        Route::post('/addmoney', [DragonPayAddMoneyController::class, 'addMoney']);
+    });
 });
 
+// DragonPay PostBack
 Route::prefix('/webbanking')->group(function (){
-    Route::post('/addmoney', [DragonPayAddMoneyController::class, 'addMoney']);
-    Route::any('/postback', function () {
-        return $_GET;
-    });
+    Route::get('/postback', [DragonPayAddMoneyController::class, 'postBack']);
 });
