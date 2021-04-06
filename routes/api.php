@@ -51,8 +51,8 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::post('/verify', [AuthController::class, 'verify']);
     });
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
-        Route::post('/', [PrepaidLoadController::class, 'load']);
-        Route::get('/promos', [PrepaidLoadController::class, 'showPromos']);
+        Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
+        Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
     });
 
     Route::prefix('/news')->middleware(['decrypt.request'])->group(function (){
