@@ -31,9 +31,9 @@ class OutBuyLoadService implements IOutBuyLoadService
         return $this->prepaidLoadService->load($details);
     }
 
-    public function createRecord(array $details) {
+    public function createRecord(array $details, object $request) {
         $getPromoDetails = $this->prepaidLoads->getByRewardKeyword($details['promo']);
-        $inputOutBuyLoad = $this->inputOutBuyLoad($getPromoDetails, $details);
+        $inputOutBuyLoad = $this->inputOutBuyLoad($getPromoDetails, $details, $request->user());
         $createOutBuyLoad = $this->outBuyLoads->create($inputOutBuyLoad);
         $createOutBuyLoad->user_account_detail = $this->userAccountRepository->get($createOutBuyLoad->user_account_id);
 
@@ -44,9 +44,9 @@ class OutBuyLoadService implements IOutBuyLoadService
         return $this->prepaidLoadService->showNetworkPromos();
     }
 
-    private function inputOutBuyLoad(object $promos, array $details): array {
+    private function inputOutBuyLoad(object $promos, array $details, object $user): array {
         $body = array(
-                    'user_account_id'=>$details['user_id'],
+                    'user_account_id'=>$user->id,
                     'prepaid_load_id'=>$promos->id,
                     'total_amount'=>$promos->amount,
                     'transaction_date'=>Carbon::now(),
