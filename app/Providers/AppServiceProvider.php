@@ -89,7 +89,7 @@ class AppServiceProvider extends ServiceProvider
                     return $this->app->get(GlobeService::class);
                 }
 
-                // return $this->app->get(GlobeService::class);
+                return $this->app->get(GlobeService::class);
             });
     }
 }
