@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             insert_countries::class,
             insert_currencies::class,
             insert_id_types::class,
-            insert_maritial_Status::class,
+            insert_maritial_status::class,
             insert_nationalities::class,
             insert_natures_of_work::class,
             insert_source_of_funds::class,
@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             insert_prepaid_loads::class,
             insert_transaction_categories::class,
             ClientSeeder::class,
+           
         ]); 
 
     }

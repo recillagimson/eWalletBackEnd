@@ -86,14 +86,10 @@ class AppServiceProvider extends ServiceProvider
             ->needs(IPrepaidLoadService::class)
             ->give(function() {
                 $request = app(Request::class);
-                $encryptionService = $this->app->make(IEncryptionService::class);
 
-                if($request->has('payload'))
+                if(strtoupper($request->route('network_type')) === NetworkTypes::Globe)
                 {
-                    $data = $encryptionService->decrypt($request->payload, $request->id, false);
-
-                    if($data['network_type'] === NetworkTypes::Globe)
-                        return $this->app->get(GlobeService::class);
+                    return $this->app->get(GlobeService::class);
                 }
 
                 // return $this->app->get(GlobeService::class);

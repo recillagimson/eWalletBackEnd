@@ -15,7 +15,7 @@ class UpdateSignupHotsNullableUserUpdate extends Migration
     {
         Schema::table('signup_hosts', function (Blueprint $table) {
      
-            $table->string('user_updated')->nullable()->change();
+            $table->uuid('user_updated')->nullable()->change();
         });
     }
 
@@ -28,7 +28,7 @@ class UpdateSignupHotsNullableUserUpdate extends Migration
     {
         Schema::table('signup_hosts', function (Blueprint $table) {
            
-            $table->string('user_updated')->change();
+            $table->uuid('user_updated')->change();
         });
     }
 }

@@ -24,10 +24,8 @@ class PrepaidLoadRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id'=> 'required',
             'mobile_number' => 'required',
             'promo' => 'required',
-            'network_type'=> 'required'
         ];
     }
 }
