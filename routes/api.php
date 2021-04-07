@@ -55,18 +55,10 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
     });
 
-    Route::prefix('/news')->middleware(['decrypt.request'])->group(function (){
-        Route::get('/', [NewsAndUpdateController::class, 'GetAll']);
-        Route::post('/', [NewsAndUpdateController::class, 'create']);
-        Route::get('/{news}', [NewsAndUpdateController::class, 'show']);
-        Route::put('/{news}', [NewsAndUpdateController::class, 'update']);
-        Route::delete('/{news}', [NewsAndUpdateController::class, 'delete']);
-    });
-    Route::prefix('/help_center')->middleware(['decrypt.request'])->group(function (){
-        Route::get('/', [HelpCenterController::class, 'GetAll']);
-        Route::post('/', [HelpCenterController::class, 'create']);
-        Route::get('/{helpCenter}', [HelpCenterController::class, 'show']);
-        Route::put('/{helpCenter}', [HelpCenterController::class, 'update']);
-        Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
+    Route::middleware(['decrypt.request'])->group(function (){
+        Route::resources([
+            'news' => NewsAndUpdateController::class,
+            'help_center' => HelpCenterController::class,
+        ]);
     });
 });
