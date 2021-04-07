@@ -29,12 +29,12 @@ class PrepaidLoadController extends Controller
      * @param PrepaidLoadRequest $request
      * @return JsonResponse
      */
-    public function load(PrepaidLoadRequest $request): JsonResponse
+    public function load(Request $request, PrepaidLoadRequest $prepaidloadrequest): JsonResponse
     {
-        $details = $request->validated();
+        $details = $prepaidloadrequest->validated();
         $load = $this->outBuyLoadService->load($details);
         // on fail
-        $createRecord = $this->outBuyLoadService->createRecord($details);
+        $createRecord = $this->outBuyLoadService->createRecord($details, $request);
         $encryptedResponse = $this->encryptionService->encrypt(array($createRecord));
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
