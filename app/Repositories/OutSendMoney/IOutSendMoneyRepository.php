@@ -1,9 +1,9 @@
 <?php
 namespace App\Repositories\OutSendMoney;
 
-use App\Repositories\OutSendMoney\OutSendMoneyRepository;
+use App\Repositories\IRepository;
 
-interface IOutSendMoneyRepository extends OutSendMoneyRepository
+interface IOutSendMoneyRepository extends IRepository
 {
     public function getLastRefNo();
 }

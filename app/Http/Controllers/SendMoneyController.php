@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Enums\UsernameTypes;
 use App\Services\Encryption\IEncryptionService;
+use App\Http\Requests\PinCode\PinCodeRequest;
 
 class SendMoneyController extends Controller
 {       
@@ -38,16 +39,16 @@ class SendMoneyController extends Controller
     {
         $fillRequest = $request->validated();
         $username = $this->getUsernameField($request);
-        $senderID = $fillRequest['user_account_id'];
+        $senderID = $request->user()->id;
         $receiverID = $this->sendMoneyService->getUserID($username, $fillRequest);
         
         $isSelf = $this->sendMoneyService->isSelf($senderID, $receiverID);
-        $isEnough = $this->sendMoneyService->validateAmount($senderID, $fillRequest);
+        $isEnough = $this->sendMoneyService->checkAmount($senderID, $fillRequest);
         $fillRequest['refNo'] = $this->sendMoneyService->generateRefNo();
 
-        if($isSelf){ $this->sendMoneyService->errorMessage('receiver','not allowed to send money to your account'); }
-        if(!$isEnough){ $this->sendMoneyService->errorMessage('amount', 'not enough balance'); }
-
+        if($isSelf){ $this->sendMoneyService->errorMessage($username,'Can\'t send to your own account'); }
+        if(!$isEnough){ $this->sendMoneyService->errorMessage('amount', 'Not enough balance'); }
+        
         $this->sendMoneyService->subtractSenderBalance($senderID, $fillRequest);
         $this->sendMoneyService->addReceiverBalance($receiverID, $fillRequest);
         $outSendMoney = $this->sendMoneyService->outSendMoney($senderID, $receiverID, $fillRequest);
@@ -58,7 +59,6 @@ class SendMoneyController extends Controller
         return response()->json([$encryptedResponseOutSendMoney, $encryptedResponseInReceiveMoney], Response::HTTP_CREATED);
     }
 
-    
     private function getUsernameField(Request $request): string
     {
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;

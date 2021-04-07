@@ -42,7 +42,7 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });
 
-    Route::prefix('/auth')->group(function (){
+    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
         Route::get('/user', [AuthController::class, 'getUser']);
 
         Route::post('/register', [AuthController::class, 'register']);
@@ -72,9 +72,10 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
     });
 
-    Route::prefix('/sendmoney')->middleware(['decrypt.request'])->group(function () {
-        Route::post('/sendmoney', [SendMoneyController::class, 'sendMoney']);
+    Route::prefix('/sendmoney')->group(function () {
+        Route::post('/', [SendMoneyController::class, 'sendmoney']);
     });
+    
 });
 
     

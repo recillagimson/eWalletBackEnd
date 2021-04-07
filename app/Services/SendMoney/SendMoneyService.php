@@ -5,6 +5,7 @@ use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use Illuminate\Validation\ValidationException;
+use App\Enums\SendMoneyTypes;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -25,6 +26,7 @@ class SendMoneyService implements ISendMoneyService
     public function getUserID(string $usernameField, array $fillRequest)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $fillRequest[$usernameField]);
+        if(empty($user)){ $this->errorMessage($usernameField, 'Account does not exist'); }
         return $user['id'];
     }
 
@@ -36,7 +38,7 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    public function validateAmount(string $userID, array $fillRequest)
+    public function checkAmount(string $userID, array $fillRequest)
     {
         $balance = $this->userBalanceInfo->getUserBalance($userID);
         if($balance >= $fillRequest['amount']){ return true; }
@@ -98,14 +100,14 @@ class SendMoneyService implements ISendMoneyService
         ]);
     }
     
-
     public function generateRefNo()
     {
         $index = $this->outSendMoney->getLastRefNo();
         $index = substr($index, 2);
         $index++;
-        return 'SM'.str_pad($index, 7, "0", STR_PAD_LEFT);
+        return SendMoneyTypes::RefHeader.str_pad($index, 7, "0", STR_PAD_LEFT);
     }
+    
 
     public function errorMessage(string $header, string $message) 
     {
