@@ -56,7 +56,7 @@ Route::middleware('auth:sanctum')->group(function (){
     });
 
     Route::middleware(['decrypt.request'])->group(function (){
-        Route::resources([
+        Route::apiResources([
             'news' => NewsAndUpdateController::class,
             'help_center' => HelpCenterController::class,
         ]);
