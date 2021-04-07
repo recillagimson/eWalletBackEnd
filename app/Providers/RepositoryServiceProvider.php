@@ -18,6 +18,8 @@ use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
+use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\Notification\NotificationRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use Illuminate\Support\ServiceProvider;
@@ -52,6 +54,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
+
+        // Notification Repository
+        $this->app->bind(INotificationRepository::class, NotificationRepository::class);
     }
 
     /**
