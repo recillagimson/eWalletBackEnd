@@ -47,9 +47,9 @@ class WebBankingService implements IWebBankingService
                                 IServiceFeeRepository $serviceFees,
                                 IReferenceNumberService $referenceNumber) {
 
-        $this->baseURL = config('dragonpay.dp_uat_base_url_v1');
-        $this->merchantID = config('dragonpay.dp_uat_merchantID');
-        $this->key = config('dragonpay.dp_uat_key');
+        $this->baseURL = config('dragonpay.dp_base_url_v1');
+        $this->merchantID = config('dragonpay.dp_merchantID');
+        $this->key = config('dragonpay.dp_key');
 
         $this->webBanks = $webBanks;
         $this->userAccounts = $userAccounts;

@@ -7,7 +7,7 @@ return [
      * to the http url params when sending 
      * request to the DragonPay API
      */
-    'dp_uat_merchantID' => env('DP_UAT_MERCHANTID'),
+    'dp_merchantID' => env('DP_MERCHANTID'),
 
     /**
      * DragonPay Password UAT
@@ -15,7 +15,7 @@ return [
      * to the http url params when sending 
      * request to the DragonPay API
      */
-    'dp_uat_key' => env('DP_UAT_KEY'),
+    'dp_key' => env('DP_KEY'),
 
     /**
      * DragonPay URL UAT
@@ -23,7 +23,7 @@ return [
      * for DragonPay API. Add the parameters 
      * after this base URL
      */
-    'dp_uat_url' => env('DP_UAT_URL'),
+    'dp_url' => env('DP_URL'),
 
     /**
      * DragonPay Base URL UAT (V1)
@@ -31,5 +31,5 @@ return [
      * to get the actual webservice URL 
      * for DragonPay
      */
-    'dp_uat_base_url_v1' => env('DP_UAT_BASE_URL_V1'),
+    'dp_base_url_v1' => env('DP_BASE_URL'),
 ];
