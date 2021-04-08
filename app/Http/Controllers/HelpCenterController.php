@@ -23,12 +23,11 @@ class HelpCenterController extends Controller
     }
 
     /**
-     * Show List
+     * Display a listing of the resource.
      *
-     * 
      * @return JsonResponse
      */
-    public function GetAll(): JsonResponse {
+    public function index(): JsonResponse {
         $records = $this->helpCenterRepository->getAll();
 
         $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
@@ -36,12 +35,23 @@ class HelpCenterController extends Controller
     }
 
     /**
-     * Create Record
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
      *
      * @param HelpCenterRequest $request
      * @return JsonResponse
      */
-    public function create(HelpCenterRequest $request): JsonResponse {
+    public function store(HelpCenterRequest $request): JsonResponse
+    {
         $details = $request->validated();
         $inputBody = $this->inputBody($details);
         $createRecord = $this->helpCenterRepository->create($inputBody);
@@ -51,40 +61,52 @@ class HelpCenterController extends Controller
     }
 
     /**
-     * Show Record
+     * Display the specified resource.
      *
      * @param HelpCenter $helpCenter
      * @return JsonResponse
      */
-    public function show(HelpCenter $helpCenter): JsonResponse {
-        $encryptedResponse = $this->encryptionService->encrypt($helpCenter->toArray());
+    public function show(HelpCenter $help_center): JsonResponse {
+        $encryptedResponse = $this->encryptionService->encrypt($help_center->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
     /**
-     * Update Record
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
      *
      * @param HelpCenter $helpCenter
      * @param HelpCenterRequest $request
      * @return JsonResponse
      */
-    public function update(HelpCenter $helpCenter, HelpCenterRequest $request): JsonResponse {
+    public function update(HelpCenterRequest $request, HelpCenter $help_center): JsonResponse {
         $details = $request->validated();
         $inputBody = $this->inputBody($details);
-        $updateRecord = $this->helpCenterRepository->update($helpCenter, $inputBody);
+        $updateRecord = $this->helpCenterRepository->update($help_center, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
     /**
-     * Delete Record
+     * Remove the specified resource from storage.
      *
      * @param string $id
      * @return JsonResponse
      */
-    public function delete(HelpCenter $helpCenter): JsonResponse {
-        $deleteRecord = $this->helpCenterRepository->delete($helpCenter);
+    public function destroy(HelpCenter $help_center): JsonResponse
+    {
+        $deleteRecord = $this->helpCenterRepository->delete($help_center);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }

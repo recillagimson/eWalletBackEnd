@@ -31,7 +31,9 @@ class insert_transaction_categories extends Seeder
                 ['id' => '0ec436e0-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Add Money to Card via POS','name' => 'POSADDFUNDS','description' => 'POS Add Funds to Card','status' => '1','user_created' => 'Migration Team'],
                 ['id' => '0ec43738-9131-11eb-b44f-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Format Card','name' => 'POSFORMAT','description' => 'POS Format Card','status' => '1','user_created' => 'Migration Team'],
                 ['id' => 'edf4d5d0-9299-11eb-9663-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Buy Load','name' => 'CXLOAD','description' => 'Purchase Load','status' => '1','user_created' => 'Migration Team'],
-                ['id' => '1a86b905-929a-11eb-9663-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Send Money','name' => 'CXSEND','description' => 'Send Money to Squidpay Account','status' => '1','user_created' => 'Migration Team']
+                ['id' => '1a86b905-929a-11eb-9663-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Send Money','name' => 'CXSEND','description' => 'Send Money to Squidpay Account','status' => '1','user_created' => 'Migration Team'],
+                ['id' => 'c5b62dbd-95a0-11eb-8473-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Bills Payment','name' => 'BILLS','description' => 'Bills Payment','status' => '1','user_created' => 'Migration Team'],
+                ['id' => 'b1792f37-929c-11eb-9663-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Receive Money','name' => 'CXRECEIVE','description' => 'Receive Money from Squidpay Account','status' => '1','user_created' => 'Migration Team']
                 
             ]);
     }
