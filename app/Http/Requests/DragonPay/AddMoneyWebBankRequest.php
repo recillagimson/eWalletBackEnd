@@ -25,7 +25,6 @@ class AddMoneyWebBankRequest extends FormRequest
     {
         return [
             'amount' => 'bail|required|regex:/^\d*(\.\d{2})?$/',
-            'email' => 'nullable|email',
         ];
     }
 }

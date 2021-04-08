@@ -69,7 +69,7 @@ class WebBankingService implements IWebBankingService
      */
     public function generateRequestURL(UserAccount $user, array $urlParams)
     {
-        $email = $this->getEmail($user, $urlParams);
+        $email = $this->getEmail($user);
         $userAccountID = $user->id;
         $amount = $urlParams['amount'];
 
@@ -106,25 +106,15 @@ class WebBankingService implements IWebBankingService
     }
     
     /**
-     * Get the email from $urlParams first (prioritize 
-     * user input) if no email is found in $urlParams
-     * proceed to get it from UserAccount
+     * Get the email from user_accounts
      * 
      * @param UserAccount $user
-     * @param array $urlParams
      * @return string|exception $email
      */
-    public function getEmail(UserAccount $user, array $urlParams)
+    public function getEmail(UserAccount $user)
     {
-        if (array_key_exists('email', $urlParams)) {
-
-            return $urlParams['email'];
-        } elseif ($user->email != null) {
-            
-            return $user->email;
-        }
-
-        // no email from both
+        if ($user->email != null) return $user->email;
+        
         return $this->invalidEmail();
     }
 
@@ -275,13 +265,12 @@ class WebBankingService implements IWebBankingService
 
 
     /**
-     * Thrown when there is no email in 
-     * database AND request parameters
+     * Thrown when there is no email in database
      */
     private function invalidEmail() 
     {
         throw ValidationException::withMessages([
-            'email' => 'Email is required'
+            'email' => 'Invalid Email. Please update your profile.'
         ]);
     }
 
