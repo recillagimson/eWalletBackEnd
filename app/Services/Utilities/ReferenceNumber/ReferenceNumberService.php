@@ -2,6 +2,7 @@
 
 namespace App\Services\Utilities\ReferenceNumber;
 
+use App\Enums\ReferenceNumberTypes;
 use App\Repositories\AddMoney\IWebBankRepository;
 
 class ReferenceNumberService implements IReferenceNumberService
@@ -30,6 +31,6 @@ class ReferenceNumberService implements IReferenceNumberService
         $lastRefNoInts = substr($lastRefNoRow->reference_number, 2);
         $latestRefNo = $lastRefNoInts + 1;
 
-        return 'AB' . str_pad($latestRefNo, 7, '0', STR_PAD_LEFT);
+        return ReferenceNumberTypes::AddMoneyViaWebBank . str_pad($latestRefNo, 7, '0', STR_PAD_LEFT);
     }
 }

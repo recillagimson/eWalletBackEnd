@@ -122,7 +122,7 @@ class WebBankingService implements IWebBankingService
      * Build the DragonPay token to be
      * used as the Auth token
      * 
-     * @return srtring-base64
+     * @return string-base64
      */
     protected function getToken()
     {
