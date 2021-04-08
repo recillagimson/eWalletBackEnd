@@ -21,14 +21,13 @@ class NewsAndUpdateController extends Controller
         $this->newsAndUpdateRepository = $newsAndUpdateRepository;
         $this->encryptionService = $encryptionService;
     }
-
     /**
-     * Show List
+     * Display a listing of the resource.
      *
-     * 
      * @return JsonResponse
      */
-    public function GetAll(): JsonResponse {
+    public function index(): JsonResponse
+    {
         $records = $this->newsAndUpdateRepository->getAll();
 
         $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
@@ -36,12 +35,23 @@ class NewsAndUpdateController extends Controller
     }
 
     /**
-     * Create Record
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
      *
      * @param NewsAndUpdateRequest $request
      * @return JsonResponse
      */
-    public function create(NewsAndUpdateRequest $request): JsonResponse {
+    public function store(NewsAndUpdateRequest $request)
+    {
         $details = $request->validated();
         $inputBody = $this->inputBody($details);
         $createRecord = $this->newsAndUpdateRepository->create($inputBody);
@@ -51,24 +61,37 @@ class NewsAndUpdateController extends Controller
     }
 
     /**
-     * Show Record
+     * Display the specified resource.
      *
-     * @param NewsAndUpdate $news
+     * @param NewsAndUpdate $id
      * @return JsonResponse
      */
-    public function show(NewsAndUpdate $news): JsonResponse {
+    public function show(NewsAndUpdate $news): JsonResponse
+    {
         $encryptedResponse = $this->encryptionService->encrypt($news->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
     /**
-     * Update Record
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
      *
      * @param NewsAndUpdate $news
      * @param NewsAndUpdateRequest $request
      * @return JsonResponse
      */
-    public function update(NewsAndUpdate $news, NewsAndUpdateRequest $request): JsonResponse {
+    public function update(NewsAndUpdateRequest $request, NewsAndUpdate $news): JsonResponse
+    {
         $details = $request->validated();
         $inputBody = $this->inputBody($details);
         $updateRecord = $this->newsAndUpdateRepository->update($news, $inputBody);
@@ -78,12 +101,13 @@ class NewsAndUpdateController extends Controller
     }
 
     /**
-     * Delete Record
+     * Remove the specified resource from storage.
      *
      * @param string $id
      * @return JsonResponse
      */
-    public function delete(NewsAndUpdate $news): JsonResponse {
+    public function destroy(NewsAndUpdate $news): JsonResponse
+    {
         $deleteRecord = $this->newsAndUpdateRepository->delete($news);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
