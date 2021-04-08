@@ -74,7 +74,7 @@ Route::middleware('auth:sanctum')->group(function (){
 
     Route::prefix('/sendmoney')->group(function () {
         Route::post('/', [SendMoneyController::class, 'sendmoney']);
-        Route::get('/generateqr', [SendMoneyController::class, 'generateqr']);
+        Route::post('/generateqr', [SendMoneyController::class, 'generateqr']);
     });
     
 });

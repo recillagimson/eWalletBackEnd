@@ -6,6 +6,7 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use Illuminate\Validation\ValidationException;
 use App\Enums\SendMoneyTypes;
+use App\Repositories\QrTransactions\IQrTransactionsRepository;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -13,13 +14,15 @@ class SendMoneyService implements ISendMoneyService
     public IInReceiveMoneyRepository $inReceiveMoney;
     public IUserAccountRepository $userAccounts;
     public IUserBalanceInfoRepository $userBalanceInfo;
+    public IQrTransactionsRepository $qrTransactions;
 
-    public function __construct(IOutSendMoneyRepository $outSendMoney, IInReceiveMoneyRepository $inReceiveMoney,IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo)
+    public function __construct(IOutSendMoneyRepository $outSendMoney, IInReceiveMoneyRepository $inReceiveMoney,IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo, IQrTransactionsRepository $qrTransactions)
     {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
         $this->userAccounts = $userAccts;
         $this->userBalanceInfo = $userBalanceInfo;
+        $this->qrTransactions = $qrTransactions;
     }
 
 
@@ -44,7 +47,7 @@ class SendMoneyService implements ISendMoneyService
         if($balance >= $fillRequest['amount']){ return true; }
         return false;
     }
-
+   
 
     public function subtractSenderBalance(string $senderID, array $fillRequest)
     {
@@ -100,6 +103,7 @@ class SendMoneyService implements ISendMoneyService
         ]);
     }
     
+
     public function generateRefNo()
     {
         $index = $this->outSendMoney->getLastRefNo();
@@ -107,13 +111,20 @@ class SendMoneyService implements ISendMoneyService
         $index++;
         return SendMoneyTypes::RefHeader.str_pad($index, 7, "0", STR_PAD_LEFT);
     }
-    
 
-    public function createUserQR(object $user)
+
+    public function createUserQR(object $user, array $fillRequest)
     {
-        return $user;
+        return $this->qrTransactions->create([
+                'user_account_id' => $user->id,
+                'amount' => $fillRequest['amount'],
+                'status' => true,
+                'user_created' => '', 
+                'user_updated' => ''
+        ]);
     }
 
+    
     public function errorMessage(string $header, string $message) 
     {
         throw ValidationException::withMessages([

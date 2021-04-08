@@ -22,6 +22,8 @@ use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\OutSendMoney\OutSendMoneyRepository;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\InReceiveMoney\InReceiveMoneyRepository;
+use App\Repositories\QrTransactions\IQrTransactionsRepository;
+use App\Repositories\QrTransactions\QrTransactionsRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
@@ -63,6 +65,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IInReceiveMoneyRepository::class, InReceiveMoneyRepository::class);
         $this->app->bind(IOutSendMoneyRepository::class, OutSendMoneyRepository::class);
         $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
+        $this->app->bind(IQrTransactionsRepository::class, QrTransactionsRepository::class);
     }
 
     /**

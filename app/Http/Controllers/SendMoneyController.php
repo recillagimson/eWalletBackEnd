@@ -32,10 +32,11 @@ class SendMoneyController extends Controller
      * @param string $receiverID
      * @param boolean $isSelf
      * @param boolean $isEnough
+     * @param string $encryptedResponse
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function sendMoney(SendMoneyRequest $request)
+    public function sendMoney(SendMoneyRequest $request):JsonResponse
     {
         $fillRequest = $request->validated();
         $username = $this->getUsernameField($request);
@@ -58,13 +59,35 @@ class SendMoneyController extends Controller
         return response()->json($encryptedResponse, Response::HTTP_CREATED);
     }
 
-    
-    public function generateqr(SendMoneyQrRequest $request)
+
+    /**
+     * Generate QR Transaction
+     *
+     * @param SendMoneyRequest $request
+     * @param array $fillRequest
+     * @param array $qrTransaction
+     * @param string $encryptedResponse
+     * @return JsonResponse
+     */
+    public function generateqr(SendMoneyQrRequest $request): JsonResponse
     {
-        return $this->sendMoneyService->createUserQR($request->user());
+        $fillRequest = $request->validated();
+        $qrTransaction = $this->sendMoneyService->createUserQR($request->user(), $fillRequest);
+        $encryptedResponse = $this->encryptionService->encrypt([
+            'user_account_id' => $qrTransaction->user_account_id,
+            'amount' => $qrTransaction->amount
+        ]);
+
+        return response()->json($encryptedResponse, Response::HTTP_CREATED);
     }
 
- 
+
+    /**
+     * Returning UsernameTypes
+     * 
+     * @param Request $request
+     * @return string
+     */
     private function getUsernameField(Request $request): string
     {
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
