@@ -28,8 +28,8 @@ class NotificationController extends Controller
      * 
      * @return JsonResponse
      */
-    public function GetAll(): JsonResponse {
-        $records = $this->iNotificationRepository->getAll();
+    public function GetAll(Request $request): JsonResponse {
+        $records = $this->iNotificationRepository->getNotifications($request);
         $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
