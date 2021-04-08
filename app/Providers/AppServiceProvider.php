@@ -7,6 +7,8 @@ use App\Enums\UsernameTypes;
 use Illuminate\Http\Request;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
+use App\Services\Auth\IVerificationService;
+use App\Services\Auth\VerificationService;
 use Illuminate\Support\ServiceProvider;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\OTP\OtpService;
@@ -44,6 +46,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
+        // Vefirication Service
+        $this->app->bind(IVerificationService::class, VerificationService::class);
     }
 
     /**
