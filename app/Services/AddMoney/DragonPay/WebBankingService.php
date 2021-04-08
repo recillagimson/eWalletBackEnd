@@ -62,7 +62,7 @@ class WebBankingService implements IWebBankingService
      * Generate the DragonPay request URL
      * to the DragonPay Web Service
      * 
-     * @param uuid $userAccountID
+     * @param UserAccount $user
      * @param float $amount
      * @param string|null @email
      * @return json $response
@@ -89,7 +89,7 @@ class WebBankingService implements IWebBankingService
         ])->withToken($token)->post($url, $body);
 
         // on DragPay API Error
-        $this->handleErr($response);
+        $this->handleError($response);
 
         if ($response->status() == 200 || $response->status() == 201) {
 
@@ -168,7 +168,7 @@ class WebBankingService implements IWebBankingService
             'Description' => $beneficiaryName . ' Add Money Amount PHP ' . $this->formatAmount($amount),
             'Email' => $email,
             'mode' => 1,
-            // 'ProcId' => 'GCSH'
+            // 'ProcId' => 'BPI'
         ];
     }
     
@@ -193,7 +193,7 @@ class WebBankingService implements IWebBankingService
      * @param response $response
      * @return exception
      */
-    public function handleErr($response)
+    public function handleError($response)
     {
         if ($response->status() == 401) {
 
@@ -242,6 +242,14 @@ class WebBankingService implements IWebBankingService
         if (!$this->webBanks->create($row)) return $this->cantWriteToTable();
     }
 
+    /**
+     * Validate the user accoirding to the user's
+     * tier and amount in the transaction
+     * 
+     * @param string $userAccountID
+     * @param float $amount
+     * @return exception|null
+     */
     public function validateTiersAndLimits(string $userAccountID, float $amount)
     {
         $tier1 = 1;
@@ -249,7 +257,7 @@ class WebBankingService implements IWebBankingService
 
         // call tier repository and get the tier
 
-        if ($amount > $amountLimit) throw new TierLimitException();
+        if ($amount > $amountLimit) return $this->tierLimitExceeded();
     }
 
 
@@ -284,18 +292,17 @@ class WebBankingService implements IWebBankingService
     private function missingAuthToken()
     {
         throw ValidationException::withMessages([
-            'addMoney' => 'Invalid token. Please try again. [0]'
+            'token' => 'Invalid token. Please try again. [0]'
         ]);
     }
 
     /**
-     * Thrown when there is an Auth token
-     * bu incorrect
+     * Thrown when Auth token is incorrect
      */
     private function invalidToken()
     {
         throw ValidationException::withMessages([
-            'addMoney' => 'Invalid token. Please try again. [1]'
+            'token' => 'Invalid token. Please try again. [1]'
         ]);
     }
 
@@ -306,7 +313,7 @@ class WebBankingService implements IWebBankingService
     private function dragPayInvalidEmail()
     {
         throw ValidationException::withMessages([
-            'addMoney' => 'Can`t validate email.'
+            'email' => 'Can`t validate email.'
         ]);
     }
 
@@ -318,7 +325,7 @@ class WebBankingService implements IWebBankingService
     private function invalidParams()
     {
         throw ValidationException::withMessages([
-            'addMoney' => 'Invalid Parameters.'
+            'parmeters' => 'Invalid Parameters.'
         ]);
     }
 
@@ -329,7 +336,17 @@ class WebBankingService implements IWebBankingService
     private function cantWriteToTable()
     {
         throw ValidationException::withMessages([
-            'addMoney' => 'Can`t connect to Database'
+            'database' => 'Can`t connect to Database'
+        ]);
+    }
+
+    /**
+     * Thrown when the request amount exceeded the limit
+     */
+    private function tierLimitExceeded()
+    {
+        throw ValidationException::withMessages([
+            'amount' => 'The requested amount exceeded the limits for this account.'
         ]);
     }
 }

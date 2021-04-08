@@ -2,10 +2,9 @@
 
 namespace App\Services\AddMoney\DragonPay\PostBack;
 
-use App\Exceptions\RecordUpdateException;
 use App\Repositories\AddMoney\IWebBankRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 
 class HandlePostBackService implements IHandlePostBackService
 {
@@ -19,6 +18,14 @@ class HandlePostBackService implements IHandlePostBackService
         $this->balanceInfos = $balanceInfos;
     }
 
+    /**
+     * The core method in this service.
+     * Inserts the data receive from DragonPay
+     * postback
+     * 
+     * @param array $postBackData
+     * @return object $responseData
+     */
     public function insertPostBackData(array $postBackData)
     {
         $referenceNumber = $postBackData['txnid'];
@@ -32,7 +39,7 @@ class HandlePostBackService implements IHandlePostBackService
         $channelCode = $message[1];
         $channelRefNo = $message[4];
 
-        // if Add Money row is missing, already updated to SUCCESS or FAILED
+        // if Add Money row is missing or the record does not have a 'PENDING' status
         $this->validate($referenceNumber);
         
         $addMoneyRow = $this->webBanks->getByReferenceNumber($referenceNumber);
@@ -42,7 +49,7 @@ class HandlePostBackService implements IHandlePostBackService
             $responseData = (object) [
                 'status' => true,
                 'amount' => $addMoneyRow->amount,
-                'message' => 'Added money successfully.'
+                'message' => 'Money added successfully.'
             ];
 
             $this->addAmountToUserBalance($addMoneyRow->user_account_id, $addMoneyRow->amount);
@@ -66,29 +73,74 @@ class HandlePostBackService implements IHandlePostBackService
         return $responseData;
     }
 
+    /**
+     * Validates the transaction's status
+     * 
+     * @param string $referenceNumber
+     * @return exception
+     */
     public function validate(string $referenceNumber)
     {
         $addMoneyRow = $this->webBanks->getByReferenceNumber($referenceNumber);
 
         if (!isset($addMoneyRow->status)) {
-            throw new ModelNotFoundException();
+            return $this->transactionNotFound();
         }
 
-        if (isset($addMoneyRow->status) && $addMoneyRow->status == 'SUCCESS') {
-            throw new RecordUpdateException();
-        }
-
-        if (isset($addMoneyRow->status) && $addMoneyRow->status == 'FAILED') {
-            throw new RecordUpdateException();
+        if (isset($addMoneyRow->status) && $addMoneyRow->status != 'PENDING') {
+            return $this->transactionIsUpToDate();
         }
     }
 
+    /**
+     * Credit the cashed in amount to the user
+     * 
+     * @param string $userAccountID
+     * @param float $amount
+     * @return bool
+     */
     public function addAmountToUserBalance(string $userAccountID, float $amount)
     {
         $userBalanceInfo = $this->balanceInfos->getByUserAccountID($userAccountID);
 
-        if ($userBalanceInfo == null) throw new ModelNotFoundException();
+        if ($userBalanceInfo == null) return $this->userBalanceInfoNotFound();
         
         return $this->balanceInfos->update($userBalanceInfo, ['available_balance' => $amount]);
+    }
+
+
+
+
+
+
+    /**
+     * Thrown when the Transaction record row
+     * is not found
+     */
+    private function transactionNotFound()
+    {
+        throw ValidationException::withMessages([
+            'refno' => 'Transaction record not found.'
+        ]);
+    }
+
+    /**
+     * Thrown when the transaction record is already updated
+     */
+    private function transactionIsUpToDate()
+    {
+        throw ValidationException::withMessages([
+            'refno' => 'Transaction record is already up to date.'
+        ]);
+    }
+
+    /**
+     * Thrown when the User Balance info row is non existent
+     */
+    private function userBalanceInfoNotFound()
+    {
+        throw ValidationException::withMessages([
+            'amount' => 'User balance info not found.'
+        ]);
     }
 }
