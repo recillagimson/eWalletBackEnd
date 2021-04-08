@@ -3,13 +3,14 @@
 namespace App\Services\Auth;
 
 use App\Repositories\Client\IClientRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
 
 class VerificationService implements IVerificationService
 {
-    public IClientRepository $clients;
+    public IUserPhotoRepository $userPhotoRepository;
 
-    public function __construct(IClientRepository $clients)
+    public function __construct(IUserPhotoRepository $userPhotoRepository)
     {
-        $this->clients = $clients;
+        $this->userPhotoRepository = $userPhotoRepository;
     }
 }

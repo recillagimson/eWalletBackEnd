@@ -23,6 +23,8 @@ use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserPhoto\UserPhotoRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -56,8 +58,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
 
         // Id Types
-        // $this->app->bind(IdTypeRepository::class, IdTypeRepository::class);
         $this->app->bind(IIdTypeRepository::class, IdTypeRepository::class);
+
+        // User Photo
+        $this->app->bind(IUserPhotoRepository::class, UserPhotoRepository::class);
+
     }
 
     /**
