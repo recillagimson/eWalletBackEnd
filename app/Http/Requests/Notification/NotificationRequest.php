@@ -24,12 +24,13 @@ class NotificationRequest extends FormRequest
     public function rules()
     {
         return [
+        'id' => 'required',
+        'user_account_id' => 'required',
         'title' => 'required', 
         'status' => 'required', 
         'description' => 'required', 
-        'password' => 'required', 
         'user_created' => 'required', 
-        'uses_updated' => 'required', 
+        'user_updated' => 'required', 
         ];
     }
 }
