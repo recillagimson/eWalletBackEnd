@@ -20,9 +20,9 @@ use App\Services\Utilities\OTP\OtpService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
-use App\Services\NewsAndUpdate\UserDetailService;
-use App\Services\NewsAndUpdate\IUserDetailService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
+use App\Services\UserDetail\UserDetailService;
+use App\Services\UserDetail\IUserDetailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 

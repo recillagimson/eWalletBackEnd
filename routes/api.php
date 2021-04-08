@@ -6,6 +6,7 @@ use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
+use App\Http\Controllers\UserDetailController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -53,6 +54,10 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
         Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
         Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
+    });
+
+    Route::prefix('/user/details')->middleware(['decrypt.request'])->group(function (){
+        Route::post('/', [UserDetailController::class, 'addOrUpdate']);
     });
 
     Route::middleware(['decrypt.request'])->group(function (){

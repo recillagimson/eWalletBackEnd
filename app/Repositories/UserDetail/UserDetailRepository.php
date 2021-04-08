@@ -11,4 +11,9 @@ class UserDetailRepository extends Repository implements IUserDetailRepository
     {
         parent::__construct($model);
     }
+
+    public function getByUserAccountId(string $userAccountId)
+    {
+        return $this->model->where('user_account_id', '=', $userAccountId)->first();
+    }
 }

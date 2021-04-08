@@ -20,8 +20,8 @@ use App\Repositories\HelpCenter\IHelpCenterRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
-use App\Repositories\TransactionCategory\IUserDetailRepository;
-use App\Repositories\TransactionCategory\UserDetailRepository;
+use App\Repositories\UserDetail\IUserDetailRepository;
+use App\Repositories\UserDetail\UserDetailRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
