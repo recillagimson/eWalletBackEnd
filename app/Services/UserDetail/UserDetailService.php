@@ -22,7 +22,7 @@ class UserDetailService implements IUserDetailService
 
        return (!$getUserDetail) ? 
        $this->addUserDetail($inputBody)->toArray() : 
-       array($this->updateUserDetail($getUserDetail, $inputBody, $getUserDetail));
+       array($this->updateUserDetail($getUserDetail, $inputBody));
     }
 
     private function addUserDetail(array $inputBody)
