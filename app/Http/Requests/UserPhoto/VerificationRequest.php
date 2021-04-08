@@ -24,7 +24,10 @@ class VerificationRequest extends FormRequest
     public function rules()
     {
         return [
-            
+            'user_account_id' => 'required',
+            'id_type_id' => 'required',
+            'id_photo' => 'required|max:1024|mimes:jpeg,png',
+            'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
         ];
     }
 }

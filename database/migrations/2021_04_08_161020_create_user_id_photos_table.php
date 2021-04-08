@@ -16,6 +16,7 @@ class CreateUserIdPhotosTable extends Migration
         Schema::create('user_id_photos', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_account_id');
+            $table->uuid('id_type_id');
             $table->string('old_type_id')->nullable();
             $table->string('photo_location');
             $table->string('approval_status')->default('FOR APPROVAL');

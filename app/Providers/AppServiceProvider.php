@@ -7,8 +7,6 @@ use App\Enums\UsernameTypes;
 use Illuminate\Http\Request;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
-use App\Services\Auth\IVerificationService;
-use App\Services\Auth\VerificationService;
 use Illuminate\Support\ServiceProvider;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\OTP\OtpService;
@@ -24,6 +22,8 @@ use App\Services\Utilities\PrepaidLoad\GlobeService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
 use App\Services\Utilities\Notifications\EmailService;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
+use App\Services\Utilities\Verification\VerificationService;
+use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Notifications\INotificationService;
 
 class AppServiceProvider extends ServiceProvider
@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
-        // Vefirication Service
+        // Verification Service
         $this->app->bind(IVerificationService::class, VerificationService::class);
     }
 

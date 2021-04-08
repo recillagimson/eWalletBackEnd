@@ -7,6 +7,7 @@ use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
+use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -52,7 +53,7 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::post('/verify', [AuthController::class, 'verify']);
 
         // Verification Route
-        Route::post('/user/verification', [AuthController::class, 'getUser']);
+        Route::post('/user/verification', [UserPhotoController::class, 'createVerification']);
 
     });
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){

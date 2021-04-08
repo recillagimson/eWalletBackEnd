@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
-use App\Services\Auth\IVerificationService;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserPhoto\VerificationRequest;
+use App\Services\Utilities\Verification\IVerificationService;
 
 class UserPhotoController extends Controller
 {
@@ -23,6 +24,8 @@ class UserPhotoController extends Controller
 
 
     public function createVerification(VerificationRequest $request) {
-        dd($request->all());
+        $createRecord = $this->iVerificationService->create($request->all());
+        $encryptedResponse = $this->encryptionService->encrypt(array($createRecord));
+        return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 }
