@@ -20,6 +20,8 @@ use App\Repositories\HelpCenter\IHelpCenterRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
+use App\Repositories\TransactionCategory\IUserDetailRepository;
+use App\Repositories\TransactionCategory\UserDetailRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -46,6 +48,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Transaction Category Repository
         $this->app->bind(ITransactionCategoryRepository::class, TransactionCategoryRepository::class);
+        
+        //UserDetail Repository
+        $this->app->bind(IUserDetailRepository::class, UserDetailRepository::class);
 
         //Utilities Repositories
         $this->app->bind(IOtpRepository::class, OtpRepository::class);

@@ -20,6 +20,8 @@ use App\Services\Utilities\OTP\OtpService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
+use App\Services\NewsAndUpdate\UserDetailService;
+use App\Services\NewsAndUpdate\IUserDetailService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -42,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEncryptionService::class, EncryptionService::class);
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
+        $this->app->bind(IUserDetailService::class, UserDetailService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
 
