@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="fixed out_buy_loads table issue in migration">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint.">
+      <change afterPath="$PROJECT_DIR$/app/Models/PasswordHistory.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_08_095501_add_validated_to_otps_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_08_103135_create_password_histories_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/LoginRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/LoginRequest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/ResetPasswordRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/ResetPasswordRequest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Rules/IsPasswordValid.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Rules/IsPasswordValid.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/auth.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/auth.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
+    </list>
+    <list id="09095dc3-92a2-452c-be9a-2ff7bda7e7e3" name="Added Logging of Password History in Register" comment="Added Logging of Password History in Register">
+      <change afterPath="$PROJECT_DIR$/app/Repositories/PasswordHistory/IPasswordHistoryRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Repositories/PasswordHistory/PasswordHistoryRepository.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,6 +215,7 @@
       <list>
         <item itemvalue="PHP Script.AuthController.php" />
         <item itemvalue="PHP Script.AuthController.php" />
+        <item itemvalue="PHP Script.AuthController.php" />
       </list>
     </recent_temporary>
   </component>
@@ -336,21 +340,7 @@
       <option name="project" value="LOCAL" />
       <updated>1617112148328</updated>
     </task>
-    <task id="LOCAL-00015" summary="fixed out_buy_loads table issue in migration">
-      <created>1617216921026</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1617216921026</updated>
-    </task>
-    <task id="LOCAL-00016" summary="fixed out_buy_loads table issue in migration">
-      <created>1617216962141</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1617216962141</updated>
-    </task>
-    <option name="localTasksCounter" value="17" />
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -372,7 +362,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="SVC-41" />
+                        <option value="SVC-40" />
                       </list>
                     </value>
                   </entry>
@@ -397,8 +387,8 @@
     <MESSAGE value="added hashing of client secret in client seeder" />
     <MESSAGE value="modified client seeder to use eloquent orm" />
     <MESSAGE value="added migration to temporary set nullable on fields without values yet" />
-    <MESSAGE value="fixed out_buy_loads table issue in migration" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed out_buy_loads table issue in migration" />
+    <MESSAGE value="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint." />
+    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -5,6 +5,7 @@ namespace App\Services\Auth;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Repositories\Client\IClientRepository;
+use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\OTP\IOtpService;
@@ -18,17 +19,20 @@ class AuthService implements IAuthService
 {
     public IUserAccountRepository $userAccounts;
     public IClientRepository $clients;
+    private IPasswordHistoryRepository $passwordHistories;
 
     private INotificationService $notificationService;
     private IOtpService $otpService;
 
     public function __construct(IUserAccountRepository $userAccts,
+                                IPasswordHistoryRepository $passwordHistories,
                                 IClientRepository $clients,
                                 INotificationService $notificationService,
                                 IOtpService $otpService)
     {
         $this->userAccounts = $userAccts;
         $this->clients = $clients;
+        $this->passwordHistories = $passwordHistories;
 
         $this->otpService = $otpService;
         $this->notificationService = $notificationService;
@@ -44,7 +48,10 @@ class AuthService implements IAuthService
     public function register(array $newUser)
     {
         $newUser['password'] = Hash::make($newUser['password']);
-        return $this->userAccounts->create($newUser);
+        $user = $this->userAccounts->create($newUser);
+
+        $this->passwordHistories->log($user->id, $newUser['password']);
+        return $user;
     }
 
     /**
