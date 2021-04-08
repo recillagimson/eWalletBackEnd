@@ -43,6 +43,7 @@ class DragonPayAddMoneyController extends Controller
         $postBack = $this->postBackService->insertPostBackData($postBackData);
         $encryptedResponse = $this->encryptionService->encrypt(array($postBack));
 
-        return response()->json($encryptedResponse);
+        // return response()->json($postBack, Response::HTTP_OK);
+        return response()->json($postBack);
     }
 }

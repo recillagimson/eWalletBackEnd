@@ -2,7 +2,6 @@
 
 namespace App\Services\AddMoney\DragonPay;
 
-use App\Exceptions\TierLimitException;
 use App\Models\UserAccount;
 use App\Repositories\AddMoney\IWebBankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;

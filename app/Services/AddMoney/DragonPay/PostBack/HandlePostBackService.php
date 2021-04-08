@@ -2,6 +2,7 @@
 
 namespace App\Services\AddMoney\DragonPay\PostBack;
 
+use App\Enums\DragonPayStatusTypes;
 use App\Repositories\AddMoney\IWebBankRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use Illuminate\Validation\ValidationException;
@@ -45,7 +46,7 @@ class HandlePostBackService implements IHandlePostBackService
         $addMoneyRow = $this->webBanks->getByReferenceNumber($referenceNumber);
 
         if ($status == 'S') {
-            $status = 'SUCCESS';
+            $status = DragonPayStatusTypes::Success;
             $responseData = (object) [
                 'status' => true,
                 'amount' => $addMoneyRow->amount,
@@ -56,7 +57,7 @@ class HandlePostBackService implements IHandlePostBackService
         }
 
         if ($status == 'F') {
-            $status = 'FAILED';
+            $status = DragonPayStatusTypes::Failure;
             $responseData = (object) [
                 'status' => false,
                 'amount' => $addMoneyRow->amount,

@@ -72,8 +72,7 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
     });
 
-    // Route::prefix('/webbanking')->middleware(['decrypt.request'])->group(function (){
-    Route::prefix('/webbanking')->group(function (){
+    Route::prefix('/webbanking')->middleware(['decrypt.request'])->group(function (){
         Route::post('/addmoney', [DragonPayAddMoneyController::class, 'addMoney']);
     });
 });
