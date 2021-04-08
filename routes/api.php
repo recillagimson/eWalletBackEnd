@@ -6,6 +6,7 @@ use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
+use App\Http\Controllers\IdTypeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -55,10 +56,20 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
     });
 
+    Route::prefix('/id')->group(function (){
+        Route::apiResources([
+            '/types' => IdTypeController::class,
+        ]);
+    });
+
     Route::middleware(['decrypt.request'])->group(function (){
         Route::apiResources([
             'news' => NewsAndUpdateController::class,
             'help_center' => HelpCenterController::class,
         ]);
     });
+
+    
+
+
 });
