@@ -6,5 +6,5 @@ use App\Repositories\IRepository;
 
 interface INotificationRepository extends IRepository
 {
-    public function getNotification(string $notificationId);
+    public function getByUserId(String $userId);
 }

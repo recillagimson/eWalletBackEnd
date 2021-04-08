@@ -21,6 +21,7 @@ use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
+use App\Services\Utilities\Notifications\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
@@ -44,7 +45,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
-
+        
+        // Notification
+        $this->app->bind(INotificationService::class, NotificationService::class);
     }
 
     /**

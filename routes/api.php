@@ -63,7 +63,7 @@ Route::middleware('auth:sanctum')->group(function (){
         ]);
     });
 
-    Route::prefix('/notifications')->group(function (){
+    Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){
         Route::get('/', [NotificationController::class, 'GetAll']);
         Route::post('/', [NotificationController::class, 'create']);
         Route::get('/{notification}', [NotificationController::class, 'show']);
