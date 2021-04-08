@@ -109,6 +109,11 @@ class SendMoneyService implements ISendMoneyService
     }
     
 
+    public function createUserQR(object $user)
+    {
+        return $user;
+    }
+
     public function errorMessage(string $header, string $message) 
     {
         throw ValidationException::withMessages([

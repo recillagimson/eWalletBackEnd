@@ -9,7 +9,7 @@ use Illuminate\Http\Response;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Enums\UsernameTypes;
 use App\Services\Encryption\IEncryptionService;
-use App\Http\Requests\PinCode\PinCodeRequest;
+use App\Http\Requests\SendMoney\SendMoneyQrRequest;
 
 class SendMoneyController extends Controller
 {       
@@ -51,20 +51,30 @@ class SendMoneyController extends Controller
         
         $this->sendMoneyService->subtractSenderBalance($senderID, $fillRequest);
         $this->sendMoneyService->addReceiverBalance($receiverID, $fillRequest);
-        $outSendMoney = $this->sendMoneyService->outSendMoney($senderID, $receiverID, $fillRequest);
-        $inReceiveMoney = $this->sendMoneyService->inReceiveMoney($senderID, $receiverID, $fillRequest);
+        $this->sendMoneyService->outSendMoney($senderID, $receiverID, $fillRequest);
+        $this->sendMoneyService->inReceiveMoney($senderID, $receiverID, $fillRequest);
 
-        $encryptedResponseOutSendMoney = $this->encryptionService->encrypt($outSendMoney->toArray());
-        $encryptedResponseInReceiveMoney = $this->encryptionService->encrypt($inReceiveMoney->toArray());
-        return response()->json([$encryptedResponseOutSendMoney, $encryptedResponseInReceiveMoney], Response::HTTP_CREATED);
+        $encryptedResponse = $this->encryptionService->encrypt([ "status" => "success"]);
+        return response()->json($encryptedResponse, Response::HTTP_CREATED);
     }
 
+    
+    public function generateqr(SendMoneyQrRequest $request)
+    {
+        return $this->sendMoneyService->createUserQR($request->user());
+    }
+
+ 
     private function getUsernameField(Request $request): string
     {
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
     }
+    
 
 
 
+    
 
 }
+
+

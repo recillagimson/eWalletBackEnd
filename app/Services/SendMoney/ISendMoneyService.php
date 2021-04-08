@@ -19,5 +19,6 @@ interface ISendMoneyService{
     public function outSendMoney(string $senderID, string $receiverID, array $fillRequest);
     public function inReceiveMoney(string $senderID, string $receiverID, array $fillRequest);
     public function generateRefNo();
+    public function createUserQR(object $user);
 }
     
