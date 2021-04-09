@@ -6,6 +6,8 @@ use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
+use App\Http\Controllers\IdTypeController;
+use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -41,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });
 
-    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
+    Route::prefix('/auth')->middleware('auth:sanctum')->group(function (){
         Route::get('/user', [AuthController::class, 'getUser']);
 
         Route::post('/register', [AuthController::class, 'register']);
@@ -49,11 +51,22 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
         Route::post('/verify', [AuthController::class, 'verify']);
+
+        // Verification Route
+        Route::post('/user/verification', [UserPhotoController::class, 'createVerification']);
+
     });
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
         Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
         Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
     });
+
+    Route::prefix('/id')->middleware(['decrypt.request'])->group(function (){
+        Route::apiResources([
+            '/types' => IdTypeController::class,
+        ]);
+    });
+
 
     Route::middleware(['decrypt.request'])->group(function (){
         Route::apiResources([
@@ -61,4 +74,8 @@ Route::middleware('auth:sanctum')->group(function (){
             'help_center' => HelpCenterController::class,
         ]);
     });
+
+    
+
+
 });

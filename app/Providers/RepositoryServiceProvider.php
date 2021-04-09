@@ -2,25 +2,29 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\ServiceProvider;
 use App\Repositories\Client\ClientRepository;
+use App\Repositories\IdType\IdTypeRepository;
 use App\Repositories\Client\IClientRepository;
-use App\Repositories\OtpRepository\IOtpRepository;
-use App\Repositories\OtpRepository\OtpRepository;
-use App\Repositories\Payload\IPayloadRepository;
+use App\Repositories\IdType\IIdTypeRepository;
 use App\Repositories\Payload\PayloadRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\Payload\IPayloadRepository;
+use App\Repositories\OtpRepository\OtpRepository;
+use App\Repositories\OtpRepository\IOtpRepository;
+use App\Repositories\HelpCenter\HelpCenterRepository;
+use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
+use App\Repositories\HelpCenter\IHelpCenterRepository;
+use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
+use App\Repositories\PrepaidLoad\PrepaidLoadRepository;
 use App\Repositories\UserAccount\UserAccountRepository;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
-use App\Repositories\PrepaidLoad\PrepaidLoadRepository;
-use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
-use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
-use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
-use App\Repositories\HelpCenter\IHelpCenterRepository;
-use App\Repositories\HelpCenter\HelpCenterRepository;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
-use Illuminate\Support\ServiceProvider;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserPhoto\UserPhotoRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -52,6 +56,13 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
+
+        // Id Types
+        $this->app->bind(IIdTypeRepository::class, IdTypeRepository::class);
+
+        // User Photo
+        $this->app->bind(IUserPhotoRepository::class, UserPhotoRepository::class);
+
     }
 
     /**
