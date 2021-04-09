@@ -107,11 +107,12 @@ class AuthService implements IAuthService
      */
     public function login(string $usernameField, array $creds, string $ip): NewAccessToken
     {
-        $throttleKey = $this->throttleKey($creds[$usernameField], $ip);
-        $this->ensureAccountIsNotLockedOut($throttleKey);
-
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
         if(!$user) $this->loginFailed();
+        if(!$user->verified) $this->accountUnverified();
+
+        $throttleKey = $this->throttleKey($creds[$usernameField], $ip);
+        $this->ensureAccountIsNotLockedOut($throttleKey);
 
         $passwordMatched = Hash::check($creds['password'], $user->password);
         if(!$user || !$passwordMatched) {
@@ -158,6 +159,7 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if(!$user) $this->accountDoesntExist();
+
 
         $otp = $this->otpService->generate(OtpTypes::passwordRecovery.':'.$user->id);
         if(!$otp->status) $this->invalidOtp($otp->message);
@@ -238,6 +240,13 @@ class AuthService implements IAuthService
     {
         throw ValidationException::withMessages([
             'account' => 'Login Failed.'
+        ]);
+    }
+
+    private function accountUnverified()
+    {
+        throw ValidationException::withMessages([
+            'account' => 'Unverified Account.'
         ]);
     }
 
