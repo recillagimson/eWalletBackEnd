@@ -22,6 +22,7 @@ class UserAccount extends Authenticatable
         'email',
         'mobile_number',
         'password',
+        'pin_code',
         'verified',
         'is_admin'
     ];
