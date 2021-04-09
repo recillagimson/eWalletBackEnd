@@ -15,7 +15,7 @@ class UpdateCurrenciesNullableUserUpdate extends Migration
     {
         Schema::table('currencies', function (Blueprint $table) {
             $table->string('code', '5')->change();
-            $table->string('user_updated')->nullable()->change();
+            $table->uuid('user_updated')->nullable()->change();
         });
     }
 
@@ -28,7 +28,7 @@ class UpdateCurrenciesNullableUserUpdate extends Migration
     {
         Schema::table('currencies', function (Blueprint $table) {
             $table->string('code', '2')->change();
-            $table->string('user_updated')->change();
+            $table->uuid('user_updated')->change();
         });
     }
 }

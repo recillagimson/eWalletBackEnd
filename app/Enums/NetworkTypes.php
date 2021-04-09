@@ -4,7 +4,7 @@ namespace App\Enums;
 
 class NetworkTypes
 {
-    const Globe = 'globe';
-    const Smart = 'smart';
-    const Sun = 'sun';
+    const Globe = 'GLOBE';
+    const Smart = 'SMART';
+    const Sun = 'SUN';
 }

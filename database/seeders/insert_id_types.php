@@ -15,7 +15,7 @@ class insert_id_types extends Seeder
      */
     public function run()
     {
-        
+        DB::table('id_types')->delete();
             DB::table('id_types')->insert([
 
                 ['id' =>"0edb4f9f-9131-11eb-b44f-1c1b0d14e211",'type' =>"TIN ID",'description' =>"Tax Identification Card (TIN)",'status' =>"1",'user_created' =>"Migration Team"],

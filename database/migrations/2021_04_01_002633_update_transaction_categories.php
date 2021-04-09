@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateCountriesStatusNullableUserUpdate extends Migration
+class UpdateTransactionCategories extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class UpdateCountriesStatusNullableUserUpdate extends Migration
      */
     public function up()
     {
-        Schema::table('countries', function (Blueprint $table) {
-     
-            $table->uuid('user_updated')->nullable()->change();
+        Schema::table('transaction_categories', function (Blueprint $table) {
+            $table->string('title', 50)->after('old_transaction_category_id');       
         });
     }
 
@@ -26,8 +25,6 @@ class UpdateCountriesStatusNullableUserUpdate extends Migration
      */
     public function down()
     {
-        Schema::table('countries', function (Blueprint $table) {
-            $table->uuid('user_updated')->change();
-        });
+        //
     }
 }

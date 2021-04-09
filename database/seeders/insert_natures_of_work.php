@@ -16,6 +16,7 @@ class insert_natures_of_work extends Seeder
     public function run()
     {
         
+        DB::table('natures_of_work')->delete();
             DB::table('natures_of_work')->insert([
 
                 ['id' =>"0ed93ff9-9131-11eb-b44f-1c1b0d14e211",'description' =>"Accountant",'status' =>"1",'user_created' =>"Migration Team"],

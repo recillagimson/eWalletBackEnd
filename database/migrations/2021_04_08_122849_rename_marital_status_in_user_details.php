@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateCountriesStatusNullableUserUpdate extends Migration
+class RenameMaritalStatusInUserDetails extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class UpdateCountriesStatusNullableUserUpdate extends Migration
      */
     public function up()
     {
-        Schema::table('countries', function (Blueprint $table) {
-     
-            $table->uuid('user_updated')->nullable()->change();
+        Schema::table('user_details', function (Blueprint $table) {
+            $table->renameColumn('maritial_status_id', 'marital_status_id');
+           
         });
     }
 
@@ -26,8 +26,8 @@ class UpdateCountriesStatusNullableUserUpdate extends Migration
      */
     public function down()
     {
-        Schema::table('countries', function (Blueprint $table) {
-            $table->uuid('user_updated')->change();
+        Schema::table('user_details', function (Blueprint $table) {
+            $table->renameColumn('marital_status_id', 'maritial_status_id');
         });
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\PrepaidLoad;
+namespace App\Http\Requests\HelpCenter;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PrepaidLoadRequest extends FormRequest
+class HelpCenterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,10 @@ class PrepaidLoadRequest extends FormRequest
     public function rules()
     {
         return [
-            'mobile_number' => 'required',
-            'promo' => 'required',
+            'title'=>'required',
+            'description'=>'required',
+            'image_location'=>'required',
+            'order'=>'required',
         ];
     }
 }

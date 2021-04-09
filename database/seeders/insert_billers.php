@@ -15,7 +15,7 @@ class insert_billers extends Seeder
      */
     public function run()
     {
-
+            DB::table('billers')->delete();
             DB::table('billers')->insert([
                 ['id' =>"38ce634b-91b8-11eb-8d33-1c1b0d14e211",'code' =>"MARINA",'name' =>"Maritime Industry Authority",'institution' =>"GOVERNMENT",'fee' =>"50",'status' =>"1",'user_created' =>"Migration Team"],
                 ['id' =>"38ce9b38-91b8-11eb-8d33-1c1b0d14e211",'code' =>"BC_MECOA",'name' =>"MERALCO - CMS",'institution' =>"ELECTRICITY",'fee' =>"0",'status' =>"1",'user_created' =>"Migration Team"],

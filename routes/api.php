@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
+use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\HelpCenterController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -53,7 +55,14 @@ Route::middleware('auth:sanctum')->group(function (){
     });
 
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
-        Route::post('/', [PrepaidLoadController::class, 'load']);
-        Route::get('/promos', [PrepaidLoadController::class, 'showPromos']);
+        Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
+        Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
+    });
+
+    Route::middleware(['decrypt.request'])->group(function (){
+        Route::apiResources([
+            'news' => NewsAndUpdateController::class,
+            'help_center' => HelpCenterController::class,
+        ]);
     });
 });

@@ -16,6 +16,7 @@ class insert_signup_hosts extends Seeder
     public function run()
     {
   
+        DB::table('signup_hosts')->delete();
             DB::table('signup_hosts')->insert([
 
                 ['id' =>"38e986ee-91b8-11eb-8d33-1c1b0d14e211",'description' =>"ACCOUNT.SQUID.PH",'status' =>"1",'user_created' =>"Migration Team"],

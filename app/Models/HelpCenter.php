@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class OutBuyLoad extends Model
+class HelpCenter extends Model
 {
     use UsesUuid, HasFactory, SoftDeletes;
 
@@ -16,19 +16,17 @@ class OutBuyLoad extends Model
      *
      * @var string
      */
-    protected $table = 'out_buy_loads';
-    
+    protected $table = 'help_centers';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'user_account_id',
-        'prepaid_load_id',
-        'total_amount',
-        'transaction_date',
-        'transaction_category_id',
-        'transaction_remarks',
+        'title',
+        'description',
+        'image_location',
+        'order',
     ];
 }

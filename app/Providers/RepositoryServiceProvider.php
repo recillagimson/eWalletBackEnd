@@ -18,6 +18,12 @@ use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
 use App\Repositories\PrepaidLoad\PrepaidLoadRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
+use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
+use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
+use App\Repositories\HelpCenter\IHelpCenterRepository;
+use App\Repositories\HelpCenter\HelpCenterRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -37,6 +43,15 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IClientRepository::class, ClientRepository::class);
         $this->app->bind(IPasswordHistoryRepository::class, PasswordHistoryRepository::class);
         $this->app->bind(IPinCodeHistoryRepository::class, PinCodeHistoryRepository::class);
+
+        //News and Updates Repositories
+        $this->app->bind(INewsAndUpdateRepository::class, NewsAndUpdateRepository::class);
+
+        //Help Center Repository
+        $this->app->bind(IHelpCenterRepository::class, HelpCenterRepository::class);
+
+        //Transaction Category Repository
+        $this->app->bind(ITransactionCategoryRepository::class, TransactionCategoryRepository::class);
 
         //Utilities Repositories
         $this->app->bind(IOtpRepository::class, OtpRepository::class);

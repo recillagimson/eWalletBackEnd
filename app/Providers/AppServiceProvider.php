@@ -19,6 +19,8 @@ use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\OTP\OtpService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
+use App\Services\NewsAndUpdate\INewsAndUpdateService;
+use App\Services\NewsAndUpdate\NewsAndUpdateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IOtpService::class, OtpService::class);
         $this->app->bind(IEncryptionService::class, EncryptionService::class);
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
+        $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
 
@@ -80,14 +83,10 @@ class AppServiceProvider extends ServiceProvider
             ->needs(IPrepaidLoadService::class)
             ->give(function() {
                 $request = app(Request::class);
-                $encryptionService = $this->app->make(IEncryptionService::class);
 
-                if($request->has('payload'))
+                if(strtoupper($request->route('network_type')) === NetworkTypes::Globe)
                 {
-                    $data = $encryptionService->decrypt($request->payload, $request->id, false);
-
-                    if($data['network_type'] === NetworkTypes::Globe)
-                        return $this->app->get(GlobeService::class);
+                    return $this->app->get(GlobeService::class);
                 }
 
                 // return $this->app->get(GlobeService::class);

@@ -16,6 +16,7 @@ class insert_nationalities extends Seeder
     public function run()
     {
         
+        DB::table('nationalities')->delete();
             DB::table('nationalities')->insert([
 
                 ['id' =>"70019e0d-91b1-11eb-8d33-1c1b0d14e211",'description' =>"Afghanistan",'code' =>"AF",'status' =>"1",'user_created' =>"Migration Team"],
