@@ -43,11 +43,12 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });
 
-    Route::prefix('/auth')->middleware('auth:sanctum')->group(function (){
+    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
         Route::get('/user', [AuthController::class, 'getUser']);
 
-        Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/register/pin', [AuthController::class, 'registerPin']);
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
         Route::post('/verify', [AuthController::class, 'verify']);
@@ -55,7 +56,11 @@ Route::middleware('auth:sanctum')->group(function (){
         // Verification Route
         Route::post('/user/verification', [UserPhotoController::class, 'createVerification']);
 
+
+        Route::post('/verify/account', [AuthController::class, 'verifyAccount']);
+
     });
+
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
         Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
         Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
@@ -75,7 +80,7 @@ Route::middleware('auth:sanctum')->group(function (){
         ]);
     });
 
-    
+
 
 
 });
