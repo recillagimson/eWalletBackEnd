@@ -48,7 +48,6 @@ Route::middleware('auth:sanctum')->group(function (){
 
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/register', [AuthController::class, 'register']);
-        Route::post('/register/pin', [AuthController::class, 'registerPin']);
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
         Route::post('/verify', [AuthController::class, 'verify']);

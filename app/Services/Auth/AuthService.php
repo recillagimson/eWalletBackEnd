@@ -59,9 +59,11 @@ class AuthService implements IAuthService
     public function register(array $newUser, string $usernameField)
     {
         $newUser['password'] = Hash::make($newUser['password']);
+        $newUser['pin_code'] = Hash::make($newUser['pin_code']);
         $user = $this->userAccounts->create($newUser);
 
         $this->passwordHistories->log($user->id, $newUser['password']);
+        $this->pinCodeHistories->log($user->id, $newUser['pin_code']);
 
         $identifier = OtpTypes::registration.':'.$user->id;
         $otp = $this->otpService->generate($identifier);
@@ -90,32 +92,6 @@ class AuthService implements IAuthService
         $user->verified = true;
         $user->save();
 
-        return $user;
-    }
-
-    /**
-     * Updates the account pin after registration
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $pinCode
-     * @return mixed
-     * @throws ValidationException
-     */
-    public function registerPIN(string $usernameField, string $username, string $pinCode)
-    {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if(!$user) $this->accountDoesntExist();
-
-        $identifier = OtpTypes::registration.':'.$user->id;
-        $this->otpService->ensureValidated($identifier);
-
-        $hashedPin = Hash::make($pinCode);
-        $user->pin_code = $hashedPin;
-        $user->user_updated = $user->id;
-        $user->save();
-
-        $this->pinCodeHistories->log($user->id, $hashedPin);
         return $user;
     }
 
