@@ -59,9 +59,11 @@ class AuthService implements IAuthService
     public function register(array $newUser, string $usernameField)
     {
         $newUser['password'] = Hash::make($newUser['password']);
+        $newUser['pin_code'] = Hash::make($newUser['pin_code']);
         $user = $this->userAccounts->create($newUser);
 
         $this->passwordHistories->log($user->id, $newUser['password']);
+        $this->pinCodeHistories->log($user->id, $newUser['pin_code']);
 
         $identifier = OtpTypes::registration.':'.$user->id;
         $otp = $this->otpService->generate($identifier);
@@ -94,32 +96,6 @@ class AuthService implements IAuthService
     }
 
     /**
-     * Updates the account pin after registration
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $pinCode
-     * @return mixed
-     * @throws ValidationException
-     */
-    public function registerPIN(string $usernameField, string $username, string $pinCode)
-    {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if(!$user) $this->accountDoesntExist();
-
-        $identifier = OtpTypes::registration.':'.$user->id;
-        $this->otpService->ensureValidated($identifier);
-
-        $hashedPin = Hash::make($pinCode);
-        $user->pin_code = $hashedPin;
-        $user->user_updated = $user->id;
-        $user->save();
-
-        $this->pinCodeHistories->log($user->id, $hashedPin);
-        return $user;
-    }
-
-    /**
      * Attempts to authenticate the user with the
      * provided credentials
      *
@@ -131,11 +107,12 @@ class AuthService implements IAuthService
      */
     public function login(string $usernameField, array $creds, string $ip): NewAccessToken
     {
-        $throttleKey = $this->throttleKey($creds[$usernameField], $ip);
-        $this->ensureAccountIsNotLockedOut($throttleKey);
-
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
         if(!$user) $this->loginFailed();
+        if(!$user->verified) $this->accountUnverified();
+
+        $throttleKey = $this->throttleKey($creds[$usernameField], $ip);
+        $this->ensureAccountIsNotLockedOut($throttleKey);
 
         $passwordMatched = Hash::check($creds['password'], $user->password);
         if(!$user || !$passwordMatched) {
@@ -182,6 +159,7 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if(!$user) $this->accountDoesntExist();
+
 
         $otp = $this->otpService->generate(OtpTypes::passwordRecovery.':'.$user->id);
         if(!$otp->status) $this->invalidOtp($otp->message);
@@ -262,6 +240,13 @@ class AuthService implements IAuthService
     {
         throw ValidationException::withMessages([
             'account' => 'Login Failed.'
+        ]);
+    }
+
+    private function accountUnverified()
+    {
+        throw ValidationException::withMessages([
+            'account' => 'Unverified Account.'
         ]);
     }
 

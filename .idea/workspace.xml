@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 &#10;- merge updating of pin code to register endpoint&#10;- remove endpoint for register pin code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterUserRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,7 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="SVC-59" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -233,6 +239,7 @@
       <workItem from="1617120314213" duration="345000" />
       <workItem from="1617162743205" duration="5346000" />
       <workItem from="1617204088316" duration="2562000" />
+      <workItem from="1617952967025" duration="551000" />
     </task>
     <task id="LOCAL-00001" summary="Added endpoints for register and login without payload encryption">
       <created>1616009107809</created>
@@ -353,7 +360,21 @@
       <option name="project" value="LOCAL" />
       <updated>1617945798638</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="SVC-59 MERGE MASTER TO SVC-59">
+      <created>1617951079393</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1617951079393</updated>
+    </task>
+    <task id="LOCAL-00019" summary="SVC-59 MERGE MASTER TO SVC-59">
+      <created>1617951219568</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1617951219568</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -403,10 +424,12 @@
     <MESSAGE value="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint." />
     <MESSAGE value="Added Logging of Password History in Register" />
     <MESSAGE value="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification" />
-    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification" />
+    <MESSAGE value="SVC-41 &#10;- merge updating of pin code to register endpoint&#10;- remove endpoint for register pin code" />
+    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 &#10;- merge updating of pin code to register endpoint&#10;- remove endpoint for register pin code" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
     <select />
   </component>
 </project>
+

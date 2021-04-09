@@ -6,11 +6,9 @@ use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\RegisterPinCodeRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
-use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Models\UserAccount;
 use App\Services\Auth\IAuthService;
 use App\Services\Encryption\IEncryptionService;
@@ -70,26 +68,6 @@ class AuthController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
-    /**
-     * Updates the pin code for the newly registered
-     * account.
-     *
-     * @param RegisterPinCodeRequest $request
-     * @return JsonResponse
-     */
-    public function registerPin(RegisterPinCodeRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->authService->registerPIN($usernameField, $data[$usernameField], $data['pin_code']);
-
-        $response = [
-            'message' => SuccessMessages::pinCodeUpdated,
-            'data' => [$usernameField => $data[$usernameField]]
-        ];
-        return response()->json($response, Response::HTTP_OK);
-    }
-
 
     /**
      * Authenticate a user
@@ -114,6 +92,7 @@ class AuthController extends Controller
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
+
     /**
      * Generates OTP for password recovery verification
      *
@@ -128,6 +107,7 @@ class AuthController extends Controller
         return response()->json([],Response::HTTP_OK);
     }
 
+
     /**
      * Reset a user accounts password
      *
@@ -141,6 +121,7 @@ class AuthController extends Controller
         $this->authService->resetPassword($usernameField, $data[$usernameField], $data['password']);
         return response()->json(null, Response::HTTP_OK);
     }
+
 
     /**
      * Get the authenticated user
