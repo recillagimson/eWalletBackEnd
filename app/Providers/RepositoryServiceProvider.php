@@ -20,6 +20,8 @@ use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
+use App\Repositories\LogHistory\ILogHistoryRepository;
+use App\Repositories\LogHistory\LogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\ServiceFee\ServiceFeeRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
@@ -62,6 +64,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
         $this->app->bind(ITransactionCategoryRepository::class, TransactionCategoryRepository::class);
         $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
+        $this->app->bind(ILogHistoryRepository::class, LogHistoryRepository::class);
     }
 
     /**

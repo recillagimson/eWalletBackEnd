@@ -4,6 +4,7 @@ namespace App\Services\AddMoney\DragonPay;
 
 use App\Models\UserAccount;
 use App\Repositories\AddMoney\IWebBankRepository;
+use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserDetail\IUserDetailRepository;
@@ -34,17 +35,33 @@ class WebBankingService implements IWebBankingService
      */
     protected $key;
 
+    /**
+     * User account ID
+     * 
+     * @var uuid
+     */
+    protected $userAccountID;
+
+    /**
+     * Reference number for Add Money Web Bank
+     * 
+     * @var string
+     */
+    protected $referenceNumber;
+
     public IWebBankRepository $webBanks;
     public IUserAccountRepository $userAccounts;
     public IUserDetailRepository $userDetails;
     public IServiceFeeRepository $serviceFees;
-    public IReferenceNumberService $referenceNumber;
+    public IReferenceNumberService $referenceNumberService;
+    public ILogHistoryRepository $logHistory;
 
     public function __construct(IWebBankRepository $webBanks, 
                                 IUserAccountRepository $userAccounts,
                                 IUserDetailRepository $userDetails,
                                 IServiceFeeRepository $serviceFees,
-                                IReferenceNumberService $referenceNumber) {
+                                IReferenceNumberService $referenceNumberService,
+                                ILogHistoryRepository $logHistory) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -54,7 +71,8 @@ class WebBankingService implements IWebBankingService
         $this->userAccounts = $userAccounts;
         $this->userDetails = $userDetails;
         $this->serviceFees = $serviceFees;
-        $this->referenceNumber = $referenceNumber;
+        $this->referenceNumberService = $referenceNumberService;
+        $this->logHistory = $logHistory;
     }
 
     /**
@@ -68,6 +86,9 @@ class WebBankingService implements IWebBankingService
      */
     public function generateRequestURL(UserAccount $user, array $urlParams)
     {
+        $this->setUserAccountID($user->id);
+        $this->setReferenceNumber($this->referenceNumberService->getAddMoneyRefNo());
+
         $email = $this->getEmail($user);
         $userAccountID = $user->id;
         $amount = $urlParams['amount'];
@@ -75,7 +96,7 @@ class WebBankingService implements IWebBankingService
         $this->validateTiersAndLimits($userAccountID, $amount);
 
         $token = $this->getToken();
-        $txnID =  $this->referenceNumber->getAddMoneyRefNo();
+        $txnID =  $this->referenceNumber;
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
         $addMoneyServiceFee = $this->serviceFees->get('6f8b72d8-cca7-49e2-8e05-bd455f86dd2e');
@@ -103,6 +124,26 @@ class WebBankingService implements IWebBankingService
 
         return $response->json();
     }
+
+    /**
+     * Set the $userAccountID
+     * 
+     * @param uuid $userAccountID
+     */
+    public function setUserAccountID(string $userAccountID)
+    {
+        $this->userAccountID = $userAccountID;
+    }
+
+    /**
+     * Set the Reference Number
+     * 
+     * @param string $refNo
+     */
+    public function setReferenceNumber(string $refNo)
+    {
+        $this->referenceNumber = $refNo;
+    }
     
     /**
      * Get the email from user_accounts
@@ -113,7 +154,7 @@ class WebBankingService implements IWebBankingService
     public function getEmail(UserAccount $user)
     {
         if ($user->email != null) return $user->email;
-        
+
         return $this->invalidEmail();
     }
 
@@ -187,12 +228,11 @@ class WebBankingService implements IWebBankingService
         if ($response->status() == 401) {
 
             return $this->missingAuthToken();
-        } elseif ($response->status() == 500) {
-            
-            return $this->invalidToken();
-        } elseif ($response->status() == 422 && $response->json() == 'Invalid email address') {
 
-            return $this->dragPayInvalidEmail();
+        } elseif ($response->status() == 500) {
+
+            return $this->invalidToken();
+            
         } elseif ($response->status() == 422 && $response->json() == 'Invalid parameter') {
             
             return $this->invalidParams();
@@ -200,7 +240,7 @@ class WebBankingService implements IWebBankingService
     }
 
     /**
-     * Insert a row in an_add_money_web_bank table
+     * Insert a row in in_add_money_web_bank table
      * 
      * @param uuid $userAccountID
      * @param string $refNo
@@ -279,9 +319,15 @@ class WebBankingService implements IWebBankingService
      */
     private function missingAuthToken()
     {
-        throw ValidationException::withMessages([
-            'token' => 'Invalid token. Please try again. [0]'
+        $this->logHistory->create([
+            'user_account_id' => $this->userAccountID,
+            'reference_number' => 'N/A',
+            'namespace' => __METHOD__,
+            'remarks' => 'DragonPay: No auth token in request header',
+            'user_created' => $this->userAccountID
         ]);
+
+        $this->throw500();
     }
 
     /**
@@ -289,20 +335,15 @@ class WebBankingService implements IWebBankingService
      */
     private function invalidToken()
     {
-        throw ValidationException::withMessages([
-            'token' => 'Invalid token. Please try again. [1]'
+        $this->logHistory->create([
+            'user_account_id' => $this->userAccountID,
+            'reference_number' => 'N/A',
+            'namespace' => __METHOD__,
+            'remarks' => 'DragonPay: Incorrect auth token in request header',
+            'user_created' => $this->userAccountID
         ]);
-    }
 
-    /**
-     * Thrown when DragonPay can't
-     * validate the passed email
-     */
-    private function dragPayInvalidEmail()
-    {
-        throw ValidationException::withMessages([
-            'email' => 'Can`t validate email.'
-        ]);
+        $this->throw500();
     }
 
     /**
@@ -312,9 +353,15 @@ class WebBankingService implements IWebBankingService
      */
     private function invalidParams()
     {
-        throw ValidationException::withMessages([
-            'parmeters' => 'Invalid Parameters.'
+        $this->logHistory->create([
+            'user_account_id' => $this->userAccountID,
+            'reference_number' => 'N/A',
+            'namespace' => __METHOD__,
+            'remarks' => 'DragonPay: Invalid parameter (invalid or missing Amount, Currency, or Description)',
+            'user_created' => $this->userAccountID
         ]);
+
+        $this->throw500();
     }
 
     /**
@@ -323,9 +370,15 @@ class WebBankingService implements IWebBankingService
      */
     private function cantWriteToTable()
     {
-        throw ValidationException::withMessages([
-            'database' => 'Can`t connect to Database'
+        $this->logHistory->create([
+            'user_account_id' => $this->userAccountID,
+            'reference_number' => 'N/A',
+            'namespace' => __METHOD__,
+            'remarks' => 'Can`t write to table.',
+            'user_created' => $this->userAccountID
         ]);
+
+        $this->throw500();
     }
 
     /**
@@ -336,5 +389,13 @@ class WebBankingService implements IWebBankingService
         throw ValidationException::withMessages([
             'amount' => 'The requested amount exceeded the limits for this account.'
         ]);
+    }
+
+    /**
+     * Throw error 500
+     */
+    private function throw500()
+    {
+        abort(500, 'Something went wrong :(');
     }
 }
