@@ -3,6 +3,7 @@
 namespace App\Services\Utilities\Verification;
 
 use Illuminate\Http\File;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 
@@ -16,27 +17,36 @@ class VerificationService implements IVerificationService
     }
 
     public function create(array $data) {
+
+        $records_created = [];
+
+        // PROCESS IDS
+        foreach($data['id_photos'] as $id_photo) {
+            // Get file extension name
+            $ext_name = $this->getFileExtensionName($id_photo);
+            // Generate new file name
+            $id_photo_name = $data['user_account_id'] . "/" . \Str::random(40) . "." . $ext_name;
+            // Put file to storage
+            $path = $this->saveFile($id_photo, $id_photo_name, 'verification');
+            // Save record to DB
+            $params = [
+                'id' => \Str::uuid(),
+                'user_account_id' => $data['user_account_id'],
+                'id_type_id' => $data['id_type_id'],
+                'photo_location' => $path,
+            ];
+            $record = $this->userPhotoRepository->create($params);
+            // Collect created record
+            array_push($records_created, $record);
+        }
+
+        // For Serfile Processing
         // GET EXT NAME
-        $id_photo_ext = $data['id_photo']->getClientOriginalExtension();
-        $selfie_photo_ext = $data['selfie_photo']->getClientOriginalExtension();
-        
+        $selfie_photo_ext = $this->getFileExtensionName($data['selfie_photo']);
         // GENERATE NEW FILE NAME
-        $id_photo_name = $data['user_account_id'] . "/" . \Str::random(40) . "." . $id_photo_ext;
         $selfie_photo_name = $data['user_account_id'] . "/" . \Str::random(40) . "." . $selfie_photo_ext;
-
         // PUT FILE TO STORAGE
-        $id_photo_path = Storage::putFileAs('verification', new File($data['id_photo']), $id_photo_name);
-        $selfie_photo_path = Storage::putFileAs('verification', new File($data['selfie_photo']), $selfie_photo_name);
-
-        // SAVE ID PHOTO
-        $params = [
-            'id' => \Str::uuid(),
-            'user_account_id' => $data['user_account_id'],
-            'id_type_id' => $data['id_type_id'],
-            'photo_location' => $id_photo_path,
-        ];
-        $id_photo = $this->userPhotoRepository->create($params);
-
+        $selfie_photo_path = $this->saveFile($data['selfie_photo'], $selfie_photo_name, 'verification');
         // SAVE SELFIE PHOTO
         $params = [
             'id' => \Str::uuid(),
@@ -44,9 +54,21 @@ class VerificationService implements IVerificationService
             'id_type_id' => $data['id_type_id'],
             'photo_location' => $selfie_photo_path,
         ];
-        $selfie_photo = $this->userPhotoRepository->create($params);
+        $record = $this->userPhotoRepository->create($params);
+        // Collect created record
+        array_push($records_created, $record);
 
-        return [$id_photo, $selfie_photo];
+        // return to controller all created records
+        return $records_created;
+    }
+    // Get file extension name
+    public function getFileExtensionName(UploadedFile $file) {
+        return $file->getClientOriginalExtension();
+    }
 
+    // Move uploaded file to server storage
+    // Returns path of the file stored
+    public function saveFile(UploadedFile $file, $file_name, $folder_name) {
+        return Storage::putFileAs($folder_name, $file, $file_name);
     }
 }

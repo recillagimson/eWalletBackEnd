@@ -24,7 +24,9 @@ class UserPhotoController extends Controller
 
 
     public function createVerification(VerificationRequest $request) {
-        $createRecord = $this->iVerificationService->create($request->all());
+        $params = $request->all();
+        $params['user_account_id'] = request()->user()->id;
+        $createRecord = $this->iVerificationService->create($params);
         $encryptedResponse = $this->encryptionService->encrypt(array($createRecord));
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }

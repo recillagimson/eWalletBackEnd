@@ -23,10 +23,11 @@ class VerificationRequest extends FormRequest
      */
     public function rules()
     {
+        // return ['files.*' => "mimes:jpg,png,jpeg|max:20000"];
         return [
-            'user_account_id' => 'required',
             'id_type_id' => 'required',
-            'id_photo' => 'required|max:1024|mimes:jpeg,png',
+            // Validate if photo in array is less that 1MB
+            'id_photos.*' => 'required|max:1024|mimes:jpeg,png',
             'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
         ];
     }
