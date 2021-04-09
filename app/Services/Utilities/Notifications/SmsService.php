@@ -18,6 +18,7 @@ class SmsService implements INotificationService
     protected string $shotcodeMask;
 
     private IApiService $apiService;
+    private string $broadcastUrl;
 
     public function __construct(IApiService $apiService)
     {
@@ -27,19 +28,29 @@ class SmsService implements INotificationService
         $this->shotcodeMask = config('sms.shortcode_mask');
 
         $this->apiService = $apiService;
+        $this->broadcastUrl = $this->apiUrl.'/broadcast';
     }
 
     public function sendPasswordVerification(string $to, string $otp)
     {
-        $url = $this->apiUrl.'/broadcast';
         $content = 'Your password recovery code is: '.$otp;
-        $message = $this->getMessage($to, $content);
+        $this->sendMessages($to, $content);
+    }
 
-        $response = $this->apiService->post($url, $message);
+    public function sendAccountVerification(string $to, string $otp)
+    {
+        $content = 'Your account verification code is: '.$otp;
+        $this->sendMessages($to, $content);
+    }
+
+    private function sendMessages(string $to, string $content)
+    {
+        $message = $this->buildMessage($to, $content);
+        $response = $this->apiService->post($this->broadcastUrl, $message);
         if(!$response->successful()) $this->sendingFailed();
     }
 
-    private function getMessage(string $to, string $content): array
+    private function buildMessage(string $to, string $content): array
     {
         return [
             'username' => $this->username,
@@ -56,4 +67,6 @@ class SmsService implements INotificationService
            'sms' => 'SMS provider failed to send the message. Please try again.'
         ]);
     }
+
+
 }

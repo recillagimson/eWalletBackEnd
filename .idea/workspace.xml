@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-40 SVC-41 SVC-42 adding password policies #ongoing">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2021_03_29_011330_create_out_buy_loads_table.php" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +18,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="SVC-40" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -208,6 +207,7 @@
       <list>
         <item itemvalue="PHP Script.AuthController.php" />
         <item itemvalue="PHP Script.AuthController.php" />
+        <item itemvalue="PHP Script.AuthController.php" />
       </list>
     </recent_temporary>
   </component>
@@ -332,7 +332,28 @@
       <option name="project" value="LOCAL" />
       <updated>1617112148328</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint.">
+      <created>1617886372583</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1617886372583</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Added Logging of Password History in Register">
+      <created>1617886396379</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1617886396379</updated>
+    </task>
+    <task id="LOCAL-00017" summary="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification">
+      <created>1617945798638</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1617945798638</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -379,7 +400,10 @@
     <MESSAGE value="added hashing of client secret in client seeder" />
     <MESSAGE value="modified client seeder to use eloquent orm" />
     <MESSAGE value="added migration to temporary set nullable on fields without values yet" />
-    <option name="LAST_COMMIT_MESSAGE" value="added migration to temporary set nullable on fields without values yet" />
+    <MESSAGE value="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint." />
+    <MESSAGE value="Added Logging of Password History in Register" />
+    <MESSAGE value="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification" />
+    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

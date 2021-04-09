@@ -5,6 +5,8 @@ namespace App\Services\Auth;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Repositories\Client\IClientRepository;
+use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
+use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\OTP\IOtpService;
@@ -18,20 +20,31 @@ class AuthService implements IAuthService
 {
     public IUserAccountRepository $userAccounts;
     public IClientRepository $clients;
+    public IPasswordHistoryRepository $passwordHistories;
+    public IPinCodeHistoryRepository $pinCodeHistories;
 
     private INotificationService $notificationService;
     private IOtpService $otpService;
 
+    private int $maxLoginAttempts;
+
+
     public function __construct(IUserAccountRepository $userAccts,
+                                IPasswordHistoryRepository $passwordHistories,
+                                IPinCodeHistoryRepository $pinCodeHistories,
                                 IClientRepository $clients,
                                 INotificationService $notificationService,
                                 IOtpService $otpService)
     {
         $this->userAccounts = $userAccts;
         $this->clients = $clients;
+        $this->passwordHistories = $passwordHistories;
+        $this->pinCodeHistories = $pinCodeHistories;
 
         $this->otpService = $otpService;
         $this->notificationService = $notificationService;
+
+        $this->maxLoginAttempts = config('auth.account_lockout_attempt');
     }
 
 
@@ -39,12 +52,71 @@ class AuthService implements IAuthService
      * Creates a new UserAccount record
      *
      * @param array $newUser
+     * @param string $usernameField
      * @return mixed
+     * @throws ValidationException
      */
-    public function register(array $newUser)
+    public function register(array $newUser, string $usernameField)
     {
         $newUser['password'] = Hash::make($newUser['password']);
-        return $this->userAccounts->create($newUser);
+        $user = $this->userAccounts->create($newUser);
+
+        $this->passwordHistories->log($user->id, $newUser['password']);
+
+        $identifier = OtpTypes::registration.':'.$user->id;
+        $otp = $this->otpService->generate($identifier);
+        if(!$otp->status) $this->invalidOtp($otp->message);
+
+        $this->notificationService->sendAccountVerification($newUser[$usernameField], $otp->token);
+        return $user;
+    }
+
+    /**
+     * Activates the user account by validating the otp
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @param string $otp
+     * @return mixed
+     * @throws ValidationException
+     */
+    public function verifyAccount(string $usernameField, string $username, string $otp)
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) $this->accountDoesntExist();
+
+        $this->verify($user->id, OtpTypes::registration, $otp);
+
+        $user->verified = true;
+        $user->save();
+
+        return $user;
+    }
+
+    /**
+     * Updates the account pin after registration
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @param string $pinCode
+     * @return mixed
+     * @throws ValidationException
+     */
+    public function registerPIN(string $usernameField, string $username, string $pinCode)
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) $this->accountDoesntExist();
+
+        $identifier = OtpTypes::registration.':'.$user->id;
+        $this->otpService->ensureValidated($identifier);
+
+        $hashedPin = Hash::make($pinCode);
+        $user->pin_code = $hashedPin;
+        $user->user_updated = $user->id;
+        $user->save();
+
+        $this->pinCodeHistories->log($user->id, $hashedPin);
+        return $user;
     }
 
     /**
@@ -124,19 +196,14 @@ class AuthService implements IAuthService
      * @param string $usernameField
      * @param string $verificationType
      * @param string $username
-     * @param string $code
+     * @param string $otp
      * @throws ValidationException
      */
-    public function verify(string $usernameField, string $verificationType, string $username, string $code)
+    public function verify(string $userId, string $verificationType, string $otp)
     {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if(!$user) $this->accountDoesntExist();
-
-        $identifier = $verificationType.':'.$user->id;
-        $otpValidity = $this->otpService->validate($identifier, $code);
+        $identifier = $verificationType.':'.$userId;
+        $otpValidity = $this->otpService->validate($identifier, $otp);
         if(!$otpValidity->status) $this->invalidOtp($otpValidity->message);
-
-        return $user;
     }
 
     /**
@@ -158,15 +225,11 @@ class AuthService implements IAuthService
     }
 
 
-
-
-
-
-
-
-
-
-
+    /*
+    |--------------------------------------------------------------------------
+    | PRIVATE METHODS
+    |--------------------------------------------------------------------------
+    */
 
     private function ensureAccountIsNotLockedOut(string $throttleKey)
     {
@@ -182,12 +245,18 @@ class AuthService implements IAuthService
 
     private function isRateLimited(string $throttleKey): bool
     {
-        if(!RateLimiter::tooManyAttempts($throttleKey, 5)) {
+        if(!RateLimiter::tooManyAttempts($throttleKey, $this->maxLoginAttempts)) {
             return false;
         }
 
         return true;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDATION EXCEPTION HELPER METHODS
+    |--------------------------------------------------------------------------
+    */
 
     private function loginFailed()
     {

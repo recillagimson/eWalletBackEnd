@@ -5,7 +5,7 @@ namespace App\Http\Requests\Auth;
 use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class VerifyAccountRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,12 +25,14 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required_without:mobile_number|email',
             'mobile_number' => [
                 'required_without:email',
+                'email',
+                'max:20',
                 new MobileNumber()
             ],
-            'password' => 'required'
+            'email' => 'required_without:mobile_number|max:50|email',
+            'code' => 'required'
         ];
     }
 }

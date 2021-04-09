@@ -22,6 +22,8 @@ class UserAccount extends Authenticatable
         'email',
         'mobile_number',
         'password',
+        'verified',
+        'is_admin'
     ];
 
     /**
@@ -31,6 +33,7 @@ class UserAccount extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'pin_code',
         'remember_token',
     ];
 

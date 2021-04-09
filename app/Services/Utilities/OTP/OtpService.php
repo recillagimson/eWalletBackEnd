@@ -6,6 +6,7 @@ namespace App\Services\Utilities\OTP;
 use App\Repositories\OtpRepository\IOtpRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class OtpService implements IOtpService
 {
@@ -145,40 +146,31 @@ class OtpService implements IOtpService
     {
         $otp = $this->otps->getByIdentifier($identifier);
 
-        if (! $otp) {
-            return (object) [
-                'status' => false,
-                'message' => 'OTP does not exists, Please generate new OTP',
-            ];
-        }
-
-        if ($otp->isExpired()) {
-            return (object) [
-                'status' => false,
-                'message' => 'OTP is expired',
-            ];
-        }
-
-        if ($otp->no_times_attempted == $this->allowedAttempts) {
-            return (object) [
-                'status' => false,
-                'message' => "Reached the maximum allowed attempts",
-            ];
-        }
+        if (!$otp) $this->otpNotFound();
+        if ($otp->isExpired()) $this->otpIsExpired();
+        if ($otp->no_times_attempted == $this->allowedAttempts) $this->otpMaxedAttempts();
 
         $otp->increment('no_times_attempted');
 
         if ($otp->token == $token) {
+            $otp->validated = true;
+            $otp->save();
+
             return (object) [
                 'status' => true,
                 'message' => 'OTP is valid',
             ];
         }
 
-        return (object) [
-            'status' => false,
-            'message' => 'OTP does not match',
-        ];
+        $this->otpInvalid();
+    }
+
+    public function ensureValidated(string $identifier)
+    {
+        $otp = $this->otps->getByIdentifier($identifier, true);
+        if (!$otp) $this->otpNotFound();
+        if ($otp->isExpired()) $this->otpIsExpired();
+        if (!$otp->validated) $this->otpInvalid();
     }
 
     public function expiredAt(string $identifier): object
@@ -217,5 +209,33 @@ class OtpService implements IOtpService
         }
 
         return $pin;
+    }
+
+    private function otpNotFound()
+    {
+        throw ValidationException::withMessages([
+            'message' => 'OTP does not exists, Please generate new OTP'
+        ]);
+    }
+
+    private function otpIsExpired()
+    {
+        throw ValidationException::withMessages([
+            'message' => 'OTP is expired'
+        ]);
+    }
+
+    private function otpMaxedAttempts()
+    {
+        throw ValidationException::withMessages([
+            'message' => 'Reached the maximum allowed attempts'
+        ]);
+    }
+
+    private function otpInvalid()
+    {
+        throw ValidationException::withMessages([
+            'message' => 'OTP is invalid.'
+        ]);
     }
 }
