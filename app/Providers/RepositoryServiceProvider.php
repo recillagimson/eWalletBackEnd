@@ -6,8 +6,12 @@ use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\OtpRepository\IOtpRepository;
 use App\Repositories\OtpRepository\OtpRepository;
+use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
+use App\Repositories\PasswordHistory\PasswordHistoryRepository;
 use App\Repositories\Payload\IPayloadRepository;
 use App\Repositories\Payload\PayloadRepository;
+use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
+use App\Repositories\PinCodeHistory\PinCodeHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccount\UserAccountRepository;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
@@ -31,6 +35,8 @@ class RepositoryServiceProvider extends ServiceProvider
         //Authentication Repositories
         $this->app->bind(IUserAccountRepository::class, UserAccountRepository::class);
         $this->app->bind(IClientRepository::class, ClientRepository::class);
+        $this->app->bind(IPasswordHistoryRepository::class, PasswordHistoryRepository::class);
+        $this->app->bind(IPinCodeHistoryRepository::class, PinCodeHistoryRepository::class);
 
         //Utilities Repositories
         $this->app->bind(IOtpRepository::class, OtpRepository::class);

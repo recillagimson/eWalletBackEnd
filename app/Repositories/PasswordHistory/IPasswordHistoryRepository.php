@@ -3,7 +3,6 @@
 
 namespace App\Repositories\PasswordHistory;
 
-
 use App\Repositories\IRepository;
 
 interface IPasswordHistoryRepository extends IRepository

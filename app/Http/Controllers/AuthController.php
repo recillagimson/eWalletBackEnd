@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterPinCodeRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Models\UserAccount;
 use App\Services\Auth\IAuthService;
@@ -35,9 +38,56 @@ class AuthController extends Controller
     public function register(RegisterUserRequest $request): JsonResponse
     {
         $newUser = $request->validated();
-        $user = $this->authService->register($newUser);
-        $encryptedResponse = $this->encryptionService->encrypt($user->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        $usernameField = $this->getUsernameField($request);
+        $user = $this->authService->register($newUser, $usernameField);
+
+        $encryptedData = $this->encryptionService->encrypt($user->toArray());
+        $response = [
+            'message' => SuccessMessages::accountRegistered,
+            'data' => $encryptedData
+        ];
+
+        return response()->json($response, Response::HTTP_CREATED);
+    }
+
+
+    /**
+     * Validates the registration otp and verifies the account
+     *
+     * @param VerifyAccountRequest $request
+     * @return JsonResponse
+     */
+    public function verifyAccount(VerifyAccountRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $this->authService->verifyAccount($usernameField, $data[$usernameField], $data['code']);
+
+        $response = [
+            'message' => SuccessMessages::accountVerification,
+            'data' => [$usernameField => $data[$usernameField]]
+        ];
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
+     * Updates the pin code for the newly registered
+     * account.
+     *
+     * @param RegisterPinCodeRequest $request
+     * @return JsonResponse
+     */
+    public function registerPin(RegisterPinCodeRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $this->authService->registerPIN($usernameField, $data[$usernameField], $data['pin_code']);
+
+        $response = [
+            'message' => SuccessMessages::pinCodeUpdated,
+            'data' => [$usernameField => $data[$usernameField]]
+        ];
+        return response()->json($response, Response::HTTP_OK);
     }
 
 
@@ -76,24 +126,6 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $this->authService->forgotPassword($usernameField, $data[$usernameField]);
         return response()->json([],Response::HTTP_OK);
-    }
-
-
-    /**
-     * Verifies OTPs
-     *
-     * @param VerifyOtpRequest $request
-     * @return JsonResponse
-     */
-    public function verify(VerifyOtpRequest  $request): JsonResponse
-    {
-        $data = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->authService->verify($usernameField, $data['code_type'], $data[$usernameField], $data['code']);
-        return response()->json([
-            $usernameField => $data[$usernameField],
-            'status' => 'success'
-        ], Response::HTTP_OK);
     }
 
     /**

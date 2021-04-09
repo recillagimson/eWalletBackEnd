@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint.">
-      <change afterPath="$PROJECT_DIR$/app/Models/PasswordHistory.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_08_095501_add_validated_to_otps_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_08_103135_create_password_histories_table.php" afterDir="false" />
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification">
+      <change afterPath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/RegisterPinCodeRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/VerifyAccountRequest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Mail/Auth/AccountVerification.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Models/PinCodeHistory.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Repositories/PinCodeHistory/IPinCodeHistoryRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Repositories/PinCodeHistory/PinCodeHistoryRepository.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_08_144745_add_verified_to_user_account_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_08_150917_max_length_of_password_in_password_histories_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_09_025217_create_pin_code_histories_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_09_050909_rename_user_created_updated_in_user_accounts_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_09_051250_max_length_for_pin_code_in_user_accounts_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resources/views/emails/auth/account_verification.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Enums/OtpTypes.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/OtpTypes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/PasswordHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/PasswordHistory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/UserAccount.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/UserAccount.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Providers/RepositoryServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Providers/RepositoryServiceProvider.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Repositories/OtpRepository/IOtpRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/OtpRepository/IOtpRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Repositories/OtpRepository/OtpRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/OtpRepository/OtpRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Repositories/PasswordHistory/IPasswordHistoryRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/PasswordHistory/IPasswordHistoryRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Repositories/UserAccount/IUserAccountRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/UserAccount/IUserAccountRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Repositories/UserAccount/UserAccountRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/UserAccount/UserAccountRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Rules/MobileNumber.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Rules/MobileNumber.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
-    </list>
-    <list id="09095dc3-92a2-452c-be9a-2ff7bda7e7e3" name="Added Logging of Password History in Register" comment="Added Logging of Password History in Register">
-      <change afterPath="$PROJECT_DIR$/app/Repositories/PasswordHistory/IPasswordHistoryRepository.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Repositories/PasswordHistory/PasswordHistoryRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/INotificationService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/INotificationService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/SmsService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/SmsService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/OTP/IOtpService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/OTP/IOtpService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/OTP/OtpService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/OTP/OtpService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -340,7 +366,21 @@
       <option name="project" value="LOCAL" />
       <updated>1617112148328</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint.">
+      <created>1617886372583</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1617886372583</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Added Logging of Password History in Register">
+      <created>1617886396379</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1617886396379</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -388,7 +428,9 @@
     <MESSAGE value="modified client seeder to use eloquent orm" />
     <MESSAGE value="added migration to temporary set nullable on fields without values yet" />
     <MESSAGE value="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint." />
-    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 #comment Added logging of initial password in password_histories table in registration endpoint." />
+    <MESSAGE value="Added Logging of Password History in Register" />
+    <MESSAGE value="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification" />
+    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
