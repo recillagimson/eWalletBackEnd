@@ -24,10 +24,11 @@ class SendMoneyRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required_without:mobile_number',
-            'mobile_number' => 'required_without:email',
+            'email' => 'nullable',
+            'mobile_number' => 'nullable',
+            'user_account_id' => 'nullable',
             'amount' => 'required|numeric|min:1',
-            'message' => 'max:60'
+            'message' => 'max:60|nullable'
         ];
     }
 }

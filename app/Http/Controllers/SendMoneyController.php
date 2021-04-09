@@ -22,46 +22,32 @@ class SendMoneyController extends Controller
         $this->encryptionService = $encryptionService;
     }
 
+
+
     /**
      * Send money request
      *
      * @param SendMoneyRequest $request
      * @param array $fillRequest
      * @param string $username
-     * @param string $senderID
-     * @param string $receiverID
-     * @param boolean $isSelf
-     * @param boolean $isEnough
      * @param string $encryptedResponse
      * @return JsonResponse
      * @throws ValidationException
      */
-    public function sendMoney(SendMoneyRequest $request):JsonResponse
+     public function sendMoney(SendMoneyRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
         $username = $this->getUsernameField($request);
-        $senderID = $request->user()->id;
-        $receiverID = $this->sendMoneyService->getUserID($username, $fillRequest);
-        
-        $isSelf = $this->sendMoneyService->isSelf($senderID, $receiverID);
-        $isEnough = $this->sendMoneyService->checkAmount($senderID, $fillRequest);
-        $fillRequest['refNo'] = $this->sendMoneyService->generateRefNo();
-
-        if($isSelf){ $this->sendMoneyService->errorMessage($username,'Can\'t send to your own account'); }
-        if(!$isEnough){ $this->sendMoneyService->errorMessage('amount', 'Not enough balance'); }
-        
-        $this->sendMoneyService->subtractSenderBalance($senderID, $fillRequest);
-        $this->sendMoneyService->addReceiverBalance($receiverID, $fillRequest);
-        $this->sendMoneyService->outSendMoney($senderID, $receiverID, $fillRequest);
-        $this->sendMoneyService->inReceiveMoney($senderID, $receiverID, $fillRequest);
+        $this->sendMoneyService->sendMoney($username, $fillRequest, $request->user());
 
         $encryptedResponse = $this->encryptionService->encrypt([ "status" => "success"]);
         return response()->json($encryptedResponse, Response::HTTP_CREATED);
     }
 
 
+
     /**
-     * Generate QR Transaction
+     * Generates QR Transaction
      *
      * @param SendMoneyRequest $request
      * @param array $fillRequest
@@ -75,7 +61,8 @@ class SendMoneyController extends Controller
         $qrTransaction = $this->sendMoneyService->createUserQR($request->user(), $fillRequest);
         $encryptedResponse = $this->encryptionService->encrypt([
             'user_account_id' => $qrTransaction->user_account_id,
-            'amount' => $qrTransaction->amount
+            'amount' => $qrTransaction->amount,
+            'message' => ''
         ]);
 
         return response()->json($encryptedResponse, Response::HTTP_CREATED);
@@ -83,7 +70,7 @@ class SendMoneyController extends Controller
 
 
     /**
-     * Returning UsernameTypes
+     * Returns UsernameType
      * 
      * @param Request $request
      * @return string

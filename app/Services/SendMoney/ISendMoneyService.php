@@ -10,15 +10,7 @@ use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
  *
  */
 interface ISendMoneyService{
-    public function getUserID(string $usernameField, array $fillRequest);
-    public function checkAmount(string $userID ,array $fillRequest);
-    public function errorMessage(string $header, string $message);
-    public function subtractSenderBalance(string $senderID, array $fillRequest);
-    public function addReceiverBalance(string $receiverID, array $fillRequest);
-    public function isSelf(string $senderID, string $receiverID);
-    public function outSendMoney(string $senderID, string $receiverID, array $fillRequest);
-    public function inReceiveMoney(string $senderID, string $receiverID, array $fillRequest);
-    public function generateRefNo();
+    public function sendMoney(string $usernameField, array $fillRequest, object $user);
     public function createUserQR(object $user, array $fillRequest);
 }
     
