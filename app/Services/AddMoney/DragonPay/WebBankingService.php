@@ -104,11 +104,10 @@ class WebBankingService implements IWebBankingService
 
     /**
      * Generate the DragonPay request URL
-     * to the DragonPay Web Service
+     * that goes to DragonPay Web Service
      * 
      * @param UserAccount $user
-     * @param float $amount
-     * @param string|null @email
+     * @param array $urlParams
      * @return json $response
      */
     public function generateRequestURL(UserAccount $user, array $urlParams)
@@ -201,7 +200,7 @@ class WebBankingService implements IWebBankingService
      * @param uuid $userAccountID
      * @return string
      */
-    public function getFullname($userAccountID)
+    public function getFullname(string $userAccountID)
     {
         $userDetails = $this->userDetails->getByUserAccountID($userAccountID);
         return $userDetails->firstname . ' ' . $userDetails->lastName;
@@ -216,7 +215,7 @@ class WebBankingService implements IWebBankingService
      * @param string $email
      * @return array
      */
-    public function createBody($amount, $beneficiaryName, $email)
+    public function createBody(float $amount, string $beneficiaryName, string $email)
     {
         return [
             'Amount' => $this->formatAmount($amount),
@@ -233,18 +232,17 @@ class WebBankingService implements IWebBankingService
      * If the data does not have 2 trailing 
      * zeros (decimal), adds ".00" at the end
      * 
-     * @param int $amount
+     * @param float $amount
      * @return string
      */
-    public function formatAmount($amount)
+    public function formatAmount(float $amount)
     {
         if (!strpos($amount, '.')) return number_format($amount, 2, '.', '');
         return (string) $amount;
     }
 
     /**
-     * Handles the error response
-     * from DragonPay API
+     * Handles the error response from DragonPay API
      * 
      * @param response $response
      * @return exception
@@ -278,7 +276,7 @@ class WebBankingService implements IWebBankingService
      * @param string $transactionRemarks
      * @return exception|null
      */
-    public function insertAddMoneyRecord($userAccountID, $refNo, $amount, $serviceFee, $serviceFeeID, $totalAmount, $transactionCategoryID, $transactionRemarks)
+    public function insertAddMoneyRecord(string $userAccountID, string $refNo, float $amount, float $serviceFee, string $serviceFeeID, float $totalAmount, string $transactionCategoryID, string $transactionRemarks)
     {
         $row = [
             'user_account_id' => $userAccountID,
