@@ -4,6 +4,7 @@ use App\Enums\DragonPayStatusTypes;
 use App\Enums\OtpTypes;
 use App\Enums\PayloadTypes;
 use App\Enums\ReferenceNumberTypes;
+use App\Enums\SquidPayModuleTypes;
 use App\Enums\UsernameTypes;
 use App\Enums\TokenNames;
 
@@ -247,6 +248,8 @@ return [
         'NetworkTypes' => NetworkTypes::class,
         'DragonPayStatusTypes' => DragonPayStatusTypes::class,
         'ReferenceNumberTypes' => ReferenceNumberTypes::class,
+        'SquidPayModuleTypes' => SquidPayModuleTypes::class,
+        'TransactionCategories' => TransactionCategories::class,
 
 
     ],

@@ -5,9 +5,9 @@ namespace App\Enums;
 class ReferenceNumberTypes
 {
     const SendMoney = 'SM';
-    const Withdrawal = 'WD';
+    const SendToBank = 'SB';
     const PayBills = 'PB';
-    const Remittence = 'RM';
+    const Remittance = 'RM';
     const BuyLoad = 'BL';
     const AddMoneyViaWebBank = 'AB';
     const AddMoneyViaOTC = 'AC'; //Over the counter

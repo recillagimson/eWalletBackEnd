@@ -2,13 +2,16 @@
 
 namespace App\Services\AddMoney\DragonPay;
 
+use App\Enums\TransactionCategories;
 use App\Models\UserAccount;
 use App\Repositories\AddMoney\IWebBankRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserDetail\IUserDetailRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 
@@ -49,23 +52,39 @@ class WebBankingService implements IWebBankingService
      */
     protected $referenceNumber;
 
+    /**
+     * Transaction name of this class
+     * 
+     * @var string
+     */
+    protected $moduleTransCategory;
+
+    /**
+     * test purposes
+     * remover when tiers and service fees are finalize
+     */
+    protected $tier;
+
     public IWebBankRepository $webBanks;
     public IUserAccountRepository $userAccounts;
     public IUserDetailRepository $userDetails;
     public IServiceFeeRepository $serviceFees;
     public IReferenceNumberService $referenceNumberService;
     public ILogHistoryRepository $logHistory;
+    public ITransactionCategoryRepository $transactionCategories;
 
     public function __construct(IWebBankRepository $webBanks, 
                                 IUserAccountRepository $userAccounts,
                                 IUserDetailRepository $userDetails,
                                 IServiceFeeRepository $serviceFees,
                                 IReferenceNumberService $referenceNumberService,
-                                ILogHistoryRepository $logHistory) {
+                                ILogHistoryRepository $logHistory,
+                                ITransactionCategoryRepository $transactionCategories) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
         $this->key = config('dragonpay.dp_key');
+        $this->moduleTransCategory = TransactionCategories::AddMoneyWebBankDragonPay;
 
         $this->webBanks = $webBanks;
         $this->userAccounts = $userAccounts;
@@ -73,6 +92,14 @@ class WebBankingService implements IWebBankingService
         $this->serviceFees = $serviceFees;
         $this->referenceNumberService = $referenceNumberService;
         $this->logHistory = $logHistory;
+        $this->transactionCategories = $transactionCategories;
+
+
+        /**
+         * Test purposes
+         * remover when tiers and service fees are finalize
+         */
+        $this->tier = 1;
     }
 
     /**
@@ -93,13 +120,11 @@ class WebBankingService implements IWebBankingService
         $userAccountID = $user->id;
         $amount = $urlParams['amount'];
 
-        $this->validateTiersAndLimits($userAccountID, $amount);
-
         $token = $this->getToken();
         $txnID =  $this->referenceNumber;
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
-        $addMoneyServiceFee = $this->serviceFees->get('6f8b72d8-cca7-49e2-8e05-bd455f86dd2e');
+        $addMoneyServiceFee = $this->validateTiersAndLimits($userAccountID, $amount);
         $totalAmount = $addMoneyServiceFee->amount + $amount;
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
 
@@ -117,7 +142,8 @@ class WebBankingService implements IWebBankingService
                                         $txnID, 
                                         $this->formatAmount($amount), 
                                         $addMoneyServiceFee->amount, 
-                                        $addMoneyServiceFee->id, $totalAmount, 
+                                        $addMoneyServiceFee->id, 
+                                        $totalAmount, 
                                         '0ec43457-9131-11eb-b44f-1c1b0d14e211', 
                                         $body['Description']);
         }
@@ -277,17 +303,27 @@ class WebBankingService implements IWebBankingService
      * 
      * @param string $userAccountID
      * @param float $amount
-     * @return exception|null
+     * @return exception|float $serviceFee
      */
     public function validateTiersAndLimits(string $userAccountID, float $amount)
     {
-        $tier1 = 1;
         $amountLimit = 5000.00;
+        $serviceFee = 0.00;
 
-        // call tier repository and get the tier
+        $userDetails = $this->userDetails->getByUserAccountID($userAccountID);
+        // get the tier from the user details and set as params in getByTierAndTransCategoryID
+
+        $addMoneyTransCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
+        $addMoneyServiceFee =  $this->serviceFees->getByTierAndTransCategoryID($this->tier, $addMoneyTransCategory->id);
+
+        if ($addMoneyServiceFee->implementation_date <= Carbon::now()) $serviceFee = $addMoneyServiceFee->amount;
 
         if ($amount > $amountLimit) return $this->tierLimitExceeded();
+
+        return $addMoneyServiceFee;
     }
+
+
 
 
 

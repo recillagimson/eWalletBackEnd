@@ -7,4 +7,5 @@ use App\Repositories\IRepository;
 
 interface IServiceFeeRepository extends IRepository
 {
+    public function getByTierAndTransCategoryID(int $tier, string $transCategoryID);
 }

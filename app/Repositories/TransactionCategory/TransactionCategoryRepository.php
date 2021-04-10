@@ -11,4 +11,9 @@ class TransactionCategoryRepository extends Repository implements ITransactionCa
     {
         parent::__construct($model);
     }
+
+    public function getByName(string $name)
+    {
+        return $this->model->where('name', $name)->first();
+    }
 }
