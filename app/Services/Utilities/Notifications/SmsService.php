@@ -43,6 +43,12 @@ class SmsService implements INotificationService
         $this->sendMessages($to, $content);
     }
 
+    public function sendLoginVerification(string $to, string $otp)
+    {
+        $content = 'Your login verification code is: '.$otp;
+        $this->sendMessages($to, $content);
+    }
+
     private function sendMessages(string $to, string $content)
     {
         $message = $this->buildMessage($to, $content);
@@ -67,6 +73,7 @@ class SmsService implements INotificationService
            'sms' => 'SMS provider failed to send the message. Please try again.'
         ]);
     }
+
 
 
 }

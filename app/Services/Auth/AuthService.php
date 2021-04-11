@@ -4,12 +4,14 @@ namespace App\Services\Auth;
 
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
+use App\Models\UserAccount;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
 use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\OTP\IOtpService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -27,6 +29,12 @@ class AuthService implements IAuthService
     private IOtpService $otpService;
 
     private int $maxLoginAttempts;
+    private int $daysToResetAttempts;
+
+    private int $remainingAgeToNotify;
+    private int $minPasswordAge;
+    private int $maxPasswordAge;
+    private int $tokenExpiration;
 
 
     public function __construct(IUserAccountRepository $userAccts,
@@ -45,6 +53,11 @@ class AuthService implements IAuthService
         $this->notificationService = $notificationService;
 
         $this->maxLoginAttempts = config('auth.account_lockout_attempt');
+        $this->daysToResetAttempts = config('auth.account_lockout_attempt_reset');
+        $this->remainingAgeToNotify = config('auth.password_notify_expire');
+        $this->minPasswordAge = config('auth.password_min_age');
+        $this->maxPasswordAge = config('auth.password_max_age_np');
+        $this->tokenExpiration = config('sanctum.expiration');
     }
 
 
@@ -74,56 +87,34 @@ class AuthService implements IAuthService
     }
 
     /**
-     * Activates the user account by validating the otp
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $otp
-     * @return mixed
-     * @throws ValidationException
-     */
-    public function verifyAccount(string $usernameField, string $username, string $otp)
-    {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if(!$user) $this->accountDoesntExist();
-
-        $this->verify($user->id, OtpTypes::registration, $otp);
-
-        $user->verified = true;
-        $user->save();
-
-        return $user;
-    }
-
-    /**
      * Attempts to authenticate the user with the
      * provided credentials
      *
      * @param string $usernameField
      * @param array $creds
      * @param string $ip
-     * @return NewAccessToken
      * @throws ValidationException
      */
-    public function login(string $usernameField, array $creds, string $ip): NewAccessToken
+    public function login(string $usernameField, array $creds, string $ip)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
         if(!$user) $this->loginFailed();
         if(!$user->verified) $this->accountUnverified();
+        if($user->is_lockout) $this->accountLockedOut();
 
-        $throttleKey = $this->throttleKey($creds[$usernameField], $ip);
-        $this->ensureAccountIsNotLockedOut($throttleKey);
+        $user->resetLoginAttempts($this->daysToResetAttempts);
 
         $passwordMatched = Hash::check($creds['password'], $user->password);
-        if(!$user || !$passwordMatched) {
-            RateLimiter::hit($throttleKey);
+        if(!$passwordMatched) {
+            $user->updateLockout($this->maxLoginAttempts);
             $this->loginFailed();
         }
 
-        $user->tokens()->where('name', '=', TokenNames::webToken)->delete();
-        RateLimiter::clear($throttleKey);
+        $identifier = OtpTypes::login.':'.$user->id;
+        $otp = $this->otpService->generate($identifier);
+        if(!$otp->status) $this->invalidOtp($otp->message);
 
-        return $user->createToken(TokenNames::webToken);
+        $this->notificationService->sendLoginVerification($creds[$usernameField], $otp->token);
     }
 
     /**
@@ -143,7 +134,6 @@ class AuthService implements IAuthService
             $this->invalidCredentials();
         }
 
-        $client->tokens()->delete();
         return $client->createToken(TokenNames::clientToken);
     }
 
@@ -171,9 +161,8 @@ class AuthService implements IAuthService
      * Verifies the validity of OTPs
      *
      *
-     * @param string $usernameField
+     * @param string $userId
      * @param string $verificationType
-     * @param string $username
      * @param string $otp
      * @throws ValidationException
      */
@@ -182,6 +171,63 @@ class AuthService implements IAuthService
         $identifier = $verificationType.':'.$userId;
         $otpValidity = $this->otpService->validate($identifier, $otp);
         if(!$otpValidity->status) $this->invalidOtp($otpValidity->message);
+    }
+
+    /**
+     * Activates the user account by validating the otp
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @param string $otp
+     * @return mixed
+     * @throws ValidationException
+     */
+    public function verifyAccount(string $usernameField, string $username, string $otp)
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) $this->accountDoesntExist();
+
+        $this->verify($user->id, OtpTypes::registration, $otp);
+
+        $user->verified = true;
+        $user->save();
+
+        return $user;
+    }
+
+    /**
+     * Validate OTP and provides user token
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @param string $otp
+     * @return array
+     * @throws ValidationException
+     */
+    public function verifyLogin(string $usernameField, string $username, string $otp): array
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) $this->accountDoesntExist();
+
+        $this->verify($user->id, OtpTypes::login, $otp);
+        $user->verified = true;
+        $user->save();
+
+        $token = $user->createToken(TokenNames::userToken);
+        $latestPassword = $this->passwordHistories->getLatest($user->id);
+        $latesPin = $this->pinCodeHistories->getLatest($user->id);
+
+        return [
+            'user_token' => [
+                'access_token' => $token->plainTextToken,
+                'created_at' => $token->accessToken->created_at,
+                'expires_in' => $this->tokenExpiration
+            ],
+            'notify_password_expiration' => $latestPassword->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge),
+            'password_age' => $latestPassword->password_age,
+            'notify_pin_expiration' => $latesPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge),
+            'pin_age' => $latesPin->pin_age
+        ];
     }
 
     /**
@@ -202,33 +248,6 @@ class AuthService implements IAuthService
         $user->save();
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | PRIVATE METHODS
-    |--------------------------------------------------------------------------
-    */
-
-    private function ensureAccountIsNotLockedOut(string $throttleKey)
-    {
-        if($this->isRateLimited($throttleKey)) {
-            $this->accountLockedOut();
-        }
-    }
-
-    private function throttleKey(string $username, string $ip): string
-    {
-        return Str::lower($username.'|'.$ip);
-    }
-
-    private function isRateLimited(string $throttleKey): bool
-    {
-        if(!RateLimiter::tooManyAttempts($throttleKey, $this->maxLoginAttempts)) {
-            return false;
-        }
-
-        return true;
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -267,7 +286,7 @@ class AuthService implements IAuthService
     private function accountLockedOut()
     {
         throw ValidationException::withMessages([
-            'account' => 'Account has been locked out. Due to subsequent failed attempts.'
+            'account' => 'Account has been locked out. Due to 3 failed attempts.'
         ]);
     }
 
