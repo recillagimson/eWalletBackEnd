@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest
@@ -11,7 +12,7 @@ class LoginRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,11 +22,14 @@ class LoginRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'email' => 'required_without:mobile_number|email',
-            'mobile_number' => 'required_without:email',
+            'mobile_number' => [
+                'required_without:email',
+                new MobileNumber()
+            ],
             'password' => 'required'
         ];
     }

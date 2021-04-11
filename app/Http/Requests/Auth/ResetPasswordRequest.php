@@ -4,6 +4,7 @@ namespace App\Http\Requests\Auth;
 
 use App\Enums\UsernameTypes;
 use App\Rules\IsPasswordValid;
+use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ResetPasswordRequest extends FormRequest
@@ -13,7 +14,7 @@ class ResetPasswordRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,16 +24,20 @@ class ResetPasswordRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'email' => 'required_without:'.UsernameTypes::MobileNumber.'|email',
-            'mobile_number' => 'required_without:'.UsernameTypes::Email,
+            'mobile_number' => [
+                'required_without:'.UsernameTypes::Email,
+                new MobileNumber()
+            ],
             'password' => [
                 'required',
-                'min:8',
+                'min:'.config('auth.password_minlength'),
                 'max:16',
                 'confirmed',
+                'different:email',
                 new IsPasswordValid()
             ],
             'password_confirmation' => 'required|min:8|max:16',

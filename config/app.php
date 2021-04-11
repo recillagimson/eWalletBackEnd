@@ -1,7 +1,9 @@
 <?php
 
+use App\Enums\NetworkTypes;
 use App\Enums\OtpTypes;
 use App\Enums\PayloadTypes;
+use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
 use App\Enums\TokenNames;
 
@@ -242,6 +244,9 @@ return [
         'TokenNames' => TokenNames::class,
         'OtpTypes' => OtpTypes::class,
         'NetworkTypes' => NetworkTypes::class,
+
+        //Enums - Messages
+        'SuccessMessages' => SuccessMessages::class
 
 
     ],
