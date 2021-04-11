@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DragonPay\AddMoneyCancelRequest;
+use App\Http\Requests\DragonPay\AddMoneyStatusRequest;
 use App\Http\Requests\DragonPay\AddMoneyWebBankRequest;
 use App\Http\Requests\DragonPay\DragonPayPostBackRequest;
 use App\Services\AddMoney\DragonPay\IWebBankingService;
@@ -9,7 +11,6 @@ use App\Services\AddMoney\DragonPay\PostBack\IHandlePostBackService;
 use App\Services\Encryption\IEncryptionService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Carbon;
 
 class DragonPayAddMoneyController extends Controller
 {
@@ -34,7 +35,7 @@ class DragonPayAddMoneyController extends Controller
         $requestURL = $this->webBankingService->generateRequestURL($user, $urlParams);
         $encryptedResponse = $this->encryptionService->encrypt(array($requestURL));
         
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return response()->json($requestURL, Response::HTTP_OK);
     }
 
     public function postBack(DragonPayPostBackRequest $request)
@@ -44,6 +45,16 @@ class DragonPayAddMoneyController extends Controller
         $postBack = $this->postBackService->insertPostBackData($postBackData);
         $encryptedResponse = $this->encryptionService->encrypt(array($postBack));
 
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return response()->json($postBack, Response::HTTP_OK);
+    }
+
+    public function cancel(AddMoneyCancelRequest $request)
+    {
+        $referenceNumber = $request->validated();
+        $user = $request->user();
+
+        $cancel = $this->webBankingService->cancelAddMoney($user, $referenceNumber);
+
+        return response()->json($cancel, Response::HTTP_OK);
     }
 }

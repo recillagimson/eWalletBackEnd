@@ -34,15 +34,10 @@ class HandlePostBackService implements IHandlePostBackService
         $status = $postBackData['status'];
         $message = $postBackData['message'];
         $digest = $postBackData['digest'];
-
-        $message = explode(' ', $message);
-        $channelNum = $message[0];
-        $channelCode = $message[1];
-        $channelRefNo = $message[4];
-
+        
         // if Add Money row is missing or the record does not have a 'PENDING' status
         $this->validate($referenceNumber);
-        
+
         $addMoneyRow = $this->webBanks->getByReferenceNumber($referenceNumber);
 
         if ($status == 'S') {
@@ -53,7 +48,20 @@ class HandlePostBackService implements IHandlePostBackService
                 'message' => 'Money added successfully.'
             ];
 
+            $message = explode(' ', $message);
+            $channelNum = $message[0];
+            $channelCode = $message[1];
+            $channelRefNo = $message[4];
+
+            $this->webBanks->update($addMoneyRow, [
+                'dragonpay_reference' => $dragonpayReference,
+                'dragonpay_channel_reference_number' => $channelRefNo,
+                'status' => $status
+            ]);
+
             $this->addAmountToUserBalance($addMoneyRow->user_account_id, $addMoneyRow->amount);
+
+            return $responseData;
         }
 
         if ($status == 'F') {
@@ -63,11 +71,23 @@ class HandlePostBackService implements IHandlePostBackService
                 'amount' => $addMoneyRow->amount,
                 'message' => 'Failed to add money.'
             ];
+            $channelRefNo = 'N/A';
+        }
+
+        if ($status == 'P') {
+            $status = DragonPayStatusTypes::Pending;
+            $responseData = (object) [
+                'status' => false,
+                'amount' => $addMoneyRow->amount,
+                'message' => 'Waiting for deposit to selected bank.'
+            ];
+            $channelRefNo = 'N/A';
         }
 
         $this->webBanks->update($addMoneyRow, [
             'dragonpay_reference' => $dragonpayReference,
             'dragonpay_channel_reference_number' => $channelRefNo,
+            'transaction_remarks' => $message,
             'status' => $status
         ]);
 

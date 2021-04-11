@@ -2,6 +2,7 @@
 
 namespace App\Services\AddMoney\DragonPay;
 
+use App\Enums\DragonPayStatusTypes;
 use App\Enums\TransactionCategories;
 use App\Models\UserAccount;
 use App\Repositories\AddMoney\IWebBankRepository;
@@ -14,6 +15,7 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
+use Prophecy\Exception\Doubler\MethodNotFoundException;
 
 class WebBankingService implements IWebBankingService
 {
@@ -321,6 +323,71 @@ class WebBankingService implements IWebBankingService
         return $addMoneyServiceFee;
     }
 
+    /**
+     * Check the transaction status in DragonPay. Note: null 
+     * reply form API means that the transaction is left in 
+     * pending for a period of time (not sure how long)
+     * 
+     * @param array $identifier
+     * @return json $response
+     */
+    public function getAddMoneyTransStatus(array $identifier)
+    {
+        if (array_key_exists('reference_number', $identifier)) {
+            
+            $response = $this->dragonpayRequest('/txnid/' . $identifier['reference_number']);
+        } else {
+            
+            $response = $this->dragonpayRequest('/refno/' . $identifier['dragonpay_reference']);
+        }
+
+        return $response->json();
+    }
+
+    /**
+     * A request builder with DragonPay baseURL
+     * 
+     * @param string $endpoint
+     * @return response $response
+     */
+    public function dragonpayRequest(string $endpoint)
+    {
+        $response = Http::withToken($this->getToken())->get($this->baseURL . $endpoint);
+        return $response;
+    }
+
+    /**
+     * Voids the transaction in DragonPay DB and SquidPay DB
+     * 
+     * @param UserAccount $user
+     * @param array $referenceNumber
+     * @return object $responseData
+     */
+    public function cancelAddMoney(UserAccount $user, array $referenceNumber)
+    {
+        $referenceNumber = $referenceNumber['reference_number'];
+
+        $addMoneyRecord = $this->webBanks->getByReferenceNumber($referenceNumber);
+
+        if ($addMoneyRecord == null) throw new ModelNotFoundException();
+
+        if ($addMoneyRecord->user_account_id != $user->id) return $this->unauthorizedForThisRecord();
+
+        if ($addMoneyRecord->status != DragonPayStatusTypes::Pending) return $this->nonPendingTrans();
+
+        $response = $this->dragonpayRequest('/void/' . $referenceNumber);
+        $response = json_decode($response->body());
+
+        if ($response->Status < 0) return $this->nonPendingTrans();
+
+        $this->webBanks->update($addMoneyRecord, ['status' => DragonPayStatusTypes::Void]);
+        
+        return $responseData = (object) [
+            'status' => true,
+            'message' => 'Add money transaction has been cancelled.'
+        ];
+    }
+
 
 
 
@@ -431,5 +498,19 @@ class WebBankingService implements IWebBankingService
     private function throw500()
     {
         abort(500, 'Something went wrong :(');
+    }
+
+    private function unauthorizedForThisRecord()
+    {
+        throw ValidationException::withMessages([
+            'reference_number' => 'Current user is unauthorized to cancel the record.'
+        ]);
+    }
+
+    private function nonPendingTrans()
+    {
+        throw ValidationException::withMessages([
+            'reference_number' => 'Cannot void a non-pending transaction.'
+        ]);
     }
 }

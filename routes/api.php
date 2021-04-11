@@ -74,6 +74,7 @@ Route::middleware('auth:sanctum')->group(function (){
 
     Route::prefix('/webbanking')->middleware(['decrypt.request'])->group(function (){
         Route::post('/addmoney', [DragonPayAddMoneyController::class, 'addMoney']);
+        Route::post('/addmoney/cancel', [DragonPayAddMoneyController::class, 'cancel']);
     });
 });
 
