@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
+use App\Http\Requests\Auth\VerifyLoginRequest;
 use App\Models\UserAccount;
 use App\Services\Auth\IAuthService;
 use App\Services\Encryption\IEncryptionService;
@@ -50,6 +51,28 @@ class AuthController extends Controller
 
 
     /**
+     * Authenticate a user
+     *
+     * @param LoginRequest $request
+     * @return JsonResponse
+     */
+    public function login(LoginRequest $request): JsonResponse
+    {
+        $login = $request->validated();
+        $ip = $request->ip();
+        $usernameField = $this->getUsernameField($request);
+        $this->authService->login($usernameField, $login, $ip);
+
+        $response = [
+            'message' => SuccessMessages::loginSuccessful,
+            'data' => [$usernameField => $login[$usernameField]]
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+
+    /**
      * Validates the registration otp and verifies the account
      *
      * @param VerifyAccountRequest $request
@@ -70,26 +93,23 @@ class AuthController extends Controller
 
 
     /**
-     * Authenticate a user
+     * Verify and validate login otp and generates token
      *
-     * @param LoginRequest $request
+     * @param VerifyLoginRequest $request
      * @return JsonResponse
      */
-    public function login(LoginRequest $request): JsonResponse
+    public function verifyLogin(VerifyLoginRequest $request): JsonResponse
     {
-        $login = $request->validated();
-        $ip = $request->ip();
-        $username = $this->getUsernameField($request);
+        $data = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $loginResponse = $this->authService->verifyLogin($usernameField, $data[$usernameField], $data['code']);
 
-        $token = $this->authService->login($username, $login, $ip);
         $response = [
-            'access_token' => $token->plainTextToken,
-            'created_at' => $token->accessToken->created_at,
-            'expires_in' => config('sanctum.expiration')
+            'message' => SuccessMessages::loginVerificationSuccessful,
+            'data' => $this->encryptionService->encrypt($loginResponse)
         ];
 
-        $encryptedResponse = $this->encryptionService->encrypt($response);
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 
 
@@ -104,7 +124,7 @@ class AuthController extends Controller
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
         $this->authService->forgotPassword($usernameField, $data[$usernameField]);
-        return response()->json([],Response::HTTP_OK);
+        return response()->json([], Response::HTTP_OK);
     }
 
 
@@ -132,9 +152,10 @@ class AuthController extends Controller
     public function getUser(Request $request): JsonResponse
     {
         $user = $request->user();
-        if(!$user instanceof UserAccount) return response()->json(null, Response::HTTP_UNAUTHORIZED);
+        if (!$user instanceof UserAccount) return response()->json(null, Response::HTTP_UNAUTHORIZED);
         return response()->json($request->user(), Response::HTTP_OK);
     }
+
 
     private function getUsernameField(Request $request): string
     {

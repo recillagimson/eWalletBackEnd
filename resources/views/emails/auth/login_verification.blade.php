@@ -2,10 +2,10 @@
 <html lang="en-US">
 <head>
     <meta charset="utf-8" />
-    <title>SquidPay - Account Verification</title>
+    <title>SquidPay - Login Verification</title>
 </head>
 <body>
 <h2>Hi,</h2>
-<p>This is your account verification code: {{ $code }}</p>
+<p>This is your login verification code: {{ $code }}</p>
 </body>
 </html>

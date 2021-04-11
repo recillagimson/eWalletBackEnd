@@ -6,6 +6,7 @@ namespace App\Services\Utilities\Notifications;
 
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
+use App\Mail\LoginVerification;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
 use Illuminate\Validation\ValidationException;
@@ -52,6 +53,19 @@ class EmailService implements INotificationService
         $this->sendMessage($to, $subject, $template);
     }
 
+    /**
+     * Sends an email for login verification
+     *
+     * @param string $to
+     * @param string $otp
+     */
+    public function sendLoginVerification(string $to, string $otp)
+    {
+        $subject = 'SquidPay - Login Verification';
+        $template = new LoginVerification($otp);
+        $this->sendMessage($to, $subject, $template);
+    }
+
     private function sendMessage(string $to, string $subject, Mailable $template): void
     {
         $mail = new Mail();
@@ -72,6 +86,4 @@ class EmailService implements INotificationService
             'email' => 'Email provider failed to send the message. Please try again.'
         ]);
     }
-
-
 }

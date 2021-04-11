@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 &#10;- merge updating of pin code to register endpoint&#10;- remove endpoint for register pin code">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 &#10;- fixed issue on pin_code not being saved in the database">
+      <change afterPath="$PROJECT_DIR$/resources/views/emails/auth/login_verification.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Enums/TokenNames.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/TokenNames.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/PasswordHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/PasswordHistory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/PinCodeHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/PinCodeHistory.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/UserAccount.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/UserAccount.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/INotificationService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/INotificationService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/SmsService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/SmsService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/seeders/insert_maritial_status.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeders/insert_maritial_status.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/emails/auth/account_verification.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/emails/auth/account_verification.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -237,6 +251,8 @@
       <workItem from="1617162743205" duration="5346000" />
       <workItem from="1617204088316" duration="2562000" />
       <workItem from="1617952967025" duration="551000" />
+      <workItem from="1617984832979" duration="8252000" />
+      <workItem from="1618030758327" duration="1466000" />
     </task>
     <task id="LOCAL-00001" summary="Added endpoints for register and login without payload encryption">
       <created>1616009107809</created>
@@ -371,7 +387,14 @@
       <option name="project" value="LOCAL" />
       <updated>1617951219568</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="SVC-41 &#10;- fixed issue on pin_code not being saved in the database">
+      <created>1617954493107</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1617954493107</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -393,7 +416,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="SVC-41" />
+                        <option value="SVC-40" />
                       </list>
                     </value>
                   </entry>
@@ -422,15 +445,16 @@
     <MESSAGE value="Added Logging of Password History in Register" />
     <MESSAGE value="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification" />
     <MESSAGE value="SVC-41 &#10;- merge updating of pin code to register endpoint&#10;- remove endpoint for register pin code" />
-    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 &#10;- merge updating of pin code to register endpoint&#10;- remove endpoint for register pin code" />
+    <MESSAGE value="SVC-41 &#10;- fixed issue on pin_code not being saved in the database" />
+    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 &#10;- fixed issue on pin_code not being saved in the database" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/app/Services/Auth/AuthService.php</url>
-          <line>60</line>
-          <option name="timeStamp" value="1" />
+          <url>file://$PROJECT_DIR$/app/Models/PasswordHistory.php</url>
+          <line>27</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
