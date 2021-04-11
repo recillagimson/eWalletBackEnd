@@ -34,11 +34,11 @@ class SendMoneyController extends Controller
      * @return JsonResponse
      * @throws ValidationException
      */
-     public function sendMoney(SendMoneyRequest $request): JsonResponse
+     public function send(SendMoneyRequest $request)
     {
         $fillRequest = $request->validated();
         $username = $this->getUsernameField($request);
-        $this->sendMoneyService->sendMoney($username, $fillRequest, $request->user());
+        $this->sendMoneyService->send($username, $fillRequest, $request->user());
 
         $encryptedResponse = $this->encryptionService->encrypt([ "status" => "success"]);
         return response()->json($encryptedResponse, Response::HTTP_CREATED);
@@ -55,10 +55,10 @@ class SendMoneyController extends Controller
      * @param string $encryptedResponse
      * @return JsonResponse
      */
-    public function generateqr(SendMoneyQrRequest $request): JsonResponse
+    public function GenerateQrRequest(SendMoneyQrRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
-        $qrTransaction = $this->sendMoneyService->createUserQR($request->user(), $fillRequest);
+        $qrTransaction = $this->sendMoneyService->generateQR($request->user(), $fillRequest);
         $encryptedResponse = $this->encryptionService->encrypt([
             'user_account_id' => $qrTransaction->user_account_id,
             'amount' => $qrTransaction->amount,

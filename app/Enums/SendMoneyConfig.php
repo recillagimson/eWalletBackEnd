@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-class SendMoneyTypes
+class SendMoneyConfig
 {
     const RefHeader = 'SM';
     const ServiceFee = 15;

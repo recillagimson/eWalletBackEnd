@@ -10,7 +10,7 @@ use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
  *
  */
 interface ISendMoneyService{
-    public function sendMoney(string $usernameField, array $fillRequest, object $user);
-    public function createUserQR(object $user, array $fillRequest);
+    public function send(string $usernameField, array $fillRequest, object $user);
+    public function generateQR(object $user, array $fillRequest);
 }
     

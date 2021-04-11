@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\SendMoney;
 
+use Composer\DependencyResolver\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SendMoneyRequest extends FormRequest
@@ -24,11 +25,11 @@ class SendMoneyRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'nullable',
-            'mobile_number' => 'nullable',
-            'user_account_id' => 'nullable',
+            'user_account_id' => 'sometimes',
+            'email' => 'sometimes|required_without:mobile_number|email',
+            'mobile_number' => 'sometimes|required_without:email',
             'amount' => 'required|numeric|min:1',
             'message' => 'max:60|nullable'
-        ];
+        ];  
     }
 }

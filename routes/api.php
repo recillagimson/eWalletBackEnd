@@ -72,9 +72,9 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
     });
 
-    Route::prefix('/sendmoney')->group(function () {
-        Route::post('/', [SendMoneyController::class, 'sendmoney']);
-        Route::post('/generateqr', [SendMoneyController::class, 'generateqr']);
+    Route::prefix('send/money')->group(function () {
+        Route::post('/', [SendMoneyController::class, 'send']);
+        Route::post('/generate/qr', [SendMoneyController::class, 'GenerateQrRequest']);
     });
     
 });

@@ -19,7 +19,7 @@ class CreateUserBalanceInfoTable extends Migration
             $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->uuid('currency_id');
             $table->foreign('currency_id')->references('id')->on('currencies');
-            $table->decimal('available_balance', $precision = 10, $scale = 3);
+            $table->decimal('available_balance', $precision = 19, $scale = 6);
             $table->uuid('user_created')->nullable();
             $table->uuid('user_updated')->nullable();
             $table->timestamps();
