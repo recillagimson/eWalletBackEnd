@@ -43,7 +43,7 @@ class SendMoneyService implements ISendMoneyService
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
      
-        if ($isSelf) $this->invalidRecepient();
+        if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->notEnoughBalance();
 
         $this->subtractSenderBalance($senderID, $fillRequest);
@@ -177,7 +177,7 @@ class SendMoneyService implements ISendMoneyService
 
     
     
-    public function invalidRecepient() 
+    public function invalidRecipient() 
     {
         throw ValidationException::withMessages([
             'email | mobile number' => 'Not allowed to send to your own account'
