@@ -24,9 +24,12 @@ class OtpRepository extends Repository implements IOtpRepository
         $this->deleteOldOtps = config('otp-generator.deleteOldOtps');
     }
 
-    public function getByIdentifier(string $identifier)
+    public function getByIdentifier(string $identifier, bool $validated = false)
     {
-        return $this->model->where('identifier', $identifier)->first();
+        return $this->model->where([
+            'identifier' => $identifier,
+            'validated' => $validated
+        ])->first();
     }
 
     public function deleteOld()

@@ -2,29 +2,31 @@
 
 namespace App\Providers;
 
-use App\Enums\UsernameTypes;
 use App\Enums\NetworkTypes;
+use App\Enums\UsernameTypes;
+use Illuminate\Http\Request;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
-use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
-use App\Services\Utilities\PrepaidLoad\GlobeService;
-use App\Services\Encryption\EncryptionService;
-use App\Services\Encryption\IEncryptionService;
+use Illuminate\Support\ServiceProvider;
 use App\Services\Utilities\API\ApiService;
-use App\Services\Utilities\API\IApiService;
-use App\Services\Utilities\Notifications\EmailService;
-use App\Services\Utilities\Notifications\INotificationService;
-use App\Services\Utilities\Notifications\SmsService;
-use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\OTP\OtpService;
-use App\Services\OutBuyLoad\IOutBuyLoadService;
+use App\Services\Utilities\API\IApiService;
+use App\Services\Utilities\OTP\IOtpService;
+use App\Services\Encryption\EncryptionService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
-use App\Services\NewsAndUpdate\INewsAndUpdateService;
+use App\Services\Encryption\IEncryptionService;
+use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Services\SendMoney\SendMoneyService;
-use Illuminate\Http\Request;
-use Illuminate\Support\ServiceProvider;
+use App\Services\Utilities\Notifications\SmsService;
+use App\Services\Utilities\PrepaidLoad\GlobeService;
+use App\Services\NewsAndUpdate\INewsAndUpdateService;
+use App\Services\Utilities\Notifications\EmailService;
+use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
+use App\Services\Utilities\Verification\VerificationService;
+use App\Services\Utilities\Verification\IVerificationService;
+use App\Services\Utilities\Notifications\INotificationService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -47,7 +49,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
-
+        // Verification Service
+        $this->app->bind(IVerificationService::class, VerificationService::class);
     }
 
     /**
@@ -92,7 +95,7 @@ class AppServiceProvider extends ServiceProvider
                     return $this->app->get(GlobeService::class);
                 }
 
-                // return $this->app->get(GlobeService::class);
+                return $this->app->get(GlobeService::class);
             });
     }
 }

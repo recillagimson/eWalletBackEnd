@@ -2,13 +2,18 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\HelpCenterController;
+use App\Http\Controllers\IdTypeController;
+use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\SendMoneyController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +26,8 @@ use Illuminate\Support\Facades\App;
 |
 */
 
-if(App::environment('local'))
-{
-    Route::prefix('/utils')->group(function(){
+if (App::environment('local')) {
+    Route::prefix('/utils')->group(function () {
         Route::post('/encrypt', [PayloadController::class, 'encrypt']);
         Route::post('/decrypt', [PayloadController::class, 'decrypt']);
 
@@ -32,36 +36,44 @@ if(App::environment('local'))
     });
 }
 
-Route::prefix('/clients')->middleware(['form-data'])->group(function (){
+Route::prefix('/clients')->middleware(['form-data'])->group(function () {
     Route::post('/token', [ClientController::class, 'getToken']);
 });
 
-Route::middleware('auth:sanctum')->group(function (){
-    Route::prefix('/payloads')->group(function() {
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('/payloads')->group(function () {
         Route::get('/generate', [PayloadController::class, 'generate']);
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });
 
-    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
+    /**
+     * ROUTES FOR AUTHENTICATION ENDPOINTS AS WELL AS
+     * OTP VERIFICATIONS
+     */
+    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser']);
+        Route::post('/user/verification', [UserPhotoController::class, 'createVerification']);
 
-        Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register']);
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
-        Route::post('/verify', [AuthController::class, 'verify']);
+
+        Route::prefix('/verify')->group(function () {
+            Route::post('/account', [AuthController::class, 'verifyAccount']);
+            Route::post('/login', [AuthController::class, 'verifyLogin']);
+        });
     });
-    Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
+
+    Route::prefix('/load')->middleware(['decrypt.request'])->group(function () {
         Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
         Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
     });
 
-    Route::prefix('/news')->middleware(['decrypt.request'])->group(function (){
-        Route::get('/', [NewsAndUpdateController::class, 'GetAll']);
-        Route::post('/', [NewsAndUpdateController::class, 'create']);
-        Route::get('/{news}', [NewsAndUpdateController::class, 'show']);
-        Route::put('/{news}', [NewsAndUpdateController::class, 'update']);
-        Route::delete('/{news}', [NewsAndUpdateController::class, 'delete']);
+    Route::prefix('/id')->middleware(['decrypt.request'])->group(function () {
+        Route::apiResources([
+            '/types' => IdTypeController::class,
+        ]);
     });
     
     Route::prefix('/help_center')->middleware(['decrypt.request'])->group(function (){
@@ -70,6 +82,12 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::get('/{helpCenter}', [HelpCenterController::class, 'show']);
         Route::put('/{helpCenter}', [HelpCenterController::class, 'update']);
         Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
+
+    Route::middleware(['decrypt.request'])->group(function () {
+        Route::apiResources([
+            'news' => NewsAndUpdateController::class,
+            'help_center' => HelpCenterController::class,
+        ]);
     });
 
     Route::prefix('send/money')->group(function () {

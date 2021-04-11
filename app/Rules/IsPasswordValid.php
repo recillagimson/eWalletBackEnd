@@ -12,7 +12,7 @@ class IsPasswordValid implements Rule
      *
      * @var boolean
      */
-    private $hasUpperCase = true;
+    private bool $hasUpperCase = true;
 
     /**
      * Determines if the password have at least one lower case
@@ -20,7 +20,7 @@ class IsPasswordValid implements Rule
      *
      * @var boolean
      */
-    private $hasLowerCase = true;
+    private bool $hasLowerCase = true;
 
     /**
      * Determines if the password have at least one numeric
@@ -28,7 +28,7 @@ class IsPasswordValid implements Rule
      *
      * @var boolean
      */
-    private $hasNumber = true;
+    private bool $hasNumber = true;
 
     /**
      * Determines if the password have at least one special
@@ -36,7 +36,7 @@ class IsPasswordValid implements Rule
      *
      * @var boolean
      */
-    private $hasSpecialCharacter = true;
+    private bool $hasSpecialCharacter = true;
 
     /**
      * Determine if the validation rule passes.
@@ -45,7 +45,7 @@ class IsPasswordValid implements Rule
      * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, $value): bool
     {
         $this->hasUpperCase = ((bool) preg_match('/[A-Z]/', $value));
         if(!$this->hasUpperCase) return false;
@@ -67,19 +67,19 @@ class IsPasswordValid implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         if(!$this->hasUpperCase)
-            return ':attribute must have at least one upper case character [A-Z].';
+            return 'The :attribute must have at least one upper case character [A-Z].';
 
         if(!$this->hasLowerCase)
-            return ':attribute must have at least one lower case character [a-z].';
+            return 'The :attribute must have at least one lower case character [a-z].';
 
         if(!$this->hasNumber)
-            return ':attribute must have at least one numeric character [0-9].';
+            return 'The :attribute must have at least one numeric character [0-9].';
 
         if(!$this->hasSpecialCharacter)
-            return ':attribute must have at least one of the ff. special characters [@$!%*#?&_].';
+            return 'The :attribute must have at least one of the ff. special characters [@$!%*#?&_].';
 
         return '';
     }
