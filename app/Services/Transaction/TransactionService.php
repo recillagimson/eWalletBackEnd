@@ -16,6 +16,7 @@ class TransactionService implements ITransactionService
         $this->userBalanceRepository = $userBalanceRepository;        
     }
     
+    // FOR USER BALANCE INFO
     public function addAvailableBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance) {
         $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
     }
