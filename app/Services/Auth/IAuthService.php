@@ -18,5 +18,6 @@ interface IAuthService {
 
     public function verifyAccount(string $usernameField, string $username, string $otp);
     public function verifyLogin(string $usernameField, string $username, string $otp): array;
+    public function verifyPassword(string $usernameField, string $username, string $otp);
 
 }

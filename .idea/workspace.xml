@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 &#10;- fixed issue on pin_code not being saved in the database">
-      <change afterPath="$PROJECT_DIR$/resources/views/emails/auth/login_verification.blade.php" afterDir="false" />
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-42&#10;- Added validations on password policies">
+      <change afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/VerifyPasswordRequest.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Enums/TokenNames.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/TokenNames.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Requests/Auth/ForgotPasswordRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/Auth/ForgotPasswordRequest.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/PasswordHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/PasswordHistory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/PinCodeHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/PinCodeHistory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/UserAccount.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/UserAccount.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Repositories/PasswordHistory/IPasswordHistoryRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/PasswordHistory/IPasswordHistoryRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Repositories/PasswordHistory/PasswordHistoryRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Repositories/PasswordHistory/PasswordHistoryRepository.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/INotificationService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/INotificationService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/SmsService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/SmsService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/seeders/insert_maritial_status.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeders/insert_maritial_status.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/emails/auth/account_verification.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/emails/auth/account_verification.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -33,7 +28,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="SVC-40" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -416,7 +411,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="SVC-40" />
+                        <option value="SVC-42" />
                       </list>
                     </value>
                   </entry>
@@ -446,18 +441,8 @@
     <MESSAGE value="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification" />
     <MESSAGE value="SVC-41 &#10;- merge updating of pin code to register endpoint&#10;- remove endpoint for register pin code" />
     <MESSAGE value="SVC-41 &#10;- fixed issue on pin_code not being saved in the database" />
-    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 &#10;- fixed issue on pin_code not being saved in the database" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/app/Models/PasswordHistory.php</url>
-          <line>27</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="SVC-42&#10;- Added validations on password policies" />
+    <option name="LAST_COMMIT_MESSAGE" value="SVC-42&#10;- Added validations on password policies" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

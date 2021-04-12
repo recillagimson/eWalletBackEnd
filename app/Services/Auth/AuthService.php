@@ -11,10 +11,7 @@ use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\OTP\IOtpService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\NewAccessToken;
 use Illuminate\Validation\ValidationException;
 
@@ -35,7 +32,7 @@ class AuthService implements IAuthService
     private int $minPasswordAge;
     private int $maxPasswordAge;
     private int $tokenExpiration;
-
+    private int $passwordRepeatCount;
 
     public function __construct(IUserAccountRepository $userAccts,
                                 IPasswordHistoryRepository $passwordHistories,
@@ -57,6 +54,7 @@ class AuthService implements IAuthService
         $this->remainingAgeToNotify = config('auth.password_notify_expire');
         $this->minPasswordAge = config('auth.password_min_age');
         $this->maxPasswordAge = config('auth.password_max_age_np');
+        $this->passwordRepeatCount = config('auth.password_repeat_count');
         $this->tokenExpiration = config('sanctum.expiration');
     }
 
@@ -149,12 +147,38 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if(!$user) $this->accountDoesntExist();
-
+        $this->checkPassword($user, '');
 
         $otp = $this->otpService->generate(OtpTypes::passwordRecovery.':'.$user->id);
         if(!$otp->status) $this->invalidOtp($otp->message);
+
         $userArray = $user->toArray();
         $this->notificationService->sendPasswordVerification($userArray[$usernameField], $otp->token);
+    }
+
+    /**
+     * Reset forgotten password
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @param string $password
+     * @throws ValidationException
+     */
+    public function resetPassword(string $usernameField, string $username, string $password)
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) $this->accountDoesntExist();
+
+        $identifier = OtpTypes::passwordRecovery.':'.$user->id;
+        $this->otpService->ensureValidated($identifier);
+
+        $this->checkPassword($user, $password);
+
+        $hashedPassword = Hash::make($password);
+        $user->password = $hashedPassword;
+        $user->save();
+
+        $this->passwordHistories->log($user->id, $hashedPassword);
     }
 
     /**
@@ -231,23 +255,42 @@ class AuthService implements IAuthService
     }
 
     /**
-     * Reset forgotten password
+     * Verifies and validates otp for password recovery
      *
      * @param string $usernameField
      * @param string $username
-     * @param string $password
+     * @param string $otp
      * @throws ValidationException
      */
-    public function resetPassword(string $usernameField, string $username, string $password)
+    public function verifyPassword(string $usernameField, string $username, string $otp)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if(!$user) $this->accountDoesntExist();
 
-        $hashedPassword = Hash::make($password);
-        $user->password = $hashedPassword;
-        $user->save();
+        $this->verify($user->id, OtpTypes::passwordRecovery, $otp);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDATION EXCEPTION HELPER METHODS
+    |--------------------------------------------------------------------------
+    */
+
+    private function checkPassword(UserAccount $user, string $password)
+    {
+        $latesPassword = $this->passwordHistories->getLatest($user->id);
+        if(!$latesPassword->isAtMinimumAge($this->minPasswordAge)) $this->passwordNotAged();
+
+        if($password)
+        {
+            $passwordHistories = $this->passwordHistories->getPrevious($this->passwordRepeatCount, $user->id);
+            foreach($passwordHistories as $passwordHistory)
+            {
+                $exists = Hash::check($password, $passwordHistory->password);
+                if($exists === true) $this->passwordUsed();
+            }
+        }
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -294,6 +337,20 @@ class AuthService implements IAuthService
     {
         throw ValidationException::withMessages([
             'code' => $message
+        ]);
+    }
+
+    private function passwordUsed()
+    {
+        throw ValidationException::withMessages([
+            'password' => 'Password has already been used.'
+        ]);
+    }
+
+    private function passwordNotAged()
+    {
+        throw ValidationException::withMessages([
+            'password' => 'Password cannot be changed for at least '.$this->minPasswordAge.'.'
         ]);
     }
 }
