@@ -81,5 +81,4 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    Route::get('/test/service', [IdTypeController::class, 'testing']);
 });
