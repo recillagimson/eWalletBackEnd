@@ -2,11 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
-use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
+use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\HelpCenterController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserPhotoController;
 use App\Services\Transaction\TransactionService;
 use Illuminate\Support\Facades\App;
@@ -81,4 +82,11 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
+    Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){
+        Route::get('/', [NotificationController::class, 'GetAll']);
+        Route::post('/', [NotificationController::class, 'create']);
+        Route::get('/{notification}', [NotificationController::class, 'show']);
+        Route::put('/{notification}', [NotificationController::class, 'update']);
+        Route::delete('/{notification}', [NotificationController::class, 'delete']);
+    });
 });
