@@ -110,8 +110,18 @@ return [
     | times out and the user is prompted to re-enter their password via the
     | confirmation screen. By default, the timeout lasts for three hours.
     |
+    |
     */
 
     'password_timeout' => 10800,
+    'password_minlength' => env('AUTH_PASSWORD_MIN_LENGTH', 12),
+    'password_min_age' => env('AUTH_PASSWORD_MIN_AGE', 1),
+    'password_max_age_np' => env('AUTH_PASSWORD_MAXAGE_NP', 60),
+    'password_max_age_p' => env('AUTH_PASSWORD_MAXAGE_P', 30),
+    'password_notify_expire' => env('AUTH_PASSWORD_NOTIFY_EXPIRE', 15),
+    'password_repeat_count' => env('AUTH_PASSWORD_REPEAT_COUNT', 6),
+
+    'account_lockout_attempt' => env('AUTH_ACCOUNT_LOCKOUT_ATTEMPT', 3),
+    'account_lockout_attempt_reset' => env('AUTH_ACCOUNT_LOCKOUT_ATTEMPT_RESET', 1),
 
 ];
