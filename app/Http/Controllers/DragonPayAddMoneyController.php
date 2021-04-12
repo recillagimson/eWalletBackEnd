@@ -35,7 +35,7 @@ class DragonPayAddMoneyController extends Controller
         $requestURL = $this->webBankingService->generateRequestURL($user, $urlParams);
         $encryptedResponse = $this->encryptionService->encrypt(array($requestURL));
         
-        return response()->json($requestURL, Response::HTTP_OK);
+        return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
     public function postBack(DragonPayPostBackRequest $request)
@@ -45,7 +45,7 @@ class DragonPayAddMoneyController extends Controller
         $postBack = $this->postBackService->insertPostBackData($postBackData);
         $encryptedResponse = $this->encryptionService->encrypt(array($postBack));
 
-        return response()->json($postBack, Response::HTTP_OK);
+        return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
     public function cancel(AddMoneyCancelRequest $request)
@@ -54,7 +54,8 @@ class DragonPayAddMoneyController extends Controller
         $user = $request->user();
 
         $cancel = $this->webBankingService->cancelAddMoney($user, $referenceNumber);
+        $encryptedResponse = $this->encryptionService->encrypt(array($cancel));
 
-        return response()->json($cancel, Response::HTTP_OK);
+        return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 }

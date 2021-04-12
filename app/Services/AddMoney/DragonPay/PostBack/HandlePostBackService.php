@@ -3,20 +3,46 @@
 namespace App\Services\AddMoney\DragonPay\PostBack;
 
 use App\Enums\DragonPayStatusTypes;
+use App\Enums\TransactionCategories;
 use App\Repositories\AddMoney\IWebBankRepository;
+use App\Repositories\LogHistory\ILogHistoryRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use Illuminate\Validation\ValidationException;
 
 class HandlePostBackService implements IHandlePostBackService
 {
+    /**
+     * Transaction name of this class
+     * 
+     * @var string
+     */
+    protected $moduleTransCategory;
+
+    protected $referenceNumber;
+
+    protected $userAccountID;
+
     private IWebBankRepository $webBanks;
     private IUserBalanceInfoRepository $balanceInfos;
+    private IUserTransactionHistoryRepository $userTransactions;
+    private ILogHistoryRepository $logHistories;
+    private ITransactionCategoryRepository $transactionCategories;
 
     public function __construct(IWebBankRepository $webBanks,
-                                IUserBalanceInfoRepository $balanceInfos) {
+                                IUserBalanceInfoRepository $balanceInfos,
+                                IUserTransactionHistoryRepository $userTransactions,
+                                ILogHistoryRepository $logHistories,
+                                ITransactionCategoryRepository $transactionCategories) {
+
+        $this->moduleTransCategory = TransactionCategories::AddMoneyWebBankDragonPay;
 
         $this->webBanks = $webBanks;
         $this->balanceInfos = $balanceInfos;
+        $this->userTransactions = $userTransactions;
+        $this->logHistories = $logHistories;
+        $this->transactionCategories = $transactionCategories;
     }
 
     /**
@@ -34,11 +60,16 @@ class HandlePostBackService implements IHandlePostBackService
         $status = $postBackData['status'];
         $message = $postBackData['message'];
         $digest = $postBackData['digest'];
+
+        $transactionCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
         
         // if Add Money row is missing or the record does not have a 'PENDING' status
         $this->validate($referenceNumber);
 
         $addMoneyRow = $this->webBanks->getByReferenceNumber($referenceNumber);
+
+        $this->setReferenceNumber($referenceNumber);
+        $this->setUserAccountID($addMoneyRow->user_account_id);
 
         if ($status == 'S') {
             $status = DragonPayStatusTypes::Success;
@@ -61,6 +92,9 @@ class HandlePostBackService implements IHandlePostBackService
 
             $this->addAmountToUserBalance($addMoneyRow->user_account_id, $addMoneyRow->amount);
 
+            $this->logTransaction('Successfully added money ' . $addMoneyRow->amount);
+            $this->logSuccessInUserTransHistory($addMoneyRow->user_account_id, $addMoneyRow->id, $addMoneyRow->reference_number, $transactionCategory->id);
+
             return $responseData;
         }
 
@@ -71,7 +105,8 @@ class HandlePostBackService implements IHandlePostBackService
                 'amount' => $addMoneyRow->amount,
                 'message' => 'Failed to add money.'
             ];
-            $channelRefNo = 'N/A';
+
+            $this->logTransaction($responseData->message);
         }
 
         if ($status == 'P') {
@@ -81,17 +116,28 @@ class HandlePostBackService implements IHandlePostBackService
                 'amount' => $addMoneyRow->amount,
                 'message' => 'Waiting for deposit to selected bank.'
             ];
-            $channelRefNo = 'N/A';
+
+            $this->logTransaction($responseData->message);
         }
 
         $this->webBanks->update($addMoneyRow, [
             'dragonpay_reference' => $dragonpayReference,
-            'dragonpay_channel_reference_number' => $channelRefNo,
+            'dragonpay_channel_reference_number' => isset($channelRefNo) ? $channelRefNo : 'N/A',
             'transaction_remarks' => $message,
             'status' => $status
         ]);
 
         return $responseData;
+    }
+
+    public function setReferenceNumber(string $referenceNumber)
+    {
+        $this->referenceNumber = $referenceNumber;
+    }
+
+    public function setUserAccountID(string $userAccountID)
+    {
+        $this->userAccountID = $userAccountID;
     }
 
     /**
@@ -125,9 +171,48 @@ class HandlePostBackService implements IHandlePostBackService
         $userBalanceInfo = $this->balanceInfos->getByUserAccountID($userAccountID);
 
         if ($userBalanceInfo == null) return $this->userBalanceInfoNotFound();
+
+        $balance = $userBalanceInfo->available_balance + $amount;
         
-        return $this->balanceInfos->update($userBalanceInfo, ['available_balance' => $amount]);
+        return $this->balanceInfos->update($userBalanceInfo, ['available_balance' => $balance]);
     }
+
+    public function logTransaction(string $remarks)
+    {
+        $this->logHistories->create([
+            'user_account_id' => $this->userAccountID,
+            'reference_number' => $this->referenceNumber,
+            'namespace' => __METHOD__,
+            'remarks' => $remarks,
+            'user_created' => $this->userAccountID
+        ]);
+    }
+
+    /**
+     * Logs the user's transaction (generate URL) in 
+     * user transaction history
+     * 
+     * @param uuid $transactionID
+     * @param uuid $transCategoryID
+     * @return void
+     */
+    public function logSuccessInUserTransHistory(string $transactionID, string $transCategoryID)
+    {
+        $this->userTransactions->create([
+            'user_account_id' => $this->userAccountID,
+            'transaction_id' => $transactionID,
+            'reference_number' => $this->referenceNumber,
+            'transaction_category_id' => $transCategoryID,
+            'user_created' => $this->userAccountID
+        ]);
+    }
+
+
+
+
+
+
+
 
 
 

@@ -30,6 +30,8 @@ use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
 use App\Repositories\UserDetail\IUserDetailRepository;
 use App\Repositories\UserDetail\UserDetailRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -65,6 +67,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ITransactionCategoryRepository::class, TransactionCategoryRepository::class);
         $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
         $this->app->bind(ILogHistoryRepository::class, LogHistoryRepository::class);
+        $this->app->bind(IUserTransactionHistoryRepository::class, UserTransactionHistoryRepository::class);
     }
 
     /**

@@ -11,11 +11,11 @@ use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserDetail\IUserDetailRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
-use Prophecy\Exception\Doubler\MethodNotFoundException;
 
 class WebBankingService implements IWebBankingService
 {
@@ -67,13 +67,14 @@ class WebBankingService implements IWebBankingService
      */
     protected $tier;
 
-    public IWebBankRepository $webBanks;
-    public IUserAccountRepository $userAccounts;
-    public IUserDetailRepository $userDetails;
-    public IServiceFeeRepository $serviceFees;
-    public IReferenceNumberService $referenceNumberService;
-    public ILogHistoryRepository $logHistory;
-    public ITransactionCategoryRepository $transactionCategories;
+    private IWebBankRepository $webBanks;
+    private IUserAccountRepository $userAccounts;
+    private IUserDetailRepository $userDetails;
+    private IServiceFeeRepository $serviceFees;
+    private IReferenceNumberService $referenceNumberService;
+    private ILogHistoryRepository $logHistory;
+    private ITransactionCategoryRepository $transactionCategories;
+    private IUserTransactionHistoryRepository $userTransactions;
 
     public function __construct(IWebBankRepository $webBanks, 
                                 IUserAccountRepository $userAccounts,
@@ -81,7 +82,8 @@ class WebBankingService implements IWebBankingService
                                 IServiceFeeRepository $serviceFees,
                                 IReferenceNumberService $referenceNumberService,
                                 ILogHistoryRepository $logHistory,
-                                ITransactionCategoryRepository $transactionCategories) {
+                                ITransactionCategoryRepository $transactionCategories,
+                                IUserTransactionHistoryRepository $userTransactions) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -95,6 +97,7 @@ class WebBankingService implements IWebBankingService
         $this->referenceNumberService = $referenceNumberService;
         $this->logHistory = $logHistory;
         $this->transactionCategories = $transactionCategories;
+        $this->userTransactions = $userTransactions;
 
 
         /**
@@ -128,6 +131,7 @@ class WebBankingService implements IWebBankingService
         $addMoneyServiceFee = $this->validateTiersAndLimits($userAccountID, $amount);
         $totalAmount = $addMoneyServiceFee->amount + $amount;
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
+        $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
 
         $response = Http::withHeaders([
             'Accept' => 'application/json',
@@ -137,18 +141,20 @@ class WebBankingService implements IWebBankingService
         // on DragPay API Error
         $this->handleError($response);
 
+        $currentAddMoneyRecord = null;
         if ($response->status() == 200 || $response->status() == 201) {
 
-            $this->insertAddMoneyRecord($userAccountID, 
+            $currentAddMoneyRecord = $this->insertAddMoneyRecord($userAccountID, 
                                         $txnID, 
                                         $this->formatAmount($amount), 
                                         $addMoneyServiceFee->amount, 
                                         $addMoneyServiceFee->id, 
                                         $totalAmount, 
-                                        '0ec43457-9131-11eb-b44f-1c1b0d14e211', 
+                                        $transactionCategoryID->id, 
                                         $body['Description']);
         }
 
+        $this->logGenerateURLInLogHistory($currentAddMoneyRecord->reference_number);
         return $response->json();
     }
 
@@ -294,7 +300,9 @@ class WebBankingService implements IWebBankingService
             'status' => 'PENDING',
         ];
 
-        if (!$this->webBanks->create($row)) return $this->cantWriteToTable();
+        return $rowInserted = $this->webBanks->create($row);
+
+        if (!$rowInserted) return $this->cantWriteToTable();
     }
 
     /**
@@ -388,6 +396,22 @@ class WebBankingService implements IWebBankingService
         ];
     }
 
+    /**
+     * Logs the user's action (generate URL) in log history
+     * 
+     * @param string $referenceNumber
+     * @return void
+     */
+    public function logGenerateURLInLogHistory(string $referenceNumber)
+    {
+        $this->logHistory->create([
+            'user_account_id' => $this->userAccountID,
+            'reference_number' => $referenceNumber,
+            'namespace' => __METHOD__,
+            'remarks' => 'Requests to generate URL for adding money',
+            'user_created' => $this->userAccountID
+        ]);
+    }
 
 
 
@@ -500,6 +524,10 @@ class WebBankingService implements IWebBankingService
         abort(500, 'Something went wrong :(');
     }
 
+    /**
+     * Thrown when the record is not owned by the 
+     * authenticated user
+     */
     private function unauthorizedForThisRecord()
     {
         throw ValidationException::withMessages([
@@ -507,6 +535,10 @@ class WebBankingService implements IWebBankingService
         ]);
     }
 
+    /**
+     * Thrown when a non pending transaction is attempted 
+     * to be voided
+     */
     private function nonPendingTrans()
     {
         throw ValidationException::withMessages([
