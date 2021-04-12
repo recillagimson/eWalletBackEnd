@@ -43,6 +43,8 @@ use App\Repositories\UserUtilities\SignupHost\ISignupHostRepository;
 use App\Repositories\UserUtilities\SignupHost\SignupHostRepository;
 use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 use App\Repositories\UserUtilities\SourceOfFund\SourceOfFundRepository;
+use App\Repositories\UserUtilities\Country\ICountryRepository;
+use App\Repositories\UserUtilities\Country\CountryRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -78,6 +80,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(INationalityRepository::class, NationalityRepository::class);
         $this->app->bind(IMaritalStatusRepository::class, MaritalStatusRepository::class);
         $this->app->bind(ICurrencyRepository::class, CurrencyRepository::class);
+        $this->app->bind(ICountryRepository::class, CountryRepository::class);
         $this->app->bind(IUserDetailRepository::class, UserDetailRepository::class);
 
         //Utilities Repositories
