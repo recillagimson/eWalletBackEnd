@@ -26,6 +26,8 @@ use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\Verification\VerificationService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\IPushNotificationService;
+use App\Services\Utilities\Notifications\PushNotificationService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -50,6 +52,9 @@ class AppServiceProvider extends ServiceProvider
         
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
+        // Push Notification 
+        $this->app->bind(IPushNotificationService::class, PushNotificationService::class);
+
         // Verification Service
         $this->app->bind(IVerificationService::class, VerificationService::class);
     }

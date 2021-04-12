@@ -2,19 +2,13 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
-use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
-<<<<<<< HEAD
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\NotificationController;
-use Illuminate\Support\Facades\Route;
-=======
 use App\Http\Controllers\UserPhotoController;
->>>>>>> 1e0a089568d3eac77f45c60f837cec8bea92c4c2
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
