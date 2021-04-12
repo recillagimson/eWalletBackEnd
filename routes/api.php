@@ -10,7 +10,14 @@ use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserDetailController;
+use App\Http\Controllers\UserUtilities\UserDetailController;
+use App\Http\Controllers\UserUtilities\CountryController;
+use App\Http\Controllers\UserUtilities\CurrencyController;
+use App\Http\Controllers\UserUtilities\MaritalStatusController;
+use App\Http\Controllers\UserUtilities\NationalityController;
+use App\Http\Controllers\UserUtilities\NatureOfWorkController;
+use App\Http\Controllers\UserUtilities\SignupHostController;
+use App\Http\Controllers\UserUtilities\SourceOfFundController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,14 +80,22 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    Route::prefix('/user/details')->middleware(['decrypt.request'])->group(function (){
-        Route::post('/', [UserDetailController::class, 'addOrUpdate']);
-    });
-
     Route::middleware(['decrypt.request'])->group(function () {
         Route::apiResources([
             'news' => NewsAndUpdateController::class,
             'help_center' => HelpCenterController::class,
+            'country' => CountryController::class,
+            'currency' => CurrencyController::class,
+            'marital_status' => MaritalStatusController::class,
+            'nationality' => NationalityController::class,
+            'nature_of_work' => NatureOfWorkController::class,
+            'signup_host' => SignupHostController::class,
+            'source_of_fund' => SourceOfFundController::class,
         ]);
+
+        Route::prefix('/user/profile')->group(function (){
+            Route::post('/', [UserDetailController::class, 'addOrUpdate']);
+        });
     });
+
 });
