@@ -8,6 +8,7 @@ use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\UserPhotoController;
+use App\Services\Transaction\TransactionService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
@@ -78,5 +79,10 @@ Route::middleware('auth:sanctum')->group(function () {
             'news' => NewsAndUpdateController::class,
             'help_center' => HelpCenterController::class,
         ]);
+    });
+
+    Route::get('/test/service', function() {
+        $transaction = new TransactionService();
+        $transaction->addAvailableBalance("123123asd123", 123, 123);
     });
 });
