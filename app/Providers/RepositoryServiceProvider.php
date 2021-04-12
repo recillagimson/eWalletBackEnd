@@ -27,6 +27,8 @@ use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\UserAccount\ILogHistoryRepository;
+use App\Repositories\UserAccount\LogHistoryRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\UserPhotoRepository;
 
@@ -68,6 +70,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // User Photo
         $this->app->bind(IUserPhotoRepository::class, UserPhotoRepository::class);
+        
+        // Log History
+        $this->app->bind(ILogHistoryRepository::class, LogHistoryRepository::class);
 
     }
 

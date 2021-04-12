@@ -25,6 +25,8 @@ use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\Verification\VerificationService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Verification\ILogService;
+use App\Services\Utilities\Verification\LogService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -48,6 +50,9 @@ class AppServiceProvider extends ServiceProvider
         $this->bindPrepaidLoadService();
         // Verification Service
         $this->app->bind(IVerificationService::class, VerificationService::class);
+        // Log History Service
+        $this->app->bind(ILogService::class, LogService::class);
+        
     }
 
     /**
