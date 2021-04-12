@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Enums\ErrorCodes;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Models\UserAccount;
@@ -301,6 +302,7 @@ class AuthService implements IAuthService
     private function loginFailed()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::LoginFailed,
             'account' => 'Login Failed.'
         ]);
     }
@@ -308,6 +310,7 @@ class AuthService implements IAuthService
     private function accountUnverified()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::UnverifiedAccount,
             'account' => 'Unverified Account.'
         ]);
     }
@@ -315,6 +318,7 @@ class AuthService implements IAuthService
     private function accountDoesntExist()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::AccountDoesNotExist,
             'account' => 'Account does not exists'
         ]);
     }
@@ -322,6 +326,7 @@ class AuthService implements IAuthService
     private function invalidCredentials()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::InvalidClient,
             'client' => 'Invalid Client Credentials'
         ]);
     }
@@ -329,13 +334,15 @@ class AuthService implements IAuthService
     private function accountLockedOut()
     {
         throw ValidationException::withMessages([
-            'account' => 'Account has been locked out. Due to 3 failed attempts.'
+            'error_code' => ErrorCodes::AccountLockedOut,
+            'account' => 'Account has been locked out. Due to 3 failed login attempts.'
         ]);
     }
 
     private function invalidOtp(string $message)
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::InvalidOTP,
             'code' => $message
         ]);
     }
@@ -343,6 +350,7 @@ class AuthService implements IAuthService
     private function passwordUsed()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::PasswordUsed,
             'password' => 'Password has already been used.'
         ]);
     }
@@ -350,6 +358,7 @@ class AuthService implements IAuthService
     private function passwordNotAged()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::PasswordNotAged,
             'password' => 'Password cannot be changed for at least '.$this->minPasswordAge.'.'
         ]);
     }
