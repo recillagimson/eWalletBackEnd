@@ -15,13 +15,11 @@ class IdTypeController extends Controller
 
     private IIdTypeRepository $idTypeRepository;
     private IEncryptionService $encryptionService;
-    private ILogHistoryService $logService;
 
-    public function __construct(IIdTypeRepository $idTypeRepository, IEncryptionService $encryptionService, ILogHistoryService $logService)
+    public function __construct(IIdTypeRepository $idTypeRepository, IEncryptionService $encryptionService)
     {
         $this->idTypeRepository = $idTypeRepository;
         $this->encryptionService = $encryptionService;
-        $this->logService = $logService;
     }
 
     /**
@@ -114,9 +112,5 @@ class IdTypeController extends Controller
         $deleteRecord = $this->idTypeRepository->delete($idType);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    public function testing() {
-        $this->logService->logUserHistory('1', "1", "1", "1", "2021-04-12 17:00:00", "sample onmly", "sample");
     }
 }

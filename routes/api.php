@@ -79,6 +79,4 @@ Route::middleware('auth:sanctum')->group(function () {
             'help_center' => HelpCenterController::class,
         ]);
     });
-
-    Route::get('/test/service', [IdTypeController::class, "testing"]);
 });
