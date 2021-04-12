@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/verify')->group(function () {
             Route::post('/account', [AuthController::class, 'verifyAccount']);
             Route::post('/login', [AuthController::class, 'verifyLogin']);
+            Route::post('/password', [AuthController::class, 'verifyPassword']);
         });
     });
 
