@@ -241,6 +241,8 @@ class AuthService implements IAuthService
         $token = $user->createToken(TokenNames::userToken);
         $latestPassword = $this->passwordHistories->getLatest($user->id);
         $latesPin = $this->pinCodeHistories->getLatest($user->id);
+        $passwordAboutToExpire = $latestPassword ? $latestPassword->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
+        $pinAboutToExpire = $latesPin ? $latesPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
 
         return [
             'user_token' => [
@@ -248,10 +250,10 @@ class AuthService implements IAuthService
                 'created_at' => $token->accessToken->created_at,
                 'expires_in' => $this->tokenExpiration
             ],
-            'notify_password_expiration' => $latestPassword->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge),
-            'password_age' => $latestPassword->password_age,
-            'notify_pin_expiration' => $latesPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge),
-            'pin_age' => $latesPin->pin_age
+            'notify_password_expiration' => $passwordAboutToExpire,
+            'password_age' => $latestPassword ? $latestPassword->password_age : null,
+            'notify_pin_expiration' => $pinAboutToExpire,
+            'pin_age' => $latesPin ? $latesPin->pin_age : null
         ];
     }
 
