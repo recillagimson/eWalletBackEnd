@@ -21,7 +21,7 @@ class CreateLogHistoriesTable extends Migration
             $table->string('reference_number')->nullable();
             $table->string('squidpay_module')->nullable();
             $table->string('namespace')->nullable();
-            $table->dateTime('transaction_time');
+            $table->dateTime('transaction_date');
             $table->string('remarks');
             $table->string('operation')->nullable();
             $table->uuid('user_created')->references('id')->on('user_accounts')
