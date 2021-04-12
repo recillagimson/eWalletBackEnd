@@ -27,7 +27,6 @@ class VerifyPasswordRequest extends FormRequest
         return [
             'mobile_number' => [
                 'required_without:email',
-                'email',
                 'max:20',
                 new MobileNumber()
             ],
