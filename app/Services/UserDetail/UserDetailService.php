@@ -46,7 +46,7 @@ class UserDetailService implements IUserDetailService
                     "name_extension"=>$details['name_extension'],
                     "birthdate"=>$details['birthdate'],
                     "place_of_birth"=>$details['place_of_birth'],
-                    "maritial_status_id"=>$details['maritial_status_id'],
+                    "marital_status_id"=>$details['marital_status_id'],
                     "nationality_id"=>$details['nationality_id'],
                     "encoded_nationality"=>$details['encoded_nationality'],
                     "occupation"=>$details['occupation'],

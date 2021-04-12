@@ -32,7 +32,7 @@ class AddUpdateRequest extends FormRequest
             'name_extension'=>'required',
             'birthdate'=>'required',
             'place_of_birth'=>'required',
-            'maritial_status_id'=>'required',
+            'marital_status_id'=>'required',
             'nationality_id'=>'required',
             'encoded_nationality'=>'required',
             'occupation'=>'required',
