@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserBalanceInfo extends Model
 {
     use HasFactory, SoftDeletes;
+    use UsesUuid;
 
     protected $table ='user_balance_info';
 
     protected $fillable = [
-        "id",
         "user_account_id",
         "currency_id",
         "available_balance",

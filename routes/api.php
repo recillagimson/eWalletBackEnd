@@ -81,8 +81,5 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    Route::get('/test/service', function() {
-        $transaction = new TransactionService();
-        $transaction->addAvailableBalance("123123asd123", 123, 123);
-    });
+    Route::get('/test/service', [IdTypeController::class, 'testing']);
 });

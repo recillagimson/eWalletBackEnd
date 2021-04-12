@@ -9,17 +9,20 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\IdType\IdTypeRequest;
 use App\Repositories\IdType\IIdTypeRepository;
 use App\Services\Encryption\IEncryptionService;
+use App\Services\Transaction\ITransactionService;
 
 class IdTypeController extends Controller
 {
 
     private IIdTypeRepository $idTypeRepository;
     private IEncryptionService $encryptionService;
+    private ITransactionService $transaction;
 
-    public function __construct(IIdTypeRepository $idTypeRepository, IEncryptionService $encryptionService)
+    public function __construct(IIdTypeRepository $idTypeRepository, IEncryptionService $encryptionService, ITransactionService $transaction)
     {
         $this->idTypeRepository = $idTypeRepository;
         $this->encryptionService = $encryptionService;
+        $this->transaction = $transaction;
     }
 
     /**
@@ -112,5 +115,12 @@ class IdTypeController extends Controller
         $deleteRecord = $this->idTypeRepository->delete($idType);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    // CLEAR FOR TESTING ONLY
+    public function testing() {
+        $record = $this->transaction->addAvailableBalance("1", "0ed24251-9131-11eb-b44f-1c1b0d14e211", 123, 123);
+        $encryptedResponse = $this->encryptionService->encrypt(array($record));
+        return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 }
