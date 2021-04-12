@@ -29,8 +29,20 @@ use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\UserPhotoRepository;
-use App\Repositories\UserDetail\IUserDetailRepository;
-use App\Repositories\UserDetail\UserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\ICurrencyRepository;
+use App\Repositories\UserUtilities\UserDetail\CurrencyRepository;
+use App\Repositories\UserUtilities\UserDetail\IMaritalStatusRepository;
+use App\Repositories\UserUtilities\UserDetail\MaritalStatusRepository;
+use App\Repositories\UserUtilities\UserDetail\INationalityRepository;
+use App\Repositories\UserUtilities\UserDetail\NationalityRepository;
+use App\Repositories\UserUtilities\UserDetail\INatureOfWorkRepository;
+use App\Repositories\UserUtilities\UserDetail\NatureOfWorkRepository;
+use App\Repositories\UserUtilities\UserDetail\ISignupHostRepository;
+use App\Repositories\UserUtilities\UserDetail\SignupHostRepository;
+use App\Repositories\UserUtilities\UserDetail\ISourceOfFundRepository;
+use App\Repositories\UserUtilities\UserDetail\SourceOfFundRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -59,7 +71,13 @@ class RepositoryServiceProvider extends ServiceProvider
         //Transaction Category Repository
         $this->app->bind(ITransactionCategoryRepository::class, TransactionCategoryRepository::class);
         
-        //UserDetail Repository
+        //UserUtilities Repository
+        $this->app->bind(ISourceOfFundRepository::class, SourceOfFundRepository::class);
+        $this->app->bind(ISignupHostRepository::class, SignupHostRepository::class);
+        $this->app->bind(INatureOfWorkRepository::class, NatureOfWorkRepository::class);
+        $this->app->bind(INationalityRepository::class, NationalityRepository::class);
+        $this->app->bind(IMaritalStatusRepository::class, MaritalStatusRepository::class);
+        $this->app->bind(ICurrencyRepository::class, CurrencyRepository::class);
         $this->app->bind(IUserDetailRepository::class, UserDetailRepository::class);
 
         //Utilities Repositories
