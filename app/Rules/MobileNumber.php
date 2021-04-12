@@ -37,7 +37,7 @@ class MobileNumber implements Rule
     public function message(): string
     {
         if(!$this->validPhoneNumber)
-            return 'The mobile number is invalid. Use the format 63 + 10 digit mobile number.';
+            return 'The mobile number is invalid. Use the format 09 + 9 digit mobile number.';
 
         return '';
     }
