@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\UserDetail;
+namespace App\Repositories\UserUtilities\UserDetail;
 
 use App\Repositories\IRepository;
 
