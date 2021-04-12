@@ -31,18 +31,18 @@ use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\UserPhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
-use App\Repositories\UserUtilities\UserDetail\ICurrencyRepository;
-use App\Repositories\UserUtilities\UserDetail\CurrencyRepository;
-use App\Repositories\UserUtilities\UserDetail\IMaritalStatusRepository;
-use App\Repositories\UserUtilities\UserDetail\MaritalStatusRepository;
-use App\Repositories\UserUtilities\UserDetail\INationalityRepository;
-use App\Repositories\UserUtilities\UserDetail\NationalityRepository;
-use App\Repositories\UserUtilities\UserDetail\INatureOfWorkRepository;
-use App\Repositories\UserUtilities\UserDetail\NatureOfWorkRepository;
-use App\Repositories\UserUtilities\UserDetail\ISignupHostRepository;
-use App\Repositories\UserUtilities\UserDetail\SignupHostRepository;
-use App\Repositories\UserUtilities\UserDetail\ISourceOfFundRepository;
-use App\Repositories\UserUtilities\UserDetail\SourceOfFundRepository;
+use App\Repositories\UserUtilities\Currency\ICurrencyRepository;
+use App\Repositories\UserUtilities\Currency\CurrencyRepository;
+use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
+use App\Repositories\UserUtilities\MaritalStatus\MaritalStatusRepository;
+use App\Repositories\UserUtilities\Nationality\INationalityRepository;
+use App\Repositories\UserUtilities\Nationality\NationalityRepository;
+use App\Repositories\UserUtilities\NatureOfWork\INatureOfWorkRepository;
+use App\Repositories\UserUtilities\NatureOfWork\NatureOfWorkRepository;
+use App\Repositories\UserUtilities\SignupHost\ISignupHostRepository;
+use App\Repositories\UserUtilities\SignupHost\SignupHostRepository;
+use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
+use App\Repositories\UserUtilities\SourceOfFund\SourceOfFundRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {

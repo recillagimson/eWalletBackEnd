@@ -46,7 +46,8 @@ class MaritalStatusController extends Controller
     public function store(MaritalStatusRequest $request): JsonResponse
     {
         $details = $request->validated();
-        $createRecord = $this->maritalStatusRepository->create($details);
+        $inputBody = $this->inputBody($details, $request->user()->id);
+        $createRecord = $this->maritalStatusRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
         return response()->json($encryptedResponse, Response::HTTP_CREATED);
@@ -74,7 +75,8 @@ class MaritalStatusController extends Controller
     public function update(MaritalStatusRequest $request, MaritalStatus $marital_status): JsonResponse
     {
         $details = $request->validated();
-        $updateRecord = $this->maritalStatusRepository->update($marital_status, $details);
+        $inputBody = $this->inputBody($details, $request->user()->id);
+        $updateRecord = $this->maritalStatusRepository->update($marital_status, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
         return response()->json($encryptedResponse, Response::HTTP_OK);
@@ -91,5 +93,15 @@ class MaritalStatusController extends Controller
         $deleteRecord = $this->maritalStatusRepository->delete($marital_status);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    private function inputBody(array $details, string $user_id): array {
+        $body = array(
+                    'description'=>$details['description'],
+                    'legend'=>$details['legend'],
+                    'status'=>$details['status'],
+                    'user_created'=>$user_id,
+                );
+        return $body;
     }
 }

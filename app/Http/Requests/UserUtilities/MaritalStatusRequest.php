@@ -27,7 +27,6 @@ class MaritalStatusRequest extends FormRequest
             "description"=>"required",
             "legend"=>"required",
             "status"=>"required",
-            "user_created"=>"required",
         ];
     }
 }

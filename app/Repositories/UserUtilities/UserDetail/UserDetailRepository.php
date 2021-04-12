@@ -2,7 +2,7 @@
 
 namespace App\Repositories\UserUtilities\UserDetail;
 
-use App\Models\UserDetail;
+use App\Models\UserUtilities\UserDetail;
 use App\Repositories\Repository;
 
 class UserDetailRepository extends Repository implements IUserDetailRepository
