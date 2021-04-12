@@ -119,7 +119,8 @@ class IdTypeController extends Controller
 
     // CLEAR FOR TESTING ONLY
     public function testing() {
-        $record = $this->transaction->addAvailableBalance("1", "0ed24251-9131-11eb-b44f-1c1b0d14e211", 123, 123);
+        // $record = $this->transaction->addAvailableBalance("1", "0ed24251-9131-11eb-b44f-1c1b0d14e211", 123, 123);
+        $record = $this->transaction->createUserTransactionEntry("1", "1", "1", "0ec41025-9131-11eb-b44f-1c1b0d14e211");
         $encryptedResponse = $this->encryptionService->encrypt(array($record));
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }

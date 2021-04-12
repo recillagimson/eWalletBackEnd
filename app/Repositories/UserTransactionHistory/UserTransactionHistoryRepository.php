@@ -2,12 +2,12 @@
 
 namespace App\Repositories\UserTransactionHistory;
 
-use App\Models\UserBalanceInfo;
+use App\Models\UserTransactionHistory;
 use App\Repositories\Repository;
 
 class UserTransactionHistoryRepository extends Repository implements IUserTransactionHistoryRepository
 {
-    public function __construct(UserBalanceInfo $model)
+    public function __construct(UserTransactionHistory $model)
     {
         parent::__construct($model);
     }

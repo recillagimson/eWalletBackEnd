@@ -12,4 +12,6 @@ interface ITransactionService
     public function subtractAvailableBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance);
     public function addPendingBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance);
     public function subtractPendingBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance);
+
+    public function createUserTransactionEntry(string $user_account_id, string $transaction_id, string $reference_number, string $transaction_category_id);
 }
