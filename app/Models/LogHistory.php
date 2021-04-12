@@ -15,10 +15,11 @@ class LogHistory extends Model
     protected $table ='log_histories';
 
     protected $fillable = [
+        "user_account_id",
         "reference_number",
         "squidpay_module",
         "namespace",
-        "transaction_time",
+        "transaction_date",
         "remarks",
         "operation",
         "user_created",

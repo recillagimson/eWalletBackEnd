@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Repositories\UserAccount;
+namespace App\Repositories\LogHistory;
 
 use App\Repositories\IRepository;
 
-interface IUserAccountRepository extends IRepository
+interface ILogHistoryRepository extends IRepository
 {
     
 }

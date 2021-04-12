@@ -1,20 +1,22 @@
 <?php
 
-namespace App\Services\Utilities\Verification;
+namespace App\Services\Utilities\LogHistory;
 
-use App\Repositories\UserAccount\ILogHistoryRepository;
+use App\Repositories\LogHistory\ILogHistoryRepository;
 
-class LogService implements ILogService
+
+class LogHistoryService implements ILogHistoryService
 {
-    public ILogHistoryRepository $iLogHistoryRepository;
+    public ILogHistoryRepository $logHistoryRepository;
 
-    public function __construct(ILogHistoryRepository $iLogHistoryRepository)
+    public function __construct(ILogHistoryRepository $logHistoryRepository)
     {
-        $this->iLogHistoryRepository = $iLogHistoryRepository;
+        $this->logHistoryRepository = $logHistoryRepository;
     }
 
     public function logUserHistory(string $user_account_id, string $reference_number = null, string $squidpay_module = null, string $namespace = null, $transaction_date, string $remarks, string $operation = null) {
-        $record = $this->ILogHistoryRepository->create([
+        $record = $this->logHistoryRepository->create([
+            'user_account_id' => $user_account_id,
             "reference_number" => $user_account_id,
             "squidpay_module" => $squidpay_module,
             "namespace" => $namespace,

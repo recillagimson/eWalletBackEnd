@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\UserAccount;
+namespace App\Repositories\LogHistory;
 
 use App\Models\LogHistory;
 use App\Repositories\Repository;
