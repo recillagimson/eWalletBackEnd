@@ -24,9 +24,11 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccount\UserAccountRepository;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
+use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\Notification\NotificationRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\UserPhotoRepository;
 
@@ -63,6 +65,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
 
+        // Notification Repository
+        $this->app->bind(INotificationRepository::class, NotificationRepository::class);
         // Id Types
         $this->app->bind(IIdTypeRepository::class, IdTypeRepository::class);
 
