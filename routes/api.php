@@ -10,7 +10,7 @@ use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserUtilities\UserDetailController;
+use App\Http\Controllers\UserUtilities\UserProfileController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
@@ -94,8 +94,8 @@ Route::middleware('auth:sanctum')->group(function () {
             'source_of_fund' => SourceOfFundController::class,
         ]);
 
-        Route::prefix('/user/profile')->group(function (){
-            Route::post('/', [UserDetailController::class, 'addOrUpdate']);
+        Route::prefix('/user')->group(function (){
+            Route::post('/profile', [UserProfileController::class, 'update']);
         });
     });
 

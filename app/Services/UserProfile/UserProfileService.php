@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services\UserDetail;
+namespace App\Services\UserProfile;
 
-use App\Repositories\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 
-class UserDetailService implements IUserDetailService
+class UserProfileService implements IUserProfileService
 {
     
     public IUserDetailRepository $userDetailRepository;
@@ -16,26 +16,16 @@ class UserDetailService implements IUserDetailService
 
     }
 
-    public function addOrUpdate(object $userAccount, array $details) {
-       $getUserDetail = $this->userDetailRepository->getByUserAccountId($userAccount->id);
-       $inputBody = $this->inputBody($userAccount, $details, $getUserDetail);
+    public function update(object $userAccount, array $details) {
+       $userProfile = $this->userDetailRepository->getByUserId($userAccount->id);
+       $data = $this->inputBody($userAccount, $details, $userProfile);
 
-       return (!$getUserDetail) ? 
-       $this->addUserDetail($inputBody)->toArray() : 
-       array($this->updateUserDetail($getUserDetail, $inputBody));
+       return (!$userProfile) ? 
+       $this->userDetailRepository->create($data)->toArray() : 
+       array($this->userDetailRepository->update($userProfile, $data));
     }
 
-    private function addUserDetail(array $inputBody)
-    {
-        return $this->userDetailRepository->create($inputBody);
-    }
-
-    private function updateUserDetail(object $getUserDetail, array $inputBody)
-    {
-        return $this->userDetailRepository->update($getUserDetail, $inputBody);
-    }
-
-    private function inputBody(object $userAccount, array $details, object $getUserDetail=null): array {
+    private function inputBody(object $userAccount, array $details, object $userProfile=null): array {
         $body = array(
                     "entity_id"=>$details['entity_id'],
                     "user_account_id"=>$userAccount->id,
@@ -69,7 +59,7 @@ class UserDetailService implements IUserDetailService
                     "report_exception_status"=>$details['report_exception_status'],
                 );
 
-        if(!$getUserDetail) {
+        if(!$userProfile) {
             $body['user_created'] = $userAccount->id;
             $body['user_updated'] = $userAccount->id;
         }else {

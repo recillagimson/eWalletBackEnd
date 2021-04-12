@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\UserDetail;
+namespace App\Http\Requests\UserProfile;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddUpdateRequest extends FormRequest
+class UpdateProfileRequest  extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,11 +25,11 @@ class AddUpdateRequest extends FormRequest
     {
         return [
             'entity_id'=>'required',
-            'title'=>'required',
-            'lastname'=>'required',
-            'firstname'=>'required',
-            'middlename'=>'required',
-            'name_extension'=>'required',
+            'title'=>['required', 'max:10'],
+            'lastname'=>['required', 'max:50'],
+            'firstname'=>['required', 'max:50'],
+            'middlename'=>['required', 'max:50'],
+            'name_extension'=>['required', 'max:50'],
             'birthdate'=>'required',
             'place_of_birth'=>'required',
             'marital_status_id'=>'required',
@@ -49,9 +49,9 @@ class AddUpdateRequest extends FormRequest
             'mother_maidenname'=>'required',
             'currency_id'=>'required',
             'signup_host_id'=>'required',
-            'verification_status'=>'required',
-            'emergency_lock_status'=>'required',
-            'report_exception_status'=>'required',
+            'verification_status'=>['required', 'max:10'],
+            'emergency_lock_status'=>['required', 'max:10'],
+            'report_exception_status'=>['required', 'max:10'],
         ];
     }
 }

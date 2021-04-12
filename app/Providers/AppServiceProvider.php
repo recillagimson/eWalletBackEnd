@@ -25,8 +25,8 @@ use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\Verification\VerificationService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Notifications\INotificationService;
-use App\Services\UserDetail\UserDetailService;
-use App\Services\UserDetail\IUserDetailService;
+use App\Services\UserProfile\UserProfileService;
+use App\Services\UserProfile\IUserProfileService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -46,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEncryptionService::class, EncryptionService::class);
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
-        $this->app->bind(IUserDetailService::class, UserDetailService::class);
+        $this->app->bind(IUserProfileService::class, UserProfileService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
         // Verification Service

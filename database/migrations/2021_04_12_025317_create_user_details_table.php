@@ -18,7 +18,7 @@ class CreateUserDetailsTable extends Migration
             $table->string('entity_id', 50);
             $table->uuid('user_account_id');
             $table->string('title', 10);
-            $table->string('lastName', 10);
+            $table->string('lastName', 50);
             $table->string('firstname', 50);
             $table->string('middlename', 50);
             $table->string('name_extension', 50);
@@ -55,7 +55,7 @@ class CreateUserDetailsTable extends Migration
             $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->foreign('marital_status_id')->references('id')->on('marital_status');
             $table->foreign('nationality_id')->references('id')->on('nationalities');
-            $table->foreign('country_id')->references('id')->on('nationalities');
+            $table->foreign('country_id')->references('id')->on('countries');
             $table->foreign('nature_of_work_id')->references('id')->on('natures_of_work');
             $table->foreign('source_of_fund_id')->references('id')->on('source_of_funds');
             $table->foreign('currency_id')->references('id')->on('currencies');

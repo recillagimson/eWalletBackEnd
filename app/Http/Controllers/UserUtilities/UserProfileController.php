@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\UserUtilities;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\UserDetail\AddUpdateRequest;
+use App\Http\Requests\UserProfile\UpdateProfileRequest;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Services\Encryption\IEncryptionService;
-use App\Services\UserDetail\IUserDetailService;
+use App\Services\UserProfile\IUserProfileService;
 
-class UserDetailController extends Controller
+class UserProfileController extends Controller
 {
     private IEncryptionService $encryptionService;
-    private IUserDetailService $userDetailService;
+    private IUserProfileService $userProfileService;
 
     public function __construct(IEncryptionService $encryptionService, 
-                                IUserDetailService $userDetailService)
+                                IUserProfileService $userProfileService)
     {
         $this->encryptionService = $encryptionService;
-        $this->userDetailService = $userDetailService;
+        $this->userProfileService = $userProfileService;
     }
 
     /**
@@ -27,10 +28,10 @@ class UserDetailController extends Controller
      * @param PrepaidLoadRequest $request
      * @return JsonResponse
      */
-    public function addOrUpdate(Request $request, AddUpdateRequest $addUpdateRequestrequest): JsonResponse
+    public function update(UpdateProfileRequest $request): JsonResponse
     {
-        $details = $addUpdateRequestrequest->validated();
-        $addOrUpdate = $this->userDetailService->addOrUpdate($request->user(), $details);
+        $details = $request->validated();
+        $addOrUpdate = $this->userProfileService->update($request->user(), $details);
         
         $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
         return response()->json($encryptedResponse, Response::HTTP_OK);
