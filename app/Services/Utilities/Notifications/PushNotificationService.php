@@ -5,7 +5,7 @@ namespace App\Services\Utilities\Notifications;
 
 use App\Repositories\Notification\INotificationRepository;
 
-class NotificationService implements INotificationService
+class PushNotificationService implements IPushNotificationService
 {
 
     private INotificationRepository $notificationRepository;
@@ -16,5 +16,8 @@ class NotificationService implements INotificationService
         $this->notificationRepository = $notificationRepository;
     }
 
-    public function sendPasswordVerification(string $to, string $otp){}
+    public function getByUserId($userId) {
+        return $notifications = $this->notificationRepository->getByUserId($userId);
+    }
+
 }

@@ -8,19 +8,19 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\Notification\NotificationRequest;
-use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\IPushNotificationService;
 
 class NotificationController extends Controller
 {
     private IEncryptionService $encryptionService;
-    private INotificationService $iNotificationService;
+    private IPushNotificationService $iPushNotificationService;
 
-    public function __construct(INotificationService $iNotificationService,
+    public function __construct(IPushNotificationService $iPushNotificationService,
                                 IEncryptionService $encryptionService)
     {
         // $this->iNotificationRepository = $iNotificationRepository;
         $this->encryptionService = $encryptionService;
-        $this->iNotificationService = $iNotificationService;
+        $this->iPushNotificationService = $iPushNotificationService;
     }
 
     /**
@@ -30,7 +30,7 @@ class NotificationController extends Controller
      * @return JsonResponse
      */
     public function GetAll(): JsonResponse {
-        $records = $this->iNotificationService->getByUserId(request()->user()->id);
+        $records = $this->iPushNotificationService->getByUserId(request()->user()->id);
         $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
