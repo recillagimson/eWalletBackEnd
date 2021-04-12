@@ -7,23 +7,37 @@ use Illuminate\Http\Request;
 
 class SignupHostController extends Controller
 {
+
+    private IEncryptionService $encryptionService;
+    private IMaritalStatusRepository $maritalStatusRepository;
+    
+    public function __construct(IMaritalStatusRepository $maritalStatusRepository,
+                                IEncryptionService $encryptionService)
+    {
+        $this->maritalStatusRepository = $maritalStatusRepository;
+        $this->encryptionService = $encryptionService;
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        $records = $this->maritalStatusRepository->getAll();
+
+        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
+        return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request $request
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         //
     }
@@ -32,9 +46,9 @@ class SignupHostController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function show($id)
+    public function show($id): JsonResponse
     {
         //
     }
@@ -44,9 +58,9 @@ class SignupHostController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): JsonResponse
     {
         //
     }
@@ -55,9 +69,9 @@ class SignupHostController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         //
     }
