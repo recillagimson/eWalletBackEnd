@@ -22,7 +22,7 @@ class CreateUserDetailsTable extends Migration
             $table->string('firstname', 50);
             $table->string('middlename', 50);
             $table->string('name_extension', 50);
-            $table->date('birthdate');
+            $table->date('birth_date');
             $table->string('place_of_birth', 50);
             $table->uuid('marital_status_id');
             $table->uuid('nationality_id');

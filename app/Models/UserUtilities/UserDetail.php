@@ -30,7 +30,7 @@ class UserDetail extends Model
         "firstname",
         "middlename",
         "name_extension",
-        "birthdate",
+        "birth_date",
         "place_of_birth",
         "marital_status_id",
         "nationality_id",

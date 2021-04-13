@@ -30,7 +30,7 @@ class UpdateProfileRequest  extends FormRequest
             'firstname'=>['required', 'max:50'],
             'middlename'=>['required', 'max:50'],
             'name_extension'=>['required', 'max:50'],
-            'birthdate'=>'required',
+            'birth_date'=>'required',
             'place_of_birth'=>'required',
             'marital_status_id'=>'required',
             'nationality_id'=>'required',

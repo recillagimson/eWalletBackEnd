@@ -34,7 +34,7 @@ class UserProfileService implements IUserProfileService
                     "firstname"=>$details['firstname'],
                     "middlename"=>$details['middlename'],
                     "name_extension"=>$details['name_extension'],
-                    "birthdate"=>$details['birthdate'],
+                    "birth_date"=>$details['birth_date'],
                     "place_of_birth"=>$details['place_of_birth'],
                     "marital_status_id"=>$details['marital_status_id'],
                     "nationality_id"=>$details['nationality_id'],
