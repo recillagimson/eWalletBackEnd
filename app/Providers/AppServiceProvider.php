@@ -19,6 +19,7 @@ use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Services\SendMoney\SendMoneyService;
+use App\Services\Utilities\Notifications\NotificationService;
 use App\Services\Utilities\Notifications\SmsService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
@@ -27,6 +28,8 @@ use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\Verification\VerificationService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\IPushNotificationService;
+use App\Services\Utilities\Notifications\PushNotificationService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,6 +52,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
+        
+        // Notification
+        $this->app->bind(INotificationService::class, NotificationService::class);
+        // Push Notification 
+        $this->app->bind(IPushNotificationService::class, PushNotificationService::class);
+
         // Verification Service
         $this->app->bind(IVerificationService::class, VerificationService::class);
     }

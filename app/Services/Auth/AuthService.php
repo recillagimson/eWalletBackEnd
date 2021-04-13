@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Enums\ErrorCodes;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Models\UserAccount;
@@ -11,10 +12,7 @@ use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\OTP\IOtpService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\NewAccessToken;
 use Illuminate\Validation\ValidationException;
 
@@ -35,7 +33,7 @@ class AuthService implements IAuthService
     private int $minPasswordAge;
     private int $maxPasswordAge;
     private int $tokenExpiration;
-
+    private int $passwordRepeatCount;
 
     public function __construct(IUserAccountRepository $userAccts,
                                 IPasswordHistoryRepository $passwordHistories,
@@ -57,6 +55,7 @@ class AuthService implements IAuthService
         $this->remainingAgeToNotify = config('auth.password_notify_expire');
         $this->minPasswordAge = config('auth.password_min_age');
         $this->maxPasswordAge = config('auth.password_max_age_np');
+        $this->passwordRepeatCount = config('auth.password_repeat_count');
         $this->tokenExpiration = config('sanctum.expiration');
     }
 
@@ -88,21 +87,18 @@ class AuthService implements IAuthService
 
     /**
      * Attempts to authenticate the user with the
-     * provided credentials
+     * provided credentials when using a web client
      *
      * @param string $usernameField
      * @param array $creds
      * @param string $ip
+     * @return array
      * @throws ValidationException
      */
-    public function login(string $usernameField, array $creds, string $ip)
+    public function login(string $usernameField, array $creds, string $ip): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        if(!$user) $this->loginFailed();
-        if(!$user->verified) $this->accountUnverified();
-        if($user->is_lockout) $this->accountLockedOut();
-
-        $user->resetLoginAttempts($this->daysToResetAttempts);
+        $this->validateUser($user);
 
         $passwordMatched = Hash::check($creds['password'], $user->password);
         if(!$passwordMatched) {
@@ -110,11 +106,33 @@ class AuthService implements IAuthService
             $this->loginFailed();
         }
 
-        $identifier = OtpTypes::login.':'.$user->id;
-        $otp = $this->otpService->generate($identifier);
-        if(!$otp->status) $this->invalidOtp($otp->message);
+        $user->deleteTokensByName(TokenNames::userWebToken);
+        return $this->generateLoginToken($user, TokenNames::userWebToken);
+    }
 
-        $this->notificationService->sendLoginVerification($creds[$usernameField], $otp->token);
+
+    /**
+     * Attempts to authenticate the user with the
+     * provided credentials when using a mobile apps.
+     *
+     * @param string $usernameField
+     * @param array $creds
+     * @return array
+     * @throws ValidationException
+     */
+    public function mobileLogin(string $usernameField, array $creds): array
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
+        $this->validateUser($user);
+
+        $passwordMatched = Hash::check($creds['pin_code'], $user->pin_code);
+        if(!$passwordMatched) {
+            $user->updateLockout($this->maxLoginAttempts);
+            $this->loginFailed();
+        }
+
+        $user->deleteTokensByName(TokenNames::userMobileToken);
+        return $this->generateLoginToken($user, TokenNames::userMobileToken);
     }
 
     /**
@@ -149,12 +167,38 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if(!$user) $this->accountDoesntExist();
-
+        $this->checkPassword($user, '');
 
         $otp = $this->otpService->generate(OtpTypes::passwordRecovery.':'.$user->id);
         if(!$otp->status) $this->invalidOtp($otp->message);
+
         $userArray = $user->toArray();
         $this->notificationService->sendPasswordVerification($userArray[$usernameField], $otp->token);
+    }
+
+    /**
+     * Reset forgotten password
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @param string $password
+     * @throws ValidationException
+     */
+    public function resetPassword(string $usernameField, string $username, string $password)
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) $this->accountDoesntExist();
+
+        $identifier = OtpTypes::passwordRecovery.':'.$user->id;
+        $this->otpService->ensureValidated($identifier);
+
+        $this->checkPassword($user, $password);
+
+        $hashedPassword = Hash::make($password);
+        $user->password = $hashedPassword;
+        $user->save();
+
+        $this->passwordHistories->log($user->id, $hashedPassword);
     }
 
     /**
@@ -213,9 +257,54 @@ class AuthService implements IAuthService
         $user->verified = true;
         $user->save();
 
-        $token = $user->createToken(TokenNames::userToken);
+
+    }
+
+    /**
+     * Verifies and validates otp for password recovery
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @param string $otp
+     * @throws ValidationException
+     */
+    public function verifyPassword(string $usernameField, string $username, string $otp)
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) $this->accountDoesntExist();
+
+        $this->verify($user->id, OtpTypes::passwordRecovery, $otp);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRIVATE METHODS
+    |--------------------------------------------------------------------------
+    */
+
+    private function checkPassword(UserAccount $user, string $password)
+    {
+        $latesPassword = $this->passwordHistories->getLatest($user->id);
+        if(!$latesPassword->isAtMinimumAge($this->minPasswordAge)) $this->passwordNotAged();
+
+        if($password)
+        {
+            $passwordHistories = $this->passwordHistories->getPrevious($this->passwordRepeatCount, $user->id);
+            foreach($passwordHistories as $passwordHistory)
+            {
+                $exists = Hash::check($password, $passwordHistory->password);
+                if($exists === true) $this->passwordUsed();
+            }
+        }
+    }
+
+    private function generateLoginToken(UserAccount $user,  string $tokenType): array
+    {
+        $token = $user->createToken($tokenType);
         $latestPassword = $this->passwordHistories->getLatest($user->id);
         $latesPin = $this->pinCodeHistories->getLatest($user->id);
+        $passwordAboutToExpire = $latestPassword ? $latestPassword->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
+        $pinAboutToExpire = $latesPin ? $latesPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
 
         return [
             'user_token' => [
@@ -223,31 +312,21 @@ class AuthService implements IAuthService
                 'created_at' => $token->accessToken->created_at,
                 'expires_in' => $this->tokenExpiration
             ],
-            'notify_password_expiration' => $latestPassword->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge),
-            'password_age' => $latestPassword->password_age,
-            'notify_pin_expiration' => $latesPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge),
-            'pin_age' => $latesPin->pin_age
+            'notify_password_expiration' => $passwordAboutToExpire,
+            'password_age' => $latestPassword ? $latestPassword->password_age : null,
+            'notify_pin_expiration' => $pinAboutToExpire,
+            'pin_age' => $latesPin ? $latesPin->pin_age : null
         ];
     }
 
-    /**
-     * Reset forgotten password
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $password
-     * @throws ValidationException
-     */
-    public function resetPassword(string $usernameField, string $username, string $password)
+    private function validateUser(UserAccount $user)
     {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if(!$user) $this->accountDoesntExist();
+        if(!$user) $this->loginFailed();
+        if(!$user->verified) $this->accountUnverified();
+        if($user->is_lockout) $this->accountLockedOut();
 
-        $hashedPassword = Hash::make($password);
-        $user->password = $hashedPassword;
-        $user->save();
+        $user->resetLoginAttempts($this->daysToResetAttempts);
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -258,6 +337,7 @@ class AuthService implements IAuthService
     private function loginFailed()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::LoginFailed,
             'account' => 'Login Failed.'
         ]);
     }
@@ -265,6 +345,7 @@ class AuthService implements IAuthService
     private function accountUnverified()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::UnverifiedAccount,
             'account' => 'Unverified Account.'
         ]);
     }
@@ -272,6 +353,7 @@ class AuthService implements IAuthService
     private function accountDoesntExist()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::AccountDoesNotExist,
             'account' => 'Account does not exists'
         ]);
     }
@@ -279,6 +361,7 @@ class AuthService implements IAuthService
     private function invalidCredentials()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::InvalidClient,
             'client' => 'Invalid Client Credentials'
         ]);
     }
@@ -286,14 +369,32 @@ class AuthService implements IAuthService
     private function accountLockedOut()
     {
         throw ValidationException::withMessages([
-            'account' => 'Account has been locked out. Due to 3 failed attempts.'
+            'error_code' => ErrorCodes::AccountLockedOut,
+            'account' => 'Account has been locked out. Due to 3 failed login attempts.'
         ]);
     }
 
     private function invalidOtp(string $message)
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::InvalidOTP,
             'code' => $message
+        ]);
+    }
+
+    private function passwordUsed()
+    {
+        throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::PasswordUsed,
+            'password' => 'Password has already been used.'
+        ]);
+    }
+
+    private function passwordNotAged()
+    {
+        throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::PasswordNotAged,
+            'password' => 'Password cannot be changed for at least '.$this->minPasswordAge.'.'
         ]);
     }
 }

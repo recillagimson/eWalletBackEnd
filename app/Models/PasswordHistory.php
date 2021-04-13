@@ -34,5 +34,12 @@ class PasswordHistory extends Model
         return false;
     }
 
+    public function isAtMinimumAge(int $minAge): bool
+    {
+        $currentAge = $this->password_age;
+        if($currentAge < $minAge) return false;
+        return true;
+    }
+
 
 }

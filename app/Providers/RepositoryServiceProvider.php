@@ -32,6 +32,8 @@ use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\QrTransactions\QrTransactionsRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
+use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\Notification\NotificationRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
@@ -76,6 +78,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IOutSendMoneyRepository::class, OutSendMoneyRepository::class);
         $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
         $this->app->bind(IQrTransactionsRepository::class, QrTransactionsRepository::class);
+        // Notification Repository
+        $this->app->bind(INotificationRepository::class, NotificationRepository::class);
         // Id Types
         $this->app->bind(IIdTypeRepository::class, IdTypeRepository::class);
 

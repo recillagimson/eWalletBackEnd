@@ -6,10 +6,12 @@ use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\MobileLoginRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Http\Requests\Auth\VerifyLoginRequest;
+use App\Http\Requests\Auth\VerifyPasswordRequest;
 use App\Models\UserAccount;
 use App\Services\Auth\IAuthService;
 use App\Services\Encryption\IEncryptionService;
@@ -49,9 +51,8 @@ class AuthController extends Controller
         return response()->json($response, Response::HTTP_CREATED);
     }
 
-
     /**
-     * Authenticate a user
+     * Authenticates a web client user
      *
      * @param LoginRequest $request
      * @return JsonResponse
@@ -61,16 +62,79 @@ class AuthController extends Controller
         $login = $request->validated();
         $ip = $request->ip();
         $usernameField = $this->getUsernameField($request);
-        $this->authService->login($usernameField, $login, $ip);
+        $loginResponse = $this->authService->login($usernameField, $login, $ip);
 
         $response = [
             'message' => SuccessMessages::loginSuccessful,
-            'data' => [$usernameField => $login[$usernameField]]
+            'data' => $this->encryptionService->encrypt($loginResponse)
         ];
 
         return response()->json($response, Response::HTTP_OK);
     }
 
+
+    /**
+     * Authenticates a mobile app user
+     *
+     * @param MobileLoginRequest $request
+     * @return JsonResponse
+     */
+    public function mobileLogin(MobileLoginRequest $request): JsonResponse
+    {
+        $login = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $loginResponse = $this->authService->mobileLogin($usernameField, $login);
+
+        $response = [
+            'message' => SuccessMessages::loginSuccessful,
+            'data' => $this->encryptionService->encrypt($loginResponse)
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
+     * Generates OTP for password recovery verification
+     *
+     * @param ForgotPasswordRequest $request
+     * @return JsonResponse
+     */
+    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $this->authService->forgotPassword($usernameField, $data[$usernameField]);
+
+        $response = [
+            'message' => SuccessMessages::passwordRecoveryRequestSuccessful,
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $data[$usernameField]
+            ])
+        ];
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
+     * Reset a user accounts password
+     *
+     * @param ResetPasswordRequest $request
+     * @return JsonResponse
+     */
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $this->authService->resetPassword($usernameField, $data[$usernameField], $data['password']);
+
+        $response = [
+            'message' => SuccessMessages::passwordUpdateSuccessful,
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $data[$usernameField]
+            ])
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
 
     /**
      * Validates the registration otp and verifies the account
@@ -88,9 +152,9 @@ class AuthController extends Controller
             'message' => SuccessMessages::accountVerification,
             'data' => [$usernameField => $data[$usernameField]]
         ];
+
         return response()->json($response, Response::HTTP_OK);
     }
-
 
     /**
      * Verify and validate login otp and generates token
@@ -114,32 +178,25 @@ class AuthController extends Controller
 
 
     /**
-     * Generates OTP for password recovery verification
+     * Verifies and validates otp for password recovery
      *
-     * @param ForgotPasswordRequest $request
+     * @param VerifyPasswordRequest $request
      * @return JsonResponse
      */
-    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
+    public function verifyPassword(VerifyPasswordRequest  $request): JsonResponse
     {
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
-        $this->authService->forgotPassword($usernameField, $data[$usernameField]);
-        return response()->json([], Response::HTTP_OK);
-    }
+        $this->authService->verifyPassword($usernameField, $data[$usernameField], $data['code']);
 
+        $response = [
+            'message' => SuccessMessages::passwordRecoveryVerificationSuccessful,
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $data[$usernameField]
+            ])
+        ];
 
-    /**
-     * Reset a user accounts password
-     *
-     * @param ResetPasswordRequest $request
-     * @return JsonResponse
-     */
-    public function resetPassword(ResetPasswordRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->authService->resetPassword($usernameField, $data[$usernameField], $data['password']);
-        return response()->json(null, Response::HTTP_OK);
+        return response()->json($response, Response::HTTP_OK);
     }
 
 
@@ -155,6 +212,7 @@ class AuthController extends Controller
         if (!$user instanceof UserAccount) return response()->json(null, Response::HTTP_UNAUTHORIZED);
         return response()->json($request->user(), Response::HTTP_OK);
     }
+
 
 
     private function getUsernameField(Request $request): string

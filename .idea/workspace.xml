@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-41 &#10;- fixed issue on pin_code not being saved in the database">
-      <change afterPath="$PROJECT_DIR$/resources/views/emails/auth/login_verification.blade.php" afterDir="false" />
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-40 SVC-41 SVC-42&#10;- Removed email validation on mobile number field">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Enums/TokenNames.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/TokenNames.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/PasswordHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/PasswordHistory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Models/PinCodeHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/PinCodeHistory.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/UserAccount.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/UserAccount.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/IAuthService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/EmailService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/INotificationService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/INotificationService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/Notifications/SmsService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/Notifications/SmsService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/seeders/insert_maritial_status.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeders/insert_maritial_status.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/emails/auth/account_verification.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/emails/auth/account_verification.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -33,7 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="SVC-40" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -253,6 +244,9 @@
       <workItem from="1617952967025" duration="551000" />
       <workItem from="1617984832979" duration="8252000" />
       <workItem from="1618030758327" duration="1466000" />
+      <workItem from="1618204336282" duration="4161000" />
+      <workItem from="1618272306292" duration="316000" />
+      <workItem from="1618272638546" duration="2144000" />
     </task>
     <task id="LOCAL-00001" summary="Added endpoints for register and login without payload encryption">
       <created>1616009107809</created>
@@ -394,7 +388,56 @@
       <option name="project" value="LOCAL" />
       <updated>1617954493107</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="SVC-42&#10;- Added validations on password policies">
+      <created>1618196036943</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1618196036943</updated>
+    </task>
+    <task id="LOCAL-00022" summary="SVC-40 SVC-41 SVC-42&#10;- Updated configuration example&#10;- Changed format of mobile number from +63 to 09">
+      <created>1618196858922</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1618196858922</updated>
+    </task>
+    <task id="LOCAL-00023" summary="SVC-40 SVC-41 SVC-42&#10;- Added error codes in response">
+      <created>1618198359933</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1618198359933</updated>
+    </task>
+    <task id="LOCAL-00024" summary="SVC-40 &#10;- Fixed issues in validation of mobile number&#10;- Fixed issues on accounts without initial password histories">
+      <created>1618203201718</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1618203201718</updated>
+    </task>
+    <task id="LOCAL-00025" summary="SVC-40 SVC-41 SVC-42&#10;- Updated error message for mobile number format">
+      <created>1618203487503</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1618203487503</updated>
+    </task>
+    <task id="LOCAL-00026" summary="SVC-40 SVC-41 SVC-42&#10;- Removed email validation on mobile number field">
+      <created>1618205338911</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1618205338911</updated>
+    </task>
+    <task id="LOCAL-00027" summary="SVC-40 SVC-41 SVC-42&#10;- Removed email validation on mobile number field">
+      <created>1618205373853</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1618205373853</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -416,7 +459,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="SVC-40" />
+                        <option value="SVC-42" />
                       </list>
                     </value>
                   </entry>
@@ -446,18 +489,13 @@
     <MESSAGE value="SVC-41 #comment &#10;- Added logging of password and pin code changes&#10;- Added endpoint for account verification upon registration&#10;- Added endpoint for updating of pin code after account verification" />
     <MESSAGE value="SVC-41 &#10;- merge updating of pin code to register endpoint&#10;- remove endpoint for register pin code" />
     <MESSAGE value="SVC-41 &#10;- fixed issue on pin_code not being saved in the database" />
-    <option name="LAST_COMMIT_MESSAGE" value="SVC-41 &#10;- fixed issue on pin_code not being saved in the database" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="php">
-          <url>file://$PROJECT_DIR$/app/Models/PasswordHistory.php</url>
-          <line>27</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="SVC-42&#10;- Added validations on password policies" />
+    <MESSAGE value="SVC-40 SVC-41 SVC-42&#10;- Updated configuration example&#10;- Changed format of mobile number from +63 to 09" />
+    <MESSAGE value="SVC-40 SVC-41 SVC-42&#10;- Added error codes in response" />
+    <MESSAGE value="SVC-40 &#10;- Fixed issues in validation of mobile number&#10;- Fixed issues on accounts without initial password histories" />
+    <MESSAGE value="SVC-40 SVC-41 SVC-42&#10;- Updated error message for mobile number format" />
+    <MESSAGE value="SVC-40 SVC-41 SVC-42&#10;- Removed email validation on mobile number field" />
+    <option name="LAST_COMMIT_MESSAGE" value="SVC-40 SVC-41 SVC-42&#10;- Removed email validation on mobile number field" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

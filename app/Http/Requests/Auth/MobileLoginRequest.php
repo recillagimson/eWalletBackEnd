@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ForgotPasswordRequest extends FormRequest
+class MobileLoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +26,11 @@ class ForgotPasswordRequest extends FormRequest
     {
         return [
             'email' => 'required_without:mobile_number|email',
-            'mobile_number' => 'required_without:email',
+            'mobile_number' => [
+                'required_without:email',
+                new MobileNumber()
+            ],
+            'pin_code' => 'required|digits:4'
         ];
     }
 }

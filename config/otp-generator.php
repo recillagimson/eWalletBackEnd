@@ -19,7 +19,7 @@ return [
     | By default = 6 digits used
     |
     */
-    'length' => env('OTP_LENGTH', 6),
+    'length' => env('OTP_LENGTH', 4),
 
     /*
     |--------------------------------------------------------------------------

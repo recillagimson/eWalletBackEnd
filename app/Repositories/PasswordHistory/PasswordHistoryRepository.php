@@ -24,6 +24,14 @@ class PasswordHistoryRepository extends Repository implements IPasswordHistoryRe
 
     public function log(string $userId, string $password)
     {
+        $latesPassword = $this->getLatest($userId);
+        if($latesPassword)
+        {
+            $latesPassword->expired = true;
+            $latesPassword->user_updated = $userId;
+            $latesPassword->save();
+        }
+
         $data = [
             'user_account_id' => $userId,
             'password' => $password,
@@ -33,4 +41,11 @@ class PasswordHistoryRepository extends Repository implements IPasswordHistoryRe
         return $this->create($data);
     }
 
+    public function getPrevious(int $recordCount, string $userId)
+    {
+        return $this->model->where('user_account_id', '=', $userId)
+            ->orderByDesc('created_at')
+            ->take($recordCount)
+            ->get();
+    }
 }
