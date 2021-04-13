@@ -24,6 +24,14 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccount\UserAccountRepository;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
+use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
+use App\Repositories\OutSendMoney\OutSendMoneyRepository;
+use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
+use App\Repositories\InReceiveMoney\InReceiveMoneyRepository;
+use App\Repositories\QrTransactions\IQrTransactionsRepository;
+use App\Repositories\QrTransactions\QrTransactionsRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Notification\NotificationRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
@@ -91,6 +99,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
 
+        //Send Money Repositories
+        $this->app->bind(IInReceiveMoneyRepository::class, InReceiveMoneyRepository::class);
+        $this->app->bind(IOutSendMoneyRepository::class, OutSendMoneyRepository::class);
+        $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
+        $this->app->bind(IQrTransactionsRepository::class, QrTransactionsRepository::class);
         // Notification Repository
         $this->app->bind(INotificationRepository::class, NotificationRepository::class);
         // Id Types

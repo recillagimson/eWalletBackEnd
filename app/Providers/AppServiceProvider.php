@@ -17,6 +17,8 @@ use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
+use App\Services\SendMoney\ISendMoneyService;
+use App\Services\SendMoney\SendMoneyService;
 use App\Services\Utilities\Notifications\NotificationService;
 use App\Services\Utilities\Notifications\SmsService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
@@ -49,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEncryptionService::class, EncryptionService::class);
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
+        $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
         $this->app->bind(IUserProfileService::class, UserProfileService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
