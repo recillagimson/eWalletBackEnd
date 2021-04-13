@@ -10,18 +10,22 @@ use Illuminate\Http\Response;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\CountryRequest;
 use App\Models\UserUtilities\Country;
+use App\Services\UserProfile\IUserProfileService;
 
 class CountryController extends Controller
 {
 
     private IEncryptionService $encryptionService;
     private ICountryRepository $countryRepository;
+    private IUserProfileService $userProfileService;
     
     public function __construct(ICountryRepository $countryRepository,
-                                IEncryptionService $encryptionService)
+                                IEncryptionService $encryptionService,
+                                IUserProfileService $userProfileService)
     {
         $this->countryRepository = $countryRepository;
         $this->encryptionService = $encryptionService;
+        $this->userProfileService = $userProfileService;
     }
 
     /**
@@ -46,7 +50,7 @@ class CountryController extends Controller
     public function store(CountryRequest $request): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->countryRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
@@ -75,7 +79,7 @@ class CountryController extends Controller
     public function update(CountryRequest $request, Country $country): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $country);
         $updateRecord = $this->countryRepository->update($country, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
