@@ -10,18 +10,22 @@ use Illuminate\Http\Response;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\SourceOfFundRequest;
 use App\Models\UserUtilities\SourceOfFund;
+use App\Services\UserProfile\IUserProfileService;
 
 class SourceOfFundController extends Controller
 {
 
     private IEncryptionService $encryptionService;
     private ISourceOfFundRepository $sourceOfFundRepository;
+    private IUserProfileService $userProfileService;
     
     public function __construct(ISourceOfFundRepository $sourceOfFundRepository,
-                                IEncryptionService $encryptionService)
+                                IEncryptionService $encryptionService,
+                                IUserProfileService $userProfileService)
     {
         $this->sourceOfFundRepository = $sourceOfFundRepository;
         $this->encryptionService = $encryptionService;
+        $this->userProfileService = $userProfileService;
     }
 
     /**
@@ -46,7 +50,7 @@ class SourceOfFundController extends Controller
     public function store(SourceOfFundRequest $request): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->sourceOfFundRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
@@ -75,7 +79,7 @@ class SourceOfFundController extends Controller
     public function update(SourceOfFundRequest $request, SourceOfFund $source_of_fund): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $source_of_fund);
         $updateRecord = $this->sourceOfFundRepository->update($source_of_fund, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
