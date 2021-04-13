@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\UserUtilities;
 
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class NewsAndUpdate extends Model
+class Nationality extends Model
 {
-    use UsesUuid, HasFactory, SoftDeletes;
+    use UsesUuid, HasFactory;
 
-     /**
+    /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'news_and_updates';
+    protected $table = "nationalities";
 
     /**
      * The attributes that are mass assignable.
@@ -24,11 +23,10 @@ class NewsAndUpdate extends Model
      * @var array
      */
     protected $fillable = [
-        'title',
-        'description',
-        'status',
-        'image_location',
-        'user_created',
-        'user_updated',
+        "description",
+        "code",
+        "status",
+        "user_created",
+        "user_updated"
     ];
 }

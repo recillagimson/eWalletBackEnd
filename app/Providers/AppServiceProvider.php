@@ -34,6 +34,8 @@ use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\IPushNotificationService;
 use App\Services\Utilities\Notifications\PushNotificationService;
+use App\Services\UserProfile\UserProfileService;
+use App\Services\UserProfile\IUserProfileService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -54,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
         $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
+        $this->app->bind(IUserProfileService::class, UserProfileService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
         
