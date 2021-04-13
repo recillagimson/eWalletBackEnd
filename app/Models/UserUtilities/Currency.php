@@ -27,5 +27,6 @@ class Currency extends Model
         "code",
         "status",
         "user_created",
+        "user_updated"
     ];
 }

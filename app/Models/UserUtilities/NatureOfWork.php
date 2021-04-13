@@ -26,5 +26,6 @@ class NatureOfWork extends Model
         "description",
         "status",
         "user_created",
+        "user_updated"
     ];
 }
