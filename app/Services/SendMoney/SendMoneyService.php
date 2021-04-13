@@ -75,8 +75,8 @@ class SendMoneyService implements ISendMoneyService
 
     private function qrOrSendMoney(string $username,array $fillRequest)
     {
-        if (!empty($fillRequest['user_account_id'])){
-            return $fillRequest['user_account_id'];
+        if (!empty($fillRequest['recipient_account_id'])){
+            return $fillRequest['recipient_account_id'];
         } 
         return $this->getUserID($username, $fillRequest);
     }

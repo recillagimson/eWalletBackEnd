@@ -41,6 +41,10 @@ use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\PasswordHistory\PasswordHistoryRepository;
 use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
+use App\Repositories\UserBalance\IUserBalanceRepository;
+use App\Repositories\UserBalance\UserBalanceRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -90,6 +94,11 @@ class RepositoryServiceProvider extends ServiceProvider
         
         // Log History
         $this->app->bind(ILogHistoryRepository::class, LogHistoryRepository::class);
+        // User Balance
+        $this->app->bind(IUserBalanceRepository::class, UserBalanceRepository::class);
+        
+        // User Transaction History
+        $this->app->bind(IUserTransactionHistoryRepository::class, UserTransactionHistoryRepository::class);
 
     }
 
