@@ -2,10 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\ErrorCodes;
 use App\Services\Encryption\IEncryptionService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class DecryptRequest
 {
@@ -34,7 +36,7 @@ class DecryptRequest
                 $data = $request->input('payload');
 
                 $decryptedData = $this->encryptionService->decrypt($data, $reqId);
-                if(!$decryptedData) return response('',Response::HTTP_UNPROCESSABLE_ENTITY);
+                if(!$decryptedData) $this->payloadIsInvalid();
 
                 $request->replace($decryptedData);
                 return $next($request);
@@ -44,5 +46,13 @@ class DecryptRequest
         }
 
         return $next($request);
+    }
+
+    private function payloadIsInvalid()
+    {
+        throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::PayloadInvalid,
+            'payload' => 'Encrypted payload is invalid.'
+        ]);
     }
 }

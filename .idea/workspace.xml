@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-40 &#10;- Revised login flow for web clients to only email/mobile number &amp; password only.&#10;- Added a separate endpoint for mobile login">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="SVC-40 &#10;- Fixed issue on login with non-existent user&#10;- Fixed unencrypted responses on authentication endpoints">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Enums/ErrorCodes.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/ErrorCodes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Middleware/DecryptRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Middleware/DecryptRequest.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -242,7 +242,8 @@
       <workItem from="1618030758327" duration="1466000" />
       <workItem from="1618204336282" duration="4161000" />
       <workItem from="1618272306292" duration="316000" />
-      <workItem from="1618272638546" duration="3796000" />
+      <workItem from="1618272638546" duration="5052000" />
+      <workItem from="1618319460113" duration="2699000" />
     </task>
     <task id="LOCAL-00001" summary="Added endpoints for register and login without payload encryption">
       <created>1616009107809</created>
@@ -440,7 +441,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618274901951</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="SVC-40 &#10;- Fixed issue on login with non-existent user&#10;- Fixed unencrypted responses on authentication endpoints">
+      <created>1618278711595</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1618278711595</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -499,7 +507,8 @@
     <MESSAGE value="SVC-40 SVC-41 SVC-42&#10;- Updated error message for mobile number format" />
     <MESSAGE value="SVC-40 SVC-41 SVC-42&#10;- Removed email validation on mobile number field" />
     <MESSAGE value="SVC-40 &#10;- Revised login flow for web clients to only email/mobile number &amp; password only.&#10;- Added a separate endpoint for mobile login" />
-    <option name="LAST_COMMIT_MESSAGE" value="SVC-40 &#10;- Revised login flow for web clients to only email/mobile number &amp; password only.&#10;- Added a separate endpoint for mobile login" />
+    <MESSAGE value="SVC-40 &#10;- Fixed issue on login with non-existent user&#10;- Fixed unencrypted responses on authentication endpoints" />
+    <option name="LAST_COMMIT_MESSAGE" value="SVC-40 &#10;- Fixed issue on login with non-existent user&#10;- Fixed unencrypted responses on authentication endpoints" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
