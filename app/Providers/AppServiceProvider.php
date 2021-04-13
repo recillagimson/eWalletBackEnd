@@ -2,12 +2,15 @@
 
 namespace App\Providers;
 
+use App\Enums\AddMoneyProviders;
 use App\Enums\UsernameTypes;
-use App\Services\AddMoney\DragonPay\IWebBankingService;
-use App\Services\AddMoney\DragonPay\WebBankingService;
 use App\Enums\NetworkTypes;
-use App\Services\AddMoney\DragonPay\PostBack\HandlePostBackService;
-use App\Services\AddMoney\DragonPay\PostBack\IHandlePostBackService;
+use App\Services\AddMoney\DragonPay\HandlePostBackService;
+use App\Services\AddMoney\DragonPay\IHandlePostBackService;
+use App\Services\AddMoney\IInAddMoneyService;
+use App\Services\AddMoney\InAddMoneyService;
+use App\Services\AddMoney\Providers\DragonPayService;
+use App\Services\AddMoney\Providers\IAddMoneyService;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
@@ -29,6 +32,7 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\ValidationException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,12 +53,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
         $this->app->bind(IReferenceNumberService::class, ReferenceNumberService::class);
+        $this->app->bind(IInAddMoneyService::class, InAddMoneyService::class);
+        $this->app->bind(IHandlePostBackService::class, HandlePostBackService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
-
-        // ADD MONEY SERVICES
-        $this->app->bind(IWebBankingService::class, WebBankingService::class);
-        $this->app->bind(IHandlePostBackService::class, HandlePostBackService::class);
+        $this->bindAddMoneyService();
     }
 
     /**
@@ -104,6 +107,25 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 // return $this->app->get(GlobeService::class);
+            });
+    }
+
+    private function bindAddMoneyService()
+    {
+        $this->app->when(InAddMoneyService::class)
+            ->needs(IAddMoneyService::class)
+            ->give(function() {
+                $request = app(Request::class);
+                $encryptionService = $this->app->make(IEncryptionService::class);
+
+                if ($request->has('payload')) {
+
+                    $data = $encryptionService->decrypt($request->payload, $request->id, false);
+
+                    if ($data['provider'] === AddMoneyProviders::DragonPay) return $this->app->get(DragonPayService::class);
+                }
+
+                return $this->app->get(DragonPayService::class);
             });
     }
 }

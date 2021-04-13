@@ -4,7 +4,7 @@ namespace App\Http\Requests\DragonPay;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddMoneyWebBankRequest extends FormRequest
+class AddMoneyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,6 +24,7 @@ class AddMoneyWebBankRequest extends FormRequest
     public function rules()
     {
         return [
+            'provider' => 'required',
             'amount' => 'bail|required|regex:/^\d*(\.\d{2})?$/',
         ];
     }

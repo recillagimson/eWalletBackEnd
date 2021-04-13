@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DragonPayAddMoneyController;
@@ -72,13 +73,13 @@ Route::middleware('auth:sanctum')->group(function (){
         Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
     });
 
-    Route::prefix('/webbanking')->middleware(['decrypt.request'])->group(function (){
-        Route::post('/addmoney', [DragonPayAddMoneyController::class, 'addMoney']);
-        Route::post('/addmoney/cancel', [DragonPayAddMoneyController::class, 'cancel']);
+    Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
+        Route::post('/', [AddMoneyController::class, 'addMoney']);
+        Route::post('/cancel', [AddMoneyController::class, 'cancel']);
     });
 });
 
 // DragonPay PostBack
-Route::prefix('/webbanking')->group(function (){
-    Route::get('/postback', [DragonPayAddMoneyController::class, 'postBack']);
+Route::prefix('/cashin')->group(function (){
+    Route::get('/postback', [AddMoneyController::class, 'postBack']);
 });

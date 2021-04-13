@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AddMoney\DragonPay;
+namespace App\Services\AddMoney\Providers;
 
 use App\Enums\DragonPayStatusTypes;
 use App\Enums\TransactionCategories;
@@ -17,7 +17,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 
-class WebBankingService implements IWebBankingService
+class DragonPayService implements IAddMoneyService
 {
     /**
      * DragonPay API base URL V1
@@ -115,7 +115,7 @@ class WebBankingService implements IWebBankingService
      * @param array $urlParams
      * @return json $response
      */
-    public function generateRequestURL(UserAccount $user, array $urlParams)
+    public function addMoney(UserAccount $user, array $urlParams)
     {
         $this->setUserAccountID($user->id);
         $this->setReferenceNumber($this->referenceNumberService->getAddMoneyRefNo());

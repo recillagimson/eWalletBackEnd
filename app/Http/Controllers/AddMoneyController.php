@@ -3,38 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DragonPay\AddMoneyCancelRequest;
-use App\Http\Requests\DragonPay\AddMoneyStatusRequest;
-use App\Http\Requests\DragonPay\AddMoneyWebBankRequest;
+use App\Http\Requests\DragonPay\AddMoneyRequest;
 use App\Http\Requests\DragonPay\DragonPayPostBackRequest;
-use App\Services\AddMoney\DragonPay\IWebBankingService;
-use App\Services\AddMoney\DragonPay\PostBack\IHandlePostBackService;
+use App\Services\AddMoney\DragonPay\IHandlePostBackService;
+use App\Services\AddMoney\IInAddMoneyService;
 use App\Services\Encryption\IEncryptionService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class DragonPayAddMoneyController extends Controller
+class AddMoneyController extends Controller
 {
-    private IWebBankingService $webBankingService;
     private IHandlePostBackService $postBackService;
     private IEncryptionService $encryptionService;
+    private IInAddMoneyService $addMoneyService;
 
-    public function __construct(IWebBankingService $webBankingService,
-                                IHandlePostBackService $postBackService,
-                                IEncryptionService $encryptionService) {
+    public function __construct(IHandlePostBackService $postBackService,
+                                IEncryptionService $encryptionService,
+                                IInAddMoneyService $addMoneyService) {
 
-        $this->webBankingService = $webBankingService;
         $this->postBackService = $postBackService;
         $this->encryptionService = $encryptionService;
+        $this->addMoneyService = $addMoneyService;
     }
 
-    public function addMoney(AddMoneyWebBankRequest $request)
+    public function addMoney(AddMoneyRequest $request)
     {
-        $urlParams = $request->validated();
+        $requestParams = $request->validated();
         $user = $request->user();
 
-        $requestURL = $this->webBankingService->generateRequestURL($user, $urlParams);
-        $encryptedResponse = $this->encryptionService->encrypt(array($requestURL));
-        
+        $addMoney = $this->addMoneyService->addMoney($user, $requestParams);
+        $encryptedResponse = $this->encryptionService->encrypt(array($addMoney));
+
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
@@ -53,7 +52,7 @@ class DragonPayAddMoneyController extends Controller
         $referenceNumber = $request->validated();
         $user = $request->user();
 
-        $cancel = $this->webBankingService->cancelAddMoney($user, $referenceNumber);
+        $cancel = $this->addMoneyService->cancelAddMoney($user, $referenceNumber);
         $encryptedResponse = $this->encryptionService->encrypt(array($cancel));
 
         return response()->json($encryptedResponse, Response::HTTP_OK);

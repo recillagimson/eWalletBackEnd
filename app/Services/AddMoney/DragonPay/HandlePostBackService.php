@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AddMoney\DragonPay\PostBack;
+namespace App\Services\AddMoney\DragonPay;
 
 use App\Enums\DragonPayStatusTypes;
 use App\Enums\TransactionCategories;
@@ -20,8 +20,19 @@ class HandlePostBackService implements IHandlePostBackService
      */
     protected $moduleTransCategory;
 
+    /**
+     * Current transaction's reference number, the one that
+     * SquidPay generated
+     * 
+     * @var string
+     */
     protected $referenceNumber;
 
+    /**
+     * Authenticated user's user account ID
+     * 
+     * @var uuid
+     */
     protected $userAccountID;
 
     private IWebBankRepository $webBanks;
@@ -130,11 +141,23 @@ class HandlePostBackService implements IHandlePostBackService
         return $responseData;
     }
 
+    /**
+     * Set the reference number
+     * 
+     * @param string $referenceNumber
+     * @return void
+     */
     public function setReferenceNumber(string $referenceNumber)
     {
         $this->referenceNumber = $referenceNumber;
     }
 
+    /**
+     * Set the user account ID
+     * 
+     * @param string $userAccountID
+     * @return void
+     */
     public function setUserAccountID(string $userAccountID)
     {
         $this->userAccountID = $userAccountID;
@@ -177,6 +200,12 @@ class HandlePostBackService implements IHandlePostBackService
         return $this->balanceInfos->update($userBalanceInfo, ['available_balance' => $balance]);
     }
 
+    /**
+     * Logs the user's transaction in user transaction table
+     * 
+     * @param string $remarks
+     * @return void
+     */
     public function logTransaction(string $remarks)
     {
         $this->logHistories->create([

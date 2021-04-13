@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AddMoney\DragonPay\PostBack;
+namespace App\Services\AddMoney\DragonPay;
 
 interface IHandlePostBackService
 {
