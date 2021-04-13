@@ -9,17 +9,21 @@ use Illuminate\Http\Response;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\NewsAndUpdate\NewsAndUpdateRequest;
 use App\Models\NewsAndUpdate;
+use App\Services\UserProfile\IUserProfileService;
 
 class NewsAndUpdateController extends Controller
 {
     private IEncryptionService $encryptionService;
     private INewsAndUpdateRepository $newsAndUpdateRepository;
+    private IUserProfileService $userProfileService;
     
     public function __construct(INewsAndUpdateRepository $newsAndUpdateRepository,
-                                IEncryptionService $encryptionService)
+                                IEncryptionService $encryptionService,
+                                IUserProfileService $userProfileService)
     {
         $this->newsAndUpdateRepository = $newsAndUpdateRepository;
         $this->encryptionService = $encryptionService;
+        $this->userProfileService = $userProfileService;
     }
     /**
      * Display a listing of the resource.
@@ -53,7 +57,7 @@ class NewsAndUpdateController extends Controller
     public function store(NewsAndUpdateRequest $request)
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user());
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->newsAndUpdateRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
@@ -93,7 +97,7 @@ class NewsAndUpdateController extends Controller
     public function update(NewsAndUpdateRequest $request, NewsAndUpdate $news): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user(), $news);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $news);
         $updateRecord = $this->newsAndUpdateRepository->update($news, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
@@ -111,15 +115,5 @@ class NewsAndUpdateController extends Controller
         $deleteRecord = $this->newsAndUpdateRepository->delete($news);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    private function inputBody(array $details, object $userAccount, object $news=null): array {
-        if(!$news) {
-            $details['user_created'] = $userAccount->id;
-            $details['user_updated'] = $userAccount->id;
-        }else {
-            $details['user_updated'] = $userAccount->id;
-        }
-        return $details;
     }
 }
