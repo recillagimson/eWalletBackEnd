@@ -12,7 +12,7 @@ class UserBalanceInfo extends Model
     use HasFactory, SoftDeletes;
     use UsesUuid;
 
-    protected $table ='user_balance_info';
+    protected $table ='user_balance_infos';
 
     protected $fillable = [
         "user_account_id",
