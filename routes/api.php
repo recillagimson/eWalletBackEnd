@@ -1,26 +1,27 @@
 <?php
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TierController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\PayloadController;
-use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\SendMoneyController;
-use App\Http\Controllers\NewsAndUpdateController;
-use App\Http\Controllers\HelpCenterController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserPhotoController;
+use App\Http\Controllers\HelpCenterController;
+use App\Http\Controllers\PrepaidLoadController;
+use App\Http\Controllers\NotificationController;
 use App\Services\Transaction\TransactionService;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
-use App\Http\Controllers\UserUtilities\MaritalStatusController;
-use App\Http\Controllers\UserUtilities\NationalityController;
-use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SignupHostController;
+use App\Http\Controllers\UserUtilities\NationalityController;
+use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
+use App\Http\Controllers\UserUtilities\MaritalStatusController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -109,10 +110,18 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){
         Route::get('/', [NotificationController::class, 'GetAll']);
-        Route::post('/', [NotificationController::class, 'create']);
+        Route::post('/', [NotificationController::class, 'store']);
         Route::get('/{notification}', [NotificationController::class, 'show']);
         Route::put('/{notification}', [NotificationController::class, 'update']);
         Route::delete('/{notification}', [NotificationController::class, 'delete']);
+    });
+
+    Route::middleware(['decrypt.request'])->prefix('/tiers')->group(function (){
+        Route::get('/', [TierController::class, 'GetAll']);
+        Route::post('/', [TierController::class, 'store']);
+        Route::get('/{tier}', [TierController::class, 'show']);
+        Route::put('/{tier}', [TierController::class, 'update']);
+        Route::delete('/{tier}', [TierController::class, 'destroy']);
     });
 });
 

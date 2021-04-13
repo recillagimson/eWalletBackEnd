@@ -20,7 +20,7 @@ class CreateTiersTable extends Migration
             $table->double('daily_threshold', 10, 6);
             $table->double('monthly_limit', 10, 6);
             $table->double('monthly_threshold', 10, 6);
-            $table->boolean('status');
+            $table->boolean('status')->default(true);
             $table->uuid('user_created')->references('id')->on('user_accounts')->onDelete('restrict');
             $table->uuid('user_updated')->references('id')->on('user_accounts')->onDelete('restrict');
             $table->timestamps();
