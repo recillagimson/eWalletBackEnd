@@ -8,8 +8,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Enums\UsernameTypes;
+use App\Http\Requests\SendMoney\GenerateQrRequest;
 use App\Services\Encryption\IEncryptionService;
-use App\Http\Requests\SendMoney\SendMoneyQrRequest;
 
 class SendMoneyController extends Controller
 {       
@@ -55,7 +55,7 @@ class SendMoneyController extends Controller
      * @param string $encryptedResponse
      * @return JsonResponse
      */
-    public function GenerateQrRequest(SendMoneyQrRequest $request): JsonResponse
+    public function generateQr(GenerateQrRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
         $qrTransaction = $this->sendMoneyService->generateQR($request->user(), $fillRequest);

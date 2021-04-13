@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\SendMoney;
 
+use App\Rules\MobileNumber;
 use Composer\DependencyResolver\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,9 +26,12 @@ class SendMoneyRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_account_id' => 'sometimes',
-            'email' => 'sometimes|required_without:mobile_number|email',
-            'mobile_number' => 'sometimes|required_without:email',
+            'recipient_account_id ' => 'sometimes',
+            'email' => 'required_without:mobile_number|email',
+            'mobile_number' => [
+                'required_without:email',
+                new MobileNumber()
+            ],
             'amount' => 'required|numeric|min:1',
             'message' => 'max:60|nullable'
         ];  

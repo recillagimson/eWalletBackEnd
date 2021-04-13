@@ -89,7 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('send/money')->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
-        Route::post('/generate/qr', [SendMoneyController::class, 'GenerateQrRequest']);
+        Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
     });
     
 });
