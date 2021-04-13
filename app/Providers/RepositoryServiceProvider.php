@@ -37,8 +37,12 @@ use App\Repositories\Notification\NotificationRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
+use App\Repositories\UserBalance\IUserBalanceRepository;
+use App\Repositories\UserBalance\UserBalanceRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\UserPhotoRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -85,6 +89,12 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // User Photo
         $this->app->bind(IUserPhotoRepository::class, UserPhotoRepository::class);
+        
+        // User Balance
+        $this->app->bind(IUserBalanceRepository::class, UserBalanceRepository::class);
+        
+        // User Transaction History
+        $this->app->bind(IUserTransactionHistoryRepository::class, UserTransactionHistoryRepository::class);
 
     }
 
