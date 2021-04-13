@@ -10,18 +10,22 @@ use Illuminate\Http\Response;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\NationalityRequest;
 use App\Models\UserUtilities\Nationality;
+use App\Services\UserProfile\IUserProfileService;
 
 class NationalityController extends Controller
 {
 
     private IEncryptionService $encryptionService;
     private INationalityRepository $nationalityRepository;
+    private IUserProfileService $userProfileService;
     
     public function __construct(INationalityRepository $nationalityRepository,
-                                IEncryptionService $encryptionService)
+                                IEncryptionService $encryptionService,
+                                IUserProfileService $userProfileService)
     {
         $this->nationalityRepository = $nationalityRepository;
         $this->encryptionService = $encryptionService;
+        $this->userProfileService = $userProfileService;
     }
 
     /**
@@ -46,7 +50,7 @@ class NationalityController extends Controller
     public function store(NationalityRequest $request): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user());
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->nationalityRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
@@ -75,7 +79,7 @@ class NationalityController extends Controller
     public function update(NationalityRequest $request, Nationality $nationality): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user(), $nationality);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $nationality);
         $updateRecord = $this->nationalityRepository->update($nationality, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
@@ -93,15 +97,5 @@ class NationalityController extends Controller
         $deleteRecord = $this->nationalityRepository->delete($nationality);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    private function inputBody(array $details, object $userAccount, object $data=null): array {
-        if(!$data) {
-            $details['user_created'] = $userAccount->id;
-            $details['user_updated'] = $userAccount->id;
-        }else {
-            $details['user_updated'] = $userAccount->id;
-        }
-        return $details;
     }
 }
