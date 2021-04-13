@@ -10,18 +10,22 @@ use Illuminate\Http\Response;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\SignupHostRequest;
 use App\Models\UserUtilities\SignupHost;
+use App\Services\UserProfile\IUserProfileService;
 
 class SignupHostController extends Controller
 {
 
     private IEncryptionService $encryptionService;
     private ISignupHostRepository $signupHostRepository;
+    private IUserProfileService $userProfileService;
     
     public function __construct(ISignupHostRepository $signupHostRepository,
-                                IEncryptionService $encryptionService)
+                                IEncryptionService $encryptionService,
+                                IUserProfileService $userProfileService)
     {
         $this->signupHostRepository = $signupHostRepository;
         $this->encryptionService = $encryptionService;
+        $this->userProfileService = $userProfileService;
     }
 
     /**
@@ -46,7 +50,7 @@ class SignupHostController extends Controller
     public function store(SignupHostRequest $request): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->signupHostRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
@@ -75,7 +79,7 @@ class SignupHostController extends Controller
     public function update(SignupHostRequest $request, SignupHost $signup_host): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $signup_host);
         $updateRecord = $this->signupHostRepository->update($signup_host, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
