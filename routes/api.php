@@ -83,13 +83,6 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
     
-    Route::prefix('/help_center')->middleware(['decrypt.request'])->group(function (){
-        Route::get('/', [HelpCenterController::class, 'GetAll']);
-        Route::post('/', [HelpCenterController::class, 'create']);
-        Route::get('/{helpCenter}', [HelpCenterController::class, 'show']);
-        Route::put('/{helpCenter}', [HelpCenterController::class, 'update']);
-        Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
-    });
     Route::middleware(['decrypt.request'])->group(function () {
         Route::apiResources([
             'news' => NewsAndUpdateController::class,

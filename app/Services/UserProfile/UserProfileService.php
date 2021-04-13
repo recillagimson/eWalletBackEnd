@@ -18,6 +18,8 @@ class UserProfileService implements IUserProfileService
 
     public function update(object $userAccount, array $details) {
        $userProfile = $this->userDetailRepository->getByUserId($userAccount->id);
+       $details["user_account_id"]= $userAccount->id;
+       $details["user_account_status"]= $userAccount->status;
        $data = $this->addUserInput($details, $userAccount, $userProfile);
 
        return (!$userProfile) ? 
@@ -26,9 +28,6 @@ class UserProfileService implements IUserProfileService
     }
 
     public function addUserInput(array $details, object $userAccount, object $data=null) {
-        
-        $details["user_account_id"]= $userAccount->id;
-        $details["user_account_status"]= $userAccount->status;
 
         if(!$data) {
             $details['user_created'] = $userAccount->id;
