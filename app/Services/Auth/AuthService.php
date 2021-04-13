@@ -87,21 +87,19 @@ class AuthService implements IAuthService
 
     /**
      * Attempts to authenticate the user with the
-     * provided credentials
+     * provided credentials when using a web client
      *
      * @param string $usernameField
      * @param array $creds
      * @param string $ip
+     * @return array
      * @throws ValidationException
      */
-    public function login(string $usernameField, array $creds, string $ip)
+    public function login(string $usernameField, array $creds, string $ip): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
         if(!$user) $this->loginFailed();
-        if(!$user->verified) $this->accountUnverified();
-        if($user->is_lockout) $this->accountLockedOut();
-
-        $user->resetLoginAttempts($this->daysToResetAttempts);
+        $this->validateUser($user);
 
         $passwordMatched = Hash::check($creds['password'], $user->password);
         if(!$passwordMatched) {
@@ -109,11 +107,34 @@ class AuthService implements IAuthService
             $this->loginFailed();
         }
 
-        $identifier = OtpTypes::login.':'.$user->id;
-        $otp = $this->otpService->generate($identifier);
-        if(!$otp->status) $this->invalidOtp($otp->message);
+        $user->deleteTokensByName(TokenNames::userWebToken);
+        return $this->generateLoginToken($user, TokenNames::userWebToken);
+    }
 
-        $this->notificationService->sendLoginVerification($creds[$usernameField], $otp->token);
+
+    /**
+     * Attempts to authenticate the user with the
+     * provided credentials when using a mobile apps.
+     *
+     * @param string $usernameField
+     * @param array $creds
+     * @return array
+     * @throws ValidationException
+     */
+    public function mobileLogin(string $usernameField, array $creds): array
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
+        if(!$user) $this->loginFailed();
+        $this->validateUser($user);
+
+        $passwordMatched = Hash::check($creds['pin_code'], $user->pin_code);
+        if(!$passwordMatched) {
+            $user->updateLockout($this->maxLoginAttempts);
+            $this->loginFailed();
+        }
+
+        $user->deleteTokensByName(TokenNames::userMobileToken);
+        return $this->generateLoginToken($user, TokenNames::userMobileToken);
     }
 
     /**
@@ -238,23 +259,7 @@ class AuthService implements IAuthService
         $user->verified = true;
         $user->save();
 
-        $token = $user->createToken(TokenNames::userToken);
-        $latestPassword = $this->passwordHistories->getLatest($user->id);
-        $latesPin = $this->pinCodeHistories->getLatest($user->id);
-        $passwordAboutToExpire = $latestPassword ? $latestPassword->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
-        $pinAboutToExpire = $latesPin ? $latesPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
 
-        return [
-            'user_token' => [
-                'access_token' => $token->plainTextToken,
-                'created_at' => $token->accessToken->created_at,
-                'expires_in' => $this->tokenExpiration
-            ],
-            'notify_password_expiration' => $passwordAboutToExpire,
-            'password_age' => $latestPassword ? $latestPassword->password_age : null,
-            'notify_pin_expiration' => $pinAboutToExpire,
-            'pin_age' => $latesPin ? $latesPin->pin_age : null
-        ];
     }
 
     /**
@@ -275,7 +280,7 @@ class AuthService implements IAuthService
 
     /*
     |--------------------------------------------------------------------------
-    | VALIDATION EXCEPTION HELPER METHODS
+    | PRIVATE METHODS
     |--------------------------------------------------------------------------
     */
 
@@ -293,6 +298,35 @@ class AuthService implements IAuthService
                 if($exists === true) $this->passwordUsed();
             }
         }
+    }
+
+    private function generateLoginToken(UserAccount $user,  string $tokenType): array
+    {
+        $token = $user->createToken($tokenType);
+        $latestPassword = $this->passwordHistories->getLatest($user->id);
+        $latesPin = $this->pinCodeHistories->getLatest($user->id);
+        $passwordAboutToExpire = $latestPassword ? $latestPassword->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
+        $pinAboutToExpire = $latesPin ? $latesPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
+
+        return [
+            'user_token' => [
+                'access_token' => $token->plainTextToken,
+                'created_at' => $token->accessToken->created_at,
+                'expires_in' => $this->tokenExpiration
+            ],
+            'notify_password_expiration' => $passwordAboutToExpire,
+            'password_age' => $latestPassword ? $latestPassword->password_age : null,
+            'notify_pin_expiration' => $pinAboutToExpire,
+            'pin_age' => $latesPin ? $latesPin->pin_age : null
+        ];
+    }
+
+    private function validateUser(UserAccount $user)
+    {
+        if(!$user->verified) $this->accountUnverified();
+        if($user->is_lockout) $this->accountLockedOut();
+
+        $user->resetLoginAttempts($this->daysToResetAttempts);
     }
 
     /*
