@@ -94,13 +94,4 @@ class SignupHostController extends Controller
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
-
-    private function inputBody(array $details, string $user_id): array {
-        $body = array(
-                    'description'=>$details['description'],
-                    'status'=>$details['status'],
-                    'user_created'=>$user_id,
-                );
-        return $body;
-    }
 }

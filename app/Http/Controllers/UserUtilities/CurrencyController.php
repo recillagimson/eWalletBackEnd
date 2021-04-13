@@ -10,18 +10,22 @@ use Illuminate\Http\Response;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\CurrencyRequest;
 use App\Models\UserUtilities\Currency;
+use App\Services\UserProfile\IUserProfileService;
 
 class CurrencyController extends Controller
 {
 
     private IEncryptionService $encryptionService;
     private ICurrencyRepository $currencyRepository;
+    private IUserProfileService $userProfileService;
     
     public function __construct(ICurrencyRepository $currencyRepository,
-                                IEncryptionService $encryptionService)
+                                IEncryptionService $encryptionService,
+                                IUserProfileService $userProfileService)
     {
         $this->currencyRepository = $currencyRepository;
         $this->encryptionService = $encryptionService;
+        $this->userProfileService = $userProfileService;
     }
 
     /**
@@ -46,7 +50,7 @@ class CurrencyController extends Controller
     public function store(CurrencyRequest $request): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->currencyRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
@@ -75,7 +79,7 @@ class CurrencyController extends Controller
     public function update(CurrencyRequest $request, Currency $currency): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $currency);
         $updateRecord = $this->currencyRepository->update($currency, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
@@ -93,15 +97,5 @@ class CurrencyController extends Controller
         $deleteRecord = $this->currencyRepository->delete($currency);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    private function inputBody(array $details, string $user_id): array {
-        $body = array(
-                    'description'=>$details['description'],
-                    'code'=>$details['code'],
-                    'status'=>$details['status'],
-                    'user_created'=>$user_id,
-                );
-        return $body;
     }
 }
