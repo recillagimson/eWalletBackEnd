@@ -6,7 +6,6 @@ use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\SendMoneyController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\NotificationController;
