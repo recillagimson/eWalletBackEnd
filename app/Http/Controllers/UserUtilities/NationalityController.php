@@ -46,7 +46,7 @@ class NationalityController extends Controller
     public function store(NationalityRequest $request): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->inputBody($details, $request->user());
         $createRecord = $this->nationalityRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
@@ -75,7 +75,7 @@ class NationalityController extends Controller
     public function update(NationalityRequest $request, Nationality $nationality): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user()->id);
+        $inputBody = $this->inputBody($details, $request->user(), $nationality);
         $updateRecord = $this->nationalityRepository->update($nationality, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
@@ -95,13 +95,13 @@ class NationalityController extends Controller
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    private function inputBody(array $details, string $user_id): array {
-        $body = array(
-                    'description'=>$details['description'],
-                    'code'=>$details['code'],
-                    'status'=>$details['status'],
-                    'user_created'=>$user_id,
-                );
-        return $body;
+    private function inputBody(array $details, object $userAccount, object $data=null): array {
+        if(!$data) {
+            $details['user_created'] = $userAccount->id;
+            $details['user_updated'] = $userAccount->id;
+        }else {
+            $details['user_updated'] = $userAccount->id;
+        }
+        return $details;
     }
 }
