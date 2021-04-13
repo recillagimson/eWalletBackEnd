@@ -3,22 +3,21 @@
 namespace App\Models;
 
 use App\Traits\UsesUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class UserBalanceInfo extends Model
+class UserTransactionHistory extends Model
 {
     use HasFactory, SoftDeletes;
     use UsesUuid;
 
-    protected $table ='user_balance_info';
-
+    protected $table = 'user_transaction_histories';
     protected $fillable = [
         "user_account_id",
-        "currency_id",
-        "available_balance",
-        "pending_balance",
+        "transaction_id",
+        "reference_number",
+        "transaction_category_id",
         "user_created",
         "user_updated",
     ];

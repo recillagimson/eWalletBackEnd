@@ -23,7 +23,11 @@ use App\Services\Utilities\Notifications\NotificationService;
 use App\Services\Utilities\Notifications\SmsService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
+use App\Services\Transaction\ITransactionService;
+use App\Services\Transaction\TransactionService;
 use App\Services\Utilities\Notifications\EmailService;
+use App\Services\Utilities\LogHistory\LogHistoryService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\Verification\VerificationService;
 use App\Services\Utilities\Verification\IVerificationService;
@@ -63,6 +67,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Verification Service
         $this->app->bind(IVerificationService::class, VerificationService::class);
+        // Log History Service
+        $this->app->bind(ILogHistoryService::class, LogHistoryService::class);
+        
+        // Transaction Service
+        $this->app->bind(ITransactionService::class, TransactionService::class);
     }
 
     /**

@@ -26,10 +26,10 @@ class SendMoneyRequest extends FormRequest
     public function rules()
     {
         return [
-            'recipient_account_id ' => 'sometimes',
-            'email' => 'required_without:mobile_number|email',
+            'recipient_account_id' => 'sometimes',
+            'email' => 'sometimes|required_without:mobile_number|email',
             'mobile_number' => [
-                'required_without:email',
+                'sometimes|required_without:email',
                 new MobileNumber()
             ],
             'amount' => 'required|numeric|min:1',

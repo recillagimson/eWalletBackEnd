@@ -37,6 +37,7 @@ class SendMoneyController extends Controller
      public function send(SendMoneyRequest $request)
     {
         $fillRequest = $request->validated();
+      
         $username = $this->getUsernameField($request);
         $this->sendMoneyService->send($username, $fillRequest, $request->user());
 
@@ -60,7 +61,7 @@ class SendMoneyController extends Controller
         $fillRequest = $request->validated();
         $qrTransaction = $this->sendMoneyService->generateQR($request->user(), $fillRequest);
         $encryptedResponse = $this->encryptionService->encrypt([
-            'user_account_id' => $qrTransaction->user_account_id,
+            'recipient_account_id' => $qrTransaction->user_account_id,
             'amount' => $qrTransaction->amount,
             'message' => ''
         ]);
