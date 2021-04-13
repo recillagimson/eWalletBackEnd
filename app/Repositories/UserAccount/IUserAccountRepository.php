@@ -4,7 +4,7 @@ namespace App\Repositories\UserAccount;
 
 use App\Repositories\IRepository;
 
-interface ILogHistoryRepository extends IRepository
+interface IUserAccountRepository extends IRepository
 {
     // public function getByUsername(string $usernameField, string $username);
 }

@@ -24,12 +24,8 @@ class CreateLogHistoriesTable extends Migration
             $table->dateTime('transaction_date');
             $table->string('remarks');
             $table->string('operation')->nullable();
-            $table->uuid('user_created')->references('id')->on('user_accounts')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-            $table->uuid('user_updated')->references('id')->on('user_accounts')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+            $table->uuid('user_created')->references('id')->on('user_accounts')->onDelete('restrict');
+            $table->uuid('user_updated')->references('id')->on('user_accounts')->onDelete('restrict');
             $table->timestamps();
             $table->softDeletes();
         });
