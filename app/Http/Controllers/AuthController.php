@@ -6,6 +6,7 @@ use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\MobileLoginRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
@@ -51,7 +52,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Authenticate a user
+     * Authenticates a web client user
      *
      * @param LoginRequest $request
      * @return JsonResponse
@@ -61,11 +62,32 @@ class AuthController extends Controller
         $login = $request->validated();
         $ip = $request->ip();
         $usernameField = $this->getUsernameField($request);
-        $this->authService->login($usernameField, $login, $ip);
+        $loginResponse = $this->authService->login($usernameField, $login, $ip);
 
         $response = [
             'message' => SuccessMessages::loginSuccessful,
-            'data' => [$usernameField => $login[$usernameField]]
+            'data' => $this->encryptionService->encrypt($loginResponse)
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+
+    /**
+     * Authenticates a mobile app user
+     *
+     * @param MobileLoginRequest $request
+     * @return JsonResponse
+     */
+    public function mobileLogin(MobileLoginRequest $request): JsonResponse
+    {
+        $login = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $loginResponse = $this->authService->mobileLogin($usernameField, $login);
+
+        $response = [
+            'message' => SuccessMessages::loginSuccessful,
+            'data' => $this->encryptionService->encrypt($loginResponse)
         ];
 
         return response()->json($response, Response::HTTP_OK);
@@ -110,6 +132,7 @@ class AuthController extends Controller
                 $usernameField => $data[$usernameField]
             ])
         ];
+
         return response()->json($response, Response::HTTP_OK);
     }
 
@@ -129,6 +152,7 @@ class AuthController extends Controller
             'message' => SuccessMessages::accountVerification,
             'data' => [$usernameField => $data[$usernameField]]
         ];
+
         return response()->json($response, Response::HTTP_OK);
     }
 
@@ -188,6 +212,7 @@ class AuthController extends Controller
         if (!$user instanceof UserAccount) return response()->json(null, Response::HTTP_UNAUTHORIZED);
         return response()->json($request->user(), Response::HTTP_OK);
     }
+
 
 
     private function getUsernameField(Request $request): string
