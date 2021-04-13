@@ -28,5 +28,7 @@ class NewsAndUpdate extends Model
         'description',
         'status',
         'image_location',
+        'user_created',
+        'user_updated',
     ];
 }

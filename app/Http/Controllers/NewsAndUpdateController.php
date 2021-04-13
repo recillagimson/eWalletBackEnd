@@ -53,7 +53,7 @@ class NewsAndUpdateController extends Controller
     public function store(NewsAndUpdateRequest $request)
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details);
+        $inputBody = $this->inputBody($details, $request->user());
         $createRecord = $this->newsAndUpdateRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
@@ -93,7 +93,7 @@ class NewsAndUpdateController extends Controller
     public function update(NewsAndUpdateRequest $request, NewsAndUpdate $news): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details);
+        $inputBody = $this->inputBody($details, $request->user(), $news);
         $updateRecord = $this->newsAndUpdateRepository->update($news, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
@@ -113,13 +113,13 @@ class NewsAndUpdateController extends Controller
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    private function inputBody(array $details): array {
-        $body = array(
-                    'title'=>$details['title'],
-                    'description'=>$details['description'],
-                    'status'=>$details['status'] === 0 ? 0 : 1,
-                    'image_location'=>$details['image_location'],
-                );
-        return $body;
+    private function inputBody(array $details, object $userAccount, object $news=null): array {
+        if(!$news) {
+            $details['user_created'] = $userAccount->id;
+            $details['user_updated'] = $userAccount->id;
+        }else {
+            $details['user_updated'] = $userAccount->id;
+        }
+        return $details;
     }
 }
