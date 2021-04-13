@@ -45,7 +45,7 @@ class AuthController extends Controller
         $encryptedData = $this->encryptionService->encrypt($user->toArray());
         $response = [
             'message' => SuccessMessages::accountRegistered,
-            'data' => $encryptedData
+            'data' => $this->encryptionService->encrypt($encryptedData)
         ];
 
         return response()->json($response, Response::HTTP_CREATED);
@@ -150,7 +150,7 @@ class AuthController extends Controller
 
         $response = [
             'message' => SuccessMessages::accountVerification,
-            'data' => [$usernameField => $data[$usernameField]]
+            'data' => $this->encryptionService->encrypt([$usernameField => $data[$usernameField]])
         ];
 
         return response()->json($response, Response::HTTP_OK);

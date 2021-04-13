@@ -98,6 +98,7 @@ class AuthService implements IAuthService
     public function login(string $usernameField, array $creds, string $ip): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
+        if(!$user) $this->loginFailed();
         $this->validateUser($user);
 
         $passwordMatched = Hash::check($creds['password'], $user->password);
@@ -123,6 +124,7 @@ class AuthService implements IAuthService
     public function mobileLogin(string $usernameField, array $creds): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
+        if(!$user) $this->loginFailed();
         $this->validateUser($user);
 
         $passwordMatched = Hash::check($creds['pin_code'], $user->pin_code);
@@ -321,7 +323,6 @@ class AuthService implements IAuthService
 
     private function validateUser(UserAccount $user)
     {
-        if(!$user) $this->loginFailed();
         if(!$user->verified) $this->accountUnverified();
         if($user->is_lockout) $this->accountLockedOut();
 
