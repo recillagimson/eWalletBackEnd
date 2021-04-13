@@ -17,17 +17,25 @@ use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
+use App\Services\SendMoney\ISendMoneyService;
+use App\Services\SendMoney\SendMoneyService;
 use App\Services\Utilities\Notifications\NotificationService;
 use App\Services\Utilities\Notifications\SmsService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
+use App\Services\Transaction\ITransactionService;
+use App\Services\Transaction\TransactionService;
 use App\Services\Utilities\Notifications\EmailService;
+use App\Services\Utilities\LogHistory\LogHistoryService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\Verification\VerificationService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\IPushNotificationService;
 use App\Services\Utilities\Notifications\PushNotificationService;
+use App\Services\UserProfile\UserProfileService;
+use App\Services\UserProfile\IUserProfileService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -47,6 +55,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEncryptionService::class, EncryptionService::class);
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
+        $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
+        $this->app->bind(IUserProfileService::class, UserProfileService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
         
@@ -57,6 +67,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Verification Service
         $this->app->bind(IVerificationService::class, VerificationService::class);
+        // Log History Service
+        $this->app->bind(ILogHistoryService::class, LogHistoryService::class);
+        
+        // Transaction Service
+        $this->app->bind(ITransactionService::class, TransactionService::class);
     }
 
     /**

@@ -1,40 +1,41 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\UserUtilities;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Repositories\HelpCenter\IHelpCenterRepository;
+use App\Repositories\UserUtilities\Currency\ICurrencyRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use App\Services\Encryption\IEncryptionService;
-use App\Http\Requests\HelpCenter\HelpCenterRequest;
-use App\Models\HelpCenter;
+use App\Http\Requests\UserUtilities\CurrencyRequest;
+use App\Models\UserUtilities\Currency;
 use App\Services\UserProfile\IUserProfileService;
 
-class HelpCenterController extends Controller
+class CurrencyController extends Controller
 {
+
     private IEncryptionService $encryptionService;
-    private IHelpCenterRepository $helpCenterRepository;
+    private ICurrencyRepository $currencyRepository;
     private IUserProfileService $userProfileService;
     
-    public function __construct(IHelpCenterRepository $helpCenterRepository,
+    public function __construct(ICurrencyRepository $currencyRepository,
                                 IEncryptionService $encryptionService,
                                 IUserProfileService $userProfileService)
     {
-        $this->helpCenterRepository = $helpCenterRepository;
+        $this->currencyRepository = $currencyRepository;
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
     }
 
-
-   /**
+    /**
      * Display a listing of the resource.
      *
      * @return JsonResponse
      */
-    public function index(): JsonResponse {
-        $records = $this->helpCenterRepository->getAll();
+    public function index(): JsonResponse
+    {
+        $records = $this->currencyRepository->getAll();
 
         $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
@@ -43,56 +44,57 @@ class HelpCenterController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param HelpCenterRequest $request
+     * @param  CurrencyRequest $request
      * @return JsonResponse
      */
-    public function store(HelpCenterRequest $request): JsonResponse
+    public function store(CurrencyRequest $request): JsonResponse
     {
         $details = $request->validated();
         $inputBody = $this->userProfileService->addUserInput($details, $request->user());
-        $createRecord = $this->helpCenterRepository->create($inputBody);
+        $createRecord = $this->currencyRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
         return response()->json($encryptedResponse, Response::HTTP_CREATED);
     }
 
-     /**
+    /**
      * Display the specified resource.
      *
-     * @param HelpCenter $helpCenter
+     * @param  Currency $currency
      * @return JsonResponse
      */
-    public function show(HelpCenter $help_center): JsonResponse {
-        $encryptedResponse = $this->encryptionService->encrypt($help_center->toArray());
+    public function show(Currency $currency): JsonResponse
+    {
+        $encryptedResponse = $this->encryptionService->encrypt($currency->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
-
 
     /**
      * Update the specified resource in storage.
      *
-     * @param HelpCenter $helpCenter
-     * @param HelpCenterRequest $request
+     * @param  CurrencyRequest $request
+     * @param  Currency $currency
      * @return JsonResponse
      */
-    public function update(HelpCenterRequest $request, HelpCenter $help_center): JsonResponse {
+    public function update(CurrencyRequest $request, Currency $currency): JsonResponse
+    {
         $details = $request->validated();
-        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $help_center);
-        
-        $updateRecord = $this->helpCenterRepository->update($help_center, $inputBody);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $currency);
+        $updateRecord = $this->currencyRepository->update($currency, $inputBody);
+
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
-   /**
+    /**
      * Remove the specified resource from storage.
      *
-     * @param string $id
+     * @param  Currency $currency
      * @return JsonResponse
      */
-    public function destroy(HelpCenter $help_center): JsonResponse
+    public function destroy(Currency $currency): JsonResponse
     {
-        $deleteRecord = $this->helpCenterRepository->delete($help_center);
+        $deleteRecord = $this->currencyRepository->delete($currency);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }

@@ -5,13 +5,22 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
+use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserPhotoController;
+use App\Services\Transaction\TransactionService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\UserUtilities\CountryController;
+use App\Http\Controllers\UserUtilities\CurrencyController;
+use App\Http\Controllers\UserUtilities\MaritalStatusController;
+use App\Http\Controllers\UserUtilities\NationalityController;
+use App\Http\Controllers\UserUtilities\NatureOfWorkController;
+use App\Http\Controllers\UserUtilities\SignupHostController;
+use App\Http\Controllers\UserUtilities\SourceOfFundController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -74,14 +83,30 @@ Route::middleware('auth:sanctum')->group(function () {
             '/types' => IdTypeController::class,
         ]);
     });
-
+    
     Route::middleware(['decrypt.request'])->group(function () {
         Route::apiResources([
             'news' => NewsAndUpdateController::class,
             'help_center' => HelpCenterController::class,
+            'country' => CountryController::class,
+            'currency' => CurrencyController::class,
+            'marital_status' => MaritalStatusController::class,
+            'nationality' => NationalityController::class,
+            'nature_of_work' => NatureOfWorkController::class,
+            'signup_host' => SignupHostController::class,
+            'source_of_fund' => SourceOfFundController::class,
         ]);
+
+        Route::prefix('/user')->group(function (){
+            Route::post('/profile', [UserProfileController::class, 'update']);
+        });
     });
 
+    Route::prefix('send/money')->group(function () {
+        Route::post('/', [SendMoneyController::class, 'send']);
+        Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
+    });
+    
     Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){
         Route::get('/', [NotificationController::class, 'GetAll']);
         Route::post('/', [NotificationController::class, 'create']);
@@ -90,3 +115,5 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{notification}', [NotificationController::class, 'delete']);
     });
 });
+
+    

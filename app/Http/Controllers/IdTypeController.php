@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\IdType;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\IdType\IdTypeRequest;
