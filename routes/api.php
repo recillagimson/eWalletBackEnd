@@ -2,11 +2,12 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
-use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
+use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\HelpCenterController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
@@ -59,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/user/verification', [UserPhotoController::class, 'createVerification']);
 
         Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
@@ -99,4 +101,11 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+    Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){
+        Route::get('/', [NotificationController::class, 'GetAll']);
+        Route::post('/', [NotificationController::class, 'create']);
+        Route::get('/{notification}', [NotificationController::class, 'show']);
+        Route::put('/{notification}', [NotificationController::class, 'update']);
+        Route::delete('/{notification}', [NotificationController::class, 'delete']);
+    });
 });
