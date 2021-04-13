@@ -7,22 +7,22 @@ use App\Repositories\Client\ClientRepository;
 use App\Repositories\IdType\IdTypeRepository;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\IdType\IIdTypeRepository;
-use App\Repositories\OtpRepository\IOtpRepository;
-use App\Repositories\OtpRepository\OtpRepository;
-use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
-use App\Repositories\PasswordHistory\PasswordHistoryRepository;
-use App\Repositories\Payload\IPayloadRepository;
 use App\Repositories\Payload\PayloadRepository;
+use App\Repositories\Payload\IPayloadRepository;
+use App\Repositories\OtpRepository\OtpRepository;
+use App\Repositories\OtpRepository\IOtpRepository;
+use App\Repositories\UserPhoto\UserPhotoRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
+use App\Repositories\LogHistory\LogHistoryRepository;
 use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
+use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\PrepaidLoad\PrepaidLoadRepository;
-use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
-use App\Repositories\PinCodeHistory\PinCodeHistoryRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccount\UserAccountRepository;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\OutSendMoney\OutSendMoneyRepository;
@@ -36,11 +36,13 @@ use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Notification\NotificationRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
+use App\Repositories\PinCodeHistory\PinCodeHistoryRepository;
+use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
+use App\Repositories\PasswordHistory\PasswordHistoryRepository;
+use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserBalance\UserBalanceRepository;
-use App\Repositories\UserPhoto\IUserPhotoRepository;
-use App\Repositories\UserPhoto\UserPhotoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 
@@ -90,6 +92,8 @@ class RepositoryServiceProvider extends ServiceProvider
         // User Photo
         $this->app->bind(IUserPhotoRepository::class, UserPhotoRepository::class);
         
+        // Log History
+        $this->app->bind(ILogHistoryRepository::class, LogHistoryRepository::class);
         // User Balance
         $this->app->bind(IUserBalanceRepository::class, UserBalanceRepository::class);
         
