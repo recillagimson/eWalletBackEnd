@@ -27,5 +27,6 @@ class MaritalStatus extends Model
         "legend",
         "status",
         "user_created",
+        "user_updated"
     ];
 }
