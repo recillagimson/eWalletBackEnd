@@ -18,9 +18,9 @@ class CreateUserDetailsTable extends Migration
             $table->string('entity_id', 50);
             $table->uuid('user_account_id');
             $table->string('title', 10);
-            $table->string('lastName', 50);
-            $table->string('firstname', 50);
-            $table->string('middlename', 50);
+            $table->string('last_name', 50);
+            $table->string('first_name', 50);
+            $table->string('middle_name', 50);
             $table->string('name_extension', 50);
             $table->date('birth_date');
             $table->string('place_of_birth', 50);

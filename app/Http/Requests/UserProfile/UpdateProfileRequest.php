@@ -26,9 +26,9 @@ class UpdateProfileRequest  extends FormRequest
         return [
             'entity_id'=>'required',
             'title'=>['required', 'max:10'],
-            'lastname'=>['required', 'max:50'],
-            'firstname'=>['required', 'max:50'],
-            'middlename'=>['required', 'max:50'],
+            'last_name'=>['required', 'max:50'],
+            'first_name'=>['required', 'max:50'],
+            'middle_name'=>['required', 'max:50'],
             'name_extension'=>['required', 'max:50'],
             'birth_date'=>'required',
             'place_of_birth'=>'required',
