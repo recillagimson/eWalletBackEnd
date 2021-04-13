@@ -3,14 +3,25 @@
 use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\DragonPayAddMoneyController;
+use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
+use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UserPhotoController;
+use App\Services\Transaction\TransactionService;
 use Illuminate\Support\Facades\App;
-
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\UserUtilities\CountryController;
+use App\Http\Controllers\UserUtilities\CurrencyController;
+use App\Http\Controllers\UserUtilities\MaritalStatusController;
+use App\Http\Controllers\UserUtilities\NationalityController;
+use App\Http\Controllers\UserUtilities\NatureOfWorkController;
+use App\Http\Controllers\UserUtilities\SignupHostController;
+use App\Http\Controllers\UserUtilities\SourceOfFundController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,9 +33,8 @@ use Illuminate\Support\Facades\App;
 |
 */
 
-if(App::environment('local'))
-{
-    Route::prefix('/utils')->group(function(){
+if (App::environment('local')) {
+    Route::prefix('/utils')->group(function () {
         Route::post('/encrypt', [PayloadController::class, 'encrypt']);
         Route::post('/decrypt', [PayloadController::class, 'decrypt']);
 
@@ -33,44 +43,77 @@ if(App::environment('local'))
     });
 }
 
-Route::prefix('/clients')->middleware(['form-data'])->group(function (){
+Route::prefix('/clients')->middleware(['form-data'])->group(function () {
     Route::post('/token', [ClientController::class, 'getToken']);
 });
 
-Route::middleware('auth:sanctum')->group(function (){
-    Route::prefix('/payloads')->group(function() {
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('/payloads')->group(function () {
         Route::get('/generate', [PayloadController::class, 'generate']);
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });
 
-    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function (){
+    /**
+     * ROUTES FOR AUTHENTICATION ENDPOINTS AS WELL AS
+     * OTP VERIFICATIONS
+     */
+    Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser']);
+        Route::post('/user/verification', [UserPhotoController::class, 'createVerification']);
 
-        Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
-        Route::post('/forgot/password', [AuthController::class, 'forgo4`tPassword']);
+        Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
-        Route::post('/verify', [AuthController::class, 'verify']);
-    });
-    Route::prefix('/load')->middleware(['decrypt.request'])->group(function (){
-        Route::post('/', [PrepaidLoadController::class, 'load']);
-        Route::get('/promos', [PrepaidLoadController::class, 'showPromos']);
+
+        Route::prefix('/verify')->group(function () {
+            Route::post('/account', [AuthController::class, 'verifyAccount']);
+            Route::post('/login', [AuthController::class, 'verifyLogin']);
+            Route::post('/password', [AuthController::class, 'verifyPassword']);
+        });
     });
 
-    Route::prefix('/news')->middleware(['decrypt.request'])->group(function (){
-        Route::get('/', [NewsAndUpdateController::class, 'GetAll']);
-        Route::post('/', [NewsAndUpdateController::class, 'create']);
-        Route::get('/{news}', [NewsAndUpdateController::class, 'show']);
-        Route::put('/{news}', [NewsAndUpdateController::class, 'update']);
-        Route::delete('/{news}', [NewsAndUpdateController::class, 'delete']);
+    Route::prefix('/load')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
+        Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
     });
 
-    Route::prefix('/help_center')->middleware(['decrypt.request'])->group(function (){
-        Route::get('/', [HelpCenterController::class, 'GetAll']);
-        Route::post('/', [HelpCenterController::class, 'create']);
-        Route::get('/{helpCenter}', [HelpCenterController::class, 'show']);
-        Route::put('/{helpCenter}', [HelpCenterController::class, 'update']);
-        Route::delete('/{helpCenter}', [HelpCenterController::class, 'delete']);
+    Route::prefix('/id')->middleware(['decrypt.request'])->group(function () {
+        Route::apiResources([
+            '/types' => IdTypeController::class,
+        ]);
+    });
+    
+    Route::middleware(['decrypt.request'])->group(function () {
+        Route::apiResources([
+            'news' => NewsAndUpdateController::class,
+            'help_center' => HelpCenterController::class,
+            'country' => CountryController::class,
+            'currency' => CurrencyController::class,
+            'marital_status' => MaritalStatusController::class,
+            'nationality' => NationalityController::class,
+            'nature_of_work' => NatureOfWorkController::class,
+            'signup_host' => SignupHostController::class,
+            'source_of_fund' => SourceOfFundController::class,
+        ]);
+
+        Route::prefix('/user')->group(function (){
+            Route::post('/profile', [UserProfileController::class, 'update']);
+        });
+    });
+
+    Route::prefix('send/money')->group(function () {
+        Route::post('/', [SendMoneyController::class, 'send']);
+        Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
+    });
+    
+    Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){
+        Route::get('/', [NotificationController::class, 'GetAll']);
+        Route::post('/', [NotificationController::class, 'create']);
+        Route::get('/{notification}', [NotificationController::class, 'show']);
+        Route::put('/{notification}', [NotificationController::class, 'update']);
+        Route::delete('/{notification}', [NotificationController::class, 'delete']);
     });
 
     Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){

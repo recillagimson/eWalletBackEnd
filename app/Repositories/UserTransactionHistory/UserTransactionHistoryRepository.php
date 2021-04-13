@@ -7,7 +7,8 @@ use App\Repositories\Repository;
 
 class UserTransactionHistoryRepository extends Repository implements IUserTransactionHistoryRepository
 {
-    public function __construct(UserTransactionHistory $model) {
+    public function __construct(UserTransactionHistory $model)
+    {
         parent::__construct($model);
     }
 }

@@ -16,4 +16,13 @@ class UserBalanceInfoRepository extends Repository implements IUserBalanceInfoRe
     {
         return $this->model->where('user_account_id', $userAccountID)->first();
     }
+    public function getUserBalance(string $userID)
+    {
+        return  $this->model->where('user_account_id', '=', $userID)->pluck('available_balance')->first();
+    }       
+
+    public function updateUserBalance(string $userID, float $newBalance){
+       return $this->model->where('user_account_id', $userID)->update(['available_balance' => $newBalance]);
+    }
+
 }

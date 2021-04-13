@@ -15,7 +15,7 @@ class UpdateIdTypesNullableUserUpdate extends Migration
     {
         Schema::table('id_types', function (Blueprint $table) {
             $table->string('type', 50)->after('id');
-            $table->string('user_updated')->nullable()->change();
+            $table->uuid('user_updated')->nullable()->change();
         });
     }
 
@@ -27,7 +27,7 @@ class UpdateIdTypesNullableUserUpdate extends Migration
     public function down()
     {
         Schema::table('id_types', function (Blueprint $table) {
-            $table->string('user_updated')->change();
+            $table->uuid('user_updated')->change();
         });
     }
 }

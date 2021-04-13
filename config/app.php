@@ -5,6 +5,11 @@ use App\Enums\OtpTypes;
 use App\Enums\PayloadTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
+use App\Enums\ErrorCodes;
+use App\Enums\NetworkTypes;
+use App\Enums\OtpTypes;
+use App\Enums\PayloadTypes;
+use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
 use App\Enums\TokenNames;
 
@@ -250,6 +255,10 @@ return [
         'ReferenceNumberTypes' => ReferenceNumberTypes::class,
         'SquidPayModuleTypes' => SquidPayModuleTypes::class,
         'TransactionCategories' => TransactionCategories::class,
+        'ErrorCodes' => ErrorCodes::class,
+
+        //Enums - Messages
+        'SuccessMessages' => SuccessMessages::class
 
 
     ],

@@ -15,7 +15,7 @@ class UpdateCountriesStatusNullableUserUpdate extends Migration
     {
         Schema::table('countries', function (Blueprint $table) {
      
-            $table->string('user_updated')->nullable()->change();
+            $table->uuid('user_updated')->nullable()->change();
         });
     }
 
@@ -27,7 +27,7 @@ class UpdateCountriesStatusNullableUserUpdate extends Migration
     public function down()
     {
         Schema::table('countries', function (Blueprint $table) {
-            $table->string('user_updated')->change();
+            $table->uuid('user_updated')->change();
         });
     }
 }

@@ -9,14 +9,32 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TransactionCategory extends Model
 {
-    use HasFactory, UsesUuid, SoftDeletes;
+    use UsesUuid, HasFactory, SoftDeletes;
 
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'transaction_categories';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'old_transaction_category_id',
+        'title',
         'name',
         'description',
         'status',
         'user_created',
+<<<<<<< HEAD
         'user_updated',
     ];
+=======
+    ];
+
+>>>>>>> master
 }

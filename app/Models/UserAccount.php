@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\UsesUuid;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -22,6 +23,9 @@ class UserAccount extends Authenticatable
         'email',
         'mobile_number',
         'password',
+        'pin_code',
+        'verified',
+        'is_admin'
     ];
 
     /**
@@ -31,6 +35,7 @@ class UserAccount extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'pin_code',
         'remember_token',
     ];
 
@@ -41,5 +46,34 @@ class UserAccount extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'last_failed_attempt' => 'datetime',
     ];
+
+
+    public function updateLockout(int $maxLoginAttempts)
+    {
+        $this->login_failed_attempts += 1;
+        $this->last_failed_attempt = Carbon::now();
+        $this->is_lockout = $this->login_failed_attempts >= $maxLoginAttempts;
+        $this->save();
+    }
+
+    public function resetLoginAttempts(int $daysToReset)
+    {
+        if($this->last_failed_attempt)
+        {
+            $diffInDays = $this->last_failed_attempt->diffInDays(Carbon::now());
+            if($diffInDays >= $daysToReset)
+            {
+                $this->login_failed_attempts = 0;
+                $this->save();
+            }
+        }
+    }
+
+    public function deleteTokensByName(string $tokenName)
+    {
+        $this->tokens()->where('name', $tokenName)->delete();
+    }
+
 }

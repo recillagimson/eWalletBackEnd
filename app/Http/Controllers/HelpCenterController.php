@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
 use Illuminate\Http\JsonResponse;
@@ -9,26 +10,30 @@ use Illuminate\Http\Response;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\HelpCenter\HelpCenterRequest;
 use App\Models\HelpCenter;
+use App\Services\UserProfile\IUserProfileService;
 
 class HelpCenterController extends Controller
 {
     private IEncryptionService $encryptionService;
     private IHelpCenterRepository $helpCenterRepository;
+    private IUserProfileService $userProfileService;
     
     public function __construct(IHelpCenterRepository $helpCenterRepository,
-                                IEncryptionService $encryptionService)
+                                IEncryptionService $encryptionService,
+                                IUserProfileService $userProfileService)
     {
         $this->helpCenterRepository = $helpCenterRepository;
         $this->encryptionService = $encryptionService;
+        $this->userProfileService = $userProfileService;
     }
 
-    /**
-     * Show List
+
+   /**
+     * Display a listing of the resource.
      *
-     * 
      * @return JsonResponse
      */
-    public function GetAll(): JsonResponse {
+    public function index(): JsonResponse {
         $records = $this->helpCenterRepository->getAll();
 
         $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
@@ -36,66 +41,59 @@ class HelpCenterController extends Controller
     }
 
     /**
-     * Create Record
+     * Store a newly created resource in storage.
      *
      * @param HelpCenterRequest $request
      * @return JsonResponse
      */
-    public function create(HelpCenterRequest $request): JsonResponse {
+    public function store(HelpCenterRequest $request): JsonResponse
+    {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->helpCenterRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
         return response()->json($encryptedResponse, Response::HTTP_CREATED);
     }
 
-    /**
-     * Show Record
+     /**
+     * Display the specified resource.
      *
      * @param HelpCenter $helpCenter
      * @return JsonResponse
      */
-    public function show(HelpCenter $helpCenter): JsonResponse {
-        $encryptedResponse = $this->encryptionService->encrypt($helpCenter->toArray());
+    public function show(HelpCenter $help_center): JsonResponse {
+        $encryptedResponse = $this->encryptionService->encrypt($help_center->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
+
     /**
-     * Update Record
+     * Update the specified resource in storage.
      *
      * @param HelpCenter $helpCenter
      * @param HelpCenterRequest $request
      * @return JsonResponse
      */
-    public function update(HelpCenter $helpCenter, HelpCenterRequest $request): JsonResponse {
+    public function update(HelpCenterRequest $request, HelpCenter $help_center): JsonResponse {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details);
-        $updateRecord = $this->helpCenterRepository->update($helpCenter, $inputBody);
-
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $help_center);
+        
+        $updateRecord = $this->helpCenterRepository->update($help_center, $inputBody);
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
-    /**
-     * Delete Record
+   /**
+     * Remove the specified resource from storage.
      *
      * @param string $id
      * @return JsonResponse
      */
-    public function delete(HelpCenter $helpCenter): JsonResponse {
-        $deleteRecord = $this->helpCenterRepository->delete($helpCenter);
+    public function destroy(HelpCenter $help_center): JsonResponse
+    {
+        $deleteRecord = $this->helpCenterRepository->delete($help_center);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    private function inputBody(array $details): array {
-        $body = array(
-                    'title'=>$details['title'],
-                    'description'=>$details['description'],
-                    'image_location'=>$details['image_location'],
-                    'order'=>$details['order'],
-                );
-        return $body;
     }
 }

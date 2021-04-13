@@ -2,8 +2,8 @@
 
 namespace App\Repositories\LogHistory;
 
-use App\Repositories\Repository;
 use App\Models\LogHistory;
+use App\Repositories\Repository;
 
 class LogHistoryRepository extends Repository implements ILogHistoryRepository
 {

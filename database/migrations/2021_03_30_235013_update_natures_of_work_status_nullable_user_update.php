@@ -15,7 +15,7 @@ class UpdateNaturesOfWorkStatusNullableUserUpdate extends Migration
     {
         Schema::table('natures_of_work', function (Blueprint $table) {
      
-            $table->string('user_updated')->nullable()->change();
+            $table->uuid('user_updated')->nullable()->change();
         });
     }
 
@@ -27,7 +27,7 @@ class UpdateNaturesOfWorkStatusNullableUserUpdate extends Migration
     public function down()
     {
         Schema::table('natures_of_work', function (Blueprint $table) {
-            $table->string('user_updated')->change();
+            $table->uuid('user_updated')->change();
         });
     }
 }

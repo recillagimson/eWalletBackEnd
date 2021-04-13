@@ -9,15 +9,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LogHistory extends Model
 {
-    use HasFactory, UsesUuid, SoftDeletes;
+    use HasFactory, SoftDeletes;
+    use UsesUuid;
+
+    protected $table ='log_histories';
 
     protected $fillable = [
-        'user_account_id',
-        'reference_number',
-        'namespace',
-        'remarks',
-        'user_created',
-        'user_updated',
-        'expires_at'
+        "user_account_id",
+        "reference_number",
+        "squidpay_module",
+        "namespace",
+        "transaction_date",
+        "remarks",
+        "operation",
+        "user_created",
+        "user_updated",
     ];
 }

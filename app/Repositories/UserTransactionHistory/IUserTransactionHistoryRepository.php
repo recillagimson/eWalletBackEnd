@@ -6,4 +6,5 @@ use App\Repositories\IRepository;
 
 interface IUserTransactionHistoryRepository extends IRepository
 {
+
 }
