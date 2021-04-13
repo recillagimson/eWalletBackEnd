@@ -12,4 +12,12 @@ class TierRepository extends Repository implements ITierRepository
     {
         parent::__construct($model);
     }
+
+    public function list($params = []) {
+        if(isset($params['search']) && $params['search'] != "") {
+            return $this->model->where('name', 'LIKE', '%' . $params['search'] . '%')->get();
+        } else {
+            return $this->model->get();
+        }
+    }
 }

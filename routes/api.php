@@ -117,7 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware(['decrypt.request'])->prefix('/tiers')->group(function (){
-        Route::get('/', [TierController::class, 'GetAll']);
+        Route::get('/', [TierController::class, 'index']);
         Route::post('/', [TierController::class, 'store']);
         Route::get('/{tier}', [TierController::class, 'show']);
         Route::put('/{tier}', [TierController::class, 'update']);

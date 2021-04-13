@@ -28,9 +28,11 @@ class TierController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function GetAll()
+    public function index(Request $request)
     {
-        $records = $this->iTierRepository->getAll();
+        // GET REQUEST VALUES
+        $params = $request->all();
+        $records = $this->iTierRepository->list($params);
         $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
