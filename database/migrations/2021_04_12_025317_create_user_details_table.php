@@ -50,7 +50,7 @@ class CreateUserDetailsTable extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
             $table->softDeletes();
-            $table->unique(array('lastName', 'firstname', 'middlename'));
+            // $table->unique(array('lastName', 'firstname', 'middlename'));
 
             $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->foreign('marital_status_id')->references('id')->on('marital_status');
