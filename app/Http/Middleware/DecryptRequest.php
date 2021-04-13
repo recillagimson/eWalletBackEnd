@@ -6,7 +6,6 @@ use App\Enums\ErrorCodes;
 use App\Services\Encryption\IEncryptionService;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 class DecryptRequest
@@ -17,12 +16,14 @@ class DecryptRequest
     {
         $this->encryptionService = $encService;
     }
+
     /**
      * Handle an incoming encrypted request.
      *
      * @param Request $request
      * @param Closure $next
      * @return mixed
+     * @throws ValidationException
      */
     public function handle(Request $request, Closure $next)
     {
@@ -42,7 +43,7 @@ class DecryptRequest
                 return $next($request);
             }
 
-            return response('',Response::HTTP_UNPROCESSABLE_ENTITY);
+            $this->payloadIsInvalid();
         }
 
         return $next($request);
