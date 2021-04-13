@@ -10,18 +10,22 @@ use Illuminate\Http\Response;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\MaritalStatusRequest;
 use App\Models\UserUtilities\MaritalStatus;
+use App\Services\UserProfile\IUserProfileService;
 
 class MaritalStatusController extends Controller
 {
 
     private IEncryptionService $encryptionService;
     private IMaritalStatusRepository $maritalStatusRepository;
+    private IUserProfileService $userProfileService;
     
     public function __construct(IMaritalStatusRepository $maritalStatusRepository,
-                                IEncryptionService $encryptionService)
+                                IEncryptionService $encryptionService,
+                                IUserProfileService $userProfileService)
     {
         $this->maritalStatusRepository = $maritalStatusRepository;
         $this->encryptionService = $encryptionService;
+        $this->userProfileService = $userProfileService;
     }
 
     /**
@@ -46,7 +50,7 @@ class MaritalStatusController extends Controller
     public function store(MaritalStatusRequest $request): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user());
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->maritalStatusRepository->create($inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
@@ -75,7 +79,7 @@ class MaritalStatusController extends Controller
     public function update(MaritalStatusRequest $request, MaritalStatus $marital_status): JsonResponse
     {
         $details = $request->validated();
-        $inputBody = $this->inputBody($details, $request->user(), $marital_status);
+        $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $marital_status);
         $updateRecord = $this->maritalStatusRepository->update($marital_status, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
@@ -93,15 +97,5 @@ class MaritalStatusController extends Controller
         $deleteRecord = $this->maritalStatusRepository->delete($marital_status);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    private function inputBody(array $details, object $userAccount, object $data=null): array {
-        if(!$data) {
-            $details['user_created'] = $userAccount->id;
-            $details['user_updated'] = $userAccount->id;
-        }else {
-            $details['user_updated'] = $userAccount->id;
-        }
-        return $details;
     }
 }
