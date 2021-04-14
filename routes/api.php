@@ -14,6 +14,7 @@ use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NotificationController;
 use App\Services\Transaction\TransactionService;
 use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
 use App\Http\Controllers\UserUtilities\SignupHostController;
@@ -124,6 +125,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{tier}', [TierController::class, 'show']);
         Route::put('/{tier}', [TierController::class, 'update']);
         Route::delete('/{tier}', [TierController::class, 'destroy']);
+    });
+
+    Route::middleware(['decrypt.request'])->prefix('/service/fees')->group(function (){
+        Route::get('/', [ServiceFeeController::class, 'index']);
+        Route::post('/', [ServiceFeeController::class, 'store']);
+        Route::get('/{serviceFee}', [ServiceFeeController::class, 'show']);
+        Route::put('/{serviceFee}', [ServiceFeeController::class, 'update']);
+        Route::delete('/{serviceFee}', [ServiceFeeController::class, 'destroy']);
     });
 });
 
