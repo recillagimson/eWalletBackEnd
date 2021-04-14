@@ -13,6 +13,8 @@ class CreateUserDetailsTable extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('user_details');
+
         Schema::create('user_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('entity_id', 50);
