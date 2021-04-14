@@ -25,10 +25,8 @@ class IdTypeRequest extends FormRequest
     {
         return [
             'type' => 'required',
-            'id' => 'required',
             'description' => 'required',
             'swirecommended' => 'required',
-            'status' => 'required',
         ];
     }
 }
