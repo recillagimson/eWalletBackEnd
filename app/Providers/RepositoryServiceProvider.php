@@ -26,8 +26,6 @@ use App\Repositories\UserAccount\UserAccountRepository;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
-use App\Repositories\ServiceFee\ServiceFeeRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
@@ -49,6 +47,10 @@ use App\Repositories\PinCodeHistory\PinCodeHistoryRepository;
 use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\PasswordHistory\PasswordHistoryRepository;
 use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\ServiceFee\ServiceFeeRepository;
+use App\Repositories\Tier\ITierRepository;
+use App\Repositories\Tier\TierRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserBalance\UserBalanceRepository;
 use App\Repositories\UserUtilities\Currency\ICurrencyRepository;
@@ -138,6 +140,12 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Add Money Repository
         $this->app->bind(IInAddMoneyRepository::class, InAddMoneyRepository::class);
+
+        // Tier Repository
+        $this->app->bind(ITierRepository::class, TierRepository::class);
+
+        // Service Fee Repository
+        $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
 
     }
 

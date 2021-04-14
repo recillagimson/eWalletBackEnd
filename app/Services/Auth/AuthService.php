@@ -378,7 +378,7 @@ class AuthService implements IAuthService
     private function invalidOtp(string $message)
     {
         throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::InvalidOTP,
+            'error_code' => ErrorCodes::OTPInvalid,
             'code' => $message
         ]);
     }

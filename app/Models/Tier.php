@@ -7,23 +7,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ServiceFee extends Model
+class Tier extends Model
 {
-    use HasFactory, SoftDeletes;
     use UsesUuid;
+    use HasFactory, SoftDeletes;
 
-    protected $table = 'service_fees';
+    protected $table = 'tiers';
 
     protected $fillable = [
-        "tier_id",
-        "transaction_category_id",
-        "amount",
-        "implementation_date",
+        "name",
+        "daily_limit",
+        "daily_threshold",
+        "monthly_limit",
+        "monthly_threshold",
+        "status",
         "user_created",
         "user_updated",
     ];
-
-    public function tier() {
-        return $this->hasOne(Tier::class, 'id', 'tier_id');
-    }
 }

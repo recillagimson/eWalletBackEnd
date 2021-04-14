@@ -42,13 +42,30 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $user = $this->authService->register($newUser, $usernameField);
 
-        $encryptedData = $this->encryptionService->encrypt($user->toArray());
         $response = [
             'message' => SuccessMessages::accountRegistered,
-            'data' => $this->encryptionService->encrypt($encryptedData)
+            'data' => $this->encryptionService->encrypt($user->toArray())
         ];
 
         return response()->json($response, Response::HTTP_CREATED);
+    }
+
+    /**
+     * Validates User Registration Inputs
+     *
+     * @param RegisterUserRequest $request
+     * @return JsonResponse
+     */
+    public function registerValidate(RegisterUserRequest $request): JsonResponse
+    {
+        $newUser = $request->validated();
+
+        $response = [
+            'message' => SuccessMessages::accountValidation,
+            'data' => $this->encryptionService->encrypt($newUser)
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**

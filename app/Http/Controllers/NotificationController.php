@@ -36,20 +36,20 @@ class NotificationController extends Controller
     }
 
     /**
-     * Create Record
+     * Store Record
      *
      * @param NotificationRequest $request
      * @return JsonResponse
      */
-    // public function create(NotificationRequest $request): JsonResponse {
-    //     $details = $request->validated();
-    //     // $inputBody = $this->inputBody($details);
-    //     $details['id'] = rand(0, 1000);
-    //     $createRecord = $this->iNotificationRepository->create($details);
+    public function store(NotificationRequest $request): JsonResponse {
+        $details = $request->validated();
+        // $inputBody = $this->inputBody($details);
+        // $details['id'] = rand(0, 1000);
+        $createRecord = $this->iNotificationRepository->create($details);
 
-    //     $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-    //     return response()->json($encryptedResponse, Response::HTTP_CREATED);
-    // }
+        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
+        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+    }
 
     /**
      * Show Record
@@ -57,10 +57,10 @@ class NotificationController extends Controller
      * @param Notification $news
      * @return JsonResponse
      */
-    // public function show(Notification $notification): JsonResponse {
-    //     $encryptedResponse = $this->encryptionService->encrypt($notification->toArray());
-    //     return response()->json($encryptedResponse, Response::HTTP_OK);
-    // }
+    public function show(Notification $notification): JsonResponse {
+        $encryptedResponse = $this->encryptionService->encrypt($notification->toArray());
+        return response()->json($encryptedResponse, Response::HTTP_OK);
+    }
 
     /**
      * Update Record
@@ -69,14 +69,14 @@ class NotificationController extends Controller
      * @param NotificationRequest $request
      * @return JsonResponse
      */
-    // public function update(Notification $notification, NotificationRequest $request): JsonResponse {
-    //     $details = $request->validated();
-    //     // $inputBody = $this->inputBody($details);
-    //     $updateRecord = $this->iNotificationRepository->update($notification, $details);
+    public function update(Notification $notification, NotificationRequest $request): JsonResponse {
+        $details = $request->validated();
+        // $inputBody = $this->inputBody($details);
+        $updateRecord = $this->iNotificationRepository->update($notification, $details);
 
-    //     $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-    //     return response()->json($encryptedResponse, Response::HTTP_OK);
-    // }
+        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
+        return response()->json($encryptedResponse, Response::HTTP_OK);
+    }
 
      /**
      * Delete Record
@@ -84,9 +84,9 @@ class NotificationController extends Controller
      * @param string $id
      * @return JsonResponse
      */
-    // public function delete(Notification $notification): JsonResponse {
-    //     $deleteRecord = $this->iNotificationRepository->delete($notification);
+    public function delete(Notification $notification): JsonResponse {
+        $deleteRecord = $this->iNotificationRepository->delete($notification);
 
-    //     return response()->json(null, Response::HTTP_NO_CONTENT);
-    // }
+        return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
 }

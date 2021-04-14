@@ -13,6 +13,8 @@ class CreateUserDetailsTable extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('user_details');
+
         Schema::create('user_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('entity_id', 50);
@@ -50,7 +52,7 @@ class CreateUserDetailsTable extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
             $table->softDeletes();
-            $table->unique(array('lastName', 'firstname', 'middlename'));
+            // $table->unique(array('lastName', 'firstname', 'middlename'));
 
             $table->foreign('user_account_id')->references('id')->on('user_accounts');
             $table->foreign('marital_status_id')->references('id')->on('marital_status');

@@ -1,26 +1,33 @@
 <?php
 
 use App\Http\Controllers\AddMoneyController;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TierController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\PayloadController;
-use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\SendMoneyController;
-use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\HelpCenterController;
+use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Services\Transaction\TransactionService;
+use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
-use App\Http\Controllers\UserUtilities\MaritalStatusController;
-use App\Http\Controllers\UserUtilities\NationalityController;
-use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SignupHostController;
+use App\Http\Controllers\UserUtilities\NationalityController;
+use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
+use App\Http\Controllers\UserUtilities\MaritalStatusController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -63,6 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
         Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/register/validate', [AuthController::class, 'registerValidate']);
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
 
@@ -83,7 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
             '/types' => IdTypeController::class,
         ]);
     });
-    
+
     Route::middleware(['decrypt.request'])->group(function () {
         Route::apiResources([
             'news' => NewsAndUpdateController::class,
@@ -98,6 +106,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
 
         Route::prefix('/user')->group(function (){
+            Route::get('/profile/{user_detail}', [UserProfileController::class, 'show']);
             Route::post('/profile', [UserProfileController::class, 'update']);
         });
     });
@@ -106,13 +115,29 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
     });
-    
+
     Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){
         Route::get('/', [NotificationController::class, 'GetAll']);
-        Route::post('/', [NotificationController::class, 'create']);
+        Route::post('/', [NotificationController::class, 'store']);
         Route::get('/{notification}', [NotificationController::class, 'show']);
         Route::put('/{notification}', [NotificationController::class, 'update']);
         Route::delete('/{notification}', [NotificationController::class, 'delete']);
+    });
+
+    Route::middleware(['decrypt.request'])->prefix('/tiers')->group(function (){
+        Route::get('/', [TierController::class, 'index']);
+        Route::post('/', [TierController::class, 'store']);
+        Route::get('/{tier}', [TierController::class, 'show']);
+        Route::put('/{tier}', [TierController::class, 'update']);
+        Route::delete('/{tier}', [TierController::class, 'destroy']);
+    });
+
+    Route::middleware(['decrypt.request'])->prefix('/service/fees')->group(function (){
+        Route::get('/', [ServiceFeeController::class, 'index']);
+        Route::post('/', [ServiceFeeController::class, 'store']);
+        Route::get('/{serviceFee}', [ServiceFeeController::class, 'show']);
+        Route::put('/{serviceFee}', [ServiceFeeController::class, 'update']);
+        Route::delete('/{serviceFee}', [ServiceFeeController::class, 'destroy']);
     });
 
     // Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
@@ -126,3 +151,5 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('/cashin')->group(function (){
     Route::get('/postback', [AddMoneyController::class, 'postBack']);
 });
+
+
