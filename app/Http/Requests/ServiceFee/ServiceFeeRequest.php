@@ -26,7 +26,7 @@ class ServiceFeeRequest extends FormRequest
         return [
             "tier_id" => 'required',
             "transaction_category_id" => 'required',
-            "implementation_date" => 'required',
+            "implementation_date" => 'required|date',
             "amount" => "required|min:0|integer"
         ];
     }
