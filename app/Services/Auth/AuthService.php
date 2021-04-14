@@ -111,7 +111,6 @@ class AuthService implements IAuthService
         return $this->generateLoginToken($user, TokenNames::userWebToken);
     }
 
-
     /**
      * Attempts to authenticate the user with the
      * provided credentials when using a mobile apps.
@@ -250,16 +249,12 @@ class AuthService implements IAuthService
      * @return array
      * @throws ValidationException
      */
-    public function verifyLogin(string $usernameField, string $username, string $otp): array
+    public function verifyLogin(string $usernameField, string $username, string $otp)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if(!$user) $this->accountDoesntExist();
 
         $this->verify($user->id, OtpTypes::login, $otp);
-        $user->verified = true;
-        $user->save();
-
-
     }
 
     /**
@@ -276,6 +271,25 @@ class AuthService implements IAuthService
         if(!$user) $this->accountDoesntExist();
 
         $this->verify($user->id, OtpTypes::passwordRecovery, $otp);
+    }
+
+    /**
+     * Generates an OTP for mobile login
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @throws ValidationException
+     */
+    public function generateMobileLoginOTP(string $usernameField, string $username)
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) $this->accountDoesntExist();
+
+        $identifier = OtpTypes::login.':'.$user->id;
+        $otp = $this->otpService->generate($identifier);
+        if(!$otp->status) $this->invalidOtp($otp->message);
+
+        $this->notificationService->sendLoginVerification($username, $otp->token);
     }
 
     /*
