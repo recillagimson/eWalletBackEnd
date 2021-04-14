@@ -24,8 +24,8 @@ class IdTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            'type' => 'required',
-            'description' => 'required',
+            'type' => 'required|max:50',
+            'description' => 'required|max:50',
             'swirecommended' => 'required',
         ];
     }

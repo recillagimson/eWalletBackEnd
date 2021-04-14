@@ -25,9 +25,9 @@ class NotificationRequest extends FormRequest
     {
         return [
             'user_account_id' => 'required',
-            'title' => 'required', 
+            'title' => 'required|max:50', 
             'status' => 'required', 
-            'description' => 'required', 
+            'description' => 'required|max:50', 
         ];
     }
 }
