@@ -20,7 +20,6 @@ use App\Services\Encryption\IEncryptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Psy\Util\Json;
 
 class AuthController extends Controller
 {
@@ -127,6 +126,8 @@ class AuthController extends Controller
         $login = $request->validated();
         $usernameField = $this->getUsernameField($request);
 
+        $this->authService->generateMobileLoginOTP($usernameField, $login[$usernameField]);
+
         $response = [
             'messsage' => SuccessMessages::loginValidationPassed,
             'data' => $this->encryptionService->encrypt([
@@ -206,15 +207,17 @@ class AuthController extends Controller
      * @param VerifyLoginRequest $request
      * @return JsonResponse
      */
-    public function verifyLogin(VerifyLoginRequest $request): JsonResponse
+    public function verifyMobileLogin(VerifyLoginRequest $request): JsonResponse
     {
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
-        $loginResponse = $this->authService->verifyLogin($usernameField, $data[$usernameField], $data['code']);
+        $this->authService->verifyLogin($usernameField, $data[$usernameField], $data['code']);
 
         $response = [
             'message' => SuccessMessages::loginVerificationSuccessful,
-            'data' => $this->encryptionService->encrypt($loginResponse)
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $data[$usernameField]
+            ])
         ];
 
         return response()->json($response, Response::HTTP_OK);
