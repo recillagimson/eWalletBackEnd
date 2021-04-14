@@ -14,9 +14,12 @@ class CreateServiceFeesTable extends Migration
     public function up()
     {
         Schema::create('service_fees', function (Blueprint $table) {
-            // $table->id();
             $table->uuid('id')->primary();
-
+            $table->uuid('tier_id')->references('id')->on('tiers')->onDelete('restrict');
+            $table->uuid('transaction_category_id')->references('id')->on('transaction_categories')->onDelete('restrict');;
+            $table->dateTime('implementation_date');
+            $table->uuid('user_created')->references('id')->on('user_accounts')->onDelete('restrict');
+            $table->uuid('user_updated')->references('id')->on('user_accounts')->onDelete('restrict');
             $table->timestamps();
             $table->softDeletes();
         });
