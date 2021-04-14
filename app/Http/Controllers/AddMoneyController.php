@@ -34,7 +34,7 @@ class AddMoneyController extends Controller
         $addMoney = $this->addMoneyService->addMoney($user, $requestParams);
         $encryptedResponse = $this->encryptionService->encrypt(array($addMoney));
 
-        return response()->json($addMoney, Response::HTTP_OK);
+        return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
     public function postBack(DragonPayPostBackRequest $request)
@@ -44,7 +44,7 @@ class AddMoneyController extends Controller
         $postBack = $this->postBackService->insertPostBackData($postBackData);
         $encryptedResponse = $this->encryptionService->encrypt(array($postBack));
 
-        return response()->json($postBack, Response::HTTP_OK);
+        return response()->json($encryptedResponse, Response::HTTP_OK);
     }
 
     public function cancel(AddMoneyCancelRequest $request)

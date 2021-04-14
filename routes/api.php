@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AddMoneyController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -8,15 +7,12 @@ use App\Http\Controllers\TierController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\PayloadController;
+use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\UserPhotoController;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserUtilities\UserProfileController;
 use App\Services\Transaction\TransactionService;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\ServiceFeeController;
@@ -140,8 +136,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{serviceFee}', [ServiceFeeController::class, 'destroy']);
     });
 
-    // Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
-    Route::prefix('/cashin')->group(function (){
+    Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
         Route::post('/', [AddMoneyController::class, 'addMoney']);
         Route::post('/cancel', [AddMoneyController::class, 'cancel']);
     });
