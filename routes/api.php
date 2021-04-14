@@ -11,7 +11,6 @@ use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserPhotoController;
-use App\Services\Transaction\TransactionService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserUtilities\UserProfileController;
@@ -116,7 +115,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{notification}', [NotificationController::class, 'delete']);
     });
 
-    Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
+    // Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
+    Route::prefix('/cashin')->group(function (){
         Route::post('/', [AddMoneyController::class, 'addMoney']);
         Route::post('/cancel', [AddMoneyController::class, 'cancel']);
     });

@@ -5,7 +5,7 @@ namespace App\Services\AddMoney\Providers;
 use App\Enums\DragonPayStatusTypes;
 use App\Enums\TransactionCategories;
 use App\Models\UserAccount;
-use App\Repositories\AddMoney\IWebBankRepository;
+use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
@@ -67,16 +67,14 @@ class DragonPayService implements IAddMoneyService
      */
     protected $tier;
 
-    private IWebBankRepository $webBanks;
-    private IUserAccountRepository $userAccounts;
+    private IInAddMoneyRepository $addMoneys;
     private IUserDetailRepository $userDetails;
     private IServiceFeeRepository $serviceFees;
     private IReferenceNumberService $referenceNumberService;
     private ILogHistoryRepository $logHistory;
     private ITransactionCategoryRepository $transactionCategories;
-    private IUserTransactionHistoryRepository $userTransactions;
 
-    public function __construct(IWebBankRepository $webBanks, 
+    public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
                                 IUserDetailRepository $userDetails,
                                 IServiceFeeRepository $serviceFees,
@@ -90,7 +88,7 @@ class DragonPayService implements IAddMoneyService
         $this->key = config('dragonpay.dp_key');
         $this->moduleTransCategory = TransactionCategories::AddMoneyWebBankDragonPay;
 
-        $this->webBanks = $webBanks;
+        $this->addMoneys = $addMoneys;
         $this->userAccounts = $userAccounts;
         $this->userDetails = $userDetails;
         $this->serviceFees = $serviceFees;
@@ -144,14 +142,16 @@ class DragonPayService implements IAddMoneyService
         $currentAddMoneyRecord = null;
         if ($response->status() == 200 || $response->status() == 201) {
 
-            $currentAddMoneyRecord = $this->insertAddMoneyRecord($userAccountID, 
-                                        $txnID, 
-                                        $this->formatAmount($amount), 
-                                        $addMoneyServiceFee->amount, 
-                                        $addMoneyServiceFee->id, 
-                                        $totalAmount, 
-                                        $transactionCategoryID->id, 
-                                        $body['Description']);
+            $currentAddMoneyRecord = $this->insertAddMoneyRecord(
+                $userAccountID, 
+                $txnID, 
+                $this->formatAmount($amount), 
+                $addMoneyServiceFee->amount, 
+                $addMoneyServiceFee->id, 
+                $totalAmount, 
+                $transactionCategoryID->id, 
+                $body['Description']
+            );
         }
 
         $this->logGenerateURLInLogHistory($currentAddMoneyRecord->reference_number);
@@ -211,7 +211,10 @@ class DragonPayService implements IAddMoneyService
     public function getFullname(string $userAccountID)
     {
         $userDetails = $this->userDetails->getByUserAccountID($userAccountID);
-        return $userDetails->firstname . ' ' . $userDetails->lastName;
+
+        if ($userDetails == null) $this->noUserDetailsFound();
+
+        return $userDetails->first_name . ' ' . $userDetails->last_name;
     }
 
     /**
@@ -294,13 +297,14 @@ class DragonPayService implements IAddMoneyService
             'service_fee_id' => $serviceFeeID,
             'total_amount' => $totalAmount,
             'dragonpay_reference' => null,
+            'transaction_date' => Carbon::now(),
             'transaction_category_id' => $transactionCategoryID,
             'transaction_remarks' => $transactionRemarks,
             'user_created' => $userAccountID,
             'status' => 'PENDING',
         ];
 
-        return $rowInserted = $this->webBanks->create($row);
+        return $rowInserted = $this->addMoneys->create($row);
 
         if (!$rowInserted) return $this->cantWriteToTable();
     }
@@ -375,7 +379,7 @@ class DragonPayService implements IAddMoneyService
     {
         $referenceNumber = $referenceNumber['reference_number'];
 
-        $addMoneyRecord = $this->webBanks->getByReferenceNumber($referenceNumber);
+        $addMoneyRecord = $this->addMoneys->getByReferenceNumber($referenceNumber);
 
         if ($addMoneyRecord == null) throw new ModelNotFoundException();
 
@@ -388,7 +392,7 @@ class DragonPayService implements IAddMoneyService
 
         if ($response->Status < 0) return $this->nonPendingTrans();
 
-        $this->webBanks->update($addMoneyRecord, ['status' => DragonPayStatusTypes::Void]);
+        $this->addMoneys->update($addMoneyRecord, ['status' => DragonPayStatusTypes::Void]);
         
         return $responseData = (object) [
             'status' => true,
@@ -408,8 +412,10 @@ class DragonPayService implements IAddMoneyService
             'user_account_id' => $this->userAccountID,
             'reference_number' => $referenceNumber,
             'namespace' => __METHOD__,
+            'transaction_date' => Carbon::now(),
             'remarks' => 'Requests to generate URL for adding money',
-            'user_created' => $this->userAccountID
+            'user_created' => $this->userAccountID,
+            'user_updated' => $this->userAccountID
         ]);
     }
 
@@ -543,6 +549,17 @@ class DragonPayService implements IAddMoneyService
     {
         throw ValidationException::withMessages([
             'reference_number' => 'Cannot void a non-pending transaction.'
+        ]);
+    }
+
+    /**
+     * Thrown when the user's details are not found in the 
+     * table
+     */
+    private function noUserDetailsFound()
+    {
+        throw ValidationException::withMessages([
+            'user_details' => 'Current user`s details can`t be found'
         ]);
     }
 }

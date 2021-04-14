@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Repositories\AddMoney;
+namespace App\Repositories\InAddMoney;
 
 use App\Repositories\IRepository;
 
-interface IWebBankRepository extends IRepository
+interface IInAddMoneyRepository extends IRepository
 {
     public function getLastByReferenceNumber();
     public function getByReferenceNumber(string $referenceNumber);

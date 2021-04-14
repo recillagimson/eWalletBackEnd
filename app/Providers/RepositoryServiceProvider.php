@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Repositories\AddMoney\IWebBankRepository;
-use App\Repositories\AddMoney\WebBankRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\IdType\IdTypeRepository;
@@ -19,6 +17,8 @@ use App\Repositories\HelpCenter\HelpCenterRepository;
 use App\Repositories\LogHistory\LogHistoryRepository;
 use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
+use App\Repositories\InAddMoney\IInAddMoneyRepository;
+use App\Repositories\InAddMoney\InAddMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\PrepaidLoad\PrepaidLoadRepository;
@@ -106,7 +106,6 @@ class RepositoryServiceProvider extends ServiceProvider
         //Utilities Repositories
         $this->app->bind(IOtpRepository::class, OtpRepository::class);
 
-        $this->app->bind(IWebBankRepository::class, WebBankRepository::class);
         $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
         $this->app->bind(IUserDetailRepository::class, UserDetailRepository::class);
@@ -136,6 +135,9 @@ class RepositoryServiceProvider extends ServiceProvider
         
         // User Transaction History
         $this->app->bind(IUserTransactionHistoryRepository::class, UserTransactionHistoryRepository::class);
+
+        // Add Money Repository
+        $this->app->bind(IInAddMoneyRepository::class, InAddMoneyRepository::class);
 
     }
 

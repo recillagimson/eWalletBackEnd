@@ -13,15 +13,16 @@ class UserDetail extends Model
 
     protected $table = 'user_details';
     protected $fillable = [
-        'user_account_id',
         'entity_id',
-        'lastName',
-        'firstname',
-        'middlename',
+        'user_account_id',
+        'title',
+        'last_name',
+        'first_name',
+        'middle_name',
         'name_extension',
-        'birthdate',
+        'birth_date',
         'place_of_birth',
-        'maritial_status_id',
+        'marital_status_id',
         'nationality_id',
         'encoded_nationality',
         'occupation',

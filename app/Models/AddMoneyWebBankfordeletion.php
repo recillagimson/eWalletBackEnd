@@ -7,11 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AddMoneyWebBank extends Model
+class AddMoneyWebBankfordeletion extends Model
 {
     use HasFactory, UsesUuid, SoftDeletes;
 
-    protected $table = 'in_add_money_web_banks';
     protected $fillable = [
         'user_account_id',
         'online_bank_or_over_the_counter_list_id',

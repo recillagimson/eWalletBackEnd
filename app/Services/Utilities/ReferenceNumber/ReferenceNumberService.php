@@ -3,14 +3,14 @@
 namespace App\Services\Utilities\ReferenceNumber;
 
 use App\Enums\ReferenceNumberTypes;
-use App\Repositories\AddMoney\IWebBankRepository;
+use App\Repositories\InAddMoney\IInAddMoneyRepository;
 
 class ReferenceNumberService implements IReferenceNumberService
 {
-    public IWebBankRepository $webBanks;
+    public IInAddMoneyRepository $addMoneys;
 
-    public function __construct(IWebBankRepository $webBanks) {
-        $this->webBanks = $webBanks;
+    public function __construct(IInAddMoneyRepository $addMoneys) {
+        $this->addMoneys = $addMoneys;
     }
 
     /**
@@ -21,7 +21,7 @@ class ReferenceNumberService implements IReferenceNumberService
      */
     public function getAddMoneyRefNo()
     {
-        $lastRefNoRow = $this->webBanks->getLastByReferenceNumber();
+        $lastRefNoRow = $this->addMoneys->getLastByReferenceNumber();
 
         if (!isset($lastRefNoRow->reference_number)) {
             $lastRefNoRow['reference_number'] = 0;

@@ -30,11 +30,6 @@ class TransactionCategory extends Model
         'description',
         'status',
         'user_created',
-<<<<<<< HEAD
         'user_updated',
     ];
-=======
-    ];
-
->>>>>>> master
 }

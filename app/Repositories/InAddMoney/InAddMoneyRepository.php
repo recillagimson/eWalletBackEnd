@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Repositories\AddMoney;
+namespace App\Repositories\InAddMoney;
 
-use App\Models\AddMoneyWebBank;
+use App\Models\InAddMoneyFromBank;
 use App\Repositories\Repository;
 
-class WebBankRepository extends Repository implements IWebBankRepository
+class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
 {
-    public function __construct(AddMoneyWebBank $model) {
+    public function __construct(InAddMoneyFromBank $model) {
         parent::__construct($model);
     }
 
