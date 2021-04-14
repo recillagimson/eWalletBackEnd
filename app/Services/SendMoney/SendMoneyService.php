@@ -8,6 +8,7 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
+use Illuminate\Http\JsonResponse;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -73,6 +74,19 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
+    public function scanQr(string $id):array
+    {
+        $qrTransaction = $this->qrTransactions->get($id);
+        $user = $this->userAccounts->get($qrTransaction->user_account_id);
+
+        if ($user->mobile_number) {
+            return ['mobile_number' => $user->mobile_number, 'amount' => $qrTransaction->amount, 'message' => ''];
+        }
+        return ['email' => $user->email , 'amount' => $qrTransaction->amount, 'message' => ''];
+    }
+
+
+
     private function qrOrSendMoney(string $username,array $fillRequest)
     {
         if (!empty($fillRequest['recipient_account_id'])){
@@ -133,7 +147,6 @@ class SendMoneyService implements ISendMoneyService
         $newBalance = $receiverBalance + $fillRequest['amount'];
         $this->userBalanceInfo->updateUserBalance($receiverID, $newBalance);
     }
-
 
 
     public function outSendMoney(string $senderID, string $receiverID, array $fillRequest) 

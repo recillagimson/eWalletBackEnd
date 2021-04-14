@@ -15,7 +15,6 @@ class QrTransactions extends Model
         'user_account_id',
         'amount',
         'status',
-        'user_created',
         'user_updated',
         'user_created',
     ];

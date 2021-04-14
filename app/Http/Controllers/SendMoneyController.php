@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\SendMoney\GenerateQrRequest;
+use App\Http\Requests\SendMoney\ScanQrRequest;
 use App\Services\Encryption\IEncryptionService;
 
 class SendMoneyController extends Controller
@@ -37,7 +38,6 @@ class SendMoneyController extends Controller
      public function send(SendMoneyRequest $request)
     {
         $fillRequest = $request->validated();
-      
         $username = $this->getUsernameField($request);
         $this->sendMoneyService->send($username, $fillRequest, $request->user());
 
@@ -61,14 +61,30 @@ class SendMoneyController extends Controller
         $fillRequest = $request->validated();
         $qrTransaction = $this->sendMoneyService->generateQR($request->user(), $fillRequest);
         $encryptedResponse = $this->encryptionService->encrypt([
-            'recipient_account_id' => $qrTransaction->user_account_id,
-            'amount' => $qrTransaction->amount,
-            'message' => ''
+            'id' => $qrTransaction->id,
         ]);
 
         return response()->json($encryptedResponse, Response::HTTP_CREATED);
     }
 
+
+    /**
+     * Scan Qr Transaction
+     *
+     * @param ScanQrRequest $request
+     * @param array $fillRequest
+     * @param array $qrTransaction
+     * @param string $encryptedResponse
+     * @return JsonResponse
+     */
+    public function scanQr(ScanQrRequest $request): JsonResponse
+    {
+        $fillRequest = $request->validated();
+        $qrTransaction = $this->sendMoneyService->scanQr($fillRequest['id']);
+        $encryptedResponse = $this->encryptionService->encrypt($qrTransaction);
+
+        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+    }
 
     /**
      * Returns UsernameType
