@@ -3,6 +3,7 @@
 
 namespace App\Services\Utilities\OTP;
 
+use App\Enums\ErrorCodes;
 use App\Repositories\OtpRepository\IOtpRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -146,7 +147,7 @@ class OtpService implements IOtpService
     {
         $otp = $this->otps->getByIdentifier($identifier);
 
-        if (!$otp) $this->otpNotFound();
+        if (!$otp) $this->otpInvalid();
         if ($otp->isExpired()) $this->otpIsExpired();
         if ($otp->no_times_attempted == $this->allowedAttempts) $this->otpMaxedAttempts();
 
@@ -168,7 +169,7 @@ class OtpService implements IOtpService
     public function ensureValidated(string $identifier)
     {
         $otp = $this->otps->getByIdentifier($identifier, true);
-        if (!$otp) $this->otpNotFound();
+        if (!$otp) $this->otpInvalid();
         if ($otp->isExpired()) $this->otpIsExpired();
         if (!$otp->validated) $this->otpInvalid();
     }
@@ -211,16 +212,10 @@ class OtpService implements IOtpService
         return $pin;
     }
 
-    private function otpNotFound()
-    {
-        throw ValidationException::withMessages([
-            'message' => 'OTP does not exists, Please generate new OTP'
-        ]);
-    }
-
     private function otpIsExpired()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::OTPExpired,
             'message' => 'OTP is expired'
         ]);
     }
@@ -228,6 +223,7 @@ class OtpService implements IOtpService
     private function otpMaxedAttempts()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::OTPMaxedAttempts,
             'message' => 'Reached the maximum allowed attempts'
         ]);
     }
@@ -235,6 +231,7 @@ class OtpService implements IOtpService
     private function otpInvalid()
     {
         throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::OTPInvalid,
             'message' => 'OTP is invalid.'
         ]);
     }

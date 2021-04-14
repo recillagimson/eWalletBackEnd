@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="- Added a validation error code when the payload cannot be decrypted">
+    <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="- Fixed issues on nested encryption of registration response">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Enums/ErrorCodes.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/ErrorCodes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/OTP/OtpService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/OTP/OtpService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -243,7 +248,7 @@
       <workItem from="1618272306292" duration="316000" />
       <workItem from="1618272638546" duration="5052000" />
       <workItem from="1618319460113" duration="4061000" />
-      <workItem from="1618346466129" duration="596000" />
+      <workItem from="1618346466129" duration="3616000" />
     </task>
     <task id="LOCAL-00001" summary="Added endpoints for register and login without payload encryption">
       <created>1616009107809</created>
@@ -462,7 +467,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618330407265</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="- Fixed issues on nested encryption of registration response">
+      <created>1618347090681</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1618347090681</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -498,7 +510,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added endpoints for register and login without payload encryption" />
     <MESSAGE value="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption" />
     <MESSAGE value="SVC-40 SVC-41 #comment Added request and response encryption on login &amp; register endpoint. Also added utility endpoint for encrypting / decrypting requests/responses to be used by developers" />
     <MESSAGE value="SVC-42 #comment Added forgot password, otp verification &amp; reset password endpoints" />
@@ -523,7 +534,8 @@
     <MESSAGE value="SVC-40 &#10;- Revised login flow for web clients to only email/mobile number &amp; password only.&#10;- Added a separate endpoint for mobile login" />
     <MESSAGE value="SVC-40 &#10;- Fixed issue on login with non-existent user&#10;- Fixed unencrypted responses on authentication endpoints" />
     <MESSAGE value="- Added a validation error code when the payload cannot be decrypted" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Added a validation error code when the payload cannot be decrypted" />
+    <MESSAGE value="- Fixed issues on nested encryption of registration response" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Fixed issues on nested encryption of registration response" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

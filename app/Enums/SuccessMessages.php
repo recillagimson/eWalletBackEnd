@@ -10,6 +10,7 @@ class SuccessMessages
     const loginVerificationSuccessful = 'Login verification successful';
 
     const accountRegistered = 'Account registration successful.';
+    const accountValidation = 'Account validation successful';
     const accountVerification = 'Account verification successful.';
 
     const passwordRecoveryRequestSuccessful = 'Password recovery request successful';
