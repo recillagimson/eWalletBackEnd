@@ -7,8 +7,10 @@ use App\Enums\UsernameTypes;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
+use App\Http\Requests\Auth\MobileLoginValidateRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\ValidateNewUserRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Http\Requests\Auth\VerifyLoginRequest;
 use App\Http\Requests\Auth\VerifyPasswordRequest;
@@ -18,6 +20,7 @@ use App\Services\Encryption\IEncryptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Psy\Util\Json;
 
 class AuthController extends Controller
 {
@@ -53,16 +56,19 @@ class AuthController extends Controller
     /**
      * Validates User Registration Inputs
      *
-     * @param RegisterUserRequest $request
+     * @param ValidateNewUserRequest $request
      * @return JsonResponse
      */
-    public function registerValidate(RegisterUserRequest $request): JsonResponse
+    public function registerValidate(ValidateNewUserRequest $request): JsonResponse
     {
         $newUser = $request->validated();
+        $usernameField = $this->getUsernameField($request);
 
         $response = [
-            'message' => SuccessMessages::accountValidation,
-            'data' => $this->encryptionService->encrypt($newUser)
+            'message' => SuccessMessages::accountValidationPassed,
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $newUser[$usernameField]
+            ])
         ];
 
         return response()->json($response, Response::HTTP_OK);
@@ -105,6 +111,27 @@ class AuthController extends Controller
         $response = [
             'message' => SuccessMessages::loginSuccessful,
             'data' => $this->encryptionService->encrypt($loginResponse)
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
+     * Validate mobile login
+     *
+     * @param MobileLoginValidateRequest $request
+     * @return JsonResponse
+     */
+    public function mobileLoginValidate(MobileLoginValidateRequest $request): JsonResponse
+    {
+        $login = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+
+        $response = [
+            'messsage' => SuccessMessages::loginValidationPassed,
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $login[$usernameField]
+            ])
         ];
 
         return response()->json($response, Response::HTTP_OK);

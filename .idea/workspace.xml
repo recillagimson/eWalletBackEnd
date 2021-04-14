@@ -3,13 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="96d022c4-9cde-482a-a4b6-1b1c57d0a7a8" name="Default Changelist" comment="- Fixed issues on nested encryption of registration response">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Enums/ErrorCodes.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/ErrorCodes.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Enums/SuccessMessages.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/UserAccount.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/UserAccount.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Auth/AuthService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Services/Utilities/OTP/OtpService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Services/Utilities/OTP/OtpService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
+    <list id="b08d72b1-5cb6-4b44-8647-8aa8c806c2df" name="- Added initial validation endpoint for register" comment="- Added initial validation endpoint for register" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,7 +23,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="SVC-40" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -248,7 +247,7 @@
       <workItem from="1618272306292" duration="316000" />
       <workItem from="1618272638546" duration="5052000" />
       <workItem from="1618319460113" duration="4061000" />
-      <workItem from="1618346466129" duration="3616000" />
+      <workItem from="1618346466129" duration="7445000" />
     </task>
     <task id="LOCAL-00001" summary="Added endpoints for register and login without payload encryption">
       <created>1616009107809</created>
@@ -474,7 +473,14 @@
       <option name="project" value="LOCAL" />
       <updated>1618347090681</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="- Added initial validation endpoint for register">
+      <created>1618399903707</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1618399903707</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -496,7 +502,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="SVC-42" />
+                        <option value="SVC-54" />
                       </list>
                     </value>
                   </entry>
@@ -510,7 +516,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="SVC-40 SVC-41 #comment Added working endpoints for register and login without payload encryption" />
     <MESSAGE value="SVC-40 SVC-41 #comment Added request and response encryption on login &amp; register endpoint. Also added utility endpoint for encrypting / decrypting requests/responses to be used by developers" />
     <MESSAGE value="SVC-42 #comment Added forgot password, otp verification &amp; reset password endpoints" />
     <MESSAGE value="fixed error on null payloads on client app login endpoint" />
@@ -535,7 +540,8 @@
     <MESSAGE value="SVC-40 &#10;- Fixed issue on login with non-existent user&#10;- Fixed unencrypted responses on authentication endpoints" />
     <MESSAGE value="- Added a validation error code when the payload cannot be decrypted" />
     <MESSAGE value="- Fixed issues on nested encryption of registration response" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Fixed issues on nested encryption of registration response" />
+    <MESSAGE value="- Added initial validation endpoint for register" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Added initial validation endpoint for register" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
