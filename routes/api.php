@@ -64,6 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
         Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/register/validate', [AuthController::class, 'registerValidate']);
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
 
@@ -84,7 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
             '/types' => IdTypeController::class,
         ]);
     });
-    
+
     Route::middleware(['decrypt.request'])->group(function () {
         Route::apiResources([
             'news' => NewsAndUpdateController::class,
@@ -99,6 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
 
         Route::prefix('/user')->group(function (){
+            Route::get('/profile/{user_detail}', [UserProfileController::class, 'show']);
             Route::post('/profile', [UserProfileController::class, 'update']);
         });
     });
@@ -107,7 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
     });
-    
+
     Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){
         Route::get('/', [NotificationController::class, 'GetAll']);
         Route::post('/', [NotificationController::class, 'store']);
@@ -125,4 +127,4 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-    
+

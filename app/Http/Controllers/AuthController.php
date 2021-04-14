@@ -51,6 +51,24 @@ class AuthController extends Controller
     }
 
     /**
+     * Validates User Registration Inputs
+     *
+     * @param RegisterUserRequest $request
+     * @return JsonResponse
+     */
+    public function registerValidate(RegisterUserRequest $request): JsonResponse
+    {
+        $newUser = $request->validated();
+
+        $response = [
+            'message' => SuccessMessages::accountValidation,
+            'data' => $this->encryptionService->encrypt($newUser)
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
      * Authenticates a web client user
      *
      * @param LoginRequest $request
