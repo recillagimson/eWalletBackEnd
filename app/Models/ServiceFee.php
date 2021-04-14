@@ -17,8 +17,13 @@ class ServiceFee extends Model
     protected $fillable = [
         "tier_id",
         "transaction_category_id",
+        "amount",
         "implementation_date",
         "user_created",
         "user_updated",
     ];
+
+    public function tier() {
+        return $this->hasOne(Tier::class, 'id', 'tier_id');
+    }
 }

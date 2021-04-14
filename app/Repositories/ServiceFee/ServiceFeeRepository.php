@@ -11,4 +11,14 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
     {
         parent::__construct($model);
     }
+
+    public function list($params = []) {
+        if(isset($params['search']) && $params['search'] != "") {
+            return $this->model->whereHas('tier', function($query) use($params) {
+                $query->where('name', 'LIKE', '%' . $params['search'] . '%');
+            })->get();
+        } else {
+            return $this->model->get();
+        }
+    }
 }
