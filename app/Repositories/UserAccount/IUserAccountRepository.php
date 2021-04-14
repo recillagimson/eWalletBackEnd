@@ -6,5 +6,5 @@ use App\Repositories\IRepository;
 
 interface IUserAccountRepository extends IRepository
 {
-    // public function getByUsername(string $usernameField, string $username);
+    public function getByUsername(string $usernameField, string $username);
 }

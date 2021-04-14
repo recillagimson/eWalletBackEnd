@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
 use App\Http\Requests\Auth\MobileLoginValidateRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
+use App\Http\Requests\Auth\ResendOtpRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\ValidateNewUserRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
@@ -93,7 +94,6 @@ class AuthController extends Controller
 
         return response()->json($response, Response::HTTP_OK);
     }
-
 
     /**
      * Authenticates a mobile app user
@@ -223,7 +223,6 @@ class AuthController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
-
     /**
      * Verifies and validates otp for password recovery
      *
@@ -246,6 +245,27 @@ class AuthController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
+    /**
+     * Generic method for resending otp
+     *
+     * @param ResendOtpRequest $request
+     * @return JsonResponse
+     */
+    public function resendOTP(ResendOtpRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $this->authService->sendOTP($usernameField, $data[$usernameField], $data['otp_type']);
+
+        $response = [
+            'message' => SuccessMessages::otpSent,
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $data[$usernameField]
+            ])
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
 
     /**
      * Get the authenticated user
@@ -259,8 +279,6 @@ class AuthController extends Controller
         if (!$user instanceof UserAccount) return response()->json(null, Response::HTTP_UNAUTHORIZED);
         return response()->json($request->user(), Response::HTTP_OK);
     }
-
-
 
     private function getUsernameField(Request $request): string
     {

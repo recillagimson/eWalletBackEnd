@@ -71,6 +71,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
 
+        Route::post('/resend/otp', [AuthController::class, 'resendOTP']);
+
         Route::prefix('/verify')->group(function () {
             Route::post('/account', [AuthController::class, 'verifyAccount']);
             Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin']);
