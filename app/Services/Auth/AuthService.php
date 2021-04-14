@@ -107,7 +107,7 @@ class AuthService implements IAuthService
             $this->loginFailed();
         }
 
-        $user->deleteTokensByName(TokenNames::userWebToken);
+        $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userWebToken);
     }
 
@@ -133,7 +133,7 @@ class AuthService implements IAuthService
             $this->loginFailed();
         }
 
-        $user->deleteTokensByName(TokenNames::userMobileToken);
+        $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken);
     }
 
