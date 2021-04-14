@@ -15,4 +15,8 @@ class ErrorCodes
     const InvalidOTP = 106;
     const PasswordUsed = 107;
     const PasswordNotAged = 108;
+
+    //ENCRYPTION ERRORS - 150
+    const PayloadInvalid = 151;
+
 }
