@@ -13,7 +13,7 @@ class UpdateUserAccountStatusFieldNullableInUserDetailTable extends Migration
      */
     public function up()
     {
-        Schema::table('user_detail', function (Blueprint $table) {
+        Schema::table('user_details', function (Blueprint $table) {
             $table->string('user_account_status', 10)->nullable()->change();
         });
     }
