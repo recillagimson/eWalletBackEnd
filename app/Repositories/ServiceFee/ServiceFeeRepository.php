@@ -4,6 +4,7 @@ namespace App\Repositories\ServiceFee;
 
 use App\Models\ServiceFee;
 use App\Repositories\Repository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ServiceFeeRepository extends Repository implements IServiceFeeRepository
 {
@@ -34,5 +35,18 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         else {
             return $this->model->get();
         }
+    }
+
+    public function getAmountByTransactionAndTier(string $transactionCategoryId, string $tierId) {
+        $amount = $this->model->where('tier_id', $tierId)
+                ->where('transactionCategoryId', $transactionCategoryId)
+                ->first();
+
+        if($amount) {
+            return $amount->amount;
+        }
+
+        // throw error if not found
+        throw new ModelNotFoundException('Service Fee record not found');
     }
 }
