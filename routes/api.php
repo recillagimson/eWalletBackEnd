@@ -103,10 +103,10 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::prefix('send/money')->group(function () {
+    Route::prefix('send/money')->middleware(['decrypt.request'])->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
-        Route::get('/scan/qr', [SendMoneyController::class, 'scanQr']);
+        Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
     });
     
     Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){

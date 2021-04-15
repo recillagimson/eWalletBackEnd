@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SuccessMessages;
 use Illuminate\Http\Request;
 use App\Http\Requests\SendMoney\SendMoneyRequest;
 use Illuminate\Http\JsonResponse;
@@ -33,18 +34,19 @@ class SendMoneyController extends Controller
      * @param string $username
      * @param string $encryptedResponse
      * @return JsonResponse
-     * @throws ValidationException
      */
-     public function send(SendMoneyRequest $request)
+     public function send(SendMoneyRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
         $username = $this->getUsernameField($request);
-        $this->sendMoneyService->send($username, $fillRequest, $request->user());
+         $this->sendMoneyService->send($username, $fillRequest, $request->user());
 
-        $encryptedResponse = $this->encryptionService->encrypt([ "status" => "success"]);
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        $response = [
+            'message' => SuccessMessages::sendMoneySuccessFul,
+            'data' => $this->encryptionService->encrypt(['status' => 'success'])
+        ];
+        return response()->json($response, Response::HTTP_CREATED);
     }
-
 
 
     /**
@@ -60,11 +62,13 @@ class SendMoneyController extends Controller
     {
         $fillRequest = $request->validated();
         $qrTransaction = $this->sendMoneyService->generateQR($request->user(), $fillRequest);
-        $encryptedResponse = $this->encryptionService->encrypt([
-            'id' => $qrTransaction->id,
-        ]);
 
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        $response = [
+            'message' => SuccessMessages::generateQrSuccessful,
+            'data' =>  $this->encryptionService->encrypt(['id' => $qrTransaction->id])
+        ];
+       
+        return response()->json($response, Response::HTTP_CREATED);
     }
 
 
@@ -77,13 +81,16 @@ class SendMoneyController extends Controller
      * @param string $encryptedResponse
      * @return JsonResponse
      */
-    public function scanQr(ScanQrRequest $request): JsonResponse
+    public function scanQr(ScanQrRequest $request)//: JsonResponse
     {
         $fillRequest = $request->validated();
         $qrTransaction = $this->sendMoneyService->scanQr($fillRequest['id']);
-        $encryptedResponse = $this->encryptionService->encrypt($qrTransaction);
+        $response = [
+            'message' => SuccessMessages::scanQrSuccessful,
+            'data' =>  $this->encryptionService->encrypt($qrTransaction)
+        ];
 
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        return response()->json($response, Response::HTTP_CREATED);
     }
 
     /**
