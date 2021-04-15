@@ -28,6 +28,7 @@ class ServiceFeeController extends Controller
      */
     public function index(Request $request)
     {
+        dd($this->iServiceFeeRepository->getAmountByTransactionAndUserAccountId("0ec41025-9131-11eb-b44f-1c1b0d14e211", "1"));
         // GET REQUEST VALUES
         $params = $request->all();
         $records = $this->iServiceFeeRepository->list($params);

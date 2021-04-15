@@ -38,16 +38,17 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         }
     }
 
-    public function getAmountByTransactionAndTier(string $transactionCategoryId, string $userAccountId) {
+    public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $userAccountId) {
         // Get User 
         $user = UserAccount::with(['tier'])->where('id', $userAccountId)->first();
-
         if($user) {
-            $amount = $this->model->where('tier_id', $userAccountId)
-                    ->select(['id', 'amount'])
-                    ->where('transaction_category_id', $transactionCategoryId)
-                    ->first();
-    
+            $amount = $this->model->whereHas('tier', function($query) use($user) {
+                $query->where('id', $user->tier_id);        
+            })
+            ->select(['id', 'amount'])
+            ->where('transaction_category_id', $transactionCategoryId)
+            ->first();
+            
             if($amount) {
                 return $amount;
             }
