@@ -21,4 +21,9 @@ class SuccessMessages
     const otpSent = 'OTP has been sent.';
 
     const pinCodeUpdated = 'Account Pin Code has been updated.';
+
+    // Send Money Controller
+    const sendMoneySuccessFul = 'Send money Successful';
+    const scanQrSuccessful = 'Scan Qr Successful';
+    const generateQrSuccessful = 'Generate Qr Successful';
 }

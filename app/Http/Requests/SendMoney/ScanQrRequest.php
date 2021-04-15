@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests\SendMoney;
 
-use App\Rules\MobileNumber;
-use Composer\DependencyResolver\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SendMoneyRequest extends FormRequest
+class ScanQrRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +24,7 @@ class SendMoneyRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'sometimes|required_without:mobile_number|email',
-            'mobile_number' => [
-                'sometimes|required_without:email',
-                new MobileNumber()
-            ],
-            'amount' => 'required|numeric|min:1',
-            'message' => 'max:60|nullable'
-        ];  
+            'id' => 'required'
+        ];
     }
 }
