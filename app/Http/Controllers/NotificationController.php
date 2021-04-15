@@ -43,9 +43,9 @@ class NotificationController extends Controller
      */
     public function store(NotificationRequest $request): JsonResponse {
         $details = $request->validated();
-        // $inputBody = $this->inputBody($details);
-        // $details['id'] = rand(0, 1000);
-        $createRecord = $this->iNotificationRepository->create($details);
+        $details['user_created'] = request()->user()->id;
+        $details['user_updated'] = request()->user()->id;
+        $createRecord = $this->iPushNotificationService->create($details);
 
         $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
         return response()->json($encryptedResponse, Response::HTTP_CREATED);
@@ -72,8 +72,7 @@ class NotificationController extends Controller
     public function update(Notification $notification, NotificationRequest $request): JsonResponse {
         $details = $request->validated();
         // $inputBody = $this->inputBody($details);
-        $updateRecord = $this->iNotificationRepository->update($notification, $details);
-
+        $updateRecord = $this->iPushNotificationService->update($notification, $details);
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
@@ -85,7 +84,7 @@ class NotificationController extends Controller
      * @return JsonResponse
      */
     public function delete(Notification $notification): JsonResponse {
-        $deleteRecord = $this->iNotificationRepository->delete($notification);
+        $deleteRecord = $this->iPushNotificationService->delete($notification);
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }

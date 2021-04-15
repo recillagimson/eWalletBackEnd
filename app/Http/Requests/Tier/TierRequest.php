@@ -29,6 +29,8 @@ class TierRequest extends FormRequest
             "daily_threshold" => 'required|regex:/^(-)?[0-9]+(\.[0-9]{1,2})?$/',
             "monthly_limit" => 'required|regex:/^(-)?[0-9]+(\.[0-9]{1,2})?$/',
             "monthly_threshold" => 'required|regex:/^(-)?[0-9]+(\.[0-9]{1,2})?$/',
+            "tier_class" => 'required',
+            "account_status" => 'required',
         ];
     }
 }
