@@ -7,8 +7,10 @@ use App\Enums\UsernameTypes;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
+use App\Http\Requests\Auth\MobileLoginValidateRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\ValidateNewUserRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Http\Requests\Auth\VerifyLoginRequest;
 use App\Http\Requests\Auth\VerifyPasswordRequest;
@@ -51,6 +53,27 @@ class AuthController extends Controller
     }
 
     /**
+     * Validates User Registration Inputs
+     *
+     * @param ValidateNewUserRequest $request
+     * @return JsonResponse
+     */
+    public function registerValidate(ValidateNewUserRequest $request): JsonResponse
+    {
+        $newUser = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+
+        $response = [
+            'message' => SuccessMessages::accountValidationPassed,
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $newUser[$usernameField]
+            ])
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
      * Authenticates a web client user
      *
      * @param LoginRequest $request
@@ -87,6 +110,29 @@ class AuthController extends Controller
         $response = [
             'message' => SuccessMessages::loginSuccessful,
             'data' => $this->encryptionService->encrypt($loginResponse)
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
+     * Validate mobile login
+     *
+     * @param MobileLoginValidateRequest $request
+     * @return JsonResponse
+     */
+    public function mobileLoginValidate(MobileLoginValidateRequest $request): JsonResponse
+    {
+        $login = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+
+        $this->authService->generateMobileLoginOTP($usernameField, $login[$usernameField]);
+
+        $response = [
+            'messsage' => SuccessMessages::loginValidationPassed,
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $login[$usernameField]
+            ])
         ];
 
         return response()->json($response, Response::HTTP_OK);
@@ -161,15 +207,17 @@ class AuthController extends Controller
      * @param VerifyLoginRequest $request
      * @return JsonResponse
      */
-    public function verifyLogin(VerifyLoginRequest $request): JsonResponse
+    public function verifyMobileLogin(VerifyLoginRequest $request): JsonResponse
     {
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
-        $loginResponse = $this->authService->verifyLogin($usernameField, $data[$usernameField], $data['code']);
+        $this->authService->verifyLogin($usernameField, $data[$usernameField], $data['code']);
 
         $response = [
             'message' => SuccessMessages::loginVerificationSuccessful,
-            'data' => $this->encryptionService->encrypt($loginResponse)
+            'data' => $this->encryptionService->encrypt([
+                $usernameField => $data[$usernameField]
+            ])
         ];
 
         return response()->json($response, Response::HTTP_OK);

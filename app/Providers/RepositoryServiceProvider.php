@@ -40,6 +40,8 @@ use App\Repositories\PinCodeHistory\PinCodeHistoryRepository;
 use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\PasswordHistory\PasswordHistoryRepository;
 use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\ServiceFee\ServiceFeeRepository;
 use App\Repositories\Tier\ITierRepository;
 use App\Repositories\Tier\TierRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
@@ -130,6 +132,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Tier Repository
         $this->app->bind(ITierRepository::class, TierRepository::class);
+
+        // Service Fee Repository
+        $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
 
     }
 

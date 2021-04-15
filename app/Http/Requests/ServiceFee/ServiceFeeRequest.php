@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\IdType;
+namespace App\Http\Requests\ServiceFee;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class IdTypeRequest extends FormRequest
+class ServiceFeeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,10 @@ class IdTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            'type' => 'required|max:50',
-            'description' => 'required|max:50',
-            'swirecommended' => 'required',
-            'status' => 'required',
+            "tier_id" => 'required',
+            "transaction_category_id" => 'required',
+            "implementation_date" => 'required|date',
+            "amount" => "required|min:0|integer"
         ];
     }
 }

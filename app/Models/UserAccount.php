@@ -71,6 +71,11 @@ class UserAccount extends Authenticatable
         }
     }
 
+    public function deleteAllTokens()
+    {
+        $this->tokens()->delete();
+    }
+
     public function deleteTokensByName(string $tokenName)
     {
         $this->tokens()->where('name', $tokenName)->delete();
