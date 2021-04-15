@@ -39,11 +39,12 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
 
     public function getAmountByTransactionAndTier(string $transactionCategoryId, string $tierId) {
         $amount = $this->model->where('tier_id', $tierId)
+                ->select(['id', 'amount'])
                 ->where('transaction_category_id', $transactionCategoryId)
                 ->first();
 
         if($amount) {
-            return $amount->amount;
+            return $amount;
         }
 
         // throw error if not found
