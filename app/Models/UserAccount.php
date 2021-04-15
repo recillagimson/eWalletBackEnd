@@ -25,7 +25,8 @@ class UserAccount extends Authenticatable
         'password',
         'pin_code',
         'verified',
-        'is_admin'
+        'is_admin',
+        'tier_id'
     ];
 
     /**
@@ -79,6 +80,10 @@ class UserAccount extends Authenticatable
     public function deleteTokensByName(string $tokenName)
     {
         $this->tokens()->where('name', $tokenName)->delete();
+    }
+
+    public function tier() {
+        return $this->hasOne(Tier::class, 'id', 'tier_id');
     }
 
 }
