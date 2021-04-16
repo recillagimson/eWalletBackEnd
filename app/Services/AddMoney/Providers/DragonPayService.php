@@ -380,8 +380,12 @@ class DragonPayService implements IAddMoneyService
         $referenceNumber = $referenceNumber['reference_number'];
 
         $addMoneyRecord = $this->addMoneys->getByReferenceNumber($referenceNumber);
-
-        if ($addMoneyRecord == null) throw new ModelNotFoundException();
+        
+        if ($addMoneyRecord == null) {
+            throw ValidationException::withMessages([
+                'reference_number' => 'Transaction not found'
+            ]);
+        }
 
         if ($addMoneyRecord->user_account_id != $user->id) return $this->unauthorizedForThisRecord();
 

@@ -24,7 +24,7 @@ class AddMoneyCancelRequest extends FormRequest
     public function rules()
     {
         return [
-            'reference_number' => 'required'
+            'reference_number' => 'required|max:10'
         ];
     }
 }
