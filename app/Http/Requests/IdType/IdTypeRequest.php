@@ -27,7 +27,6 @@ class IdTypeRequest extends FormRequest
             'type' => 'required|max:50',
             'description' => 'required|max:50',
             'swirecommended' => 'required',
-            'status' => 'required',
         ];
     }
 }

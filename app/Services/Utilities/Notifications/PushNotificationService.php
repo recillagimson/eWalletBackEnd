@@ -20,4 +20,16 @@ class PushNotificationService implements IPushNotificationService
         return $notifications = $this->notificationRepository->getByUserId($userId);
     }
 
+    public function create($params) {
+        return $this->notificationRepository->create($params);
+    }
+
+    public function update($notification, $params) {
+        return $this->notificationRepository->update($notification, $params);
+    }
+
+    public function delete($notification){
+        return $this->notificationRepository->delete($notification);
+    }
+
 }

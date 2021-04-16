@@ -18,6 +18,8 @@ class SuccessMessages
     const passwordRecoveryVerificationSuccessful = 'Password recovery verification successful';
     const passwordUpdateSuccessful = 'Password has been updated';
 
+    const otpSent = 'OTP has been sent.';
+
     const pinCodeUpdated = 'Account Pin Code has been updated.';
 
     // Send Money Controller

@@ -24,4 +24,5 @@ interface IAuthService {
     public function verifyPassword(string $usernameField, string $username, string $otp);
 
     public function generateMobileLoginOTP(string $usernameField, string $username);
+    public function sendOTP(string $usernameField, string $username, string $otpType);
 }
