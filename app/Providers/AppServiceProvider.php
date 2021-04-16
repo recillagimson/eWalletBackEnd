@@ -5,6 +5,10 @@ namespace App\Providers;
 use App\Enums\AddMoneyProviders;
 use App\Enums\UsernameTypes;
 use App\Enums\NetworkTypes;
+use App\Services\FundTransfer\BankListService;
+use App\Services\FundTransfer\IBankListService;
+use App\Services\FundTransfer\CashoutService;
+use App\Services\FundTransfer\ICashoutService;
 use App\Services\AddMoney\DragonPay\HandlePostBackService;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
@@ -74,6 +78,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IUserProfileService::class, UserProfileService::class);
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
+        $this->app->bind(IBankListService::class, BankListService::class);
+        $this->app->bind(ICashoutService::class, CashoutService::class);
         
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);

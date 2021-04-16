@@ -15,6 +15,7 @@ use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\ServiceFeeController;
+use App\Http\Controllers\api\FundTransferController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
 use App\Http\Controllers\UserUtilities\SignupHostController;
@@ -145,6 +146,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [AddMoneyController::class, 'addMoney']);
         Route::post('/cancel', [AddMoneyController::class, 'cancel']);
     });
+
+    Route::group(['prefix'  =>  'cashout'], function(){
+        Route::get('/ubp/instapay/banks', [FundTransferController::class, 'index']);
+        Route::post('/ubp/instapay/transfer', [FundTransferController::class, 'InstapayCashout']);  
+    });    
 });
 
 // DragonPay PostBack
