@@ -30,9 +30,8 @@ class RegisterUserRequest extends FormRequest
                 'required_without:email',
                 'max:20',
                 new MobileNumber(),
-                'unique:user_accounts,mobile_number'
             ],
-            'email' => 'required_without:mobile_number|max:50|email|unique:user_accounts,email',
+            'email' => 'required_without:mobile_number|max:50|email',
             'password' => [
                 'required',
                 'min:'.config('auth.password_minlength'),
