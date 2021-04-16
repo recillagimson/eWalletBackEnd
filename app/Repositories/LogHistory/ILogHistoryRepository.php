@@ -6,5 +6,4 @@ use App\Repositories\IRepository;
 
 interface ILogHistoryRepository extends IRepository
 {
-    
 }

@@ -63,6 +63,7 @@ class AuthController extends Controller
     {
         $newUser = $request->validated();
         $usernameField = $this->getUsernameField($request);
+        $this->authService->checkAccount($usernameField, $newUser[$usernameField]);
 
         $response = [
             'message' => SuccessMessages::accountValidationPassed,

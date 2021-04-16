@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Enums\ErrorCodes;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Models\UserAccount;
@@ -14,6 +15,7 @@ use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\OTP\IOtpService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\NewAccessToken;
 
 class AuthService implements IAuthService
@@ -72,6 +74,8 @@ class AuthService implements IAuthService
      */
     public function register(array $newUser, string $usernameField)
     {
+        $this->checkAccount($usernameField, $newUser[$usernameField]);
+
         $newUser['password'] = Hash::make($newUser['password']);
         $newUser['pin_code'] = Hash::make($newUser['pin_code']);
 
@@ -305,6 +309,22 @@ class AuthService implements IAuthService
         }
     }
 
+    /**
+     * Validate accounts existence
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @throws ValidationException
+     */
+    public function checkAccount(string $usernameField, string $username)
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) return;
+
+        if($user->verified) $this->accountAlreadyTaken();
+        $user->forceDelete();
+    }
+
     /*
     |--------------------------------------------------------------------------
     | PRIVATE METHODS
@@ -371,6 +391,13 @@ class AuthService implements IAuthService
         if($user->is_lockout) $this->errorService->accountLockedOut();
 
         $user->resetLoginAttempts($this->daysToResetAttempts);
+    }
+
+    private function accountAlreadyTaken() {
+        throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::AccountAlreadyTaken,
+            'message' => 'Email / Mobile Number is already taken.'
+        ]);
     }
 
 

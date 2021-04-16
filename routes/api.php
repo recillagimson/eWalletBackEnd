@@ -7,6 +7,7 @@ use App\Http\Controllers\TierController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\PayloadController;
+use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\HelpCenterController;
@@ -139,6 +140,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{serviceFee}', [ServiceFeeController::class, 'update']);
         Route::delete('/{serviceFee}', [ServiceFeeController::class, 'destroy']);
     });
+
+    Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
+        Route::post('/', [AddMoneyController::class, 'addMoney']);
+        Route::post('/cancel', [AddMoneyController::class, 'cancel']);
+    });
+});
+
+// DragonPay PostBack
+Route::prefix('/cashin')->group(function (){
+    Route::get('/postback', [AddMoneyController::class, 'postBack']);
 });
 
 

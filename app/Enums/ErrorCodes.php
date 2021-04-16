@@ -18,6 +18,7 @@ class ErrorCodes
     const otpExpired = 109;
     const otpMaxedAttempts = 110;
     const otpTypeInvalid = 111;
+    const accountAlreadyTaken = 112;
 
     //ENCRYPTION ERRORS - 150
     const payloadInvalid = 151;

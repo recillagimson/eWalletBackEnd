@@ -17,6 +17,8 @@ use App\Repositories\HelpCenter\HelpCenterRepository;
 use App\Repositories\LogHistory\LogHistoryRepository;
 use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
+use App\Repositories\InAddMoney\IInAddMoneyRepository;
+use App\Repositories\InAddMoney\InAddMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\PrepaidLoad\PrepaidLoadRepository;
@@ -24,17 +26,22 @@ use App\Repositories\UserAccount\UserAccountRepository;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\TransactionCategory\TransactionCategoryRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
+use App\Repositories\UserDetail\IUserDetailRepository;
+use App\Repositories\UserDetail\UserDetailRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\OutSendMoney\OutSendMoneyRepository;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\InReceiveMoney\InReceiveMoneyRepository;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\QrTransactions\QrTransactionsRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Notification\NotificationRepository;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\PinCodeHistory\PinCodeHistoryRepository;
 use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
@@ -44,13 +51,8 @@ use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\ServiceFee\ServiceFeeRepository;
 use App\Repositories\Tier\ITierRepository;
 use App\Repositories\Tier\TierRepository;
-use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserBalance\UserBalanceRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
 use App\Repositories\UserUtilities\Currency\ICurrencyRepository;
 use App\Repositories\UserUtilities\Currency\CurrencyRepository;
 use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
@@ -108,6 +110,12 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
+        $this->app->bind(IUserDetailRepository::class, UserDetailRepository::class);
+        $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
+        $this->app->bind(ITransactionCategoryRepository::class, TransactionCategoryRepository::class);
+        $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
+        $this->app->bind(ILogHistoryRepository::class, LogHistoryRepository::class);
+        $this->app->bind(IUserTransactionHistoryRepository::class, UserTransactionHistoryRepository::class);
 
         //Send Money Repositories
         $this->app->bind(IInReceiveMoneyRepository::class, InReceiveMoneyRepository::class);
@@ -129,6 +137,9 @@ class RepositoryServiceProvider extends ServiceProvider
         
         // User Transaction History
         $this->app->bind(IUserTransactionHistoryRepository::class, UserTransactionHistoryRepository::class);
+
+        // Add Money Repository
+        $this->app->bind(IInAddMoneyRepository::class, InAddMoneyRepository::class);
 
         // Tier Repository
         $this->app->bind(ITierRepository::class, TierRepository::class);

@@ -1,9 +1,12 @@
 <?php
 
-use App\Enums\ErrorCodes;
-use App\Enums\NetworkTypes;
+use App\Enums\DragonPayStatusTypes;
 use App\Enums\OtpTypes;
 use App\Enums\PayloadTypes;
+use App\Enums\ReferenceNumberTypes;
+use App\Enums\SquidPayModuleTypes;
+use App\Enums\ErrorCodes;
+use App\Enums\NetworkTypes;
 use App\Enums\SuccessMessages;
 use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
@@ -76,7 +79,8 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // 'timezone' => 'UTC',
+    'timezone' => 'Asia/Manila',
 
     /*
     |--------------------------------------------------------------------------
@@ -246,6 +250,10 @@ return [
         'TokenNames' => TokenNames::class,
         'OtpTypes' => OtpTypes::class,
         'NetworkTypes' => NetworkTypes::class,
+        'DragonPayStatusTypes' => DragonPayStatusTypes::class,
+        'ReferenceNumberTypes' => ReferenceNumberTypes::class,
+        'SquidPayModuleTypes' => SquidPayModuleTypes::class,
+        'TransactionCategories' => TransactionCategories::class,
         'ErrorCodes' => ErrorCodes::class,
         'TpaProviders' => TpaProviders::class,
 
