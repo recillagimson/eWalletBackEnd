@@ -13,7 +13,6 @@ use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\NotificationController;
-use App\Services\Transaction\TransactionService;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\UserUtilities\CountryController;
@@ -65,14 +64,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
+        Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
+
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/register/validate', [AuthController::class, 'registerValidate']);
+
         Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
         Route::post('/reset/password', [AuthController::class, 'resetPassword']);
 
+        Route::post('/resend/otp', [AuthController::class, 'resendOTP']);
+
         Route::prefix('/verify')->group(function () {
             Route::post('/account', [AuthController::class, 'verifyAccount']);
-            Route::post('/login', [AuthController::class, 'verifyLogin']);
+            Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin']);
             Route::post('/password', [AuthController::class, 'verifyPassword']);
         });
     });
@@ -107,9 +111,10 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::prefix('send/money')->group(function () {
+    Route::prefix('send/money')->middleware(['decrypt.request'])->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
+        Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
     });
 
     Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){

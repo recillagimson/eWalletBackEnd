@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\IdType;
+namespace App\Http\Requests\SendMoney;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class IdTypeRequest extends FormRequest
+class ScanQrRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,7 @@ class IdTypeRequest extends FormRequest
     public function rules()
     {
         return [
-            'type' => 'required|max:50',
-            'description' => 'required|max:50',
-            'swirecommended' => 'required',
+            'id' => 'required'
         ];
     }
 }

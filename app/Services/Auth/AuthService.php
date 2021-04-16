@@ -12,6 +12,7 @@ use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\OTP\IOtpService;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\NewAccessToken;
 use Illuminate\Validation\ValidationException;
@@ -72,16 +73,12 @@ class AuthService implements IAuthService
     {
         $newUser['password'] = Hash::make($newUser['password']);
         $newUser['pin_code'] = Hash::make($newUser['pin_code']);
-        $user = $this->userAccounts->create($newUser);
 
+        $user = $this->userAccounts->create($newUser);
         $this->passwordHistories->log($user->id, $newUser['password']);
         $this->pinCodeHistories->log($user->id, $newUser['pin_code']);
 
-        $identifier = OtpTypes::registration.':'.$user->id;
-        $otp = $this->otpService->generate($identifier);
-        if(!$otp->status) $this->invalidOtp($otp->message);
-
-        $this->notificationService->sendAccountVerification($newUser[$usernameField], $otp->token);
+        $this->sendOTP($usernameField, $newUser[$usernameField], OtpTypes::registration);
         return $user;
     }
 
@@ -107,10 +104,9 @@ class AuthService implements IAuthService
             $this->loginFailed();
         }
 
-        $user->deleteTokensByName(TokenNames::userWebToken);
+        $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userWebToken);
     }
-
 
     /**
      * Attempts to authenticate the user with the
@@ -133,7 +129,7 @@ class AuthService implements IAuthService
             $this->loginFailed();
         }
 
-        $user->deleteTokensByName(TokenNames::userMobileToken);
+        $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken);
     }
 
@@ -171,11 +167,7 @@ class AuthService implements IAuthService
         if(!$user) $this->accountDoesntExist();
         $this->checkPassword($user, '');
 
-        $otp = $this->otpService->generate(OtpTypes::passwordRecovery.':'.$user->id);
-        if(!$otp->status) $this->invalidOtp($otp->message);
-
-        $userArray = $user->toArray();
-        $this->notificationService->sendPasswordVerification($userArray[$usernameField], $otp->token);
+        $this->sendOTP($usernameField, $username, OtpTypes::passwordRecovery);
     }
 
     /**
@@ -214,6 +206,11 @@ class AuthService implements IAuthService
      */
     public function verify(string $userId, string $verificationType, string $otp)
     {
+        if(App::environment('local')) {
+            if($otp === "1111") return;
+            else $this->invalidOtp('Invalid OTP.');
+        }
+
         $identifier = $verificationType.':'.$userId;
         $otpValidity = $this->otpService->validate($identifier, $otp);
         if(!$otpValidity->status) $this->invalidOtp($otpValidity->message);
@@ -247,19 +244,15 @@ class AuthService implements IAuthService
      * @param string $usernameField
      * @param string $username
      * @param string $otp
-     * @return array
+     * @return void
      * @throws ValidationException
      */
-    public function verifyLogin(string $usernameField, string $username, string $otp): array
+    public function verifyLogin(string $usernameField, string $username, string $otp)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if(!$user) $this->accountDoesntExist();
 
         $this->verify($user->id, OtpTypes::login, $otp);
-        $user->verified = true;
-        $user->save();
-
-
     }
 
     /**
@@ -276,6 +269,50 @@ class AuthService implements IAuthService
         if(!$user) $this->accountDoesntExist();
 
         $this->verify($user->id, OtpTypes::passwordRecovery, $otp);
+    }
+
+    /**
+     * Generates an OTP for mobile login
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @throws ValidationException
+     */
+    public function generateMobileLoginOTP(string $usernameField, string $username)
+    {
+        $this->sendOTP($usernameField, $username, OtpTypes::login);
+    }
+
+    /**
+     * Resend OTP
+     *
+     * @param string $usernameField
+     * @param string $username
+     * @param string $otpType
+     * @throws ValidationException
+     */
+    public function sendOTP(string $usernameField, string $username, string $otpType)
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if(!$user) $this->accountDoesntExist();
+
+        $otp = $this->generateOTP($otpType, $user->id);
+        if(App::environment('local')) return;
+
+        switch ($otpType)
+        {
+            case OtpTypes::registration:
+                $this->notificationService->sendAccountVerification($username, $otp->token);
+                break;
+            case OtpTypes::login:
+                $this->notificationService->sendLoginVerification($username, $otp->token);
+                break;
+            case OtpTypes::passwordRecovery:
+                $this->notificationService->sendPasswordVerification($username, $otp->token);
+                break;
+            default:
+                $this->invalidOTPType();
+        }
     }
 
     /*
@@ -304,9 +341,9 @@ class AuthService implements IAuthService
     {
         $token = $user->createToken($tokenType);
         $latestPassword = $this->passwordHistories->getLatest($user->id);
-        $latesPin = $this->pinCodeHistories->getLatest($user->id);
+        $latestPin = $this->pinCodeHistories->getLatest($user->id);
         $passwordAboutToExpire = $latestPassword ? $latestPassword->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
-        $pinAboutToExpire = $latesPin ? $latesPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
+        $pinAboutToExpire = $latestPin ? $latestPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
 
         return [
             'user_token' => [
@@ -317,8 +354,25 @@ class AuthService implements IAuthService
             'notify_password_expiration' => $passwordAboutToExpire,
             'password_age' => $latestPassword ? $latestPassword->password_age : null,
             'notify_pin_expiration' => $pinAboutToExpire,
-            'pin_age' => $latesPin ? $latesPin->pin_age : null
+            'pin_age' => $latestPin ? $latestPin->pin_age : null
         ];
+    }
+
+    private function generateOTP(string $otpType, string $userId): object
+    {
+        if(App::environment('local')) {
+            return (object) [
+                'status' => true,
+                'token' => "1111",
+                'message' => "OTP generated",
+            ];
+        }
+
+        $identifier = $otpType.':'.$userId;
+        $otp = $this->otpService->generate($identifier);
+        if(!$otp->status) $this->invalidOtp($otp->message);
+
+        return $otp;
     }
 
     private function validateUser(UserAccount $user)
@@ -396,6 +450,13 @@ class AuthService implements IAuthService
         throw ValidationException::withMessages([
             'error_code' => ErrorCodes::PasswordNotAged,
             'password' => 'Password cannot be changed for at least '.$this->minPasswordAge.'.'
+        ]);
+    }
+
+    private function invalidOTPType() {
+        throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::OTPTypeInvalid,
+            'message' => 'OTP Type is invalid'
         ]);
     }
 }

@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Http\Requests\SendMoney;
+namespace App\Http\Requests\Auth;
 
+use App\Enums\OtpTypes;
 use App\Rules\MobileNumber;
-use Composer\DependencyResolver\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class SendMoneyRequest extends FormRequest
+class ResendOtpRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,16 +24,18 @@ class SendMoneyRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'email' => 'sometimes|required_without:mobile_number|email',
+            'email' => 'required_without:mobile_number|email',
             'mobile_number' => [
-                'sometimes|required_without:email',
+                'required_without:email',
                 new MobileNumber()
             ],
-            'amount' => 'required|numeric|min:1',
-            'message' => 'max:60|nullable'
-        ];  
+            'otp_type' =>  [
+                'required',
+                Rule::in(OtpTypes::values)
+            ]
+        ];
     }
 }

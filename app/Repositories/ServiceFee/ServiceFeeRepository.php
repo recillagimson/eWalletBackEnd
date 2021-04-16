@@ -3,7 +3,9 @@
 namespace App\Repositories\ServiceFee;
 
 use App\Models\ServiceFee;
+use App\Models\UserAccount;
 use App\Repositories\Repository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ServiceFeeRepository extends Repository implements IServiceFeeRepository
 {
@@ -39,5 +41,25 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
     public function getByTierAndTransCategoryID(int $tier, string $tranCategoryID)
     {
         return $this->model->where('tier', $tier)->where('transaction_category_id', $tranCategoryID)->first();
+    }
+
+    public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $userAccountId) {
+        // Get User 
+        $user = UserAccount::with(['tier'])->where('id', $userAccountId)->first();
+        if($user) {
+            $amount = $this->model->whereHas('tier', function($query) use($user) {
+                $query->where('id', $user->tier_id);        
+            })
+            ->select(['id', 'amount'])
+            ->where('transaction_category_id', $transactionCategoryId)
+            ->first();
+            
+            if($amount) {
+                return $amount;
+            }
+        }
+
+        // throw error if not found
+        throw new ModelNotFoundException('Service Fee record not found');
     }
 }

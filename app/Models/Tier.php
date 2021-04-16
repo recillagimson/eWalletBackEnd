@@ -16,6 +16,8 @@ class Tier extends Model
 
     protected $fillable = [
         "name",
+        "tier_class",
+        "account_status",
         "daily_limit",
         "daily_threshold",
         "monthly_limit",
