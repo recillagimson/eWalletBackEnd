@@ -99,11 +99,7 @@ class SendMoneyService implements ISendMoneyService
         $user = $this->userAccounts->get($qrTransaction->user_account_id);
         if (empty($user)) $this->invalidAccount(); 
          
-        
-
-        if ($user->mobile_number) {
-            return ['mobile_number' => $user->mobile_number, 'amount' => $qrTransaction->amount, 'message' => ''];
-        }
+        if ($user->mobile_number) { return ['mobile_number' => $user->mobile_number, 'amount' => $qrTransaction->amount, 'message' => '']; } 
         return ['email' => $user->email , 'amount' => $qrTransaction->amount, 'message' => ''];
     }
 
