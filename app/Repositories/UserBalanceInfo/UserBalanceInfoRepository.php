@@ -12,6 +12,10 @@ class UserBalanceInfoRepository extends Repository implements IUserBalanceInfoRe
         parent::__construct($model);
     }
 
+    public function getByUserAccountID(string $userAccountID)
+    {
+        return $this->model->where('user_account_id', $userAccountID)->first();
+    }
     public function getUserBalance(string $userID)
     {
         return  $this->model->where('user_account_id', '=', $userID)->pluck('available_balance')->first();

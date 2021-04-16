@@ -2,8 +2,8 @@
 
 namespace App\Repositories\TransactionCategory;
 
-use App\Models\TransactionCategory;
 use App\Repositories\Repository;
+use App\Models\TransactionCategory;
 
 class TransactionCategoryRepository extends Repository implements ITransactionCategoryRepository
 {
@@ -14,6 +14,6 @@ class TransactionCategoryRepository extends Repository implements ITransactionCa
 
     public function getByName(string $name)
     {
-        return $this->model->where('name', '=', $name)->first();
+        return $this->model->where('name', $name)->first();
     }
 }
