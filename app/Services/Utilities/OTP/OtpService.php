@@ -3,11 +3,10 @@
 
 namespace App\Services\Utilities\OTP;
 
-use App\Enums\ErrorCodes;
 use App\Repositories\OtpRepository\IOtpRepository;
+use App\Services\Utilities\Errors\IErrorService;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class OtpService implements IOtpService
 {
@@ -61,8 +60,10 @@ class OtpService implements IOtpService
     protected $allowedAttempts;
 
     private IOtpRepository $otps;
+    private IErrorService $errorService;
 
-    public function __construct(IOtpRepository $otps)
+    public function __construct(IOtpRepository $otps,
+        IErrorService $errorService)
     {
         $this->length = config('otp-generator.length');
         $this->onlyDigits = config('otp-generator.onlyDigits');
@@ -73,6 +74,7 @@ class OtpService implements IOtpService
         $this->allowedAttempts = config('otp-generator.allowedAttempts');
 
         $this->otps = $otps;
+        $this->errorService = $errorService;
     }
 
     /**
@@ -86,17 +88,13 @@ class OtpService implements IOtpService
      */
     public function __call(string $method, $params)
     {
-        if (substr($method, 0, 3) != 'set') {
-            return;
-        }
+        if (substr($method, 0, 3) != 'set') return;
 
         $property = Str::camel(substr($method, 3));
 
 
         // Does the property exist on this object?
-        if (! property_exists($this, $property)) {
-            return;
-        }
+        if (! property_exists($this, $property)) return;
 
         $this->{$property} = $params[0] ?? null;
 
@@ -147,9 +145,9 @@ class OtpService implements IOtpService
     {
         $otp = $this->otps->getByIdentifier($identifier);
 
-        if (!$otp) $this->otpInvalid();
-        if ($otp->isExpired()) $this->otpIsExpired();
-        if ($otp->no_times_attempted == $this->allowedAttempts) $this->otpMaxedAttempts();
+        if (!$otp) $this->errorService->otpInvalid();
+        if ($otp->isExpired()) $this->errorService->otpIsExpired();
+        if ($otp->no_times_attempted == $this->allowedAttempts) $this->errorService->otpMaxedAttempts();
 
         $otp->increment('no_times_attempted');
 
@@ -163,15 +161,15 @@ class OtpService implements IOtpService
             ];
         }
 
-        $this->otpInvalid();
+        $this->errorService->otpInvalid();
     }
 
     public function ensureValidated(string $identifier)
     {
         $otp = $this->otps->getByIdentifier($identifier, true);
-        if (!$otp) $this->otpInvalid();
-        if ($otp->isExpired()) $this->otpIsExpired();
-        if (!$otp->validated) $this->otpInvalid();
+        if (!$otp) $this->errorService->otpInvalid();
+        if ($otp->isExpired()) $this->errorService->otpIsExpired();
+        if (!$otp->validated) $this->errorService->otpInvalid();
     }
 
     public function expiredAt(string $identifier): object
@@ -212,27 +210,5 @@ class OtpService implements IOtpService
         return $pin;
     }
 
-    private function otpIsExpired()
-    {
-        throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::OTPExpired,
-            'message' => 'OTP is expired'
-        ]);
-    }
 
-    private function otpMaxedAttempts()
-    {
-        throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::OTPMaxedAttempts,
-            'message' => 'Reached the maximum allowed attempts'
-        ]);
-    }
-
-    private function otpInvalid()
-    {
-        throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::OTPInvalid,
-            'message' => 'OTP is invalid.'
-        ]);
-    }
 }

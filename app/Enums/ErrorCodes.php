@@ -7,19 +7,22 @@ namespace App\Enums;
 class ErrorCodes
 {
     //AUTHENTICATION ERRORS - 100
-    const LoginFailed = 101;
-    const UnverifiedAccount = 102;
-    const AccountDoesNotExist = 103;
-    const InvalidClient = 104;
-    const AccountLockedOut = 105;
-    const PasswordUsed = 106;
-    const PasswordNotAged = 107;
-    const OTPInvalid = 108;
-    const OTPExpired = 109;
-    const OTPMaxedAttempts = 110;
-    const OTPTypeInvalid = 111;
+    const loginFailed = 101;
+    const unverifiedAccount = 102;
+    const accountDoesNotExist = 103;
+    const invalidClient = 104;
+    const accountLockedOut = 105;
+    const passwordUsed = 106;
+    const passwordNotAged = 107;
+    const otpInvalid = 108;
+    const otpExpired = 109;
+    const otpMaxedAttempts = 110;
+    const otpTypeInvalid = 111;
 
     //ENCRYPTION ERRORS - 150
-    const PayloadInvalid = 151;
+    const payloadInvalid = 151;
+
+    //3RD PARTY APIS - 200
+    const tpaFailedAuthentication = 201;
 
 }

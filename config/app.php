@@ -5,6 +5,7 @@ use App\Enums\NetworkTypes;
 use App\Enums\OtpTypes;
 use App\Enums\PayloadTypes;
 use App\Enums\SuccessMessages;
+use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
 use App\Enums\TokenNames;
 
@@ -246,6 +247,7 @@ return [
         'OtpTypes' => OtpTypes::class,
         'NetworkTypes' => NetworkTypes::class,
         'ErrorCodes' => ErrorCodes::class,
+        'TpaProviders' => TpaProviders::class,
 
         //Enums - Messages
         'SuccessMessages' => SuccessMessages::class
