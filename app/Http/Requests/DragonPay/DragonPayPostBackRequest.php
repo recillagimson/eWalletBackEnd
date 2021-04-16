@@ -28,7 +28,7 @@ class DragonPayPostBackRequest extends FormRequest
             'refno' => 'required',
             'status' => 'required',
             'message' => 'required',
-            'digest' => 'required'
+            'digest' => 'required',
         ];
     }
 }

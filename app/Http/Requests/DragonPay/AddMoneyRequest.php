@@ -3,6 +3,7 @@
 namespace App\Http\Requests\DragonPay;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class AddMoneyRequest extends FormRequest
 {
@@ -24,7 +25,12 @@ class AddMoneyRequest extends FormRequest
     public function rules()
     {
         return [
-            'provider' => 'required',
+            'provider' => [
+                'required',
+                Rule::in([
+                    'DragonPay',
+                ]),
+            ],
             'amount' => 'bail|required|regex:/^\d*(\.\d{2})?$/',
         ];
     }

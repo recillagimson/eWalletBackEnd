@@ -24,8 +24,8 @@ class AddMoneyStatusRequest extends FormRequest
     public function rules()
     {
         return [
-            'reference_number' => 'required_without:dragonpay_reference',
-            'dragonpay_reference' => 'required_without:reference_number'
+            'reference_number' => 'required_without:dragonpay_reference|max:10',
+            'dragonpay_reference' => 'required_without:reference_number|max:10'
         ];
     }
 }
