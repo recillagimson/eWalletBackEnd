@@ -22,6 +22,7 @@ interface IErrorService
     public function otpTypeInvalid();
     public function otpIsExpired();
     public function otpMaxedAttempts();
+    public function accountAlreadyTaken();
 
     /*
     |--------------------------------------------------------------------------

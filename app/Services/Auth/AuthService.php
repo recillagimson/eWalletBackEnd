@@ -321,7 +321,7 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if(!$user) return;
 
-        if($user->verified) $this->accountAlreadyTaken();
+        if($user->verified) $this->errorService->accountAlreadyTaken();
         $user->forceDelete();
     }
 
@@ -391,13 +391,6 @@ class AuthService implements IAuthService
         if($user->is_lockout) $this->errorService->accountLockedOut();
 
         $user->resetLoginAttempts($this->daysToResetAttempts);
-    }
-
-    private function accountAlreadyTaken() {
-        throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::AccountAlreadyTaken,
-            'message' => 'Email / Mobile Number is already taken.'
-        ]);
     }
 
 

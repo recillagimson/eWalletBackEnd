@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\AddMoneyProviders;
+use App\Enums\NetworkTypes;
 use App\Enums\UsernameTypes;
 use App\Services\Utilities\Errors\ErrorService;
 use App\Services\Utilities\Errors\IErrorService;
@@ -24,7 +25,6 @@ use App\Services\Encryption\EncryptionService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
-use App\Services\NewsAndUpdate\NewsAndUpdateService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
 use App\Services\SendMoney\ISendMoneyService;
@@ -64,7 +64,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEncryptionService::class, EncryptionService::class);
         $this->app->bind(IErrorService::class, ErrorService::class);
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
-        $this->app->bind(INewsAndUpdateService::class, NewsAndUpdateService::class);
         $this->app->bind(IReferenceNumberService::class, ReferenceNumberService::class);
         $this->app->bind(IInAddMoneyService::class, InAddMoneyService::class);
         $this->app->bind(IHandlePostBackService::class, HandlePostBackService::class);

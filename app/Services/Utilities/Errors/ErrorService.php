@@ -70,6 +70,13 @@ class ErrorService implements IErrorService
         $this->validationErrorMessage(ErrorCodes::otpMaxedAttempts, 'Reached the maximum allowed attempts.');
     }
 
+    public function accountAlreadyTaken() {
+        throw ValidationException::withMessages([
+            'error_code' => ErrorCodes::accountAlreadyTaken,
+            'message' => 'Email / Mobile Number is already taken.'
+        ]);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | 3RD PARTY APIS ERRORS
