@@ -12,6 +12,7 @@ class CashoutService implements ICashoutService
 {
     public IOutSendToBankRepository $sendToBank;
     public IUserBalanceRepository $userBalanceInfo;
+    protected $Cashout;
 
     public function __construct(IOutSendToBankRepository $stBank, IUserBalanceRepository $userbalance)
     {
@@ -21,12 +22,12 @@ class CashoutService implements ICashoutService
 
     public function cashout(array $newCashout)
     {
+        $this->Cashout = $newCashout;
         /*
         |================================================================
         |Get available balance of the user [sender] using user_account_id
         |================================================================
          */
-
         $UserBalance = $this->getUserBalance($newCashout);
         /*
         |==============================================
@@ -51,7 +52,6 @@ class CashoutService implements ICashoutService
 
             //API for single transfer here
             $repsonse = $this->singleTransfer($LoginToken);
-            dd($response);
 
             //handling response of API here
             if (!empty(json_decode($response)->code) && !empty(json_decode($response)->errors[0])) {
@@ -132,8 +132,8 @@ class CashoutService implements ICashoutService
                 ],
             ],
             "beneficiary" => [
-                "accountNumber" => "8439374137",
-                "name" => "MARK GUANEZ",
+                "accountNumber" => $this->Cashout['account_number'],
+                "name" => $this->Cashout['account_name'],
                 "address" => [
                     "line1" => "241 A.DEL MUNDO ST BET. 5TH 6TH AVE GRACE",
                     "line2" => "PARK CALOOCAN CITY",
@@ -144,7 +144,7 @@ class CashoutService implements ICashoutService
                 ],
             ],
             "remittance" => [
-                "amount" => "10.00",
+                "amount" => number_format($this->Cashout['amount'], 2),
                 "currency" => "PHP",
                 "receivingBank" => "161403",
                 "purpose" => "1001",
@@ -158,7 +158,7 @@ class CashoutService implements ICashoutService
             "Content-Type" => "application/json",
             "Accept" => "application/json"
         ])->withToken($LoginToken->access_token)->post($transferURL, $body);
-            dd(json_decode($response));
+            
         return $response;
     }
 
