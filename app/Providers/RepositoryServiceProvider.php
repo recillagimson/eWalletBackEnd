@@ -30,8 +30,8 @@ use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
-use App\Repositories\UserDetail\IUserDetailRepository;
-use App\Repositories\UserDetail\UserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
@@ -96,6 +96,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ITransactionCategoryRepository::class, TransactionCategoryRepository::class);
         
         //UserUtilities Repository
+        $this->app->bind(IUserDetailRepository::class, UserDetailRepository::class);
         $this->app->bind(ISourceOfFundRepository::class, SourceOfFundRepository::class);
         $this->app->bind(ISignupHostRepository::class, SignupHostRepository::class);
         $this->app->bind(INatureOfWorkRepository::class, NatureOfWorkRepository::class);
@@ -103,14 +104,12 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IMaritalStatusRepository::class, MaritalStatusRepository::class);
         $this->app->bind(ICurrencyRepository::class, CurrencyRepository::class);
         $this->app->bind(ICountryRepository::class, CountryRepository::class);
-        $this->app->bind(IUserDetailRepository::class, UserDetailRepository::class);
 
         //Utilities Repositories
         $this->app->bind(IOtpRepository::class, OtpRepository::class);
 
         $this->app->bind(IPrepaidLoadRepository::class, PrepaidLoadRepository::class);
         $this->app->bind(IOutBuyLoadRepository::class, OutBuyLoadRepository::class);
-        $this->app->bind(IUserDetailRepository::class, UserDetailRepository::class);
         $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
         $this->app->bind(ITransactionCategoryRepository::class, TransactionCategoryRepository::class);
         $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
