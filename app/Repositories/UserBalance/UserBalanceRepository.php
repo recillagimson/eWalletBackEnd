@@ -13,7 +13,7 @@ class UserBalanceRepository extends Repository implements IUserBalanceRepository
     }
 
     public function getUserBalanceInfoById(string $userAccountId) {
-        $balance = UserBalanceInfo::where('user_account_id', $userAccountId)
+        $balance = $this->model->where('user_account_id', $userAccountId)
         ->orderBy('created_at', 'DESC')
         ->first();
 

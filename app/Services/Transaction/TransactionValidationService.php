@@ -53,10 +53,13 @@ class TransactionValidationService implements ITransactionValidationService
         }
         else {
             // NOT CASH IN
+            // Stage 4 Checking if total transaction is maxed out
             $doesNotMeetMonthlyTransactionLimit = $this->checkUserMonthlyTransactionLimit($userAccountId, $total_amount);
-            dd($doesNotMeetMonthlyTransactionLimit);
+            // Stage 5 Check if balance is sufficient
+            $isBalanceSufficient = $this->checkUserBalance($userAccountId, $total_amount);
+            return true;
         }
-
+        return false;
     }
 
 
@@ -121,5 +124,13 @@ class TransactionValidationService implements ITransactionValidationService
         ]);
     }
 
-    public function checkUserBalance(string $userAccountId){}
+    public function checkUserBalance(string $userAccountId, $total_amount){
+        $balance =  $this->userBalanceRepository->getUserBalanceInfoById($userAccountId, $total_amount);
+        if($balance >= $total_amount) {
+            return true;
+        }
+        throw ValidationException::withMessages([
+            'balance_not_sufficient' => 'Current Balance is not sufficient'
+        ]);
+    }
 }

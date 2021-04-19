@@ -14,5 +14,5 @@ interface ITransactionValidationService
     public function getTransactionCategory(string $transactionCategoryId);
     public function checkUserTier(string $userAccountId);
     public function checkUserMonthlyTransactionLimit(string $userAccountId, $total_amount);
-    public function checkUserBalance(string $userAccountId);
+    public function checkUserBalance(string $userAccountId, $total_amount);
 }
