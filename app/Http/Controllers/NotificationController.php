@@ -32,7 +32,7 @@ class NotificationController extends Controller
     public function GetAll(): JsonResponse {
         $records = $this->iPushNotificationService->getByUserId(request()->user()->id);
         // dd(request()->user());
-        dd(\Auth::user());
+        // dd(\Auth::user());
         $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
