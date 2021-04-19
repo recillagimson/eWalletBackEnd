@@ -35,7 +35,6 @@ class TierController extends Controller
      */
     public function index(Request $request)
     {
-        dd($this->iUserBalanceRepository->getUserBalanceInfoById("62d8961e-ca7f-476c-bd3d-5c98c5d7112d"));
         // GET REQUEST VALUES
         $params = $request->all();
         $records = $this->iTierRepository->list($params);
