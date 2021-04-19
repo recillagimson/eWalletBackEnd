@@ -15,17 +15,14 @@ class TierController extends Controller
 
     private IEncryptionService $encryptionService;
     private ITierRepository $iTierRepository;
-    private IUserBalanceRepository $iUserBalanceRepository;
 
 
     public function __construct(IEncryptionService $encryptionService, 
-                                ITierRepository $iTierRepository,
-                                IUserBalanceRepository $iUserBalanceRepository
+                                ITierRepository $iTierRepository
                                 )
     {
         $this->encryptionService = $encryptionService;
         $this->iTierRepository = $iTierRepository;
-        $this->iUserBalanceRepository = $iUserBalanceRepository;
     }
 
     /**
