@@ -16,5 +16,11 @@ class UserBalanceRepository extends Repository implements IUserBalanceRepository
         $balance = UserBalanceInfo::where('user_account_id', $userAccountId)
         ->orderBy('created_at', 'DESC')
         ->first();
+
+        if($balance) {
+            return $balance->available_balance;
+        }
+        // Return 0 if no user balance info
+        return 0;
     }
 }

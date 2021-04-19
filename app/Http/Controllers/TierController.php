@@ -7,6 +7,7 @@ use App\Models\Tier;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Repositories\Tier\ITierRepository;
+use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Services\Encryption\IEncryptionService;
 
 class TierController extends Controller
@@ -14,13 +15,17 @@ class TierController extends Controller
 
     private IEncryptionService $encryptionService;
     private ITierRepository $iTierRepository;
+    private IUserBalanceRepository $iUserBalanceRepository;
 
 
     public function __construct(IEncryptionService $encryptionService, 
-                                ITierRepository $iTierRepository)
+                                ITierRepository $iTierRepository,
+                                IUserBalanceRepository $iUserBalanceRepository
+                                )
     {
         $this->encryptionService = $encryptionService;
         $this->iTierRepository = $iTierRepository;
+        $this->iUserBalanceRepository = $iUserBalanceRepository;
     }
 
     /**
@@ -30,6 +35,7 @@ class TierController extends Controller
      */
     public function index(Request $request)
     {
+        dd($this->iUserBalanceRepository->getUserBalanceInfoById("62d8961e-ca7f-476c-bd3d-5c98c5d7112d"));
         // GET REQUEST VALUES
         $params = $request->all();
         $records = $this->iTierRepository->list($params);
