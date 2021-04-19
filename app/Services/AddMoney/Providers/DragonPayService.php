@@ -8,6 +8,7 @@ use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\Tier\ITierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserDetail\IUserDetailRepository;
@@ -61,18 +62,13 @@ class DragonPayService implements IAddMoneyService
      */
     protected $moduleTransCategory;
 
-    /**
-     * test purposes
-     * remover when tiers and service fees are finalize
-     */
-    protected $tier;
-
     private IInAddMoneyRepository $addMoneys;
     private IUserDetailRepository $userDetails;
     private IServiceFeeRepository $serviceFees;
     private IReferenceNumberService $referenceNumberService;
     private ILogHistoryRepository $logHistory;
     private ITransactionCategoryRepository $transactionCategories;
+    private ITierRepository $tiers;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
@@ -81,7 +77,8 @@ class DragonPayService implements IAddMoneyService
                                 IReferenceNumberService $referenceNumberService,
                                 ILogHistoryRepository $logHistory,
                                 ITransactionCategoryRepository $transactionCategories,
-                                IUserTransactionHistoryRepository $userTransactions) {
+                                IUserTransactionHistoryRepository $userTransactions,
+                                ITierRepository $tiers) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -96,13 +93,7 @@ class DragonPayService implements IAddMoneyService
         $this->logHistory = $logHistory;
         $this->transactionCategories = $transactionCategories;
         $this->userTransactions = $userTransactions;
-
-
-        /**
-         * Test purposes
-         * remover when tiers and service fees are finalize
-         */
-        $this->tier = 1;
+        $this->tiers = $tiers;
     }
 
     /**
@@ -126,7 +117,7 @@ class DragonPayService implements IAddMoneyService
         $txnID =  $this->referenceNumber;
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
-        $addMoneyServiceFee = $this->validateTiersAndLimits($userAccountID, $amount);
+        $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
         $totalAmount = $addMoneyServiceFee->amount + $amount;
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
         $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
@@ -157,7 +148,7 @@ class DragonPayService implements IAddMoneyService
         $this->logGenerateURLInLogHistory($currentAddMoneyRecord->reference_number);
         return $response->json();
     }
-
+#section
     /**
      * Set the $userAccountID
      * 
@@ -308,29 +299,27 @@ class DragonPayService implements IAddMoneyService
 
         if (!$rowInserted) return $this->cantWriteToTable();
     }
-
+#section
     /**
      * Validate the user accoirding to the user's
      * tier and amount in the transaction
      * 
-     * @param string $userAccountID
+     * @param UserAccount $userAccountID
      * @param float $amount
      * @return exception|float $serviceFee
      */
-    public function validateTiersAndLimits(string $userAccountID, float $amount)
+    public function validateTiersAndLimits(UserAccount $user, float $amount)
     {
-        $amountLimit = 5000.00;
-        $serviceFee = 0.00;
-
-        $userDetails = $this->userDetails->getByUserAccountID($userAccountID);
-        // get the tier from the user details and set as params in getByTierAndTransCategoryID
+        $tier = $this->tiers->get($user->tier_id);
 
         $addMoneyTransCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
-        $addMoneyServiceFee =  $this->serviceFees->getByTierAndTransCategoryID($this->tier, $addMoneyTransCategory->id);
 
-        if ($addMoneyServiceFee->implementation_date <= Carbon::now()) $serviceFee = $addMoneyServiceFee->amount;
+        $addMoneyServiceFee = $this->serviceFees->getByTierAndTransCategoryID($user->tier_id, $addMoneyTransCategory->id);
 
-        if ($amount > $amountLimit) return $this->tierLimitExceeded();
+        if ($addMoneyServiceFee->implementation_date >= Carbon::now()) $addMoneyServiceFee->amount = 0;
+
+        // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
+        if ($amount > $tier->daily_limit) return $this->tierLimitExceeded();
 
         return $addMoneyServiceFee;
     }
