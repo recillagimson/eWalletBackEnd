@@ -18,20 +18,6 @@ class TransactionService implements ITransactionService
         $this->userBalanceRepository = $userBalanceRepository;        
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
     }
-    
-    // FOR USER BALANCE INFO
-    // public function addAvailableBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance) {
-    //     $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
-    // }
-    // public function subtractAvailableBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance) {
-    //     $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
-    // }
-    // public function addPendingBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance) {
-    //     $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
-    // }
-    // public function subtractPendingBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance) {
-    //     $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
-    // }
 
     public function addUserBalanceInfo(string $userAccountId, string $currentId, float $availableBalance, float $pendingBalance) {
         $record =  $this->userBalanceRepository->create([
@@ -61,6 +47,6 @@ class TransactionService implements ITransactionService
 
     // GET BALANCE INFO
     public function getUserBalanceById(string $userAccountId) {
-        return $this->userBalanceRepository->getUserBalanceById($userAccountId);
+        return $this->userBalanceRepository->getUserBalanceInfoById($userAccountId);
     }
 }
