@@ -3,8 +3,10 @@
 namespace App\Repositories\Tier;
 
 use App\Models\Tier;
+use App\Models\User;
 use App\Models\UserAccount;
 use App\Repositories\Repository;
+use Illuminate\Validation\ValidationException;
 
 class TierRepository extends Repository implements ITierRepository
 {
@@ -19,5 +21,21 @@ class TierRepository extends Repository implements ITierRepository
         } else {
             return $this->model->get();
         }
+    }
+
+    public function getTierByUserAccountId($userAccountId) {
+        $user = UserAccount::find($userAccountId);
+        if($user) {
+            $tier = $this->model->find($user->tier_id);
+            if($tier) {
+                return $tier;
+            }
+            throw ValidationException::withMessages([
+                'tier_not_found' => 'Tier not found or not Set'
+            ]);
+        }
+        throw ValidationException::withMessages([
+            'user_not_found' => 'Account not found'
+        ]);
     }
 }

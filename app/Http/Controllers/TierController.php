@@ -9,20 +9,24 @@ use Illuminate\Http\Response;
 use App\Repositories\Tier\ITierRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Services\Encryption\IEncryptionService;
+use App\Services\Transaction\ITransactionValidationService;
 
 class TierController extends Controller
 {
 
     private IEncryptionService $encryptionService;
     private ITierRepository $iTierRepository;
+    private ITransactionValidationService $validation;
 
 
     public function __construct(IEncryptionService $encryptionService, 
-                                ITierRepository $iTierRepository
+                                ITierRepository $iTierRepository,
+                                ITransactionValidationService $validation
                                 )
     {
         $this->encryptionService = $encryptionService;
         $this->iTierRepository = $iTierRepository;
+        $this->validation = $validation;
     }
 
     /**
@@ -32,6 +36,7 @@ class TierController extends Controller
      */
     public function index(Request $request)
     {
+        dd($this->validation->transactionValidation("c00375fe-0409-415a-b3fe-c3229535adc9", "0ec43457-9131-11eb-b44f-1c1b0d14e211", 10000));
         // GET REQUEST VALUES
         $params = $request->all();
         $records = $this->iTierRepository->list($params);
