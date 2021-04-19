@@ -33,7 +33,9 @@ use App\Services\Utilities\Notifications\SmsService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
 use App\Services\Transaction\ITransactionService;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Transaction\TransactionService;
+use App\Services\Transaction\TransactionValidationService;
 use App\Services\Utilities\Notifications\EmailService;
 use App\Services\Utilities\LogHistory\LogHistoryService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
@@ -87,6 +89,9 @@ class AppServiceProvider extends ServiceProvider
         
         // Transaction Service
         $this->app->bind(ITransactionService::class, TransactionService::class);
+        
+        // Validation Service
+        $this->app->bind(ITransactionValidationService::class, TransactionValidationService::class);
     }
 
     /**
