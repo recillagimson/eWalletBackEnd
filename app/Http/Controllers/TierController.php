@@ -36,7 +36,7 @@ class TierController extends Controller
      */
     public function index(Request $request)
     {
-        dd($this->validation->transactionValidation("c00375fe-0409-415a-b3fe-c3229535adc9", "0ec43457-9131-11eb-b44f-1c1b0d14e211", 10000));
+        dd($this->validation->transactionValidation("c00375fe-0409-415a-b3fe-c3229535adc9", "0ec41025-9131-11eb-b44f-1c1b0d14e211", 10000));
         // GET REQUEST VALUES
         $params = $request->all();
         $records = $this->iTierRepository->list($params);

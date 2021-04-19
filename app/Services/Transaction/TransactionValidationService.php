@@ -5,14 +5,15 @@ namespace App\Services\Transaction;
 
 
 use App\Models\UserAccount;
+use Illuminate\Support\Carbon;
 use App\Repositories\Tier\ITierRepository;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserBalance\IUserBalanceRepository;
-
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use Illuminate\Validation\ValidationException;
+use App\Repositories\UserAccount\IUserAccountRepository;
+
+use App\Repositories\UserBalance\IUserBalanceRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class TransactionValidationService implements ITransactionValidationService
 {
@@ -44,6 +45,7 @@ class TransactionValidationService implements ITransactionValidationService
         // DragonPay or POS 
         // POS POSADDFUNDS
         // DRAGONPAY CASHINDRAGONPAY
+        $doesNotMeetMonthlyTransactionLimit = true;
         if($transactionCategory && ($transactionCategory->name == "POSADDFUNDS" || $transactionCategory->name == "CASHINDRAGONPAY")) {
             // CASH IN
             $userTier = $this->tierRepository->getTierByUserAccountId($userAccountId);
@@ -51,7 +53,10 @@ class TransactionValidationService implements ITransactionValidationService
         }
         else {
             // NOT CASH IN
+            $doesNotMeetMonthlyTransactionLimit = $this->checkUserMonthlyTransactionLimit($userAccountId, $total_amount);
+            dd($doesNotMeetMonthlyTransactionLimit);
         }
+
     }
 
 
@@ -96,6 +101,25 @@ class TransactionValidationService implements ITransactionValidationService
     }
 
     public function checkUserTier(string $userAccountId){}
-    public function checkUserMonthlyTransactionLimit(string $userAccountId){}
+
+    public function checkUserMonthlyTransactionLimit(string $userAccountId, $total_amount){
+        $tier = $this->tierRepository->getTierByUserAccountId($userAccountId);
+        if($tier) {
+            $from = Carbon::now()->startOfMonth()->format('Y-m-d');
+            $to = Carbon::now()->endOfMonth()->format('Y-m-d');
+            $total_transaction_current_month = $this->userTransactionHistoryRepository->getTotalTransactionAmountByUserAccountIdDateRange($userAccountId, $from, $to);
+            $sum_up = $total_transaction_current_month + $total_amount;
+            if($tier->monthly_limit >= $sum_up) {
+                return true;
+            }
+            throw ValidationException::withMessages([
+                'monthly_limit_reached' => 'Monthly Limit Reached'
+            ]);
+        }
+        throw ValidationException::withMessages([
+            'tier_not_found' => 'Tier not found or set'
+        ]);
+    }
+
     public function checkUserBalance(string $userAccountId){}
 }
