@@ -58,4 +58,9 @@ class TransactionService implements ITransactionService
         ]);
         return $record;
     }
+
+    // GET BALANCE INFO
+    public function getUserBalanceById(string $userAccountId) {
+        return $this->userBalanceRepository->getUserBalanceById($userAccountId);
+    }
 }
