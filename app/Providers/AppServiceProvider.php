@@ -2,16 +2,10 @@
 
 namespace App\Providers;
 
-use App\Enums\AddMoneyProviders;
-use App\Enums\UsernameTypes;
 use App\Enums\NetworkTypes;
-use App\Services\AddMoney\DragonPay\HandlePostBackService;
-use App\Services\AddMoney\DragonPay\IHandlePostBackService;
-use App\Services\AddMoney\IInAddMoneyService;
-use App\Services\AddMoney\InAddMoneyService;
-use App\Services\AddMoney\Providers\DragonPayService;
-use App\Services\AddMoney\Providers\IAddMoneyService;
+use App\Enums\UsernameTypes;
 use Illuminate\Http\Request;
+use App\Enums\AddMoneyProviders;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
 use Illuminate\Support\ServiceProvider;
@@ -19,32 +13,40 @@ use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\OTP\OtpService;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\OTP\IOtpService;
+use App\Services\AddMoney\InAddMoneyService;
+use App\Services\SendMoney\SendMoneyService;
+use App\Services\AddMoney\IInAddMoneyService;
+use App\Services\SendMoney\ISendMoneyService;
 use App\Services\Encryption\EncryptionService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
+use App\Services\Transaction\TransactionService;
+use App\Services\UserProfile\UserProfileService;
+use App\Services\Transaction\ITransactionService;
+use App\Services\UserProfile\IUserProfileService;
 use App\Services\NewsAndUpdate\NewsAndUpdateService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
-use App\Services\SendMoney\ISendMoneyService;
-use App\Services\SendMoney\SendMoneyService;
-use App\Services\Utilities\Notifications\NotificationService;
 use App\Services\Utilities\Notifications\SmsService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
+use App\Services\AddMoney\Providers\DragonPayService;
+use App\Services\AddMoney\Providers\IAddMoneyService;
 use App\Services\NewsAndUpdate\INewsAndUpdateService;
-use App\Services\Transaction\ITransactionService;
-use App\Services\Transaction\TransactionService;
 use App\Services\Utilities\Notifications\EmailService;
 use App\Services\Utilities\LogHistory\LogHistoryService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\AddMoney\DragonPay\HandlePostBackService;
+use App\Services\Transaction\TransactionValidationService;
+use App\Services\AddMoney\DragonPay\IHandlePostBackService;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\Verification\VerificationService;
+use App\Services\Utilities\Notifications\NotificationService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Notifications\INotificationService;
-use App\Services\Utilities\Notifications\IPushNotificationService;
 use App\Services\Utilities\Notifications\PushNotificationService;
-use App\Services\UserProfile\UserProfileService;
-use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\Notifications\IPushNotificationService;
+use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -87,6 +89,10 @@ class AppServiceProvider extends ServiceProvider
         
         // Transaction Service
         $this->app->bind(ITransactionService::class, TransactionService::class);
+
+        // Validation Service
+        $this->app->bind(ITransactionValidationService::class, TransactionValidationService::class);
+
     }
 
     /**
