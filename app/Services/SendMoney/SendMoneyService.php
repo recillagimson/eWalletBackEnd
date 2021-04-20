@@ -119,10 +119,11 @@ class SendMoneyService implements ISendMoneyService
         $index = $this->outSendMoney->getLastRefNo();
         $index = substr($index, 2);
         $index++;
+        if($index == 0) { return SendMoneyConfig::RefHeader . str_pad($index + 1, 7, "0", STR_PAD_LEFT); } 
         return SendMoneyConfig::RefHeader . str_pad($index, 7, "0", STR_PAD_LEFT);
     }
 
-
+ 
 
     private function getUserID(string $usernameField, array $fillRequest)
     {
@@ -181,7 +182,7 @@ class SendMoneyService implements ISendMoneyService
             'message' => $fillRequest['message'],
             'status' => true,
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transction_category_id' => '1a86b905-929a-11eb-9663-1c1b0d14e211',
+            'transction_category_id' => SendMoneyConfig::CXSEND,
             'transaction_remarks' => '',
             'user_created' => '',
             'user_updated' => ''
@@ -198,7 +199,7 @@ class SendMoneyService implements ISendMoneyService
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transction_category_id' => '1a86b905-929a-11eb-9663-1c1b0d14e211',
+            'transction_category_id' => SendMoneyConfig::CXRECEIVE,
             'transaction_remarks' => '',
             'status' => true,
             'user_created' => '',

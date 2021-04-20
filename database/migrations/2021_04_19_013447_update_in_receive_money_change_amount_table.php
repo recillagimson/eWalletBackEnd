@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddAmountColumnInServiceFeesTable extends Migration
+class UpdateInReceiveMoneyChangeAmountTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddAmountColumnInServiceFeesTable extends Migration
      */
     public function up()
     {
-        Schema::table('service_fees', function (Blueprint $table) {
-            $table->double('amount', 10, 6)->after('transaction_category_id');
+        Schema::table('in_receive_money', function (Blueprint $table) {
+            $table->decimal('amount', $precision = 19, $scale = 6)->change();
         });
     }
 
@@ -25,8 +25,8 @@ class AddAmountColumnInServiceFeesTable extends Migration
      */
     public function down()
     {
-        Schema::table('service_fees', function (Blueprint $table) {
-            $table->dropColumn('amount');
+        Schema::table('in_receive_money', function (Blueprint $table) {
+            $table->decimal('amount')->change();
         });
     }
 }
