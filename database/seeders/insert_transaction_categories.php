@@ -13,7 +13,7 @@ class insert_transaction_categories extends Seeder
      */
     public function run()
     {
-  
+
         DB::table('transaction_categories')->delete();
             DB::table('transaction_categories')->insert([
 
@@ -34,9 +34,9 @@ class insert_transaction_categories extends Seeder
                 ['id' => '1a86b905-929a-11eb-9663-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Send Money','name' => 'CXSEND','description' => 'Send Money to Squidpay Account','status' => '1','user_created' => 'Migration Team'],
                 ['id' => 'c5b62dbd-95a0-11eb-8473-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Bills Payment','name' => 'BILLS','description' => 'Bills Payment','status' => '1','user_created' => 'Migration Team'],
                 ['id' => 'b1792f37-929c-11eb-9663-1c1b0d14e211','old_transaction_category_id' => '','title' => 'Receive Money','name' => 'CXRECEIVE','description' => 'Receive Money from Squidpay Account','status' => '1','user_created' => 'Migration Team']
-                
+
             ]);
     }
-    
+
 
 }
