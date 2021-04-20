@@ -4,6 +4,7 @@ namespace App\Repositories\ServiceFee;
 
 use App\Models\ServiceFee;
 use App\Models\UserAccount;
+use Illuminate\Support\Carbon;
 use App\Repositories\Repository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -45,6 +46,7 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
 
     public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $userAccountId) {
         // Get User 
+        $current_date = Carbon::now()->format('Y-m-d');
         $user = UserAccount::with(['tier'])->where('id', $userAccountId)->first();
         if($user) {
             $amount = $this->model->whereHas('tier', function($query) use($user) {
@@ -52,6 +54,7 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
             })
             ->select(['id', 'amount'])
             ->where('transaction_category_id', $transactionCategoryId)
+            ->where('implementation_date', '>=', $current_date)
             ->first();
             
             if($amount) {
