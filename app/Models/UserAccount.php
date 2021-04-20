@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\UsesUuid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
@@ -50,6 +51,21 @@ class UserAccount extends Authenticatable
         'last_failed_attempt' => 'datetime',
     ];
 
+    public function tier(): HasOne
+    {
+        return $this->hasOne(Tier::class, 'id', 'tier_id');
+    }
+
+    public function profile(): HasOne
+    {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'id');
+    }
+
+    public function balanceInfo(): HasOne
+    {
+        return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
+    }
+
 
     public function updateLockout(int $maxLoginAttempts)
     {
@@ -82,8 +98,5 @@ class UserAccount extends Authenticatable
         $this->tokens()->where('name', $tokenName)->delete();
     }
 
-    public function tier() {
-        return $this->hasOne(Tier::class, 'id', 'tier_id');
-    }
 
 }

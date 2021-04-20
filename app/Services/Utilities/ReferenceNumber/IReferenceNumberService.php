@@ -2,7 +2,7 @@
 
 namespace App\Services\Utilities\ReferenceNumber;
 
-interface IReferenceNumberService 
+interface IReferenceNumberService
 {
-    public function getAddMoneyRefNo();
+    public function generate(string $referenceType): string;
 }

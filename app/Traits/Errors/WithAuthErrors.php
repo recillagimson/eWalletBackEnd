@@ -1,15 +1,16 @@
 <?php
 
 
-namespace App\Services\Utilities\Errors;
+namespace App\Traits\Errors;
 
 
 use App\Enums\ErrorCodes;
 use Illuminate\Validation\ValidationException;
 
-
-class ErrorService implements IErrorService
+trait WithAuthErrors
 {
+    use WithErrors;
+
     /*
     |--------------------------------------------------------------------------
     | AUTH VALIDATION EXCEPTION HELPER METHODS
@@ -76,28 +77,4 @@ class ErrorService implements IErrorService
             'message' => 'Email / Mobile Number is already taken.'
         ]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | 3RD PARTY APIS ERRORS
-    |--------------------------------------------------------------------------
-    */
-
-    public function tpaFailedAuthentication(string $provider)
-    {
-        $this->validationErrorMessage(ErrorCodes::tpaFailedAuthentication, 'TPA:'.$provider.' Authentication Failed.');
-    }
-
-
-
-
-    private function validationErrorMessage($errorCode, $errorMessage)
-    {
-        throw ValidationException::withMessages([
-           'error_code' => $errorCode,
-           'message' => $errorMessage
-        ]);
-    }
-
-
 }

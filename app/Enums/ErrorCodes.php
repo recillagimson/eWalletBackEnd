@@ -6,7 +6,7 @@ namespace App\Enums;
 
 class ErrorCodes
 {
-    //AUTHENTICATION ERRORS - 100
+    //AUTHENTICATION / USER ERRORS - 100
     const loginFailed = 101;
     const unverifiedAccount = 102;
     const accountDoesNotExist = 103;
@@ -25,5 +25,15 @@ class ErrorCodes
 
     //3RD PARTY APIS - 200
     const tpaFailedAuthentication = 201;
+    const tpaErrorOccured = 202;
+
+    //TRANSACTIONS - 300
+    const transactionInvalid = 301;
+    const transactionFailed = 302;
+
+    //USER ERRORS - 400
+    const userProfileNotUpdated = 401;
+    const userInsufficientBalance = 402;
+
 
 }

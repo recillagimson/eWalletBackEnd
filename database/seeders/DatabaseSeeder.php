@@ -26,9 +26,10 @@ class DatabaseSeeder extends Seeder
             insert_signup_hosts::class,
             insert_prepaid_loads::class,
             insert_transaction_categories::class,
+            insert_reference_counters::class,
             ClientSeeder::class,
-           
-        ]); 
+
+        ]);
 
     }
 }

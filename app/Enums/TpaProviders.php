@@ -6,5 +6,7 @@ namespace App\Enums;
 
 class TpaProviders
 {
-    public const UBP = 'UBP';
+    const ubp = 'ubp';
+    const ubpPesonet = 'ubp-pesonet';
+    const ubpInstapay = 'ubp-instapay';
 }

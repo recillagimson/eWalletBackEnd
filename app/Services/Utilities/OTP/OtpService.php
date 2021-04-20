@@ -4,12 +4,14 @@
 namespace App\Services\Utilities\OTP;
 
 use App\Repositories\OtpRepository\IOtpRepository;
-use App\Services\Utilities\Errors\IErrorService;
+use App\Traits\Errors\WithAuthErrors;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class OtpService implements IOtpService
 {
+    use WithAuthErrors;
+
     /**
      * Length of the generated OTP
      *
@@ -60,10 +62,8 @@ class OtpService implements IOtpService
     protected $allowedAttempts;
 
     private IOtpRepository $otps;
-    private IErrorService $errorService;
 
-    public function __construct(IOtpRepository $otps,
-        IErrorService $errorService)
+    public function __construct(IOtpRepository $otps)
     {
         $this->length = config('otp-generator.length');
         $this->onlyDigits = config('otp-generator.onlyDigits');
@@ -84,7 +84,7 @@ class OtpService implements IOtpService
      *
      * @param string $method
      * @param mixed $params
-     * @return mixed
+     * @return OtpService|void
      */
     public function __call(string $method, $params)
     {
@@ -145,9 +145,9 @@ class OtpService implements IOtpService
     {
         $otp = $this->otps->getByIdentifier($identifier);
 
-        if (!$otp) $this->errorService->otpInvalid();
-        if ($otp->isExpired()) $this->errorService->otpIsExpired();
-        if ($otp->no_times_attempted == $this->allowedAttempts) $this->errorService->otpMaxedAttempts();
+        if (!$otp) $this->otpInvalid();
+        if ($otp->isExpired()) $this->otpIsExpired();
+        if ($otp->no_times_attempted == $this->allowedAttempts) $this->otpMaxedAttempts();
 
         $otp->increment('no_times_attempted');
 
@@ -155,21 +155,21 @@ class OtpService implements IOtpService
             $otp->validated = true;
             $otp->save();
 
-            return (object) [
+            return (object)[
                 'status' => true,
                 'message' => 'OTP is valid',
             ];
         }
 
-        $this->errorService->otpInvalid();
+        $this->otpInvalid();
     }
 
     public function ensureValidated(string $identifier)
     {
         $otp = $this->otps->getByIdentifier($identifier, true);
-        if (!$otp) $this->errorService->otpInvalid();
-        if ($otp->isExpired()) $this->errorService->otpIsExpired();
-        if (!$otp->validated) $this->errorService->otpInvalid();
+        if (!$otp) $this->otpInvalid();
+        if ($otp->isExpired()) $this->otpIsExpired();
+        if (!$otp->validated) $this->otpInvalid();
     }
 
     public function expiredAt(string $identifier): object

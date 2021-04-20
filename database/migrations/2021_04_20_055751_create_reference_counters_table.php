@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddAmountColumnInServiceFeesTable extends Migration
+class CreateReferenceCountersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,11 @@ class AddAmountColumnInServiceFeesTable extends Migration
      */
     public function up()
     {
-        Schema::table('service_fees', function (Blueprint $table) {
-            $table->double('amount', 10, 6)->after('transaction_category_id');
+        Schema::create('reference_counters', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('code', 10)->unique();
+            $table->unsignedInteger('counter');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +28,6 @@ class AddAmountColumnInServiceFeesTable extends Migration
      */
     public function down()
     {
-        Schema::table('service_fees', function (Blueprint $table) {
-            $table->dropColumn('amount');
-        });
+        Schema::dropIfExists('reference_counters');
     }
 }
