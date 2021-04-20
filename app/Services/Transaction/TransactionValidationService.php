@@ -49,7 +49,18 @@ class TransactionValidationService implements ITransactionValidationService
         if($transactionCategory && ($transactionCategory->name == "POSADDFUNDS" || $transactionCategory->name == "CASHINDRAGONPAY")) {
             // CASH IN
             $userTier = $this->tierRepository->getTierByUserAccountId($userAccountId);
+            // IF NOT TIER 1
+            if($userTier->account_status != "BASIC") {
+                // Stage 4 Checking if total transaction is maxed out
+                $doesNotMeetMonthlyTransactionLimit = $this->checkUserMonthlyTransactionLimit($userAccountId, $total_amount);
+                // Stage 5 Check if balance is sufficient
+                $isBalanceSufficient = $this->checkUserBalance($userAccountId, $total_amount);
+                return true;
+            }
             // HOLD FOR TIER
+            throw ValidationException::withMessages([
+                'tier_status' => 'Account Tier is not allowed to cash in'
+            ]);
         }
         else {
             // NOT CASH IN
