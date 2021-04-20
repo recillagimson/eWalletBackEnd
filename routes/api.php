@@ -54,6 +54,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });
 
+    Route::prefix('/image')->group(function () {
+        Route::post('/upload/{module}', [ImageUploadController::class, 'uploadImage']);
+    });
     /**
      * ROUTES FOR AUTHENTICATION ENDPOINTS AS WELL AS
      * OTP VERIFICATIONS
