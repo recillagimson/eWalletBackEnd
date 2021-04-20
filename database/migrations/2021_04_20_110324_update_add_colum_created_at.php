@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateTierIdLength extends Migration
+class UpdateAddColumCreatedAt extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class UpdateTierIdLength extends Migration
      */
     public function up()
     {
-        Schema::table('service_fees', function (Blueprint $table) {
-            $table->string('tier_id', 36)->change();
-            $table->dropColumn('name');
-        
+        Schema::table('tiers', function (Blueprint $table) {
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'))->after('user_updated');
+         
         });
     }
 
@@ -27,8 +26,9 @@ class UpdateTierIdLength extends Migration
      */
     public function down()
     {
-        Schema::table('service_fees', function (Blueprint $table) {
-
+        Schema::table('tiers', function (Blueprint $table) {
+           
         });
     }
 }
+
