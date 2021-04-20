@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Enums\SuccessMessages;
 use Illuminate\Http\JsonResponse;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\Notification\NotificationRequest;
@@ -31,8 +32,12 @@ class NotificationController extends Controller
      */
     public function GetAll(): JsonResponse {
         $records = $this->iPushNotificationService->getByUserId(request()->user()->id);
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        $response = [
+            'message' => SuccessMessages::notificationListSuccessful,
+            'data' => $this->encryptionService->encrypt($records)
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -46,9 +51,16 @@ class NotificationController extends Controller
         $details['user_created'] = request()->user()->id;
         $details['user_updated'] = request()->user()->id;
         $createRecord = $this->iPushNotificationService->create($details);
+        
+        // $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
+        // return response()->json($encryptedResponse, Response::HTTP_CREATED);
 
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        $response = [
+            'message' => SuccessMessages::notificationCreatedSuccessful,
+            'data' => $this->encryptionService->encrypt($createRecord->toArray())
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -58,8 +70,15 @@ class NotificationController extends Controller
      * @return JsonResponse
      */
     public function show(Notification $notification): JsonResponse {
-        $encryptedResponse = $this->encryptionService->encrypt($notification->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($notification->toArray());
+        // return response()->json($encryptedResponse, Response::HTTP_OK);
+
+        $response = [
+            'message' => SuccessMessages::notificationShowSuccessful,
+            'data' => $this->encryptionService->encrypt($notification->toArray())
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -73,8 +92,14 @@ class NotificationController extends Controller
         $details = $request->validated();
         // $inputBody = $this->inputBody($details);
         $updateRecord = $this->iPushNotificationService->update($notification, $details);
-        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
+        // return response()->json($encryptedResponse, Response::HTTP_OK);
+        $response = [
+            'message' => SuccessMessages::notificationUpdatedSuccessful,
+            'data' => $this->encryptionService->encrypt($updateRecord->toArray())
+        ];
+
+        return response()->json($response, Response::HTTP_OK);
     }
 
      /**
