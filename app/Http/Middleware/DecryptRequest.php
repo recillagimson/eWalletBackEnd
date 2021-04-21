@@ -52,7 +52,7 @@ class DecryptRequest
     private function payloadIsInvalid()
     {
         throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::PayloadInvalid,
+            'error_code' => ErrorCodes::payloadInvalid,
             'payload' => 'Encrypted payload is invalid.'
         ]);
     }
