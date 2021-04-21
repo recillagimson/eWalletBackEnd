@@ -45,27 +45,24 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         return $this->model->where('tier', $tier)->where('transaction_category_id', $tranCategoryID)->first();
     }
 
-    public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $userAccountId) {
+    public function getAmountByTransactionAndTierId(string $transactionCategoryId, string $tierId) {
         // Get User 
-        $current_date = Carbon::now()->format('Y-m-d');
-        $user = UserAccount::with(['tier'])->where('id', $userAccountId)->first();
-        if($user) {
-            $amount = $this->model->whereHas('tier', function($query) use($user) {
-                $query->where('id', $user->tier_id);        
-            })
-            ->select(['id', 'amount'])
-            ->where('transaction_category_id', $transactionCategoryId)
-            ->where('implementation_date', '>=', $current_date)
-            ->first();
+        $currentDate = Carbon::now()->format('Y-m-d');
+
+        $amount = $this->model
+        ->select(['id', 'amount'])
+        ->where('tier_id', $tierId)
+        ->where('transaction_category_id', $transactionCategoryId)
+        ->where('implementation_date', '>=', $currentDate)
+        ->first();
             
-            if($amount) {
-                return $amount;
-            }
+        if($amount) {
+            return $amount;
         }
 
         // throw error if not found
         throw ValidationException::withMessages([
-            'tier_not_found' => 'Account Tier is not found'
+            'tier_not_found' => 'Tier is not found'
         ]);
     }
 }

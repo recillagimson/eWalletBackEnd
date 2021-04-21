@@ -9,5 +9,5 @@ interface IServiceFeeRepository extends IRepository
 {
     public function getByTierAndTransCategoryID(int $tier, string $transCategoryID);
     public function list($params = []);
-    public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $userAccountId);
+    public function getAmountByTransactionAndTierId(string $transactionCategoryId, string $tierId);
 }

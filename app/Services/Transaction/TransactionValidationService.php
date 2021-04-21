@@ -23,6 +23,13 @@ class TransactionValidationService implements ITransactionValidationService
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private ITransactionCategoryRepository $transactionCategoryRepository;
     private ITierRepository $tierRepository;
+
+
+    private $statusActiveError = "Your account is disabled. Please contact Squidpay support.";
+    private $emergencyLockError = "Your Account has been locked, Please contact Squidpay Support for assistance in unlocking your account.";
+    private $minTierError = "Oops! To completely access all Squidpay services, please update your profile. Thank you.";
+    private $monthlyLimitExceedError = "Oh No! You have exceeded your monthly limit.";
+    private $balanceNotEnoughError = "Oops! You do not have enough balance.";
     
     public function __construct(IUserBalanceRepository $userBalanceRepository, IUserTransactionHistoryRepository $userTransactionHistoryRepository, IUserAccountRepository $userAccountRepository, IUserDetailRepository $userDetailRepository, ITransactionCategoryRepository $transactionCategoryRepository, ITierRepository $tierRepository)
     {
@@ -59,7 +66,7 @@ class TransactionValidationService implements ITransactionValidationService
             }
             // HOLD FOR TIER
             throw ValidationException::withMessages([
-                'tier_status' => 'Account Tier is not allowed to cash in'
+                'tier_status' => $this->minTierError
             ]);
         }
         else {
@@ -81,7 +88,7 @@ class TransactionValidationService implements ITransactionValidationService
                 return true;
             }
             throw ValidationException::withMessages([
-                'user_account_status' => 'Account Status is not active'
+                'user_account_status' => $this->statusActiveError
             ]);
         }
         throw ValidationException::withMessages([
@@ -96,7 +103,7 @@ class TransactionValidationService implements ITransactionValidationService
                 return true;
             }
             throw ValidationException::withMessages([
-                'emergency_lock_status' => 'Account Emergency Lock is active'
+                'emergency_lock_status' => $this->emergencyLockError
             ]);
         }
         throw ValidationException::withMessages([
@@ -127,7 +134,7 @@ class TransactionValidationService implements ITransactionValidationService
                 return true;
             }
             throw ValidationException::withMessages([
-                'monthly_limit_reached' => 'Monthly Limit Reached'
+                'monthly_limit_reached' => $this->monthlyLimitExceedError
             ]);
         }
         throw ValidationException::withMessages([
@@ -141,7 +148,7 @@ class TransactionValidationService implements ITransactionValidationService
             return true;
         }
         throw ValidationException::withMessages([
-            'balance_not_sufficient' => 'Current Balance is not sufficient'
+            'balance_not_sufficient' => $this->balanceNotEnoughError
         ]);
     }
 }
