@@ -22,6 +22,7 @@ use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SignupHostController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\ImageUploadController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
