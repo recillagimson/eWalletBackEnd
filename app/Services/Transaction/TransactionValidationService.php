@@ -116,14 +116,14 @@ class TransactionValidationService implements ITransactionValidationService
 
     public function checkUserTier(string $userAccountId){}
 
-    public function checkUserMonthlyTransactionLimit(string $userAccountId, $total_amount){
+    public function checkUserMonthlyTransactionLimit(string $userAccountId, $totalAmount){
         $tier = $this->tierRepository->getTierByUserAccountId($userAccountId);
         if($tier) {
             $from = Carbon::now()->startOfMonth()->format('Y-m-d');
             $to = Carbon::now()->endOfMonth()->format('Y-m-d');
-            $total_transaction_current_month = $this->userTransactionHistoryRepository->getTotalTransactionAmountByUserAccountIdDateRange($userAccountId, $from, $to);
-            $sum_up = $total_transaction_current_month + $total_amount;
-            if($tier->monthly_limit >= $sum_up) {
+            $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository->getTotalTransactionAmountByUserAccountIdDateRange($userAccountId, $from, $to);
+            $sumUp = $totalTransactionCurrentMonth + $totalAmount;
+            if($tier->monthly_limit >= $sumUp) {
                 return true;
             }
             throw ValidationException::withMessages([
@@ -135,9 +135,9 @@ class TransactionValidationService implements ITransactionValidationService
         ]);
     }
 
-    public function checkUserBalance(string $userAccountId, $total_amount){
-        $balance =  $this->userBalanceRepository->getUserBalanceInfoById($userAccountId, $total_amount);
-        if($balance >= $total_amount) {
+    public function checkUserBalance(string $userAccountId, $totalAmount){
+        $balance =  $this->userBalanceRepository->getUserBalanceInfoById($userAccountId, $totalAmount);
+        if($balance >= $totalAmount) {
             return true;
         }
         throw ValidationException::withMessages([
