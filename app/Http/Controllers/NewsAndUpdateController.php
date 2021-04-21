@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Enums\SuccessMessages;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -11,20 +12,24 @@ use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\NewsAndUpdate\NewsAndUpdateRequest;
 use App\Models\NewsAndUpdate;
 use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\Responses\IResponseService;
 
 class NewsAndUpdateController extends Controller
 {
     private IEncryptionService $encryptionService;
     private INewsAndUpdateRepository $newsAndUpdateRepository;
     private IUserProfileService $userProfileService;
+    private IResponseService $responseService;
     
     public function __construct(INewsAndUpdateRepository $newsAndUpdateRepository,
                                 IEncryptionService $encryptionService,
-                                IUserProfileService $userProfileService)
+                                IUserProfileService $userProfileService,
+                                IResponseService $responseService)
     {
         $this->newsAndUpdateRepository = $newsAndUpdateRepository;
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
+        $this->responseService = $responseService;
     }
     /**
      * Display a listing of the resource.
@@ -35,8 +40,8 @@ class NewsAndUpdateController extends Controller
     {
         $records = $this->newsAndUpdateRepository->getAll();
 
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -61,8 +66,8 @@ class NewsAndUpdateController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->newsAndUpdateRepository->create($inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        // $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
+        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
     /**
@@ -74,7 +79,7 @@ class NewsAndUpdateController extends Controller
     public function show(NewsAndUpdate $news): JsonResponse
     {
         $encryptedResponse = $this->encryptionService->encrypt($news->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($news->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -102,7 +107,7 @@ class NewsAndUpdateController extends Controller
         $updateRecord = $this->newsAndUpdateRepository->update($news, $inputBody);
 
         $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
     }
 
     /**
@@ -115,6 +120,6 @@ class NewsAndUpdateController extends Controller
     {
         $deleteRecord = $this->newsAndUpdateRepository->delete($news);
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->successResponse(null, SuccessMessages::recordDeleted);
     }
 }
