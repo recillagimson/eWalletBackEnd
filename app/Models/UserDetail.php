@@ -46,4 +46,9 @@ class UserDetail extends Model
         'user_created',
         'user_updated',
     ];
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
 }

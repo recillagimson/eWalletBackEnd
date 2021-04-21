@@ -2,8 +2,9 @@
 
 namespace App\Repositories\UserAccount;
 
-use App\Repositories\Repository;
 use App\Models\UserAccount;
+use App\Repositories\Repository;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserAccountRepository extends Repository implements IUserAccountRepository
 {
@@ -12,8 +13,18 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         parent::__construct($model);
     }
 
+    public function getUser(string $id)
+    {
+        return $this->getBaseQuery()->where('id', '=', $id)->first();
+    }
+
     public function getByUsername(string $usernameField, string $username)
     {
         return $this->model->where($usernameField, '=', $username)->first();
+    }
+
+    private function getBaseQuery(): Builder
+    {
+        return $this->model->with(['profile', 'balanceInfo']);
     }
 }

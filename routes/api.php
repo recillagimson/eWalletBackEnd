@@ -1,28 +1,30 @@
 <?php
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TierController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\IdTypeController;
-use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\AddMoneyController;
-use App\Http\Controllers\SendMoneyController;
-use App\Http\Controllers\UserPhotoController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\HelpCenterController;
-use App\Http\Controllers\PrepaidLoadController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PayloadController;
+use App\Http\Controllers\PrepaidLoadController;
+use App\Http\Controllers\Send2BankController;
+use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\ServiceFeeController;
+use App\Http\Controllers\TierController;
+use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
-use App\Http\Controllers\UserUtilities\SignupHostController;
-use App\Http\Controllers\UserUtilities\NationalityController;
-use App\Http\Controllers\UserUtilities\UserProfileController;
-use App\Http\Controllers\UserUtilities\NatureOfWorkController;
-use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
+use App\Http\Controllers\UserUtilities\NationalityController;
+use App\Http\Controllers\UserUtilities\NatureOfWorkController;
+use App\Http\Controllers\UserUtilities\SignupHostController;
+use App\Http\Controllers\UserUtilities\SourceOfFundController;
+use App\Http\Controllers\UserUtilities\UserProfileController;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -81,6 +83,11 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+    Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
+        Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
+    });
+
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function () {
         Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
         Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
@@ -117,7 +124,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
     });
 
-    Route::middleware(['decrypt.request'])->prefix('/notifications')->group(function (){
+    Route::prefix('/notifications')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [NotificationController::class, 'GetAll']);
         Route::post('/', [NotificationController::class, 'store']);
         Route::get('/{notification}', [NotificationController::class, 'show']);
@@ -125,7 +132,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{notification}', [NotificationController::class, 'delete']);
     });
 
-    Route::middleware(['decrypt.request'])->prefix('/tiers')->group(function (){
+    Route::prefix('/tiers')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [TierController::class, 'index']);
         Route::post('/', [TierController::class, 'store']);
         Route::get('/{tier}', [TierController::class, 'show']);
@@ -133,7 +140,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{tier}', [TierController::class, 'destroy']);
     });
 
-    Route::middleware(['decrypt.request'])->prefix('/service/fees')->group(function (){
+    Route::prefix('/service/fees')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [ServiceFeeController::class, 'index']);
         Route::post('/', [ServiceFeeController::class, 'store']);
         Route::get('/{serviceFee}', [ServiceFeeController::class, 'show']);
@@ -145,6 +152,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [AddMoneyController::class, 'addMoney']);
         Route::post('/cancel', [AddMoneyController::class, 'cancel']);
     });
+
+
 });
 
 // DragonPay PostBack

@@ -27,6 +27,10 @@ class SuccessMessages
     const scanQrSuccessful = 'Scan Qr Successful';
     const generateQrSuccessful = 'Generate Qr Successful';
 
+    const success = 'Success';
+    const recordSaved = 'Record has been saved.';
+    const recordDeleted = 'Record has been deleted';
+    
     // Notifications
     const notificationListSuccessful = 'Notification Fetch Successfully';
     const notificationShowSuccessful = 'Notification Get Successfully';

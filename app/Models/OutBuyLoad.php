@@ -17,7 +17,7 @@ class OutBuyLoad extends Model
      * @var string
      */
     protected $table = 'out_buy_loads';
-    
+
     /**
      * The attributes that are mass assignable.
      *

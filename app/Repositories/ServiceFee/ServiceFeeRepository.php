@@ -47,6 +47,7 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
     public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $userAccountId) {
         // Get User 
         $current_date = Carbon::now()->format('Y-m-d');
+        // consider service fee implementation
         $user = UserAccount::with(['tier'])->where('id', $userAccountId)->first();
         if($user) {
             $amount = $this->model->whereHas('tier', function($query) use($user) {
@@ -64,5 +65,6 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
 
         // throw error if not found
         throw new ModelNotFoundException('Service Fee record not found');
+        // Validation exception 422
     }
 }

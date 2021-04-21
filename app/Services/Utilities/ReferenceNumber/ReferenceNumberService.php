@@ -2,35 +2,29 @@
 
 namespace App\Services\Utilities\ReferenceNumber;
 
-use App\Enums\ReferenceNumberTypes;
-use App\Repositories\InAddMoney\IInAddMoneyRepository;
+use App\Repositories\ReferenceCounter\IReferenceCounterRepository;
+use App\Traits\Errors\WithTransactionErrors;
+use Illuminate\Support\Str;
 
 class ReferenceNumberService implements IReferenceNumberService
 {
-    public IInAddMoneyRepository $addMoneys;
+    use WithTransactionErrors;
 
-    public function __construct(IInAddMoneyRepository $addMoneys) {
-        $this->addMoneys = $addMoneys;
+    private IReferenceCounterRepository $refCounters;
+
+    public function __construct(IReferenceCounterRepository $refCounters)
+    {
+        $this->refCounters = $refCounters;
     }
 
-    /**
-     * Generates a Reference Number for Add Money
-     * Web Bank with the format AB0000000
-     * 
-     * @return string referenceNumberWebBank
-     */
-    public function getAddMoneyRefNo()
+    public function generate(string $referenceType): string
     {
-        $lastRefNoRow = $this->addMoneys->getLastByReferenceNumber();
+        $ref = $this->refCounters->getByCode($referenceType);
+        if (!$ref) $this->transInvalid();
 
-        if (!isset($lastRefNoRow->reference_number)) {
-            $lastRefNoRow['reference_number'] = 0;
-            $lastRefNoRow = (object) $lastRefNoRow;
-        }
+        $ref->counter += 1;
+        $ref->save();
 
-        $lastRefNoInts = substr($lastRefNoRow->reference_number, 2);
-        $latestRefNo = $lastRefNoInts + 1;
-
-        return ReferenceNumberTypes::AddMoneyViaWebBank . str_pad($latestRefNo, 7, '0', STR_PAD_LEFT);
+        return $referenceType . Str::padLeft($ref->counter, 7, '0');
     }
 }
