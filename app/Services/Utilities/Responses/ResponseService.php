@@ -4,6 +4,7 @@
 namespace App\Services\Utilities\Responses;
 
 
+use App\Enums\SuccessMessages;
 use App\Services\Encryption\IEncryptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -47,7 +48,7 @@ class ResponseService implements IResponseService
             'message' => $message,
         ];
 
-        if ($data) $response['data'] = $this->encryptionService->encrypt($data);
+        if ($data !== null) $response['data'] = $this->encryptionService->encrypt($data);
 
         return response()->json($response, $statusCode);
     }
