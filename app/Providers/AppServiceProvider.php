@@ -45,6 +45,8 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Services\Utilities\Responses\ResponseService;
+use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
+use App\Services\Utilities\ServiceFeeService\ServiceFeeService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Verification\VerificationService;
 use Illuminate\Http\Request;
@@ -101,7 +103,10 @@ class AppServiceProvider extends ServiceProvider
 
         // Validation Service
         $this->app->bind(ITransactionValidationService::class, TransactionValidationService::class);
-
+        
+        // Service Fee Service
+        $this->app->bind(IServiceFeeService::class, ServiceFeeService::class);
+        
         $this->bindSend2BankService();
         $this->bindAddMoneyService();
     }
