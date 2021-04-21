@@ -11,7 +11,7 @@ use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\Tier\ITierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Illuminate\Support\Carbon;
@@ -148,7 +148,7 @@ class DragonPayService implements IAddMoneyService
         $this->logGenerateURLInLogHistory($currentAddMoneyRecord->reference_number);
         return $response->json();
     }
-#section
+
     /**
      * Set the $userAccountID
      * 
@@ -201,7 +201,7 @@ class DragonPayService implements IAddMoneyService
      */
     public function getFullname(string $userAccountID)
     {
-        $userDetails = $this->userDetails->getByUserAccountID($userAccountID);
+        $userDetails = $this->userDetails->getByUserId($userAccountID);
 
         if ($userDetails == null) $this->noUserDetailsFound();
 
@@ -299,7 +299,7 @@ class DragonPayService implements IAddMoneyService
 
         if (!$rowInserted) return $this->cantWriteToTable();
     }
-#section
+
     /**
      * Validate the user accoirding to the user's
      * tier and amount in the transaction
