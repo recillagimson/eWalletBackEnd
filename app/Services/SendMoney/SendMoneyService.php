@@ -18,7 +18,6 @@ class SendMoneyService implements ISendMoneyService
     private IUserAccountRepository $userAccounts;
     private IUserBalanceInfoRepository $userBalanceInfo;
     private IQrTransactionsRepository $qrTransactions;
-    private INotificationService $notificationService;
 
     public function __construct(IOutSendMoneyRepository $outSendMoney, IInReceiveMoneyRepository $inReceiveMoney,IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo, IQrTransactionsRepository $qrTransactions, INotificationService $notificationService)
     {
@@ -212,7 +211,7 @@ class SendMoneyService implements ISendMoneyService
     private function invalidRecipient() 
     {
         throw ValidationException::withMessages([
-            'email | mobile number' => 'Not allowed to send to your own account'
+            'email or mobile_number' => 'Not allowed to send to your own account'
         ]);
     }
 
@@ -226,7 +225,7 @@ class SendMoneyService implements ISendMoneyService
     private function invalidAccount()
     {
         throw ValidationException::withMessages([
-            'amount' => 'Account does not exists'
+            'email or mobile_number' => 'Account does not exists'
         ]);
     }
 
