@@ -15,7 +15,7 @@ class UpdateQrTransactionsUpdate extends Migration
     {
         Schema::table('qr_transactions', function (Blueprint $table) {
             $table->decimal('amount', 19, 6)->change();
-            $table->softDeletes();
+          
         });
     }
 
