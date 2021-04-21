@@ -17,7 +17,7 @@ use App\Http\Requests\Auth\VerifyLoginRequest;
 use App\Http\Requests\Auth\VerifyPasswordRequest;
 use App\Models\UserAccount;
 use App\Services\Auth\IAuthService;
-use App\Services\Encryption\IEncryptionService;
+use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -25,12 +25,12 @@ use Illuminate\Http\Response;
 class AuthController extends Controller
 {
     private IAuthService $authService;
-    private IEncryptionService $encryptionService;
+    private IResponseService $responseService;
 
-    public function __construct(IAuthService $authService, IEncryptionService $encryptionService)
+    public function __construct(IAuthService $authService, IResponseService $responseService)
     {
         $this->authService = $authService;
-        $this->encryptionService = $encryptionService;
+        $this->responseService = $responseService;
     }
 
     /**
@@ -45,12 +45,7 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $user = $this->authService->register($newUser, $usernameField);
 
-        $response = [
-            'message' => SuccessMessages::accountRegistered,
-            'data' => $this->encryptionService->encrypt($user->toArray())
-        ];
-
-        return response()->json($response, Response::HTTP_CREATED);
+        return $this->responseService->createdResponse($user->toArray(), SuccessMessages::accountRegistered);
     }
 
     /**
@@ -65,14 +60,9 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $this->authService->checkAccount($usernameField, $newUser[$usernameField]);
 
-        $response = [
-            'message' => SuccessMessages::accountValidationPassed,
-            'data' => $this->encryptionService->encrypt([
-                $usernameField => $newUser[$usernameField]
-            ])
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse([
+            $usernameField => $newUser[$usernameField]
+        ], SuccessMessages::accountValidationPassed);
     }
 
     /**
@@ -88,12 +78,7 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $loginResponse = $this->authService->login($usernameField, $login, $ip);
 
-        $response = [
-            'message' => SuccessMessages::loginSuccessful,
-            'data' => $this->encryptionService->encrypt($loginResponse)
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse($loginResponse, SuccessMessages::loginSuccessful);
     }
 
     /**
@@ -108,12 +93,7 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $loginResponse = $this->authService->mobileLogin($usernameField, $login);
 
-        $response = [
-            'message' => SuccessMessages::loginSuccessful,
-            'data' => $this->encryptionService->encrypt($loginResponse)
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse($loginResponse, SuccessMessages::loginSuccessful);
     }
 
     /**
@@ -129,14 +109,9 @@ class AuthController extends Controller
 
         $this->authService->generateMobileLoginOTP($usernameField, $login[$usernameField]);
 
-        $response = [
-            'messsage' => SuccessMessages::loginValidationPassed,
-            'data' => $this->encryptionService->encrypt([
-                $usernameField => $login[$usernameField]
-            ])
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse([
+            $usernameField => $login[$usernameField]
+        ], SuccessMessages::loginValidationPassed);
     }
 
     /**
@@ -151,13 +126,9 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $this->authService->forgotPassword($usernameField, $data[$usernameField]);
 
-        $response = [
-            'message' => SuccessMessages::passwordRecoveryRequestSuccessful,
-            'data' => $this->encryptionService->encrypt([
-                $usernameField => $data[$usernameField]
-            ])
-        ];
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse([
+            $usernameField => $data[$usernameField]
+        ], SuccessMessages::passwordRecoveryRequestSuccessful);
     }
 
     /**
@@ -172,14 +143,9 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $this->authService->resetPassword($usernameField, $data[$usernameField], $data['password']);
 
-        $response = [
-            'message' => SuccessMessages::passwordUpdateSuccessful,
-            'data' => $this->encryptionService->encrypt([
-                $usernameField => $data[$usernameField]
-            ])
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse([
+            $usernameField => $data[$usernameField]
+        ], SuccessMessages::passwordUpdateSuccessful);
     }
 
     /**
@@ -194,12 +160,7 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $this->authService->verifyAccount($usernameField, $data[$usernameField], $data['code']);
 
-        $response = [
-            'message' => SuccessMessages::accountVerification,
-            'data' => $this->encryptionService->encrypt([$usernameField => $data[$usernameField]])
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse([$usernameField => $data[$usernameField]], SuccessMessages::accountVerification);
     }
 
     /**
@@ -214,14 +175,9 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $this->authService->verifyLogin($usernameField, $data[$usernameField], $data['code']);
 
-        $response = [
-            'message' => SuccessMessages::loginVerificationSuccessful,
-            'data' => $this->encryptionService->encrypt([
-                $usernameField => $data[$usernameField]
-            ])
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse([
+            $usernameField => $data[$usernameField]
+        ], SuccessMessages::loginVerificationSuccessful);
     }
 
     /**
@@ -236,14 +192,9 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $this->authService->verifyPassword($usernameField, $data[$usernameField], $data['code']);
 
-        $response = [
-            'message' => SuccessMessages::passwordRecoveryVerificationSuccessful,
-            'data' => $this->encryptionService->encrypt([
-                $usernameField => $data[$usernameField]
-            ])
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse([
+            $usernameField => $data[$usernameField]
+        ], SuccessMessages::passwordRecoveryVerificationSuccessful);
     }
 
     /**
@@ -258,14 +209,9 @@ class AuthController extends Controller
         $usernameField = $this->getUsernameField($request);
         $this->authService->sendOTP($usernameField, $data[$usernameField], $data['otp_type']);
 
-        $response = [
-            'message' => SuccessMessages::otpSent,
-            'data' => $this->encryptionService->encrypt([
-                $usernameField => $data[$usernameField]
-            ])
-        ];
-
-        return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse([
+            $usernameField => $data[$usernameField]
+        ], SuccessMessages::otpSent);
     }
 
     /**

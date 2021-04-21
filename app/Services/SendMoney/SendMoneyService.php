@@ -2,14 +2,12 @@
 namespace App\Services\SendMoney;
 
 use App\Enums\SendMoneyConfig;
-use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
+use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
+use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use Illuminate\Validation\ValidationException;
-use App\Repositories\QrTransactions\IQrTransactionsRepository;
-use App\Services\Utilities\Notifications\INotificationService;
-use Illuminate\Http\JsonResponse;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -18,23 +16,23 @@ class SendMoneyService implements ISendMoneyService
     private IUserAccountRepository $userAccounts;
     private IUserBalanceInfoRepository $userBalanceInfo;
     private IQrTransactionsRepository $qrTransactions;
-    private INotificationService $notificationService;
 
-    public function __construct(IOutSendMoneyRepository $outSendMoney, IInReceiveMoneyRepository $inReceiveMoney,IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo, IQrTransactionsRepository $qrTransactions, INotificationService $notificationService)
+    public function __construct(IOutSendMoneyRepository $outSendMoney, IInReceiveMoneyRepository $inReceiveMoney,
+                                IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo,
+                                IQrTransactionsRepository $qrTransactions)
     {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
         $this->userAccounts = $userAccts;
         $this->userBalanceInfo = $userBalanceInfo;
         $this->qrTransactions = $qrTransactions;
-        $this->notificationService = $notificationService;
     }
 
 
     /**
      * Creates a new record for out_send_money, in_receive_money
-     * 
-     * @param string $username 
+     *
+     * @param string $username
      * @param array $fillRequest
      * @param object $user
      * @param string $senderID
@@ -51,7 +49,7 @@ class SendMoneyService implements ISendMoneyService
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
-     
+
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->notEnoughBalance();
 
@@ -64,8 +62,8 @@ class SendMoneyService implements ISendMoneyService
 
     /**
      * Creates a new record for qr_transactions
-     * 
-     * @param string $username 
+     *
+     * @param string $username
      * @param object $user
      * @param array $fillRequest
      * @return mixed
@@ -85,9 +83,9 @@ class SendMoneyService implements ISendMoneyService
     /**
      * Use for getting the qr_trasaction by ID
      * Returns user mobile_number or email with amount
-     * 
-     * @param string $id 
-     * @param string $qrTransaction 
+     *
+     * @param string $id
+     * @param string $qrTransaction
      * @param string $user
      *
      * @return array
@@ -97,10 +95,12 @@ class SendMoneyService implements ISendMoneyService
         $qrTransaction = $this->qrTransactions->get($id);
         if (empty($qrTransaction)) $this->invalidQr();
         $user = $this->userAccounts->get($qrTransaction->user_account_id);
-        if (empty($user)) $this->invalidAccount(); 
-         
-        if ($user->mobile_number) { return ['mobile_number' => $user->mobile_number, 'amount' => $qrTransaction->amount, 'message' => '']; } 
-        return ['email' => $user->email , 'amount' => $qrTransaction->amount, 'message' => ''];
+        if (empty($user)) $this->invalidAccount();
+
+        if ($user->mobile_number) {
+            return ['mobile_number' => $user->mobile_number, 'amount' => $qrTransaction->amount, 'message' => ''];
+        }
+        return ['email' => $user->email, 'amount' => $qrTransaction->amount, 'message' => ''];
     }
 
 
@@ -109,7 +109,7 @@ class SendMoneyService implements ISendMoneyService
     {
         if (!empty($fillRequest['recipient_account_id'])){
             return $fillRequest['recipient_account_id'];
-        } 
+        }
         return $this->getUserID($username, $fillRequest);
     }
 
@@ -119,16 +119,18 @@ class SendMoneyService implements ISendMoneyService
         $index = $this->outSendMoney->getLastRefNo();
         $index = substr($index, 2);
         $index++;
-        if($index == 0) { return SendMoneyConfig::RefHeader . str_pad($index + 1, 7, "0", STR_PAD_LEFT); } 
+        if ($index == 0) {
+            return SendMoneyConfig::RefHeader . str_pad($index + 1, 7, "0", STR_PAD_LEFT);
+        }
         return SendMoneyConfig::RefHeader . str_pad($index, 7, "0", STR_PAD_LEFT);
     }
 
- 
+
 
     private function getUserID(string $usernameField, array $fillRequest)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $fillRequest[$usernameField]);
-        if(empty($user)) $this->invalidAccount(); 
+        if (empty($user)) $this->invalidAccount();
         return $user['id'];
     }
 
@@ -136,7 +138,7 @@ class SendMoneyService implements ISendMoneyService
 
     private function isSelf(string $senderID, string $receiverID)
     {
-        if($senderID == $receiverID) return true; 
+        if ($senderID == $receiverID) return true;
     }
 
 
@@ -145,7 +147,7 @@ class SendMoneyService implements ISendMoneyService
     {
         $balance = $this->userBalanceInfo->getUserBalance($senderID);
         $fillRequest['amount'] = $fillRequest['amount'] + SendMoneyConfig::ServiceFee;
-        if($balance >= $fillRequest['amount']) return true; 
+        if ($balance >= $fillRequest['amount']) return true;
     }
 
 
@@ -168,7 +170,7 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function outSendMoney(string $senderID, string $receiverID, array $fillRequest) 
+    private function outSendMoney(string $senderID, string $receiverID, array $fillRequest)
     {
         return $this->outSendMoney->create([
             'user_account_id' => $senderID,
@@ -208,8 +210,7 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-
-    private function invalidRecipient() 
+    private function invalidRecipient()
     {
         throw ValidationException::withMessages([
             'email | mobile number' => 'Not allowed to send to your own account'
