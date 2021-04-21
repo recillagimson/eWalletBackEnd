@@ -1,16 +1,17 @@
 <?php
 
+use App\Enums\AccountTiers;
 use App\Enums\DragonPayStatusTypes;
+use App\Enums\ErrorCodes;
+use App\Enums\NetworkTypes;
 use App\Enums\OtpTypes;
 use App\Enums\PayloadTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
-use App\Enums\ErrorCodes;
-use App\Enums\NetworkTypes;
 use App\Enums\SuccessMessages;
+use App\Enums\TokenNames;
 use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
-use App\Enums\TokenNames;
 
 return [
 
@@ -256,11 +257,10 @@ return [
         'TransactionCategories' => TransactionCategories::class,
         'ErrorCodes' => ErrorCodes::class,
         'TpaProviders' => TpaProviders::class,
+        'AccountTiers' => AccountTiers::class,
 
         //Enums - Messages
-        'SuccessMessages' => SuccessMessages::class
-
-
+        'SuccessMessages' => SuccessMessages::class,
     ],
 
 ];

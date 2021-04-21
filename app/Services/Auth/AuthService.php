@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Enums\AccountTiers;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Models\UserAccount;
@@ -76,6 +77,7 @@ class AuthService implements IAuthService
 
         $newUser['password'] = Hash::make($newUser['password']);
         $newUser['pin_code'] = Hash::make($newUser['pin_code']);
+        $newUser['tier_id'] = AccountTiers::tier1;
 
         $user = $this->userAccounts->create($newUser);
         $this->passwordHistories->log($user->id, $newUser['password']);
@@ -145,8 +147,7 @@ class AuthService implements IAuthService
     {
         $client = $this->clients->getClient($clientId);
 
-        if(!$client || !Hash::check($clientSecret, $client->client_secret))
-        {
+        if(!$client || !Hash::check($clientSecret, $client->client_secret)) {
             $this->invalidCredentials();
         }
 
@@ -291,8 +292,7 @@ class AuthService implements IAuthService
         $otp = $this->generateOTP($otpType, $user->id);
         if(App::environment('local')) return;
 
-        switch ($otpType)
-        {
+        switch ($otpType) {
             case OtpTypes::registration:
                 $this->notificationService->sendAccountVerification($username, $otp->token);
                 break;
@@ -334,11 +334,9 @@ class AuthService implements IAuthService
         $latestPassword = $this->passwordHistories->getLatest($user->id);
         if (!$latestPassword->isAtMinimumAge($this->minPasswordAge)) $this->passwordNotAged($this->minPasswordAge);
 
-        if($password)
-        {
+        if($password) {
             $passwordHistories = $this->passwordHistories->getPrevious($this->passwordRepeatCount, $user->id);
-            foreach($passwordHistories as $passwordHistory)
-            {
+            foreach($passwordHistories as $passwordHistory) {
                 $exists = Hash::check($password, $passwordHistory->password);
                 if ($exists === true) $this->passwordUsed();
             }
