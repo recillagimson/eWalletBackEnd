@@ -117,7 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
 
         Route::prefix('/user')->group(function (){
-            Route::get('/profile/{user_detail}', [UserProfileController::class, 'show']);
+            Route::get('/profile', [UserProfileController::class, 'show']);
             Route::post('/profile', [UserProfileController::class, 'update']);
         });
     });
