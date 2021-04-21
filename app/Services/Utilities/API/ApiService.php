@@ -9,9 +9,36 @@ use Illuminate\Support\Facades\Http;
 
 class ApiService implements IApiService
 {
+    private array $defaultHeaders = [
+        'Accept' => 'application/json',
+    ];
 
-    public function post(string $url, array $data): Response
+    public function get(string $url, array $headers = null): Response
     {
-        return Http::post($url, $data);
+        if (!$headers) {
+            $headers = $this->defaultHeaders;
+        }
+
+        return Http::withHeaders($headers)->get($url);
     }
+
+    public function post(string $url, array $data, array $headers = null): Response
+    {
+        if (!$headers) {
+            $headers = $this->defaultHeaders;
+        }
+
+        return Http::withHeaders($headers)->post($url, $data);
+    }
+
+    public function postAsForm(string $url, array $data, array $headers = null): Response
+    {
+        if (!$headers) {
+            $headers = $this->defaultHeaders;
+        }
+
+        return Http::withHeaders($headers)->asForm()->post($url, $data);
+    }
+
+
 }
