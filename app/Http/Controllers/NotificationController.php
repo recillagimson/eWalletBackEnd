@@ -14,17 +14,16 @@ use App\Services\Utilities\Notifications\IPushNotificationService;
 
 class NotificationController extends Controller
 {
-    private IEncryptionService $encryptionService;
+    // private IEncryptionService $encryptionService;
     private IPushNotificationService $iPushNotificationService;
     private IResponseService $responseService;
 
     public function __construct(IPushNotificationService $iPushNotificationService,
-                                IEncryptionService $encryptionService,
                                 IResponseService $responseService
     )
     {
         // $this->iNotificationRepository = $iNotificationRepository;
-        $this->encryptionService = $encryptionService;
+        // $this->encryptionService = $encryptionService;
         $this->iPushNotificationService = $iPushNotificationService;
         $this->responseService = $responseService;
     }

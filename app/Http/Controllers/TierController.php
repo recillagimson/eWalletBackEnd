@@ -2,30 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Tier\TierRequest;
 use App\Models\Tier;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use App\Enums\SuccessMessages;
+use App\Http\Requests\Tier\TierRequest;
 use App\Repositories\Tier\ITierRepository;
-use App\Services\Encryption\IEncryptionService;
-use App\Services\Transaction\ITransactionValidationService;
+use App\Services\Utilities\Responses\IResponseService;
 
 class TierController extends Controller
 {
 
-    private IEncryptionService $encryptionService;
     private ITierRepository $iTierRepository;
-    private ITransactionValidationService $iTransactionValidationService;
+    private IResponseService $responseService;
 
 
-    public function __construct(IEncryptionService $encryptionService, 
+    public function __construct(
                                 ITierRepository $iTierRepository,
-                                ITransactionValidationService $iTransactionValidationService
+                                IResponseService $responseService
                                 )
     {
-        $this->encryptionService = $encryptionService;
+        // $this->encryptionService = $encryptionService;
         $this->iTierRepository = $iTierRepository;
-        $this->iTransactionValidationService = $iTransactionValidationService;
+        $this->responseService = $responseService;
     }
 
     /**
@@ -39,8 +37,7 @@ class TierController extends Controller
         // GET REQUEST VALUES
         $params = $request->all();
         $records = $this->iTierRepository->list($params);
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -65,9 +62,7 @@ class TierController extends Controller
         $details['user_created'] = request()->user()->id;
         $details['user_updated'] = request()->user()->id;
         $createRecord = $this->iTierRepository->create($details);
-
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        return $this->responseService->createdResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
     /**
@@ -78,8 +73,7 @@ class TierController extends Controller
      */
     public function show(Tier $tier)
     {
-        $encryptedResponse = $this->encryptionService->encrypt($tier->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($tier->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -104,9 +98,7 @@ class TierController extends Controller
     {
         $details = $request->validated();
         $updateRecord = $this->iTierRepository->update($tier, $details);
-
-        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($updateRecord->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -118,6 +110,6 @@ class TierController extends Controller
     public function destroy(Tier $tier)
     {
         $deleteRecord = $this->iTierRepository->delete($tier);
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->noContentResponse($deleteRecord->toArray(), SuccessMessages::recordDeleted);
     }
 }
