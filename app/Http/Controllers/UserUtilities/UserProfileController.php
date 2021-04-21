@@ -56,7 +56,9 @@ class UserProfileController extends Controller
     {
         $user_detail = $this->userDetailRepository->getByUserId($request->user()->id);
         // $encryptedResponse = $this->encryptionService->encrypt($user_detail->toArray());
-        return $this->responseService->successResponse($user_detail->toArray(), SuccessMessages::success);
+        return ($user_detail) ? 
+        $this->responseService->successResponse($user_detail->toArray(), SuccessMessages::success) :
+        $this->responseService->notFound("No Data Found.");
     }
 
 }
