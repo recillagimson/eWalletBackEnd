@@ -67,8 +67,6 @@ use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 use App\Repositories\UserUtilities\SourceOfFund\SourceOfFundRepository;
 use App\Repositories\UserUtilities\Country\ICountryRepository;
 use App\Repositories\UserUtilities\Country\CountryRepository;
-use App\Repositories\FundTransfer\OutSendToBankRepository;
-use App\Repositories\FundTransfer\IOutSendToBankRepository;
 
 
 class RepositoryServiceProvider extends ServiceProvider
