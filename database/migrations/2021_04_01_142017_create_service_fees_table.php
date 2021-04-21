@@ -26,7 +26,7 @@ class CreateServiceFeesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-    }
+    }php 
 
     /**
      * Reverse the migrations.
