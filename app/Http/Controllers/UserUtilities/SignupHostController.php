@@ -11,6 +11,8 @@ use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\SignupHostRequest;
 use App\Models\UserUtilities\SignupHost;
 use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Enums\SuccessMessages;
 
 class SignupHostController extends Controller
 {
@@ -18,14 +20,17 @@ class SignupHostController extends Controller
     private IEncryptionService $encryptionService;
     private ISignupHostRepository $signupHostRepository;
     private IUserProfileService $userProfileService;
+    private IResponseService $responseService;
     
     public function __construct(ISignupHostRepository $signupHostRepository,
                                 IEncryptionService $encryptionService,
-                                IUserProfileService $userProfileService)
+                                IUserProfileService $userProfileService,
+                                IResponseService $responseService)
     {
         $this->signupHostRepository = $signupHostRepository;
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
+        $this->responseService = $responseService;
     }
 
     /**
@@ -37,8 +42,8 @@ class SignupHostController extends Controller
     {
         $records = $this->signupHostRepository->getAll();
 
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -53,8 +58,8 @@ class SignupHostController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->signupHostRepository->create($inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        // $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
+        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
     /**
@@ -65,8 +70,8 @@ class SignupHostController extends Controller
      */
     public function show(SignupHost $signup_host): JsonResponse
     {
-        $encryptedResponse = $this->encryptionService->encrypt($signup_host->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($signup_host->toArray());
+        return $this->responseService->successResponse($signup_host->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -82,8 +87,8 @@ class SignupHostController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $signup_host);
         $updateRecord = $this->signupHostRepository->update($signup_host, $inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
+        return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
     }
 
     /**
@@ -96,6 +101,6 @@ class SignupHostController extends Controller
     {
         $deleteRecord = $this->signupHostRepository->delete($signup_host);
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->successResponse(null, SuccessMessages::recordDeleted);
     }
 }

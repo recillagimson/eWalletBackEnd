@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Enums\SuccessMessages;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -11,20 +12,24 @@ use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\HelpCenter\HelpCenterRequest;
 use App\Models\HelpCenter;
 use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\Responses\IResponseService;
 
 class HelpCenterController extends Controller
 {
     private IEncryptionService $encryptionService;
     private IHelpCenterRepository $helpCenterRepository;
     private IUserProfileService $userProfileService;
+    private IResponseService $responseService;
     
     public function __construct(IHelpCenterRepository $helpCenterRepository,
                                 IEncryptionService $encryptionService,
-                                IUserProfileService $userProfileService)
+                                IUserProfileService $userProfileService,
+                                IResponseService $responseService)
     {
         $this->helpCenterRepository = $helpCenterRepository;
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
+        $this->responseService = $responseService;
     }
 
 
@@ -36,8 +41,8 @@ class HelpCenterController extends Controller
     public function index(): JsonResponse {
         $records = $this->helpCenterRepository->getAll();
 
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -52,8 +57,8 @@ class HelpCenterController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->helpCenterRepository->create($inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        // $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
+        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
      /**
@@ -63,8 +68,8 @@ class HelpCenterController extends Controller
      * @return JsonResponse
      */
     public function show(HelpCenter $help_center): JsonResponse {
-        $encryptedResponse = $this->encryptionService->encrypt($help_center->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($help_center->toArray());
+        return $this->responseService->successResponse($help_center->toArray(), SuccessMessages::success);
     }
 
 
@@ -80,8 +85,8 @@ class HelpCenterController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $help_center);
         
         $updateRecord = $this->helpCenterRepository->update($help_center, $inputBody);
-        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
+        return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
     }
 
    /**
@@ -94,6 +99,6 @@ class HelpCenterController extends Controller
     {
         $deleteRecord = $this->helpCenterRepository->delete($help_center);
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->successResponse(null, SuccessMessages::recordDeleted);
     }
 }

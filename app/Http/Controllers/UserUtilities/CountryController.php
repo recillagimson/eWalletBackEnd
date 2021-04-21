@@ -11,6 +11,8 @@ use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\CountryRequest;
 use App\Models\UserUtilities\Country;
 use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Enums\SuccessMessages;
 
 class CountryController extends Controller
 {
@@ -18,14 +20,17 @@ class CountryController extends Controller
     private IEncryptionService $encryptionService;
     private ICountryRepository $countryRepository;
     private IUserProfileService $userProfileService;
+    private IResponseService $responseService;
     
     public function __construct(ICountryRepository $countryRepository,
                                 IEncryptionService $encryptionService,
-                                IUserProfileService $userProfileService)
+                                IUserProfileService $userProfileService,
+                                IResponseService $responseService)
     {
         $this->countryRepository = $countryRepository;
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
+        $this->responseService = $responseService;
     }
 
     /**
@@ -37,8 +42,8 @@ class CountryController extends Controller
     {
         $records = $this->countryRepository->getAll();
 
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -53,8 +58,8 @@ class CountryController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->countryRepository->create($inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        // $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
+        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
     /**
@@ -65,8 +70,8 @@ class CountryController extends Controller
      */
     public function show(Country $country): JsonResponse
     {
-        $encryptedResponse = $this->encryptionService->encrypt($country->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($country->toArray());
+        return $this->responseService->successResponse($country->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -82,8 +87,8 @@ class CountryController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $country);
         $updateRecord = $this->countryRepository->update($country, $inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
+        return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
     }
 
     /**
@@ -96,6 +101,6 @@ class CountryController extends Controller
     {
         $deleteRecord = $this->countryRepository->delete($country);
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->successResponse(null, SuccessMessages::recordDeleted);
     }
 }

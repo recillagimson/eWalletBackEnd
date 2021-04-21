@@ -22,6 +22,7 @@ use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SignupHostController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\ImageUploadController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +57,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
     });
 
+    Route::prefix('/image')->group(function () {
+        Route::post('/upload/{module}', [ImageUploadController::class, 'uploadImage']);
+    });
     /**
      * ROUTES FOR AUTHENTICATION ENDPOINTS AS WELL AS
      * OTP VERIFICATIONS
@@ -113,7 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
 
         Route::prefix('/user')->group(function (){
-            Route::get('/profile/{user_detail}', [UserProfileController::class, 'show']);
+            Route::get('/profile', [UserProfileController::class, 'show']);
             Route::post('/profile', [UserProfileController::class, 'update']);
         });
     });

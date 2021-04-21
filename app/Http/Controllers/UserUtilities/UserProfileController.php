@@ -9,18 +9,26 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\UserProfile\IUserProfileService;
-use App\Models\UserUtilities\UserDetail;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Enums\SuccessMessages;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class UserProfileController extends Controller
 {
     private IEncryptionService $encryptionService;
     private IUserProfileService $userProfileService;
+    private IResponseService $responseService;
+    private IUserDetailRepository $userDetailRepository;
 
     public function __construct(IEncryptionService $encryptionService, 
-                                IUserProfileService $userProfileService)
+                                IUserProfileService $userProfileService,
+                                IResponseService $responseService,
+                                IUserDetailRepository $userDetailRepository)
     {
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
+        $this->responseService = $responseService;
+        $this->userDetailRepository = $userDetailRepository;
     }
 
     /**
@@ -34,8 +42,8 @@ class UserProfileController extends Controller
         $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $details);
         
-        $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
+        return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
     }
 
     /**
@@ -44,10 +52,11 @@ class UserProfileController extends Controller
      * @param  Model  $marital_status
      * @return JsonResponse
      */
-    public function show(UserDetail $user_detail): JsonResponse
+    public function show(Request $request): JsonResponse
     {
-        $encryptedResponse = $this->encryptionService->encrypt($user_detail->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        $user_detail = $this->userDetailRepository->getByUserId($request->user()->id);
+        // $encryptedResponse = $this->encryptionService->encrypt($user_detail->toArray());
+        return $this->responseService->successResponse($user_detail->toArray(), SuccessMessages::success);
     }
 
 }
