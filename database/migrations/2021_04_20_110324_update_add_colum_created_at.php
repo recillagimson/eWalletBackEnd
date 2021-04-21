@@ -15,7 +15,7 @@ class UpdateAddColumCreatedAt extends Migration
     {
         Schema::table('tiers', function (Blueprint $table) {
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'))->after('user_updated');
-         
+
         });
     }
 
@@ -27,7 +27,7 @@ class UpdateAddColumCreatedAt extends Migration
     public function down()
     {
         Schema::table('tiers', function (Blueprint $table) {
-           
+
         });
     }
 }

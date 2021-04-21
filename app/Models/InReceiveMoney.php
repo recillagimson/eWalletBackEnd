@@ -30,5 +30,5 @@ class InReceiveMoney extends Model
         'user_updated',
     ];
 
-    
+
 }

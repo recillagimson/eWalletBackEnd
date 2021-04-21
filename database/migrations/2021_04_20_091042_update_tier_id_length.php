@@ -16,7 +16,7 @@ class UpdateTierIdLength extends Migration
         Schema::table('service_fees', function (Blueprint $table) {
             $table->string('tier_id', 36)->change();
             $table->dropColumn('name');
-        
+
         });
     }
 

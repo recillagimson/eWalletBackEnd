@@ -15,12 +15,12 @@ class UpdateTierUserUpdatedNullable extends Migration
     {
         Schema::table('tiers', function (Blueprint $table) {
             $table->uuid('user_updated')->nullable()->change();
-            $table->decimal('daily_limit', 18,6)->change();
-            $table->decimal('daily_threshold', 18,6)->change();
-            $table->decimal('monthly_limit', 18,6)->change();
-            $table->decimal('monthly_threshold', 18,6)->change();
+            $table->decimal('daily_limit', 18, 6)->change();
+            $table->decimal('daily_threshold', 18, 6)->change();
+            $table->decimal('monthly_limit', 18, 6)->change();
+            $table->decimal('monthly_threshold', 18, 6)->change();
             $table->dropColumn('created_at');
-         
+
         });
     }
 

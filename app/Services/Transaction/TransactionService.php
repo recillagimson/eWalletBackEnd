@@ -33,10 +33,10 @@ class TransactionService implements ITransactionService
     //     $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
     // }
 
-    public function addUserBalanceInfo(string $userAccountId, string $currentId, float $availableBalance, float $pendingBalance) {
+    public function addUserBalanceInfo(string $userAccountId, string $currencyId, float $availableBalance, float $pendingBalance) {
         $record =  $this->userBalanceRepository->create([
             'user_account_id' => $userAccountId,
-            'currency_id' => $currentId,
+            'currency_id' => $currencyId,
             'available_balance' => $availableBalance,
             'pending_balance' => $pendingBalance,
             'user_created' => request()->user()->id,

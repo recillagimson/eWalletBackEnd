@@ -22,45 +22,45 @@ class DragonPayService implements IAddMoneyService
 {
     /**
      * DragonPay API base URL V1
-     * 
+     *
      * @var string
      */
     protected $baseURL;
 
     /**
      * DragonPay API merchant ID (Username)
-     * 
+     *
      * @var string
      */
     protected $merchantID;
 
     /**
      * DragonPay API key (Password)
-     * 
+     *
      * @var string
      */
     protected $key;
 
     /**
      * User account ID
-     * 
-     * @var uuid
+     *
+     * @var string
      */
-    protected $userAccountID;
+    protected string $userAccountID;
 
     /**
      * Reference number for Add Money Web Bank
-     * 
+     *
      * @var string
      */
-    protected $referenceNumber;
+    protected string $referenceNumber;
 
     /**
      * Transaction name of this class
-     * 
+     *
      * @var string
      */
-    protected $moduleTransCategory;
+    protected string $moduleTransCategory;
 
     private IInAddMoneyRepository $addMoneys;
     private IUserDetailRepository $userDetails;
@@ -72,7 +72,6 @@ class DragonPayService implements IAddMoneyService
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
-                                IUserDetailRepository $userDetails,
                                 IServiceFeeRepository $serviceFees,
                                 IReferenceNumberService $referenceNumberService,
                                 ILogHistoryRepository $logHistory,
@@ -87,7 +86,6 @@ class DragonPayService implements IAddMoneyService
 
         $this->addMoneys = $addMoneys;
         $this->userAccounts = $userAccounts;
-        $this->userDetails = $userDetails;
         $this->serviceFees = $serviceFees;
         $this->referenceNumberService = $referenceNumberService;
         $this->logHistory = $logHistory;
@@ -99,7 +97,7 @@ class DragonPayService implements IAddMoneyService
     /**
      * Generate the DragonPay request URL
      * that goes to DragonPay Web Service
-     * 
+     *
      * @param UserAccount $user
      * @param array $urlParams
      * @return json $response
@@ -134,13 +132,13 @@ class DragonPayService implements IAddMoneyService
         if ($response->status() == 200 || $response->status() == 201) {
 
             $currentAddMoneyRecord = $this->insertAddMoneyRecord(
-                $userAccountID, 
-                $txnID, 
-                $this->formatAmount($amount), 
-                $addMoneyServiceFee->amount, 
-                $addMoneyServiceFee->id, 
-                $totalAmount, 
-                $transactionCategoryID->id, 
+                $userAccountID,
+                $txnID,
+                $this->formatAmount($amount),
+                $addMoneyServiceFee->amount,
+                $addMoneyServiceFee->id,
+                $totalAmount,
+                $transactionCategoryID->id,
                 $body['Description']
             );
         }
@@ -151,7 +149,7 @@ class DragonPayService implements IAddMoneyService
 
     /**
      * Set the $userAccountID
-     * 
+     *
      * @param uuid $userAccountID
      */
     public function setUserAccountID(string $userAccountID)
@@ -161,17 +159,17 @@ class DragonPayService implements IAddMoneyService
 
     /**
      * Set the Reference Number
-     * 
+     *
      * @param string $refNo
      */
     public function setReferenceNumber(string $refNo)
     {
         $this->referenceNumber = $refNo;
     }
-    
+
     /**
      * Get the email from user_accounts
-     * 
+     *
      * @param UserAccount $user
      * @return string|exception $email
      */
@@ -185,7 +183,7 @@ class DragonPayService implements IAddMoneyService
     /**
      * Build the DragonPay token to be
      * used as the Auth token
-     * 
+     *
      * @return string-base64
      */
     protected function getToken()
@@ -195,7 +193,7 @@ class DragonPayService implements IAddMoneyService
 
     /**
      * Get the fullname (First name and Last name)
-     * 
+     *
      * @param uuid $userAccountID
      * @return string
      */
@@ -211,7 +209,7 @@ class DragonPayService implements IAddMoneyService
     /**
      * Create the request body to be used
      * as the DragonPay request
-     * 
+     *
      * @param float $amount
      * @param string $beneficiaryName
      * @param string $email
@@ -228,12 +226,12 @@ class DragonPayService implements IAddMoneyService
             // 'ProcId' => 'BPI'
         ];
     }
-    
+
     /**
-     * Convert the data to string. 
-     * If the data does not have 2 trailing 
+     * Convert the data to string.
+     * If the data does not have 2 trailing
      * zeros (decimal), adds ".00" at the end
-     * 
+     *
      * @param float $amount
      * @return string
      */
@@ -245,7 +243,7 @@ class DragonPayService implements IAddMoneyService
 
     /**
      * Handles the error response from DragonPay API
-     * 
+     *
      * @param response $response
      * @return exception
      */
@@ -258,25 +256,25 @@ class DragonPayService implements IAddMoneyService
         } elseif ($response->status() == 500) {
 
             return $this->invalidToken();
-            
+
         } elseif ($response->status() == 422 && $response->json() == 'Invalid parameter') {
-            
+
             return $this->invalidParams();
         }
     }
 
     /**
      * Insert a row in in_add_money_web_bank table
-     * 
-     * @param uuid $userAccountID
+     *
+     * @param string $userAccountID
      * @param string $refNo
      * @param float $amount
      * @param float $serviceFee
-     * @param uuid $serviceFeeID
+     * @param string $serviceFeeID
      * @param float $totalAmount
-     * @param uuid $transactionCategoryID
+     * @param string $transactionCategoryID
      * @param string $transactionRemarks
-     * @return exception|null
+     * @return void
      */
     public function insertAddMoneyRecord(string $userAccountID, string $refNo, float $amount, float $serviceFee, string $serviceFeeID, float $totalAmount, string $transactionCategoryID, string $transactionRemarks)
     {
@@ -325,20 +323,20 @@ class DragonPayService implements IAddMoneyService
     }
 
     /**
-     * Check the transaction status in DragonPay. Note: null 
-     * reply form API means that the transaction is left in 
+     * Check the transaction status in DragonPay. Note: null
+     * reply form API means that the transaction is left in
      * pending for a period of time (not sure how long)
-     * 
+     *
      * @param array $identifier
      * @return json $response
      */
     public function getAddMoneyTransStatus(array $identifier)
     {
         if (array_key_exists('reference_number', $identifier)) {
-            
+
             $response = $this->dragonpayRequest('/txnid/' . $identifier['reference_number']);
         } else {
-            
+
             $response = $this->dragonpayRequest('/refno/' . $identifier['dragonpay_reference']);
         }
 
@@ -347,7 +345,7 @@ class DragonPayService implements IAddMoneyService
 
     /**
      * A request builder with DragonPay baseURL
-     * 
+     *
      * @param string $endpoint
      * @return response $response
      */
@@ -359,7 +357,7 @@ class DragonPayService implements IAddMoneyService
 
     /**
      * Voids the transaction in DragonPay DB and SquidPay DB
-     * 
+     *
      * @param UserAccount $user
      * @param array $referenceNumber
      * @return object $responseData
@@ -369,7 +367,7 @@ class DragonPayService implements IAddMoneyService
         $referenceNumber = $referenceNumber['reference_number'];
 
         $addMoneyRecord = $this->addMoneys->getByReferenceNumber($referenceNumber);
-        
+
         if ($addMoneyRecord == null) {
             throw ValidationException::withMessages([
                 'reference_number' => 'Transaction not found'
@@ -386,7 +384,7 @@ class DragonPayService implements IAddMoneyService
         if ($response->Status < 0) return $this->nonPendingTrans();
 
         $this->addMoneys->update($addMoneyRecord, ['status' => DragonPayStatusTypes::Void]);
-        
+
         return $responseData = (object) [
             'status' => true,
             'message' => 'Add money transaction has been cancelled.'
@@ -395,7 +393,7 @@ class DragonPayService implements IAddMoneyService
 
     /**
      * Logs the user's action (generate URL) in log history
-     * 
+     *
      * @param string $referenceNumber
      * @return void
      */
@@ -430,7 +428,7 @@ class DragonPayService implements IAddMoneyService
     /**
      * Thrown when there is no email in database
      */
-    private function invalidEmail() 
+    private function invalidEmail()
     {
         throw ValidationException::withMessages([
             'email' => 'Invalid Email. Please update your profile.'
@@ -524,7 +522,7 @@ class DragonPayService implements IAddMoneyService
     }
 
     /**
-     * Thrown when the record is not owned by the 
+     * Thrown when the record is not owned by the
      * authenticated user
      */
     private function unauthorizedForThisRecord()
@@ -535,7 +533,7 @@ class DragonPayService implements IAddMoneyService
     }
 
     /**
-     * Thrown when a non pending transaction is attempted 
+     * Thrown when a non pending transaction is attempted
      * to be voided
      */
     private function nonPendingTrans()
@@ -546,7 +544,7 @@ class DragonPayService implements IAddMoneyService
     }
 
     /**
-     * Thrown when the user's details are not found in the 
+     * Thrown when the user's details are not found in the
      * table
      */
     private function noUserDetailsFound()
