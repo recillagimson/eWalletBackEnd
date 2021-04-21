@@ -14,7 +14,7 @@ class RenameTierInServiceFees extends Migration
     public function up()
     {
         Schema::table('service_fees', function (Blueprint $table) {
-            $table->renameColumn('tier', 'tier_id');
+          
         });
     }
 
@@ -26,7 +26,7 @@ class RenameTierInServiceFees extends Migration
     public function down()
     {
         Schema::table('service_fees', function (Blueprint $table) {
-            $table->renameColumn('tier_id', 'tier');
+            
         });
     }
 }
