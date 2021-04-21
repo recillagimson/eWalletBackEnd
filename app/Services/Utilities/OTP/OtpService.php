@@ -74,7 +74,6 @@ class OtpService implements IOtpService
         $this->allowedAttempts = config('otp-generator.allowedAttempts');
 
         $this->otps = $otps;
-        $this->errorService = $errorService;
     }
 
     /**
