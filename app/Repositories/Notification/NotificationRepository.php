@@ -13,7 +13,7 @@ class NotificationRepository extends Repository implements INotificationReposito
         parent::__construct($model);
     }
 
-    public function getByUserId(String $userId) {
+    public function getByUserId(string $userId) {
         $notifications = Notification::where('user_account_id', $userId);
         return $notifications->get();
     }

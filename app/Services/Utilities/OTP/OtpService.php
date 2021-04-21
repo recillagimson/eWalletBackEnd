@@ -3,14 +3,15 @@
 
 namespace App\Services\Utilities\OTP;
 
-use App\Enums\ErrorCodes;
 use App\Repositories\OtpRepository\IOtpRepository;
+use App\Traits\Errors\WithAuthErrors;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class OtpService implements IOtpService
 {
+    use WithAuthErrors;
+
     /**
      * Length of the generated OTP
      *
@@ -82,21 +83,17 @@ class OtpService implements IOtpService
      *
      * @param string $method
      * @param mixed $params
-     * @return mixed
+     * @return OtpService|void
      */
     public function __call(string $method, $params)
     {
-        if (substr($method, 0, 3) != 'set') {
-            return;
-        }
+        if (substr($method, 0, 3) != 'set') return;
 
         $property = Str::camel(substr($method, 3));
 
 
         // Does the property exist on this object?
-        if (! property_exists($this, $property)) {
-            return;
-        }
+        if (! property_exists($this, $property)) return;
 
         $this->{$property} = $params[0] ?? null;
 
@@ -157,7 +154,7 @@ class OtpService implements IOtpService
             $otp->validated = true;
             $otp->save();
 
-            return (object) [
+            return (object)[
                 'status' => true,
                 'message' => 'OTP is valid',
             ];
@@ -212,27 +209,5 @@ class OtpService implements IOtpService
         return $pin;
     }
 
-    private function otpIsExpired()
-    {
-        throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::OTPExpired,
-            'message' => 'OTP is expired'
-        ]);
-    }
 
-    private function otpMaxedAttempts()
-    {
-        throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::OTPMaxedAttempts,
-            'message' => 'Reached the maximum allowed attempts'
-        ]);
-    }
-
-    private function otpInvalid()
-    {
-        throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::OTPInvalid,
-            'message' => 'OTP is invalid.'
-        ]);
-    }
 }
