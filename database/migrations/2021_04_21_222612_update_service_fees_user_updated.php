@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateTierIdLength extends Migration
+class UpdateServiceFeesUserUpdated extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,8 @@ class UpdateTierIdLength extends Migration
     public function up()
     {
         Schema::table('service_fees', function (Blueprint $table) {
-            $table->string('tier_id', 36)->change();
-            $table->dropColumn('name');
-
+     
+            $table->string('user_updated')->nullable()->change();
         });
     }
 
@@ -28,7 +27,7 @@ class UpdateTierIdLength extends Migration
     public function down()
     {
         Schema::table('service_fees', function (Blueprint $table) {
-
+            $table->string('user_updated')->change();
         });
     }
 }

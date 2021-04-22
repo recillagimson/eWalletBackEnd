@@ -1,31 +1,38 @@
 <?php
 namespace App\Services\SendMoney;
 
+use App\Enums\ReferenceNumberTypes;
 use App\Enums\SendMoneyConfig;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Traits\Errors\WithSendMoneyErrors;
 use Illuminate\Validation\ValidationException;
 
 class SendMoneyService implements ISendMoneyService
 {
+    use WithSendMoneyErrors;
+
     private IOutSendMoneyRepository $outSendMoney;
     private IInReceiveMoneyRepository $inReceiveMoney;
     private IUserAccountRepository $userAccounts;
     private IUserBalanceInfoRepository $userBalanceInfo;
     private IQrTransactionsRepository $qrTransactions;
-
+    private IReferenceNumberService $referenceNumberService;
+    
     public function __construct(IOutSendMoneyRepository $outSendMoney, IInReceiveMoneyRepository $inReceiveMoney,
                                 IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo,
-                                IQrTransactionsRepository $qrTransactions)
+                                IQrTransactionsRepository $qrTransactions, IReferenceNumberService $referenceNumberService)
     {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
         $this->userAccounts = $userAccts;
         $this->userBalanceInfo = $userBalanceInfo;
         $this->qrTransactions = $qrTransactions;
+        $this->referenceNumberService = $referenceNumberService;
     }
 
 
@@ -35,7 +42,7 @@ class SendMoneyService implements ISendMoneyService
      * @param string $username
      * @param array $fillRequest
      * @param object $user
-     * @param string $senderID
+     * @param string $senderID 
      * @param string $receiverID
      * @param boolean $isSelf
      * @param boolean $isEnough
@@ -45,13 +52,13 @@ class SendMoneyService implements ISendMoneyService
     {
         $senderID = $user->id;
         $receiverID = $this->qrOrSendMoney($username, $fillRequest);
-        $fillRequest['refNo'] = $this->generateRefNo();
+        $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);   
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
 
         if ($isSelf) $this->invalidRecipient();
-        if (!$isEnough) $this->notEnoughBalance();
+        if (!$isEnough) $this->insuficientBalance();
 
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
@@ -103,7 +110,7 @@ class SendMoneyService implements ISendMoneyService
         return ['email' => $user->email, 'amount' => $qrTransaction->amount, 'message' => ''];
     }
 
-
+    
 
     private function qrOrSendMoney(string $username,array $fillRequest)
     {
@@ -112,19 +119,6 @@ class SendMoneyService implements ISendMoneyService
         }
         return $this->getUserID($username, $fillRequest);
     }
-
-
-    private function generateRefNo()
-    {
-        $index = $this->outSendMoney->getLastRefNo();
-        $index = substr($index, 2);
-        $index++;
-        if ($index == 0) {
-            return SendMoneyConfig::RefHeader . str_pad($index + 1, 7, "0", STR_PAD_LEFT);
-        }
-        return SendMoneyConfig::RefHeader . str_pad($index, 7, "0", STR_PAD_LEFT);
-    }
-
 
 
     private function getUserID(string $usernameField, array $fillRequest)
@@ -206,35 +200,6 @@ class SendMoneyService implements ISendMoneyService
             'status' => true,
             'user_created' => '',
             'user_updated' => ''
-        ]);
-    }
-
-
-    private function invalidRecipient()
-    {
-        throw ValidationException::withMessages([
-            'email | mobile number' => 'Not allowed to send to your own account'
-        ]);
-    }
-
-    private function notEnoughBalance()
-    {
-        throw ValidationException::withMessages([
-            'amount' => 'Not enough balance'
-        ]);
-    }
-
-    private function invalidAccount()
-    {
-        throw ValidationException::withMessages([
-            'amount' => 'Account does not exists'
-        ]);
-    }
-
-    private function invalidQr()
-    {
-        throw ValidationException::withMessages([
-            'id' => 'Qr transaction does not exists'
         ]);
     }
 

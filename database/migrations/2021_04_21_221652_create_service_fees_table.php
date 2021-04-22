@@ -14,19 +14,18 @@ class CreateServiceFeesTable extends Migration
     public function up()
     {
         Schema::create('service_fees', function (Blueprint $table) {
-            $table->uuid('id')->unique();
-            $table->string('old_service_fee_id', 50);
-            $table->integer('tier');
+            $table->uuid('id')->primary();
+            $table->uuid('tier_id');
             $table->uuid('transaction_category_id');
-            $table->string('name', 50);
-            $table->decimal('amount', 10, 3);
-            $table->timestamp('implementation_date');
+            $table->double('daily_limit', 18, 6);
+            $table->timestamp('implementation_date')->nullable();
             $table->uuid('user_created');
             $table->uuid('user_updated');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->nullable();
             $table->softDeletes();
         });
-    }php 
+    }
 
     /**
      * Reverse the migrations.
