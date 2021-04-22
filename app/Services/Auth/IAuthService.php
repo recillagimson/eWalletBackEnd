@@ -16,6 +16,8 @@ interface IAuthService {
     public function clientLogin(string $clientId, string $clientSecret): NewAccessToken;
     public function mobileLogin(string $usernameField, array $creds): array;
 
+    public function confirmTransactions(string $userId, string $pinCode);
+
     public function forgotPassword(string $usernameField, string $username);
     public function resetPassword(string $usernameField, string $username, string $password);
 

@@ -71,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
         Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
+        Route::post('/confirmation', [AuthController::class, 'confirmTransactions']);
 
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/register/validate', [AuthController::class, 'registerValidate']);

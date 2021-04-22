@@ -9,6 +9,7 @@ class SuccessMessages
     const loginSuccessful = 'Login successful';
     const loginValidationPassed = 'Login validation passed.';
     const loginVerificationSuccessful = 'Login verification successful';
+    const confirmationSuccessful = 'Transaction confirmation successful';
 
     const accountRegistered = 'Account registration successful.';
     const accountValidationPassed = 'Account validation passed.';
