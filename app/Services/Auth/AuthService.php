@@ -70,6 +70,7 @@ class AuthService implements IAuthService
      * @param array $newUser
      * @param string $usernameField
      * @return mixed
+     * @throws ValidationException
      */
     public function register(array $newUser, string $usernameField)
     {
@@ -105,7 +106,7 @@ class AuthService implements IAuthService
         $passwordMatched = Hash::check($creds['password'], $user->password);
         if(!$passwordMatched) {
             $user->updateLockout($this->maxLoginAttempts);
-            $this - $this->loginFailed();
+            $this->loginFailed();
         }
 
         $user->deleteAllTokens();
@@ -127,13 +128,32 @@ class AuthService implements IAuthService
         $this->validateUser($user);
 
         $passwordMatched = Hash::check($creds['pin_code'], $user->pin_code);
-        if(!$passwordMatched) {
+        if (!$passwordMatched) {
             $user->updateLockout($this->maxLoginAttempts);
             $this->loginFailed();
         }
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken);
+    }
+
+    /**
+     * Pin authentication for confirmation to
+     * proceed in transactions
+     *
+     * @param string $userId
+     * @param string $pinCode
+     */
+    public function confirmTransactions(string $userId, string $pinCode)
+    {
+        $user = $this->userAccounts->get($userId);
+        if (!$user) $this->confirmationFailed();
+
+        $pinCodeMatch = Hash::check($pinCode, $user->pin_code);
+        if (!$pinCodeMatch) {
+            $user->updateLockout($this->maxLoginAttempts);
+            $this->confirmationFailed();
+        }
     }
 
     /**

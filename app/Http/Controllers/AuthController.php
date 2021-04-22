@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
+use App\Http\Requests\Auth\ConfirmTransactionRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
@@ -186,7 +187,7 @@ class AuthController extends Controller
      * @param VerifyPasswordRequest $request
      * @return JsonResponse
      */
-    public function verifyPassword(VerifyPasswordRequest  $request): JsonResponse
+    public function verifyPassword(VerifyPasswordRequest $request): JsonResponse
     {
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
@@ -195,6 +196,26 @@ class AuthController extends Controller
         return $this->responseService->successResponse([
             $usernameField => $data[$usernameField]
         ], SuccessMessages::passwordRecoveryVerificationSuccessful);
+    }
+
+    /**
+     * Authentication via pin code to confirm a specific
+     * transaction
+     *
+     * @param ConfirmTransactionRequest $request
+     * @return JsonResponse
+     */
+    public function confirmTransactions(ConfirmTransactionRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $user = $request->user();
+        $this->authService->confirmTransactions($user->id, $data['pin_code']);
+
+        $response = [
+            'mobile_number' => $user->mobile_number
+        ];
+
+        return $this->responseService->successResponse($response, SuccessMessages::confirmationSuccessful);
     }
 
     /**
