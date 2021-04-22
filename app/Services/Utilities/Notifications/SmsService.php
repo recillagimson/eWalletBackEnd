@@ -4,6 +4,7 @@
 namespace App\Services\Utilities\Notifications;
 
 
+use App\Enums\OtpTypes;
 use App\Services\Utilities\API\IApiService;
 use Illuminate\Validation\ValidationException;
 
@@ -31,9 +32,10 @@ class SmsService implements INotificationService
         $this->broadcastUrl = $this->apiUrl.'/broadcast';
     }
 
-    public function sendPasswordVerification(string $to, string $otp)
+    public function sendPasswordVerification(string $to, string $otp, string $otpType = OtpTypes::passwordRecovery)
     {
-        $content = 'Your password recovery code is: '.$otp;
+        $pinOrPassword = $otpType === OtpTypes::passwordRecovery ? 'password' : 'pin code';
+        $content = 'Your ' . $pinOrPassword . ' recovery code is: ' . $otp;
         $this->sendMessages($to, $content);
     }
 
@@ -70,10 +72,9 @@ class SmsService implements INotificationService
     private function sendingFailed()
     {
         throw ValidationException::withMessages([
-           'sms' => 'SMS provider failed to send the message. Please try again.'
+            'sms' => 'SMS provider failed to send the message. Please try again.'
         ]);
     }
-
 
 
 }

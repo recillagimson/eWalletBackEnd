@@ -18,6 +18,7 @@ class PasswordHistory extends Model
         'user_updated'
     ];
 
+
     public function getPasswordAgeAttribute(): int
     {
         return $this->created_at->diffInDays(Carbon::now());
