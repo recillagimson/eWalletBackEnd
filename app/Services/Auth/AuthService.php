@@ -191,12 +191,7 @@ class AuthService implements IAuthService
         $this->otpService->ensureValidated($identifier);
 
         $this->checkPinOrPassword($user, $pinOrPassword, $otpType);
-
-        $hashedPassword = Hash::make($pinOrPassword);
-        $user->password = $hashedPassword;
-        $user->save();
-
-        $this->passwordHistories->log($user->id, $hashedPassword);
+        $this->updatedPinOrPassword($user, $pinOrPassword, $otpType);
     }
 
     /**
@@ -384,6 +379,21 @@ class AuthService implements IAuthService
                 if ($exists === true) $this->passwordUsed();
             }
         }
+    }
+
+    public function updatedPinOrPassword(UserAccount $user, string $pinOrPassword, string $otpType)
+    {
+        $hashedPinOrPassword = Hash::make($pinOrPassword);
+
+        if ($otpType === OtpTypes::passwordRecovery) {
+            $user->password = $hashedPinOrPassword;
+            $this->passwordHistories->log($user->id, $hashedPinOrPassword);
+        } else {
+            $user->pin_code = $hashedPinOrPassword;
+            $this->pinCodeHistories->log($user->id, $hashedPinOrPassword);
+        }
+
+        $user->save();
     }
 
     private function generateLoginToken(UserAccount $user, string $tokenType): array
