@@ -30,7 +30,7 @@ trait WithSendMoneyErrors
 
     private function insuficientBalance()
     {
-        $this->validationErrorMessage(ErrorCodes::userInsufficientBalance, 'Insuficient Balance.');
+        $this->validationErrorMessage(ErrorCodes::userInsufficientBalance, 'Not Enough balance.');
     }
 
     private function invalidQr()
