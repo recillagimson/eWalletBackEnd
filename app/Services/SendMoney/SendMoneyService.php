@@ -60,8 +60,7 @@ class SendMoneyService implements ISendMoneyService
     public function send(string $username ,array $fillRequest, object $user)
     {
         $senderID = $user->id;
-        $receiverID = $this->qrOrSendMoney($username, $fillRequest);
-        $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);   
+        $receiverID = $this->qrOrSendMoney($username, $fillRequest); 
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
@@ -69,6 +68,7 @@ class SendMoneyService implements ISendMoneyService
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
 
+        $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);  
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
         $this->outSendMoney($senderID, $receiverID, $fillRequest);
