@@ -27,7 +27,7 @@ class VerificationService implements IVerificationService
             // Generate new file name
             $id_photo_name = $data['user_account_id'] . "/" . \Str::random(40) . "." . $ext_name;
             // Put file to storage
-            $path = $this->saveFile($id_photo, $id_photo_name, 'verification');
+            $path = $this->saveFile($id_photo, $id_photo_name, 'id_photo');
             // Save record to DB
             $params = [
                 'id' => \Str::uuid(),
@@ -46,7 +46,7 @@ class VerificationService implements IVerificationService
         // GENERATE NEW FILE NAME
         $selfie_photo_name = $data['user_account_id'] . "/" . \Str::random(40) . "." . $selfie_photo_ext;
         // PUT FILE TO STORAGE
-        $selfie_photo_path = $this->saveFile($data['selfie_photo'], $selfie_photo_name, 'verification');
+        $selfie_photo_path = $this->saveFile($data['selfie_photo'], $selfie_photo_name, 'selfie_photo');
         // SAVE SELFIE PHOTO
         $params = [
             'id' => \Str::uuid(),
