@@ -28,7 +28,7 @@ class ResponseService implements IResponseService
         return $this->success($message, Response::HTTP_CREATED, $data);
     }
 
-    public function noContentResponse(array $data = null, string $message = SuccessMessages::recordDeleted): JsonResponse
+    public function noContentResponse(string $message = SuccessMessages::recordDeleted): JsonResponse
     {
         return $this->success($message, Response::HTTP_NO_CONTENT);
     }
@@ -48,7 +48,7 @@ class ResponseService implements IResponseService
             'message' => $message,
         ];
 
-        if ($data) $response['data'] = $this->encryptionService->encrypt($data);
+        if ($data !== null) $response['data'] = $this->encryptionService->encrypt($data);
 
         return response()->json($response, $statusCode);
     }

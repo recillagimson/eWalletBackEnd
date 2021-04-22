@@ -11,6 +11,8 @@ use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\NatureOfWorkRequest;
 use App\Models\UserUtilities\NatureOfWork;
 use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Enums\SuccessMessages;
 
 class NatureOfWorkController extends Controller
 {
@@ -18,14 +20,17 @@ class NatureOfWorkController extends Controller
     private IEncryptionService $encryptionService;
     private INatureOfWorkRepository $natureOfWorkRepository;
     private IUserProfileService $userProfileService;
+    private IResponseService $responseService;
     
     public function __construct(INatureOfWorkRepository $natureOfWorkRepository,
                                 IEncryptionService $encryptionService,
-                                IUserProfileService $userProfileService)
+                                IUserProfileService $userProfileService,
+                                IResponseService $responseService)
     {
         $this->natureOfWorkRepository = $natureOfWorkRepository;
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
+        $this->responseService = $responseService;
     }
 
     /**
@@ -37,8 +42,8 @@ class NatureOfWorkController extends Controller
     {
         $records = $this->natureOfWorkRepository->getAll();
 
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -53,8 +58,8 @@ class NatureOfWorkController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->natureOfWorkRepository->create($inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        // $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
+        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
     /**
@@ -65,8 +70,8 @@ class NatureOfWorkController extends Controller
      */
     public function show(NatureOfWork $nature_of_work): JsonResponse
     {
-        $encryptedResponse = $this->encryptionService->encrypt($nature_of_work->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($nature_of_work->toArray());
+        return $this->responseService->successResponse($nature_of_work->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -82,8 +87,8 @@ class NatureOfWorkController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $nature_of_work);
         $updateRecord = $this->natureOfWorkRepository->update($nature_of_work, $inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
+        return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
     }
 
     /**
@@ -96,6 +101,6 @@ class NatureOfWorkController extends Controller
     {
         $deleteRecord = $this->natureOfWorkRepository->delete($nature_of_work);
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->successResponse(null, SuccessMessages::recordDeleted);
     }
 }

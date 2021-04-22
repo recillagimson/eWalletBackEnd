@@ -11,17 +11,17 @@ use App\Services\SendMoney\ISendMoneyService;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\SendMoney\GenerateQrRequest;
 use App\Http\Requests\SendMoney\ScanQrRequest;
-use App\Services\Encryption\IEncryptionService;
+use App\Services\Utilities\Responses\IResponseService;
 
 class SendMoneyController extends Controller
 {       
     private ISendMoneyService $sendMoneyService;
-    private IEncryptionService $encryptionService;
+    private IResponseService $responseService;
 
-    public function __construct(ISendMoneyService $sendMoneyService, IEncryptionService $encryptionService)
+    public function __construct(ISendMoneyService $sendMoneyService, IResponseService $responseService)
     {   
         $this->sendMoneyService = $sendMoneyService;
-        $this->encryptionService = $encryptionService;
+        $this->responseService = $responseService;
     }
 
 
@@ -38,14 +38,10 @@ class SendMoneyController extends Controller
      public function send(SendMoneyRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
-        $username = $this->getUsernameField($request);
-        $this->sendMoneyService->send($username, $fillRequest, $request->user());
+        $usernameField = $this->getUsernameField($request);
+        $this->sendMoneyService->send($usernameField, $fillRequest, $request->user());
 
-        $response = [
-            'message' => SuccessMessages::sendMoneySuccessFul,
-            'data' => $this->encryptionService->encrypt(['status' => 'success'])
-        ];
-        return response()->json($response, Response::HTTP_CREATED);
+        return $this->responseService->successResponse(['status' => 'success'], SuccessMessages::sendMoneySuccessFul);
     }
 
 
@@ -63,12 +59,7 @@ class SendMoneyController extends Controller
         $fillRequest = $request->validated();
         $qrTransaction = $this->sendMoneyService->generateQR($request->user(), $fillRequest);
 
-        $response = [
-            'message' => SuccessMessages::generateQrSuccessful,
-            'data' =>  $this->encryptionService->encrypt(['id' => $qrTransaction->id])
-        ];
-       
-        return response()->json($response, Response::HTTP_CREATED);
+        return $this->responseService->createdResponse(['id' => $qrTransaction->id], SuccessMessages::generateQrSuccessful);
     }
 
 
@@ -81,16 +72,12 @@ class SendMoneyController extends Controller
      * @param string $encryptedResponse
      * @return JsonResponse
      */
-    public function scanQr(ScanQrRequest $request)//: JsonResponse
+    public function scanQr(ScanQrRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
         $qrTransaction = $this->sendMoneyService->scanQr($fillRequest['id']);
-        $response = [
-            'message' => SuccessMessages::scanQrSuccessful,
-            'data' =>  $this->encryptionService->encrypt($qrTransaction)
-        ];
 
-        return response()->json($response, Response::HTTP_CREATED);
+        return $this->responseService->successResponse($qrTransaction, SuccessMessages::scanQrSuccessful);
     }
 
     /**

@@ -11,6 +11,8 @@ use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\SourceOfFundRequest;
 use App\Models\UserUtilities\SourceOfFund;
 use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Enums\SuccessMessages;
 
 class SourceOfFundController extends Controller
 {
@@ -18,14 +20,17 @@ class SourceOfFundController extends Controller
     private IEncryptionService $encryptionService;
     private ISourceOfFundRepository $sourceOfFundRepository;
     private IUserProfileService $userProfileService;
+    private IResponseService $responseService;
     
     public function __construct(ISourceOfFundRepository $sourceOfFundRepository,
                                 IEncryptionService $encryptionService,
-                                IUserProfileService $userProfileService)
+                                IUserProfileService $userProfileService,
+                                IResponseService $responseService)
     {
         $this->sourceOfFundRepository = $sourceOfFundRepository;
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
+        $this->responseService = $responseService;
     }
 
     /**
@@ -37,8 +42,8 @@ class SourceOfFundController extends Controller
     {
         $records = $this->sourceOfFundRepository->getAll();
 
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -53,8 +58,8 @@ class SourceOfFundController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->sourceOfFundRepository->create($inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        // $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
+        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
     /**
@@ -65,8 +70,8 @@ class SourceOfFundController extends Controller
      */
     public function show(SourceOfFund $source_of_fund): JsonResponse
     {
-        $encryptedResponse = $this->encryptionService->encrypt($source_of_fund->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($source_of_fund->toArray());
+        return $this->responseService->successResponse($source_of_fund->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -82,8 +87,8 @@ class SourceOfFundController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $source_of_fund);
         $updateRecord = $this->sourceOfFundRepository->update($source_of_fund, $inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
+        return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
     }
 
     /**
@@ -96,6 +101,6 @@ class SourceOfFundController extends Controller
     {
         $deleteRecord = $this->sourceOfFundRepository->delete($source_of_fund);
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->successResponse(null, SuccessMessages::recordDeleted);
     }
 }

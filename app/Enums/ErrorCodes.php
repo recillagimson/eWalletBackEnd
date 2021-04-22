@@ -34,6 +34,7 @@ class ErrorCodes
     //USER ERRORS - 400
     const userProfileNotUpdated = 401;
     const userInsufficientBalance = 402;
+    const userInvalidQR = 403;
 
 
 }
