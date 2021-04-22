@@ -115,7 +115,7 @@ class AuthService implements IAuthService
 
     /**
      * Attempts to authenticate the user with the
-     * provided credentials when using a mobile apps.
+     * provided credentials when using mobile apps.
      *
      * @param string $usernameField
      * @param array $creds
@@ -138,25 +138,6 @@ class AuthService implements IAuthService
     }
 
     /**
-     * Pin authentication for confirmation to
-     * proceed in transactions
-     *
-     * @param string $userId
-     * @param string $pinCode
-     */
-    public function confirmTransactions(string $userId, string $pinCode)
-    {
-        $user = $this->userAccounts->get($userId);
-        if (!$user) $this->confirmationFailed();
-
-        $pinCodeMatch = Hash::check($pinCode, $user->pin_code);
-        if (!$pinCodeMatch) {
-            $user->updateLockout($this->maxLoginAttempts);
-            $this->confirmationFailed();
-        }
-    }
-
-    /**
      * Authenticates Client Applications
      *
      * @param string $clientId
@@ -173,6 +154,7 @@ class AuthService implements IAuthService
 
         return $client->createToken(TokenNames::clientToken);
     }
+
 
     /**
      * Generates OTP for password / pin recovery
@@ -215,6 +197,25 @@ class AuthService implements IAuthService
         $user->save();
 
         $this->passwordHistories->log($user->id, $hashedPassword);
+    }
+
+    /**
+     * Pin authentication for confirmation to
+     * proceed in transactions
+     *
+     * @param string $userId
+     * @param string $pinCode
+     */
+    public function confirmTransactions(string $userId, string $pinCode)
+    {
+        $user = $this->userAccounts->get($userId);
+        if (!$user) $this->confirmationFailed();
+
+        $pinCodeMatch = Hash::check($pinCode, $user->pin_code);
+        if (!$pinCodeMatch) {
+            $user->updateLockout($this->maxLoginAttempts);
+            $this->confirmationFailed();
+        }
     }
 
     /**
