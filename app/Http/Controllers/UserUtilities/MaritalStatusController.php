@@ -11,6 +11,8 @@ use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\MaritalStatusRequest;
 use App\Models\UserUtilities\MaritalStatus;
 use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Enums\SuccessMessages;
 
 class MaritalStatusController extends Controller
 {
@@ -18,14 +20,17 @@ class MaritalStatusController extends Controller
     private IEncryptionService $encryptionService;
     private IMaritalStatusRepository $maritalStatusRepository;
     private IUserProfileService $userProfileService;
+    private IResponseService $responseService;
     
     public function __construct(IMaritalStatusRepository $maritalStatusRepository,
                                 IEncryptionService $encryptionService,
-                                IUserProfileService $userProfileService)
+                                IUserProfileService $userProfileService,
+                                IResponseService $responseService)
     {
         $this->maritalStatusRepository = $maritalStatusRepository;
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
+        $this->responseService = $responseService;
     }
 
     /**
@@ -37,8 +42,8 @@ class MaritalStatusController extends Controller
     {
         $records = $this->maritalStatusRepository->getAll();
 
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -53,8 +58,8 @@ class MaritalStatusController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user());
         $createRecord = $this->maritalStatusRepository->create($inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        // $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
+        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
     /**
@@ -65,8 +70,8 @@ class MaritalStatusController extends Controller
      */
     public function show(MaritalStatus $marital_status): JsonResponse
     {
-        $encryptedResponse = $this->encryptionService->encrypt($marital_status->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt($marital_status->toArray());
+        return $this->responseService->successResponse($marital_status->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -82,8 +87,8 @@ class MaritalStatusController extends Controller
         $inputBody = $this->userProfileService->addUserInput($details, $request->user(), $marital_status);
         $updateRecord = $this->maritalStatusRepository->update($marital_status, $inputBody);
 
-        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        // $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
+        return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
     }
 
     /**
@@ -96,6 +101,6 @@ class MaritalStatusController extends Controller
     {
         $deleteRecord = $this->maritalStatusRepository->delete($marital_status);
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->successResponse(null, SuccessMessages::recordDeleted);
     }
 }
