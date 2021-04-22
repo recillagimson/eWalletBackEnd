@@ -21,6 +21,14 @@ class PinCodeHistoryRepository extends Repository implements IPinCodeHistoryRepo
         ])->orderByDesc('created_at')->first();
     }
 
+    public function getPrevious(int $recordCount, string $userId)
+    {
+        return $this->model->where('user_account_id', '=', $userId)
+            ->orderByDesc('created_at')
+            ->take($recordCount)
+            ->get();
+    }
+
     public function log(string $userId, string $pinCode)
     {
         $data = [

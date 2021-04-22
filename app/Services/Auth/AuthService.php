@@ -175,39 +175,42 @@ class AuthService implements IAuthService
     }
 
     /**
-     * Generates OTP for password recovery
+     * Generates OTP for password / pin recovery
      *
      *
      * @param string $usernameField
      * @param string $username
+     * @param string $otpType
      */
-    public function forgotPassword(string $usernameField, string $username)
+    public function forgotPinOrPassword(string $usernameField, string $username, string $otpType = OtpTypes::passwordRecovery)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
-        $this->checkPassword($user, '');
 
-        $this->sendOTP($usernameField, $username, OtpTypes::passwordRecovery);
+        $this->checkPinOrPassword($user, '', $otpType);
+        $this->sendOTP($usernameField, $username, $otpType);
     }
 
     /**
-     * Reset forgotten password
+     * Reset forgotten password / pin
      *
      * @param string $usernameField
      * @param string $username
-     * @param string $password
+     * @param string $pinOrPassword
+     * @param string $otpType
      */
-    public function resetPassword(string $usernameField, string $username, string $password)
+    public function resetPinOrPassword(string $usernameField, string $username, string $pinOrPassword,
+                                       string $otpType = OtpTypes::passwordRecovery)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $identifier = OtpTypes::passwordRecovery.':'.$user->id;
+        $identifier = $otpType . ':' . $user->id;
         $this->otpService->ensureValidated($identifier);
 
-        $this->checkPassword($user, $password);
+        $this->checkPinOrPassword($user, $pinOrPassword, $otpType);
 
-        $hashedPassword = Hash::make($password);
+        $hashedPassword = Hash::make($pinOrPassword);
         $user->password = $hashedPassword;
         $user->save();
 
@@ -278,7 +281,8 @@ class AuthService implements IAuthService
      * @param string $username
      * @param string $otp
      */
-    public function verifyPassword(string $usernameField, string $username, string $otp)
+    public function verifyPinorPassword(string $usernameField, string $username, string $otp,
+                                        string $otpType = OtpTypes::passwordRecovery)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
@@ -310,21 +314,16 @@ class AuthService implements IAuthService
         if (!$user) $this->accountDoesntExist();
 
         $otp = $this->generateOTP($otpType, $user->id);
-        if(App::environment('local')) return;
+        if (App::environment('local')) return;
 
-        switch ($otpType) {
-            case OtpTypes::registration:
-                $this->notificationService->sendAccountVerification($username, $otp->token);
-                break;
-            case OtpTypes::login:
-                $this->notificationService->sendLoginVerification($username, $otp->token);
-                break;
-            case OtpTypes::passwordRecovery:
-                $this->notificationService->sendPasswordVerification($username, $otp->token);
-                break;
-            default:
-                $this->otpTypeInvalid();
-        }
+        if ($otpType === OtpTypes::registration)
+            $this->notificationService->sendAccountVerification($username, $otp->token);
+        elseif ($otpType === OtpTypes::login)
+            $this->notificationService->sendLoginVerification($username, $otp->token);
+        elseif ($otpType === OtpTypes::passwordRecovery || $otpType === OtpTypes::pinRecovery)
+            $this->notificationService->sendPasswordVerification($username, $otp->token, $otpType);
+        else
+            $this->otpTypeInvalid();
     }
 
     /**
@@ -349,21 +348,44 @@ class AuthService implements IAuthService
     |--------------------------------------------------------------------------
     */
 
+    private function checkPinOrPassword(UserAccount $user, string $pinOrPassword, string $otpType = OtpTypes::passwordRecovery)
+    {
+        if ($otpType == OtpTypes::passwordRecovery) {
+            $this->checkPassword($user, $pinOrPassword);
+        } else {
+            $this->checkPin($user, $pinOrPassword);
+        }
+    }
+
     private function checkPassword(UserAccount $user, string $password)
     {
         $latestPassword = $this->passwordHistories->getLatest($user->id);
         if (!$latestPassword->isAtMinimumAge($this->minPasswordAge)) $this->passwordNotAged($this->minPasswordAge);
 
-        if($password) {
+        if ($password) {
             $passwordHistories = $this->passwordHistories->getPrevious($this->passwordRepeatCount, $user->id);
-            foreach($passwordHistories as $passwordHistory) {
+            foreach ($passwordHistories as $passwordHistory) {
                 $exists = Hash::check($password, $passwordHistory->password);
                 if ($exists === true) $this->passwordUsed();
             }
         }
     }
 
-    private function generateLoginToken(UserAccount $user,  string $tokenType): array
+    private function checkPin(UserAccount $user, string $pinCode)
+    {
+        $latestPin = $this->pinCodeHistories->getLatest($user->id);
+        if (!$latestPin->isAtMinimumAge($this->minPasswordAge)) $this->passwordNotAged($this->minPasswordAge);
+
+        if ($pinCode) {
+            $pinCodeHistories = $this->pinCodeHistories->getPrevious($this->passwordRepeatCount, $user->id);
+            foreach ($pinCodeHistories as $pinCodeHistory) {
+                $exists = Hash::check($pinCode, $pinCodeHistory->password);
+                if ($exists === true) $this->passwordUsed();
+            }
+        }
+    }
+
+    private function generateLoginToken(UserAccount $user, string $tokenType): array
     {
         $token = $user->createToken($tokenType);
         $latestPassword = $this->passwordHistories->getLatest($user->id);
