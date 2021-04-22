@@ -3,6 +3,7 @@
 namespace App\Services\AddMoney\Providers;
 
 use App\Enums\DragonPayStatusTypes;
+use App\Enums\ReferenceNumberTypes;
 use App\Enums\TransactionCategories;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
@@ -14,12 +15,14 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 
 class DragonPayService implements IAddMoneyService
 {
+#section
     /**
      * DragonPay API base URL V1
      *
@@ -61,7 +64,7 @@ class DragonPayService implements IAddMoneyService
      * @var string
      */
     protected string $moduleTransCategory;
-
+#section
     private IInAddMoneyRepository $addMoneys;
     private IUserDetailRepository $userDetails;
     private IServiceFeeRepository $serviceFees;
@@ -77,7 +80,8 @@ class DragonPayService implements IAddMoneyService
                                 ILogHistoryRepository $logHistory,
                                 ITransactionCategoryRepository $transactionCategories,
                                 IUserTransactionHistoryRepository $userTransactions,
-                                ITierRepository $tiers) {
+                                ITierRepository $tiers,
+                                IUserDetailRepository $userDetails) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -92,6 +96,7 @@ class DragonPayService implements IAddMoneyService
         $this->transactionCategories = $transactionCategories;
         $this->userTransactions = $userTransactions;
         $this->tiers = $tiers;
+        $this->userDetails = $userDetails;
     }
 
     /**
@@ -105,7 +110,7 @@ class DragonPayService implements IAddMoneyService
     public function addMoney(UserAccount $user, array $urlParams)
     {
         $this->setUserAccountID($user->id);
-        $this->setReferenceNumber($this->referenceNumberService->getAddMoneyRefNo());
+        $this->setReferenceNumber($this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaWebBank));
 
         $email = $this->getEmail($user);
         $userAccountID = $user->id;
@@ -146,7 +151,7 @@ class DragonPayService implements IAddMoneyService
         $this->logGenerateURLInLogHistory($currentAddMoneyRecord->reference_number);
         return $response->json();
     }
-
+#section
     /**
      * Set the $userAccountID
      *
@@ -297,7 +302,7 @@ class DragonPayService implements IAddMoneyService
 
         if (!$rowInserted) return $this->cantWriteToTable();
     }
-
+#section
     /**
      * Validate the user accoirding to the user's
      * tier and amount in the transaction
@@ -312,14 +317,13 @@ class DragonPayService implements IAddMoneyService
 
         $addMoneyTransCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
 
-        $addMoneyServiceFee = $this->serviceFees->getByTierAndTransCategoryID($user->tier_id, $addMoneyTransCategory->id);
-
-        if ($addMoneyServiceFee->implementation_date >= Carbon::now()) $addMoneyServiceFee->amount = 0;
+        $serviceFee = $this->serviceFees->getAmountByTransactionAndUserAccountId($addMoneyTransCategory->id, $this->userAccountID);
 
         // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
         if ($amount > $tier->daily_limit) return $this->tierLimitExceeded();
 
-        return $addMoneyServiceFee;
+        // return $addMoneyServiceFee;
+        return $serviceFee;
     }
 
     /**
@@ -383,12 +387,7 @@ class DragonPayService implements IAddMoneyService
 
         if ($response->Status < 0) return $this->nonPendingTrans();
 
-        $this->addMoneys->update($addMoneyRecord, ['status' => DragonPayStatusTypes::Void]);
-
-        return $responseData = (object) [
-            'status' => true,
-            'message' => 'Add money transaction has been cancelled.'
-        ];
+        return $this->addMoneys->update($addMoneyRecord, ['status' => DragonPayStatusTypes::Failure]);
     }
 
     /**
@@ -539,7 +538,7 @@ class DragonPayService implements IAddMoneyService
     private function nonPendingTrans()
     {
         throw ValidationException::withMessages([
-            'reference_number' => 'Cannot void a non-pending transaction.'
+            'reference_number' => 'Cannot cancel a non-pending transaction.'
         ]);
     }
 

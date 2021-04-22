@@ -3,12 +3,14 @@
 namespace App\Services\AddMoney\DragonPay;
 
 use App\Enums\DragonPayStatusTypes;
+use App\Enums\SuccessMessages;
 use App\Enums\TransactionCategories;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
@@ -41,12 +43,14 @@ class HandlePostBackService implements IHandlePostBackService
     private IUserTransactionHistoryRepository $userTransactions;
     private ILogHistoryRepository $logHistories;
     private ITransactionCategoryRepository $transactionCategories;
+    private IResponseService $responseService;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserBalanceInfoRepository $balanceInfos,
                                 IUserTransactionHistoryRepository $userTransactions,
                                 ILogHistoryRepository $logHistories,
-                                ITransactionCategoryRepository $transactionCategories) {
+                                ITransactionCategoryRepository $transactionCategories,
+                                IResponseService $responseService) {
 
         $this->moduleTransCategory = TransactionCategories::AddMoneyWebBankDragonPay;
 
@@ -55,6 +59,7 @@ class HandlePostBackService implements IHandlePostBackService
         $this->userTransactions = $userTransactions;
         $this->logHistories = $logHistories;
         $this->transactionCategories = $transactionCategories;
+        $this->responseService = $responseService;
     }
 
     /**
@@ -79,18 +84,12 @@ class HandlePostBackService implements IHandlePostBackService
         $this->validate($referenceNumber);
 
         $addMoneyRow = $this->addMoneys->getByReferenceNumber($referenceNumber);
+        $amountForResponse = ['amount' => $addMoneyRow->amount];
 
         $this->setReferenceNumber($referenceNumber);
         $this->setUserAccountID($addMoneyRow->user_account_id);
 
         if ($status == 'S') {
-            $status = DragonPayStatusTypes::Success;
-            $responseData = (object) [
-                'status' => true,
-                'amount' => $addMoneyRow->amount,
-                'message' => 'Money added successfully.'
-            ];
-
             $message = explode(' ', $message);
             $channelNum = $message[0];
             $channelCode = $message[1];
@@ -99,7 +98,7 @@ class HandlePostBackService implements IHandlePostBackService
             $this->addMoneys->update($addMoneyRow, [
                 'dragonpay_reference' => $dragonpayReference,
                 'dragonpay_channel_reference_number' => $channelRefNo,
-                'status' => $status
+                'status' => DragonPayStatusTypes::Success
             ]);
 
             $this->addAmountToUserBalance($addMoneyRow->user_account_id, $addMoneyRow->amount);
@@ -107,39 +106,39 @@ class HandlePostBackService implements IHandlePostBackService
             $this->logTransaction('Successfully added money ' . $addMoneyRow->amount);
             $this->logSuccessInUserTransHistory($addMoneyRow->user_account_id, $addMoneyRow->id, $addMoneyRow->reference_number, $transactionCategory->id);
 
-            return $responseData;
+            return $this->responseService->successResponse(
+                $amountForResponse, 
+                SuccessMessages::addMoneySuccess
+            );
         }
 
         if ($status == 'F') {
-            $status = DragonPayStatusTypes::Failure;
-            $responseData = (object) [
-                'status' => false,
-                'amount' => $addMoneyRow->amount,
-                'message' => 'Failed to add money.'
-            ];
 
-            $this->logTransaction($responseData->message);
+            $this->addMoneys->update($addMoneyRow, [
+                'dragonpay_reference' => $dragonpayReference,
+                'dragonpay_channel_reference_number' => isset($channelRefNo) ? $channelRefNo : 'N/A',
+                'transaction_remarks' => $message,
+                'status' => DragonPayStatusTypes::Failure
+            ]);
+
+            $this->logTransaction(SuccessMessages::addMoneyFailed);
+
+            return $this->responseService->noContentResponse(null, SuccessMessages::addMoneyFailed);
         }
 
         if ($status == 'P') {
-            $status = DragonPayStatusTypes::Pending;
-            $responseData = (object) [
-                'status' => false,
-                'amount' => $addMoneyRow->amount,
-                'message' => 'Waiting for deposit to selected bank.'
-            ];
 
-            $this->logTransaction($responseData->message);
+            $this->addMoneys->update($addMoneyRow, [
+                'dragonpay_reference' => $dragonpayReference,
+                'dragonpay_channel_reference_number' => isset($channelRefNo) ? $channelRefNo : 'N/A',
+                'transaction_remarks' => $message,
+                'status' => DragonPayStatusTypes::Pending
+            ]);
+
+            $this->logTransaction(SuccessMessages::addMoneyPending);
+
+            return $this->responseService->noContentResponse(null, SuccessMessages::addMoneyPending);
         }
-
-        $this->addMoneys->update($addMoneyRow, [
-            'dragonpay_reference' => $dragonpayReference,
-            'dragonpay_channel_reference_number' => isset($channelRefNo) ? $channelRefNo : 'N/A',
-            'transaction_remarks' => $message,
-            'status' => $status
-        ]);
-
-        return $responseData;
     }
 
     /**

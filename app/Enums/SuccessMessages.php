@@ -30,4 +30,11 @@ class SuccessMessages
     const success = 'Success';
     const recordSaved = 'Record has been saved.';
     const recordDeleted = 'Record has been deleted';
+
+    // Add Money Controller
+    const URLGenerated = 'Generate URL Successful';
+    const addMoneySuccess = 'Added money Successfully';
+    const addMoneyFailed = 'Add money Failed';
+    const addMoneyPending = 'Waiting for deposit to selected bank';
+    const addMoneyCancel = 'Add money request Cancelled';
 }
