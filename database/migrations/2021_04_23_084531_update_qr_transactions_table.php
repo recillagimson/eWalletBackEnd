@@ -14,7 +14,7 @@ class UpdateQrTransactionsTable extends Migration
     public function up()
     {
         Schema::table('qr_transactions', function (Blueprint $table) {
-            $table->softDeletes();
+           
         });
     }
 
