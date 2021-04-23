@@ -3,22 +3,29 @@
 namespace App\Services\AddMoney\Providers;
 
 use App\Enums\DragonPayStatusTypes;
+use App\Enums\ReferenceNumberTypes;
+use App\Enums\SquidPayModuleTypes;
 use App\Enums\TransactionCategories;
+use App\Models\InAddMoneyFromBank;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\Tier\ITierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
+use phpDocumentor\Reflection\Types\Null_;
 
 class DragonPayService implements IAddMoneyService
 {
+
     /**
      * DragonPay API base URL V1
      *
@@ -61,18 +68,13 @@ class DragonPayService implements IAddMoneyService
      */
     protected string $moduleTransCategory;
 
-    /**
-     * test purposes
-     * remover when tiers and service fees are finalize
-     */
-    protected int $tier;
-
     private IInAddMoneyRepository $addMoneys;
     private IUserDetailRepository $userDetails;
     private IServiceFeeRepository $serviceFees;
     private IReferenceNumberService $referenceNumberService;
     private ILogHistoryRepository $logHistory;
     private ITransactionCategoryRepository $transactionCategories;
+    private ITierRepository $tiers;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
@@ -80,7 +82,9 @@ class DragonPayService implements IAddMoneyService
                                 IReferenceNumberService $referenceNumberService,
                                 ILogHistoryRepository $logHistory,
                                 ITransactionCategoryRepository $transactionCategories,
-                                IUserTransactionHistoryRepository $userTransactions) {
+                                IUserTransactionHistoryRepository $userTransactions,
+                                ITierRepository $tiers,
+                                IUserDetailRepository $userDetails) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -94,13 +98,8 @@ class DragonPayService implements IAddMoneyService
         $this->logHistory = $logHistory;
         $this->transactionCategories = $transactionCategories;
         $this->userTransactions = $userTransactions;
-
-
-        /**
-         * Test purposes
-         * remover when tiers and service fees are finalize
-         */
-        $this->tier = 1;
+        $this->tiers = $tiers;
+        $this->userDetails = $userDetails;
     }
 
     /**
@@ -114,7 +113,7 @@ class DragonPayService implements IAddMoneyService
     public function addMoney(UserAccount $user, array $urlParams)
     {
         $this->setUserAccountID($user->id);
-        $this->setReferenceNumber($this->referenceNumberService->getAddMoneyRefNo());
+        $this->setReferenceNumber($this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaWebBank));
 
         $email = $this->getEmail($user);
         $userAccountID = $user->id;
@@ -124,7 +123,7 @@ class DragonPayService implements IAddMoneyService
         $txnID =  $this->referenceNumber;
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
-        $addMoneyServiceFee = $this->validateTiersAndLimits($userAccountID, $amount);
+        $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
         $totalAmount = $addMoneyServiceFee->amount + $amount;
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
         $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
@@ -208,7 +207,7 @@ class DragonPayService implements IAddMoneyService
      */
     public function getFullname(string $userAccountID)
     {
-        $userDetails = $this->userDetails->getByUserAccountID($userAccountID);
+        $userDetails = $this->userDetails->getByUserId($userAccountID);
 
         if ($userDetails == null) $this->noUserDetailsFound();
 
@@ -310,27 +309,141 @@ class DragonPayService implements IAddMoneyService
     /**
      * Validate the user accoirding to the user's
      * tier and amount in the transaction
-     *
-     * @param string $userAccountID
+     * 
+     * @param UserAccount $userAccountID
      * @param float $amount
      * @return exception|float $serviceFee
      */
-    public function validateTiersAndLimits(string $userAccountID, float $amount)
+    public function validateTiersAndLimits(UserAccount $user, float $amount)
     {
-        $amountLimit = 5000.00;
-        $serviceFee = 0.00;
-
-        $userDetails = $this->userDetails->getByUserAccountID($userAccountID);
-        // get the tier from the user details and set as params in getByTierAndTransCategoryID
+        $tier = $this->tiers->get($user->tier_id);
 
         $addMoneyTransCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
-        $addMoneyServiceFee =  $this->serviceFees->getByTierAndTransCategoryID($this->tier, $addMoneyTransCategory->id);
 
-        if ($addMoneyServiceFee->implementation_date <= Carbon::now()) $serviceFee = $addMoneyServiceFee->amount;
+        $serviceFee = $this->serviceFees->getAmountByTransactionAndUserAccountId($addMoneyTransCategory->id, $this->userAccountID);
 
-        if ($amount > $amountLimit) return $this->tierLimitExceeded();
+        // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
+        if ($amount > $tier->daily_limit) return $this->tierLimitExceeded();
 
-        return $addMoneyServiceFee;
+        // return $addMoneyServiceFee;
+        return $serviceFee;
+    }
+
+
+    /**
+     * Gets the status of the transaction from SquidPay DB. If the status from
+     * DragonPay is not the same with SquidPay DB then updates SquidPay DB
+     *
+     * @param UserAccount $var Description
+     * @param array $request
+     * @return array
+     * @throws conditon
+     **/
+    public function getStatus(UserAccount $user, array $request)
+    {
+        $this->setUserAccountID($user->id);
+
+        $refNo = $request['reference_number'];
+        $sureStatus = null;
+
+        $squidPayAddMoney = $this->addMoneys->getByReferenceNumber($refNo);
+        if ($squidPayAddMoney == null) $this->noRecordsFound();
+
+        $dragonPayAddMoney = $this->getTransStatusFromDragonPay($request);
+        if ($dragonPayAddMoney == null) $dragonPayAddMoney = ['Status' => 'F'];
+
+        switch ($dragonPayAddMoney['Status']) {
+            case 'S':
+                $statusShouldBe = DragonPayStatusTypes::Success;
+
+                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
+                break;
+
+            case 'F':
+                $statusShouldBe = DragonPayStatusTypes::Failure;
+
+                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
+                break;
+
+            case 'P':
+                $statusShouldBe = DragonPayStatusTypes::Pending;
+                
+                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
+                break;
+
+            case 'U':
+                $statusShouldBe = DragonPayStatusTypes::Pending;
+                
+                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
+                break;
+
+            case 'R':
+                $statusShouldBe = DragonPayStatusTypes::Failure;
+                
+                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
+                break;
+
+            case 'K':
+                $statusShouldBe = DragonPayStatusTypes::Failure;
+                
+                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
+                break;
+
+            case 'V':
+                $statusShouldBe = DragonPayStatusTypes::Failure;
+                
+                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
+                break;
+
+            case 'A':
+                $statusShouldBe = DragonPayStatusTypes::Failure;
+                
+                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
+                break;
+
+            default:
+                return $this->noStatusReceived();
+                break;
+        }
+
+        return [
+            'reference_number' => $refNo,
+            'status' => $sureStatus
+        ];
+    }
+
+    /**
+     * Validate that status from SquidPay DB and DragonPay are the same
+     *
+     * @param InAddMoneyFromBank $squidPayTransStatus
+     * @param string $statusShouldBe
+     * @return type
+     * @throws conditon
+     **/
+    private function validateStatus(InAddMoneyFromBank $squidPayTransaction, $statusShouldBe)
+    {
+        if ($squidPayTransaction->status != $statusShouldBe) {
+                    
+            $this->updateTransStatus($squidPayTransaction, $statusShouldBe);
+        }
+
+        return $statusShouldBe;
+    }
+
+    /**
+     * Update the transaction record with the correct status
+     *
+     * @param Type $var Description
+     * @return type
+     * @throws conditon
+     **/
+    private function updateTransStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe)
+    {
+        $this->addMoneys->update(
+            $squidPayTransaction,
+            ['status' => $statusShouldBe]
+        );
+        return $statusShouldBe;
     }
 
     /**
@@ -341,7 +454,7 @@ class DragonPayService implements IAddMoneyService
      * @param array $identifier
      * @return json $response
      */
-    public function getAddMoneyTransStatus(array $identifier)
+    public function getTransStatusFromDragonPay(array $identifier)
     {
         if (array_key_exists('reference_number', $identifier)) {
 
@@ -363,6 +476,9 @@ class DragonPayService implements IAddMoneyService
     public function dragonpayRequest(string $endpoint)
     {
         $response = Http::withToken($this->getToken())->get($this->baseURL . $endpoint);
+
+        if ($response->status() == 500) $this->cantConnectToDragonPay();
+
         return $response;
     }
 
@@ -375,6 +491,8 @@ class DragonPayService implements IAddMoneyService
      */
     public function cancelAddMoney(UserAccount $user, array $referenceNumber)
     {
+        $this->setUserAccountID($user->id);
+
         $referenceNumber = $referenceNumber['reference_number'];
 
         $addMoneyRecord = $this->addMoneys->getByReferenceNumber($referenceNumber);
@@ -394,12 +512,7 @@ class DragonPayService implements IAddMoneyService
 
         if ($response->Status < 0) return $this->nonPendingTrans();
 
-        $this->addMoneys->update($addMoneyRecord, ['status' => DragonPayStatusTypes::Void]);
-
-        return $responseData = (object) [
-            'status' => true,
-            'message' => 'Add money transaction has been cancelled.'
-        ];
+        return $this->addMoneys->update($addMoneyRecord, ['status' => DragonPayStatusTypes::Failure]);
     }
 
     /**
@@ -413,6 +526,7 @@ class DragonPayService implements IAddMoneyService
         $this->logHistory->create([
             'user_account_id' => $this->userAccountID,
             'reference_number' => $referenceNumber,
+            'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
             'namespace' => __METHOD__,
             'transaction_date' => Carbon::now(),
             'remarks' => 'Requests to generate URL for adding money',
@@ -455,9 +569,12 @@ class DragonPayService implements IAddMoneyService
         $this->logHistory->create([
             'user_account_id' => $this->userAccountID,
             'reference_number' => 'N/A',
+            'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
             'namespace' => __METHOD__,
+            'transaction_date' => Carbon::now(),
             'remarks' => 'DragonPay: No auth token in request header',
-            'user_created' => $this->userAccountID
+            'user_created' => $this->userAccountID,
+            'user_updated' => $this->userAccountID
         ]);
 
         $this->throw500();
@@ -471,9 +588,12 @@ class DragonPayService implements IAddMoneyService
         $this->logHistory->create([
             'user_account_id' => $this->userAccountID,
             'reference_number' => 'N/A',
+            'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
             'namespace' => __METHOD__,
+            'transaction_date' => Carbon::now(),
             'remarks' => 'DragonPay: Incorrect auth token in request header',
-            'user_created' => $this->userAccountID
+            'user_created' => $this->userAccountID,
+            'user_updated' => $this->userAccountID
         ]);
 
         $this->throw500();
@@ -489,9 +609,12 @@ class DragonPayService implements IAddMoneyService
         $this->logHistory->create([
             'user_account_id' => $this->userAccountID,
             'reference_number' => 'N/A',
+            'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
             'namespace' => __METHOD__,
+            'transaction_date' => Carbon::now(),
             'remarks' => 'DragonPay: Invalid parameter (invalid or missing Amount, Currency, or Description)',
-            'user_created' => $this->userAccountID
+            'user_created' => $this->userAccountID,
+            'user_updated' => $this->userAccountID
         ]);
 
         $this->throw500();
@@ -506,9 +629,12 @@ class DragonPayService implements IAddMoneyService
         $this->logHistory->create([
             'user_account_id' => $this->userAccountID,
             'reference_number' => 'N/A',
+            'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
             'namespace' => __METHOD__,
+            'transaction_date' => Carbon::now(),
             'remarks' => 'Can`t write to table.',
-            'user_created' => $this->userAccountID
+            'user_created' => $this->userAccountID,
+            'user_updated' => $this->userAccountID
         ]);
 
         $this->throw500();
@@ -550,7 +676,7 @@ class DragonPayService implements IAddMoneyService
     private function nonPendingTrans()
     {
         throw ValidationException::withMessages([
-            'reference_number' => 'Cannot void a non-pending transaction.'
+            'reference_number' => 'Cannot cancel a non-pending transaction.'
         ]);
     }
 
@@ -562,6 +688,51 @@ class DragonPayService implements IAddMoneyService
     {
         throw ValidationException::withMessages([
             'user_details' => 'Current user`s details can`t be found'
+        ]);
+    }
+
+    private function cantConnectToDragonPay()
+    {
+        $this->logHistory->create([
+            'user_account_id' => $this->userAccountID,
+            'reference_number' => 'N/A',
+            'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
+            'namespace' => __METHOD__,
+            'transaction_date' => Carbon::now(),
+            'remarks' => 'Can`t connect to DragonPay.',
+            'user_created' => $this->userAccountID,
+            'user_updated' => $this->userAccountID
+        ]);
+
+        $this->throw500();
+    }
+
+    /**
+     * Thrown when no status is received from DragonPay
+     **/
+    private function noStatusReceived()
+    {
+        $this->logHistory->create([
+            'user_account_id' => $this->userAccountID,
+            'reference_number' => 'N/A',
+            'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
+            'namespace' => __METHOD__,
+            'transaction_date' => Carbon::now(),
+            'remarks' => 'No status received from DragonPay.',
+            'user_created' => $this->userAccountID,
+            'user_updated' => $this->userAccountID
+        ]);
+
+        $this->throw500();
+    }
+
+    /**
+     * Thrown when there is no record found
+     **/
+    public function noRecordsFound()
+    {
+        throw ValidationException::withMessages([
+            'reference_number' => 'No record found.'
         ]);
     }
 }

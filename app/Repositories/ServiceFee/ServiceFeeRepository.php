@@ -40,9 +40,16 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         }
     }
 
-    public function getByTierAndTransCategoryID(string $tierId, string $tranCategoryID)
+    /**
+     * Get the service fee using the tier_id and 
+     *
+     * @param uuid $tierID
+     * @param uuid $tranCategoryID
+     * @return SeviceFee
+     */
+    public function getByTierAndTransCategoryID(string $tierID, string $tranCategoryID)
     {
-        return $this->model->where('tier', $tierId)->where('transaction_category_id', $tranCategoryID)->first();
+        return $this->model->where('tier_id', $tierID)->where('transaction_category_id', $tranCategoryID)->first();
     }
 
     public function getAmountByTransactionAndTierId(string $transactionCategoryId, string $tierId) {

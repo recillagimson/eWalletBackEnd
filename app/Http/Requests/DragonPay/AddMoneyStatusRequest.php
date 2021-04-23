@@ -3,6 +3,7 @@
 namespace App\Http\Requests\DragonPay;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class AddMoneyStatusRequest extends FormRequest
 {
@@ -24,8 +25,13 @@ class AddMoneyStatusRequest extends FormRequest
     public function rules()
     {
         return [
-            'reference_number' => 'required_without:dragonpay_reference|max:10',
-            'dragonpay_reference' => 'required_without:reference_number|max:10'
+            'provider' => [
+                'required',
+                Rule::in([
+                    'DragonPay',
+                ]),
+            ],
+            'reference_number' => 'required|max:10',
         ];
     }
 }

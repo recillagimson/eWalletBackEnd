@@ -22,4 +22,9 @@ class InAddMoneyService implements IInAddMoneyService
     {
         return $this->addMoneyService->cancelAddMoney($user, $referenceNumber);
     }
+
+    public function getStatus(UserAccount $user, array $request)
+    {
+        return $this->addMoneyService->getStatus($user, $request);
+    }
 }
