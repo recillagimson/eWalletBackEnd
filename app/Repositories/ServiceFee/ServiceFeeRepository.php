@@ -52,7 +52,7 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         return $this->model->where('tier_id', $tierID)->where('transaction_category_id', $tranCategoryID)->first();
     }
 
-    public function getAmountByTransactionAndTierId(string $transactionCategoryId, string $tierId) {
+    public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $tierId) {
         // Get User 
         // get Current Date for query parameter for implementation date 
         $currentDate = Carbon::now()->format('Y-m-d');
@@ -61,7 +61,8 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         ->select(['id', 'amount'])
         ->where('tier_id', $tierId)
         ->where('transaction_category_id', $transactionCategoryId)
-        ->where('implementation_date', '>=', $currentDate)
+        ->where('implementation_date', '<=', $currentDate)
+        ->orderBy('created_at', 'DESC')
         ->first();
             
         if($amount) {
