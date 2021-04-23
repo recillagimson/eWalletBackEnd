@@ -5,17 +5,14 @@ namespace App\Http\Controllers;
 use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\Auth\ConfirmTransactionRequest;
-use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
 use App\Http\Requests\Auth\MobileLoginValidateRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResendOtpRequest;
-use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\ValidateNewUserRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Http\Requests\Auth\VerifyLoginRequest;
-use App\Http\Requests\Auth\VerifyPasswordRequest;
 use App\Models\UserAccount;
 use App\Services\Auth\IAuthService;
 use App\Services\Utilities\Responses\IResponseService;
@@ -116,40 +113,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Generates OTP for password recovery verification
-     *
-     * @param ForgotPasswordRequest $request
-     * @return JsonResponse
-     */
-    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->authService->forgotPassword($usernameField, $data[$usernameField]);
-
-        return $this->responseService->successResponse([
-            $usernameField => $data[$usernameField]
-        ], SuccessMessages::passwordRecoveryRequestSuccessful);
-    }
-
-    /**
-     * Reset a user accounts password
-     *
-     * @param ResetPasswordRequest $request
-     * @return JsonResponse
-     */
-    public function resetPassword(ResetPasswordRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->authService->resetPassword($usernameField, $data[$usernameField], $data['password']);
-
-        return $this->responseService->successResponse([
-            $usernameField => $data[$usernameField]
-        ], SuccessMessages::passwordUpdateSuccessful);
-    }
-
-    /**
      * Validates the registration otp and verifies the account
      *
      * @param VerifyAccountRequest $request
@@ -179,23 +142,6 @@ class AuthController extends Controller
         return $this->responseService->successResponse([
             $usernameField => $data[$usernameField]
         ], SuccessMessages::loginVerificationSuccessful);
-    }
-
-    /**
-     * Verifies and validates otp for password recovery
-     *
-     * @param VerifyPasswordRequest $request
-     * @return JsonResponse
-     */
-    public function verifyPassword(VerifyPasswordRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->authService->verifyPassword($usernameField, $data[$usernameField], $data['code']);
-
-        return $this->responseService->successResponse([
-            $usernameField => $data[$usernameField]
-        ], SuccessMessages::passwordRecoveryVerificationSuccessful);
     }
 
     /**

@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\AddMoneyController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ForgotPinController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
+use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PayloadController;
@@ -22,7 +25,6 @@ use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SignupHostController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
-use App\Http\Controllers\ImageUploadController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
@@ -76,15 +78,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/register/validate', [AuthController::class, 'registerValidate']);
 
-        Route::post('/forgot/password', [AuthController::class, 'forgotPassword']);
-        Route::post('/reset/password', [AuthController::class, 'resetPassword']);
+        Route::post('/forgot/password', [ForgotPasswordController::class, 'forgotPassword']);
+        Route::post('/reset/password', [ForgotPasswordController::class, 'resetPassword']);
+
+        Route::post('/forgot/pin', [ForgotPinController::class, 'forgotPin']);
+        Route::post('/reset/pin', [ForgotPinController::class, 'resetPin']);
 
         Route::post('/resend/otp', [AuthController::class, 'resendOTP']);
 
         Route::prefix('/verify')->group(function () {
             Route::post('/account', [AuthController::class, 'verifyAccount']);
             Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin']);
-            Route::post('/password', [AuthController::class, 'verifyPassword']);
+            Route::post('/password', [ForgotPasswordController::class, 'verifyPassword']);
+            Route::post('/pin', [ForgotPinController::class, 'verifyPin']);
         });
     });
 

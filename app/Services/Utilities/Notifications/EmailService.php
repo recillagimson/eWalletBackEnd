@@ -4,6 +4,7 @@
 namespace App\Services\Utilities\Notifications;
 
 
+use App\Enums\OtpTypes;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\LoginVerification;
@@ -32,9 +33,10 @@ class EmailService implements INotificationService
      * @param string $to
      * @param string $otp
      */
-    public function sendPasswordVerification(string $to, string $otp)
+    public function sendPasswordVerification(string $to, string $otp, string $otpType = OtpTypes::passwordRecovery)
     {
-        $subject = 'SquidPay - Account Password Recovery Verification';
+        $pinOrPassword = $otpType == OtpTypes::passwordRecovery ? 'password' : 'pin code';
+        $subject = 'SquidPay - Account ' . ucwords($pinOrPassword) . ' Recovery Verification';
         $template = new PasswordRecoveryEmail($otp);
         $this->sendMessage($to, $subject, $template);
     }
