@@ -52,7 +52,7 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         return $this->model->where('tier_id', $tierID)->where('transaction_category_id', $tranCategoryID)->first();
     }
 
-    public function getAmountByTransactionAndTierId(string $transactionCategoryId, string $tierId) {
+    public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $tierId) {
         // Get User 
         // get Current Date for query parameter for implementation date 
         $currentDate = Carbon::now()->format('Y-m-d');
@@ -61,16 +61,20 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         ->select(['id', 'amount'])
         ->where('tier_id', $tierId)
         ->where('transaction_category_id', $transactionCategoryId)
-        ->where('implementation_date', '>=', $currentDate)
+        ->where('implementation_date', '<=', $currentDate)
+        ->orderBy('created_at', 'DESC')
         ->first();
             
         if($amount) {
             return $amount;
         }
 
+        // Fix issue raised by Davette
+        return 0;
+
         // throw error if not found
-        throw ValidationException::withMessages([
-            'tier_not_found' => 'Tier is not found'
-        ]);
+        // throw ValidationException::withMessages([
+        //     'tier_not_found' => 'Tier is not found'
+        // ]);
     }
 }
