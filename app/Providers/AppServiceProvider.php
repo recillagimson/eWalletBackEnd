@@ -35,7 +35,6 @@ use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\LogHistory\LogHistoryService;
 use App\Services\Utilities\Notifications\EmailService;
 use App\Services\Utilities\Notifications\INotificationService;
-use App\Services\Utilities\Notifications\IPushNotificationService;
 use App\Services\Utilities\Notifications\PushNotificationService;
 use App\Services\Utilities\Notifications\SmsService;
 use App\Services\Utilities\OTP\IOtpService;
@@ -46,6 +45,8 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Services\Utilities\Responses\ResponseService;
+use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
+use App\Services\Utilities\ServiceFeeService\ServiceFeeService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Verification\VerificationService;
 use Illuminate\Http\Request;
@@ -86,6 +87,26 @@ class AppServiceProvider extends ServiceProvider
         //APP SERVICES - CONTEXTUAL BINDINGS
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
+        
+        // Notification
+        $this->app->bind(INotificationService::class, NotificationService::class);
+        // Push Notification 
+        $this->app->bind(IPushNotificationService::class, PushNotificationService::class);
+
+        // Verification Service
+        $this->app->bind(IVerificationService::class, VerificationService::class);
+        // Log History Service
+        $this->app->bind(ILogHistoryService::class, LogHistoryService::class);
+        
+        // Transaction Service
+        $this->app->bind(ITransactionService::class, TransactionService::class);
+
+        // Validation Service
+        $this->app->bind(ITransactionValidationService::class, TransactionValidationService::class);
+        
+        // Service Fee Service
+        $this->app->bind(IServiceFeeService::class, ServiceFeeService::class);
+        
         $this->bindSend2BankService();
         $this->bindAddMoneyService();
     }

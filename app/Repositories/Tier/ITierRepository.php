@@ -7,4 +7,5 @@ use App\Repositories\IRepository;
 interface ITierRepository extends IRepository
 {
     public function list($params = []);
+    public function getTierByUserAccountId($userAccountId);
 }
