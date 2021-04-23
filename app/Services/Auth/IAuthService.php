@@ -31,7 +31,7 @@ interface IAuthService
 
     public function verifyLogin(string $usernameField, string $username, string $otp);
 
-    public function verifyPinorPassword(string $usernameField, string $username, string $otp,
+    public function verifyPinOrPassword(string $usernameField, string $username, string $otp,
                                         string $otpType = OtpTypes::passwordRecovery);
 
     public function generateMobileLoginOTP(string $usernameField, string $username);

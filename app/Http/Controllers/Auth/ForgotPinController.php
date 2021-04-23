@@ -54,7 +54,7 @@ class ForgotPinController extends Controller
     {
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
-        $this->authService->verifyPinorPassword($usernameField, $data[$usernameField], $data['code'], OtpTypes::pinRecovery);
+        $this->authService->verifyPinOrPassword($usernameField, $data[$usernameField], $data['code'], OtpTypes::pinRecovery);
 
         return $this->responseService->successResponse([
             $usernameField => $data[$usernameField]

@@ -52,7 +52,7 @@ class ForgotPasswordController extends Controller
     {
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
-        $this->authService->verifyPinorPassword($usernameField, $data[$usernameField], $data['code']);
+        $this->authService->verifyPinOrPassword($usernameField, $data[$usernameField], $data['code']);
 
         return $this->responseService->successResponse([
             $usernameField => $data[$usernameField]

@@ -168,6 +168,7 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
+        $this->validateUser($user);
 
         $this->checkPinOrPassword($user, '', $otpType);
         $this->sendOTP($usernameField, $username, $otpType);
@@ -186,6 +187,7 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
+        $this->validateUser($user);
 
         $identifier = $otpType . ':' . $user->id;
         $this->otpService->ensureValidated($identifier);
@@ -277,7 +279,7 @@ class AuthService implements IAuthService
      * @param string $username
      * @param string $otp
      */
-    public function verifyPinorPassword(string $usernameField, string $username, string $otp,
+    public function verifyPinOrPassword(string $usernameField, string $username, string $otp,
                                         string $otpType = OtpTypes::passwordRecovery)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
@@ -323,7 +325,7 @@ class AuthService implements IAuthService
     }
 
     /**
-     * Validate accounts existence
+     * Validate accounts existence used only by registration
      *
      * @param string $usernameField
      * @param string $username
@@ -375,7 +377,7 @@ class AuthService implements IAuthService
         if ($pinCode) {
             $pinCodeHistories = $this->pinCodeHistories->getPrevious($this->passwordRepeatCount, $user->id);
             foreach ($pinCodeHistories as $pinCodeHistory) {
-                $exists = Hash::check($pinCode, $pinCodeHistory->password);
+                $exists = Hash::check($pinCode, $pinCodeHistory->pin_code);
                 if ($exists === true) $this->passwordUsed();
             }
         }
@@ -436,7 +438,7 @@ class AuthService implements IAuthService
 
     private function validateUser(UserAccount $user)
     {
-        if (!$user->verified) $this->accountUnverified();
+        if (!$user->verified) $this->accountDoesntExist();
         if ($user->is_lockout) $this->accountLockedOut();
 
         $user->resetLoginAttempts($this->daysToResetAttempts);
