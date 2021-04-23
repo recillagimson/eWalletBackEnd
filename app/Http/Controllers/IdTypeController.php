@@ -4,21 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\IdType;
 use Illuminate\Http\Response;
+use App\Enums\SuccessMessages;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\IdType\IdTypeRequest;
 use App\Repositories\IdType\IIdTypeRepository;
-use App\Services\Encryption\IEncryptionService;
+use App\Services\Utilities\Responses\IResponseService;
 
 class IdTypeController extends Controller
 {
 
     private IIdTypeRepository $idTypeRepository;
-    private IEncryptionService $encryptionService;
+    private IResponseService $responseService;
 
-    public function __construct(IIdTypeRepository $idTypeRepository, IEncryptionService $encryptionService)
+
+    public function __construct(IIdTypeRepository $idTypeRepository, IResponseService $responseService)
     {
         $this->idTypeRepository = $idTypeRepository;
-        $this->encryptionService = $encryptionService;
+        $this->responseService = $responseService;
     }
 
     /**
@@ -29,8 +31,7 @@ class IdTypeController extends Controller
     public function index(): JsonResponse 
     {
         $records = $this->idTypeRepository->getAll();
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -55,8 +56,7 @@ class IdTypeController extends Controller
         $details['user_created'] = request()->user()->id;
         $details['user_updated'] = request()->user()->id;
         $createRecord = $this->idTypeRepository->create($details);
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        return $this->responseService->createdResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
     /**
@@ -67,8 +67,7 @@ class IdTypeController extends Controller
      */
     public function show(IdType $idType) : JsonResponse 
     {
-        $encryptedResponse = $this->encryptionService->encrypt($idType->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($idType->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -95,9 +94,7 @@ class IdTypeController extends Controller
         $details['user_updated'] = request()->user()->id;
         // $inputBody = $this->inputBody($details);
         $updateRecord = $this->idTypeRepository->update($idType, $details);
-
-        $encryptedResponse = $this->encryptionService->encrypt(array($updateRecord));
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($updateRecord->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -109,7 +106,6 @@ class IdTypeController extends Controller
     public function destroy(IdType $idType): JsonResponse
     {
         $deleteRecord = $this->idTypeRepository->delete($idType);
-
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->noContentResponse($deleteRecord->toArray(), SuccessMessages::recordDeleted);
     }
 }

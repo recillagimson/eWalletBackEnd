@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ServiceFee\ServiceFeeRequest;
 use App\Models\ServiceFee;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Services\Encryption\IEncryptionService;
+use App\Enums\SuccessMessages;
+use App\Http\Requests\ServiceFee\ServiceFeeRequest;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Services\Utilities\Responses\IResponseService;
 
 class ServiceFeeController extends Controller
 {
-    private IEncryptionService $encryptionService;
+    private IResponseService $responseService;
     private IServiceFeeRepository $iServiceFeeRepository;
 
 
-    public function __construct(IEncryptionService $encryptionService, 
+    public function __construct(IResponseService $responseService, 
             IServiceFeeRepository $iServiceFeeRepository)
     {
-        $this->encryptionService = $encryptionService;
+        $this->responseService = $responseService;
         $this->iServiceFeeRepository = $iServiceFeeRepository;
     }
     /**
@@ -31,8 +32,7 @@ class ServiceFeeController extends Controller
         // GET REQUEST VALUES
         $params = $request->all();
         $records = $this->iServiceFeeRepository->list($params);
-        $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -47,9 +47,7 @@ class ServiceFeeController extends Controller
         $details['user_created'] = request()->user()->id;
         $details['user_updated'] = request()->user()->id;
         $createRecord = $this->iServiceFeeRepository->create($details);
-
-        $encryptedResponse = $this->encryptionService->encrypt($createRecord->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_CREATED);
+        return $this->responseService->createdResponse($createRecord->toArray(), SuccessMessages::recordSaved);
     }
 
     /**
@@ -60,8 +58,7 @@ class ServiceFeeController extends Controller
      */
     public function show(ServiceFee $serviceFee)
     {
-        $encryptedResponse = $this->encryptionService->encrypt($serviceFee->toArray());
-        return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($serviceFee->toArray(), SuccessMessages::success);
     }
 
     /**
@@ -87,7 +84,6 @@ class ServiceFeeController extends Controller
      */
     public function destroy(ServiceFee $serviceFee)
     {
-        $deleteRecord = $this->iTierRepository->delete($serviceFee);
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return $this->responseService->noContentResponse($serviceFee->toArray(), SuccessMessages::recordDeleted);
     }
 }
