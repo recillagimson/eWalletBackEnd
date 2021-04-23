@@ -60,7 +60,7 @@ class SendMoneyService implements ISendMoneyService
     public function send(string $username ,array $fillRequest, object $user)
     {
         $senderID = $user->id;
-        $receiverID = $this->qrOrSendMoney($username, $fillRequest); 
+        $receiverID = $this->getUserID($username, $fillRequest);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
@@ -79,7 +79,32 @@ class SendMoneyService implements ISendMoneyService
 
 
     /**
-     * Creates a new record for qr_transactions
+     * Validates Send money
+     *
+     * @param string $username
+     * @param array $fillRequest
+     * @param object $user
+     * @param string $senderID 
+     * @param string $receiverID
+     * @param boolean $isSelf
+     * @param boolean $isEnough
+     * @throws ValidationException
+     */
+    public function validateSend(string $username, array $fillRequest, object $user)
+    {
+        $senderID = $user->id;
+        $receiverID = $this->getUserID($username, $fillRequest);
+
+        $isSelf = $this->isSelf($senderID, $receiverID);
+        $isEnough = $this->checkAmount($senderID, $fillRequest);
+
+        if ($isSelf) $this->invalidRecipient();
+        if (!$isEnough) $this->insuficientBalance();
+    }
+
+
+    /**
+     * Creates a record for qr_transactions
      *  
      * @param string $username
      * @param object $user
@@ -111,9 +136,10 @@ class SendMoneyService implements ISendMoneyService
     public function scanQr(string $id):array
     {
         $qrTransaction = $this->qrTransactions->get($id);
-        if (empty($qrTransaction)) $this->invalidQr();
+        if (!$qrTransaction) $this->invalidQr();
+
         $user = $this->userAccounts->get($qrTransaction->user_account_id);
-        if (empty($user)) $this->invalidAccount();
+        if (!$user) $this->invalidAccount();
 
         if ($user->mobile_number) {
             return ['mobile_number' => $user->mobile_number, 'amount' => $qrTransaction->amount, 'message' => ''];
@@ -121,24 +147,14 @@ class SendMoneyService implements ISendMoneyService
         return ['email' => $user->email, 'amount' => $qrTransaction->amount, 'message' => ''];
     }
 
-    
-
-    private function qrOrSendMoney(string $username,array $fillRequest)
-    {
-        if (!empty($fillRequest['recipient_account_id'])){
-            return $fillRequest['recipient_account_id'];
-        }
-        return $this->getUserID($username, $fillRequest);
-    }
 
 
     private function getUserID(string $usernameField, array $fillRequest)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $fillRequest[$usernameField]);
-        if (empty($user)) $this->invalidAccount();
+        if (!$user) $this->invalidAccount();
         return $user['id'];
     }
-
 
 
     private function isSelf(string $senderID, string $receiverID)
@@ -147,14 +163,12 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-
     private function checkAmount(string $senderID, array $fillRequest)
     {
         $balance = $this->userBalanceInfo->getUserBalance($senderID);
         $fillRequest['amount'] = $fillRequest['amount'] + SendMoneyConfig::ServiceFee;
         if ($balance >= $fillRequest['amount']) return true;
     }
-
 
 
     private function subtractSenderBalance(string $senderID, array $fillRequest)
@@ -166,7 +180,6 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-
     private function addReceiverBalance(string $receiverID, array $fillRequest)
     {
         $receiverBalance = $this->userBalanceInfo->getUserBalance($receiverID);
@@ -174,7 +187,7 @@ class SendMoneyService implements ISendMoneyService
         $this->userBalanceInfo->updateUserBalance($receiverID, $newBalance);
     }
 
-
+    
     private function outSendMoney(string $senderID, string $receiverID, array $fillRequest)
     {
         return $this->outSendMoney->create([
@@ -214,6 +227,7 @@ class SendMoneyService implements ISendMoneyService
         ]);
     }
 
+
     private function logHistories($senderID, $receiverID, $fillRequest)
     {
         $this->loghistoryrepository->create([
@@ -229,6 +243,7 @@ class SendMoneyService implements ISendMoneyService
         ]);
     }
 
+    
     private function userTransactionHistory($senderID, $fillRequest)
     {
         $this->userTransactionHistoryRepository->create([

@@ -125,6 +125,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('send/money')->middleware(['decrypt.request'])->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
+        Route::post('/validate', [SendMoneyController::class, 'sendValidate']);
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
     });

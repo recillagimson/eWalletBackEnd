@@ -24,9 +24,10 @@ class SuccessMessages
     const pinCodeUpdated = 'Account Pin Code has been updated.';
 
     // Send Money Controller
-    const sendMoneySuccessFul = 'Send money Successful';
-    const scanQrSuccessful = 'Scan Qr Successful';
-    const generateQrSuccessful = 'Generate Qr Successful';
+    const sendMoneySuccessFul = 'Send money successful';
+    const validateSendMoney = 'Send money validation successful';
+    const scanQrSuccessful = 'Scan Qr successful';
+    const generateQrSuccessful = 'Generate Qr successful';
 
     const success = 'Success';
     const recordSaved = 'Record has been saved.';
