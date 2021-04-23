@@ -156,6 +156,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [AddMoneyController::class, 'addMoney']);
         Route::post('/cancel', [AddMoneyController::class, 'cancel']);
         Route::post('/status', [AddMoneyController::class, 'getStatus']);
+        Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans']);
     });
 
 

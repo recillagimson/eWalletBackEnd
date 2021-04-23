@@ -7,6 +7,7 @@ use App\Http\Requests\DragonPay\AddMoneyCancelRequest;
 use App\Http\Requests\DragonPay\AddMoneyRequest;
 use App\Http\Requests\DragonPay\AddMoneyStatusRequest;
 use App\Http\Requests\DragonPay\DragonPayPostBackRequest;
+use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
 use App\Services\Encryption\IEncryptionService;
@@ -17,19 +18,21 @@ use Illuminate\Http\Response;
 class AddMoneyController extends Controller
 {
     private IHandlePostBackService $postBackService;
-    private IEncryptionService $encryptionService;
     private IInAddMoneyService $addMoneyService;
     private IResponseService $responseService;
+    private IInAddMoneyRepository $addMoneys;
 
     public function __construct(IHandlePostBackService $postBackService,
                                 IEncryptionService $encryptionService,
                                 IInAddMoneyService $addMoneyService,
-                                IResponseService $responseService) {
+                                IResponseService $responseService,
+                                IInAddMoneyRepository $addMoneys) {
 
         $this->postBackService = $postBackService;
         $this->encryptionService = $encryptionService;
         $this->addMoneyService = $addMoneyService;
         $this->responseService = $responseService;
+        $this->addMoneys = $addMoneys;
     }
 
     public function addMoney(AddMoneyRequest $request)
@@ -70,5 +73,14 @@ class AddMoneyController extends Controller
         $status = $this->addMoneyService->getStatus($user, $requestParams);
 
         return $this->responseService->successResponse($status, SuccessMessages::addMoneyStatusAcquired);
+    }
+
+    public function getLatestPendingTrans(Request $request)
+    {
+        $user = $request->user();
+
+        $transaction = $this->addMoneys->getLatestPendingByUserAccountID($user->id);
+
+        return $this->responseService->successResponse($transaction->toArray(), SuccessMessages::success);
     }
 }
