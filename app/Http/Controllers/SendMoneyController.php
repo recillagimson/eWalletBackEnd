@@ -32,7 +32,6 @@ class SendMoneyController extends Controller
      * @param SendMoneyRequest $request
      * @param array $fillRequest
      * @param string $username
-     * @param string $encryptedResponse
      * @return JsonResponse
      */
      public function send(SendMoneyRequest $request): JsonResponse
@@ -44,6 +43,23 @@ class SendMoneyController extends Controller
         return $this->responseService->successResponse(['status' => 'success'], SuccessMessages::sendMoneySuccessFul);
     }
 
+    /**
+     * Validates send money 
+     *
+     * @param SendMoneyRequest $request
+     * @param array $fillRequest
+     * @param string $username
+     * @return JsonResponse
+     */
+    public function sendValidate(SendMoneyRequest $request) : JsonResponse
+    {
+        $fillRequest = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $this->sendMoneyService->validateSend($usernameField, $fillRequest, $request->user());
+
+        return $this->responseService->successResponse($fillRequest, SuccessMessages::validateSendMoney);
+    }
+
 
     /**
      * Generates QR Transaction
@@ -51,7 +67,6 @@ class SendMoneyController extends Controller
      * @param SendMoneyRequest $request
      * @param array $fillRequest
      * @param array $qrTransaction
-     * @param string $encryptedResponse
      * @return JsonResponse
      */
     public function generateQr(GenerateQrRequest $request): JsonResponse
@@ -69,7 +84,6 @@ class SendMoneyController extends Controller
      * @param ScanQrRequest $request
      * @param array $fillRequest
      * @param array $qrTransaction
-     * @param string $encryptedResponse
      * @return JsonResponse
      */
     public function scanQr(ScanQrRequest $request): JsonResponse
