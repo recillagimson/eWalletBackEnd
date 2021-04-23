@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use App\Enums\SuccessMessages;
 use Illuminate\Http\JsonResponse;
-use App\Services\Encryption\IEncryptionService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\Notification\NotificationRequest;
 use App\Services\Utilities\Notifications\IPushNotificationService;
@@ -22,8 +19,6 @@ class NotificationController extends Controller
                                 IResponseService $responseService
     )
     {
-        // $this->iNotificationRepository = $iNotificationRepository;
-        // $this->encryptionService = $encryptionService;
         $this->iPushNotificationService = $iPushNotificationService;
         $this->responseService = $responseService;
     }

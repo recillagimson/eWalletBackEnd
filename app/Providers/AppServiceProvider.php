@@ -2,56 +2,57 @@
 
 namespace App\Providers;
 
-use App\Enums\AddMoneyProviders;
 use App\Enums\NetworkTypes;
 use App\Enums\TpaProviders;
+use Illuminate\Support\Str;
 use App\Enums\UsernameTypes;
-use App\Http\Controllers\Send2BankController;
-use App\Services\AddMoney\DragonPay\HandlePostBackService;
-use App\Services\AddMoney\DragonPay\IHandlePostBackService;
-use App\Services\AddMoney\IInAddMoneyService;
-use App\Services\AddMoney\InAddMoneyService;
-use App\Services\AddMoney\Providers\DragonPayService;
-use App\Services\AddMoney\Providers\IAddMoneyService;
+use Illuminate\Http\Request;
+use App\Enums\AddMoneyProviders;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
-use App\Services\Encryption\EncryptionService;
-use App\Services\Encryption\IEncryptionService;
-use App\Services\OutBuyLoad\IOutBuyLoadService;
-use App\Services\OutBuyLoad\OutBuyLoadService;
-use App\Services\Send2Bank\ISend2BankService;
-use App\Services\Send2Bank\Send2BankPesonetService;
-use App\Services\SendMoney\ISendMoneyService;
+use Illuminate\Support\ServiceProvider;
+use App\Services\Utilities\API\ApiService;
+use App\Services\Utilities\OTP\OtpService;
+use App\Services\ThirdParty\UBP\UBPService;
+use App\Services\Utilities\API\IApiService;
+use App\Services\Utilities\OTP\IOtpService;
+use App\Services\AddMoney\InAddMoneyService;
 use App\Services\SendMoney\SendMoneyService;
 use App\Services\ThirdParty\UBP\IUBPService;
-use App\Services\ThirdParty\UBP\UBPService;
-use App\Services\Transaction\ITransactionService;
+use App\Http\Controllers\Send2BankController;
+use App\Services\AddMoney\IInAddMoneyService;
+use App\Services\Send2Bank\ISend2BankService;
+use App\Services\SendMoney\ISendMoneyService;
+use App\Services\Encryption\EncryptionService;
+use App\Services\OutBuyLoad\OutBuyLoadService;
+use App\Services\Encryption\IEncryptionService;
+use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\Transaction\TransactionService;
-use App\Services\UserProfile\IUserProfileService;
 use App\Services\UserProfile\UserProfileService;
-use App\Services\Utilities\API\ApiService;
-use App\Services\Utilities\API\IApiService;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Services\Utilities\LogHistory\LogHistoryService;
-use App\Services\Utilities\Notifications\EmailService;
-use App\Services\Utilities\Notifications\INotificationService;
-use App\Services\Utilities\Notifications\PushNotificationService;
+use App\Services\Transaction\ITransactionService;
+use App\Services\UserProfile\IUserProfileService;
+use App\Services\Send2Bank\Send2BankPesonetService;
 use App\Services\Utilities\Notifications\SmsService;
-use App\Services\Utilities\OTP\IOtpService;
-use App\Services\Utilities\OTP\OtpService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
-use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
-use App\Services\Utilities\Responses\IResponseService;
+use App\Services\AddMoney\Providers\DragonPayService;
+use App\Services\AddMoney\Providers\IAddMoneyService;
 use App\Services\Utilities\Responses\ResponseService;
-use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
-use App\Services\Utilities\ServiceFeeService\ServiceFeeService;
-use App\Services\Utilities\Verification\IVerificationService;
+use App\Services\Utilities\Notifications\EmailService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Services\Utilities\LogHistory\LogHistoryService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\AddMoney\DragonPay\HandlePostBackService;
+use App\Services\AddMoney\DragonPay\IHandlePostBackService;
+use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\Verification\VerificationService;
-use Illuminate\Http\Request;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
+use App\Services\Utilities\Verification\IVerificationService;
+use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\ServiceFeeService\ServiceFeeService;
+use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
+use App\Services\Utilities\Notifications\PushNotificationService;
+use App\Services\Utilities\Notifications\IPushNotificationService;
+use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -91,7 +92,7 @@ class AppServiceProvider extends ServiceProvider
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
         // Push Notification 
-        $this->app->bind(IPushNotificationService::class, PushNotificationService::class);
+        // $this->app->bind(IPushNotificationService::class, PushNotificationService::class);
 
         // Verification Service
         $this->app->bind(IVerificationService::class, VerificationService::class);
