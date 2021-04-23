@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\UserKeyTypes;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
@@ -24,12 +25,8 @@ use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\OutSendMoney\OutSendMoneyRepository;
-use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
-use App\Repositories\PasswordHistory\PasswordHistoryRepository;
 use App\Repositories\Payload\IPayloadRepository;
 use App\Repositories\Payload\PayloadRepository;
-use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
-use App\Repositories\PinCodeHistory\PinCodeHistoryRepository;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
 use App\Repositories\PrepaidLoad\PrepaidLoadRepository;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
@@ -48,6 +45,11 @@ use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserBalance\UserBalanceRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserBalanceInfo\UserBalanceInfoRepository;
+use App\Repositories\UserKeys\IUserKeyLogsRepository;
+use App\Repositories\UserKeys\PasswordHistory\IPasswordHistoryRepository;
+use App\Repositories\UserKeys\PasswordHistory\PasswordHistoryRepository;
+use App\Repositories\UserKeys\PinCodeHistory\IPinCodeHistoryRepository;
+use App\Repositories\UserKeys\PinCodeHistory\PinCodeHistoryRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\UserPhotoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
@@ -68,6 +70,8 @@ use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 use App\Repositories\UserUtilities\SourceOfFund\SourceOfFundRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
+use App\Services\Auth\UserKey\UserKeyService;
+use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -150,6 +154,9 @@ class RepositoryServiceProvider extends ServiceProvider
         // Service Fee Repository
         $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
 
+        //CONTEXTUAL BINDINGS
+        $this->bindUserKeyRepository();
+
     }
 
     /**
@@ -160,5 +167,21 @@ class RepositoryServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+    }
+
+    private function bindUserKeyRepository()
+    {
+        $this->app->when(UserKeyService::class)
+            ->needs(IUserKeyLogsRepository::class)
+            ->give(function () {
+                $request = app(Request::class);
+
+                if ($request->route('keyType')) {
+                    $keyType = $request->route('keyType');
+                    if ($keyType == UserKeyTypes::pin) return $this->app->get(PinCodeHistoryRepository::class);
+                }
+
+                return $this->app->get(PasswordHistoryRepository::class);
+            });
     }
 }

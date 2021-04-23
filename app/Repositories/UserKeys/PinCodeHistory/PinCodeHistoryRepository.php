@@ -1,9 +1,9 @@
 <?php
 
 
-namespace App\Repositories\PinCodeHistory;
+namespace App\Repositories\UserKeys\PinCodeHistory;
 
-use App\Models\PinCodeHistory;
+use App\Models\UserKeys\PinCodeHistory;
 use App\Repositories\Repository;
 
 class PinCodeHistoryRepository extends Repository implements IPinCodeHistoryRepository
@@ -21,11 +21,11 @@ class PinCodeHistoryRepository extends Repository implements IPinCodeHistoryRepo
         ])->orderByDesc('created_at')->first();
     }
 
-    public function getPrevious(int $recordCount, string $userId)
+    public function getPrevious(int $takeCount, string $userId)
     {
         return $this->model->where('user_account_id', '=', $userId)
             ->orderByDesc('created_at')
-            ->take($recordCount)
+            ->take($takeCount)
             ->get();
     }
 

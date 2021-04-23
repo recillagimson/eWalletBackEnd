@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\OtpTypes;
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\ForgotPinOrPasswordRequest;
+use App\Http\Requests\Auth\ForgotKeyRequest;
 use App\Http\Requests\Auth\ResetPinRequest;
-use App\Http\Requests\Auth\VerifyPinOrPasswordRequest;
+use App\Http\Requests\Auth\VerifyKeyRequest;
 use App\Services\Auth\IAuthService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
@@ -30,10 +30,10 @@ class ForgotPinController extends Controller
     /**
      * Generates OTP for pin recovery verification
      *
-     * @param ForgotPinOrPasswordRequest $request
+     * @param ForgotKeyRequest $request
      * @return JsonResponse
      */
-    public function forgotPin(ForgotPinOrPasswordRequest $request): JsonResponse
+    public function forgotPin(ForgotKeyRequest $request): JsonResponse
     {
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
@@ -47,10 +47,10 @@ class ForgotPinController extends Controller
     /**
      * Verifies and validates otp for pin recovery
      *s
-     * @param VerifyPinOrPasswordRequest $request
+     * @param VerifyKeyRequest $request
      * @return JsonResponse
      */
-    public function verifyPin(VerifyPinOrPasswordRequest $request): JsonResponse
+    public function verifyPin(VerifyKeyRequest $request): JsonResponse
     {
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
