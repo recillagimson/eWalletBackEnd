@@ -69,9 +69,12 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
             return $amount;
         }
 
+        // Fix issue raised by Davette
+        return 0;
+
         // throw error if not found
-        throw ValidationException::withMessages([
-            'tier_not_found' => 'Tier is not found'
-        ]);
+        // throw ValidationException::withMessages([
+        //     'tier_not_found' => 'Tier is not found'
+        // ]);
     }
 }
