@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\SuccessMessages;
 use App\Http\Requests\DragonPay\AddMoneyCancelRequest;
 use App\Http\Requests\DragonPay\AddMoneyRequest;
+use App\Http\Requests\DragonPay\AddMoneyStatusRequest;
 use App\Http\Requests\DragonPay\DragonPayPostBackRequest;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
@@ -59,5 +60,15 @@ class AddMoneyController extends Controller
         $cancel = $this->addMoneyService->cancelAddMoney($user, $referenceNumber);
 
         return $this->responseService->successResponse(null, SuccessMessages::addMoneyCancel);
+    }
+
+    public function getStatus(AddMoneyStatusRequest $request)
+    {
+        $user = $request->user();
+        $requestParams = $request->validated();
+
+        $status = $this->addMoneyService->getStatus($user, $requestParams);
+
+        return $this->responseService->successResponse($status, SuccessMessages::addMoneyStatusAcquired);
     }
 }

@@ -155,6 +155,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
         Route::post('/', [AddMoneyController::class, 'addMoney']);
         Route::post('/cancel', [AddMoneyController::class, 'cancel']);
+        Route::post('/status', [AddMoneyController::class, 'getStatus']);
     });
 
 

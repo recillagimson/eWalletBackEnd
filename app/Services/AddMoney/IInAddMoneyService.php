@@ -8,4 +8,5 @@ interface IInAddMoneyService
 {
     public function addMoney(UserAccount $user, array $request);
     public function cancelAddMoney(UserAccount $user, array $referenceNumber);
+    public function getStatus(UserAccount $user, array $request);
 }
