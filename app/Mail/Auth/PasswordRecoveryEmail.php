@@ -11,15 +11,17 @@ class PasswordRecoveryEmail extends Mailable
     use Queueable, SerializesModels;
 
     private string $otp;
+    private string $pinOrPassword;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(string $otp)
+    public function __construct(string $otp, string $pinOrPassword)
     {
         $this->otp = $otp;
+        $this->pinOrPassword = $pinOrPassword;
     }
 
     /**
@@ -30,9 +32,10 @@ class PasswordRecoveryEmail extends Mailable
     public function build()
     {
         return $this->view('emails.auth.password_recovery')
-            ->subject('SquidPay - Account Password Recovery Verification')
+            ->subject('SquidPay - Account ' . ucwords($this->pinOrPassword) . ' Recovery Verification')
             ->with([
-                'code' => $this->otp
+                'code' => $this->otp,
+                'pinOrPassword' => $this->pinOrPassword
             ]);
     }
 }

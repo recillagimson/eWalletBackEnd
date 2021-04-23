@@ -16,4 +16,9 @@ class TransactionCategoryRepository extends Repository implements ITransactionCa
     {
         return $this->model->where('name', $name)->first();
     }
+
+    public function getById(string $transactionCategoryId) {
+        return $this->model->find($transactionCategoryId);
+    }
+
 }

@@ -26,12 +26,18 @@ class PinCodeHistory extends Model
     public function isAboutToExpire(int $daysToNotify = 15, int $maxAge = 60): bool
     {
         $remainingAge = $maxAge - $this->pin_age;
-        if($remainingAge <= $daysToNotify)
-        {
+        if ($remainingAge <= $daysToNotify) {
             return true;
         }
 
         return false;
+    }
+
+    public function isAtMinimumAge(int $minAge): bool
+    {
+        $currentAge = $this->pin_age;
+        if ($currentAge < $minAge) return false;
+        return true;
     }
 
 }

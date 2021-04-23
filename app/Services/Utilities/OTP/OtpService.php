@@ -6,6 +6,7 @@ namespace App\Services\Utilities\OTP;
 use App\Repositories\OtpRepository\IOtpRepository;
 use App\Traits\Errors\WithAuthErrors;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 class OtpService implements IOtpService
@@ -165,6 +166,8 @@ class OtpService implements IOtpService
 
     public function ensureValidated(string $identifier)
     {
+        if (App::environment('local')) return;
+
         $otp = $this->otps->getByIdentifier($identifier, true);
         if (!$otp) $this->otpInvalid();
         if ($otp->isExpired()) $this->otpIsExpired();

@@ -6,5 +6,5 @@ use App\Repositories\IRepository;
 
 interface IUserBalanceRepository extends IRepository
 {
-
+    public function getUserBalanceInfoById(string $userAccountId);
 }

@@ -14,7 +14,7 @@ class ServiceFeeService implements IServiceFeeService
         $this->serviceFeeRepository = $serviceFeeRepository;
     }
 
-    public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $userAccountId) {
-        return $this->serviceFeeRepository->getAmountByTransactionAndUserAccountId($transactionCategoryId, $userAccountId);
+    public function getAmountByTransactionAndUserAccountId(string $transactionCategoryId, string $tierId) {
+        return $this->serviceFeeRepository->getAmountByTransactionAndUserAccountId($transactionCategoryId, $tierId);
     }
 }

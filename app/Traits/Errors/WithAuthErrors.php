@@ -19,7 +19,12 @@ trait WithAuthErrors
 
     public function loginFailed()
     {
-        $this->validationErrorMessage(ErrorCodes::loginFailed, 'Login Failed');
+        $this->validationErrorMessage(ErrorCodes::confirmationFailed, 'Login Failed');
+    }
+
+    public function confirmationFailed()
+    {
+        $this->validationErrorMessage(ErrorCodes::confirmationFailed, 'Transaction Confirmation Failed');
     }
 
     public function accountUnverified()
@@ -44,12 +49,12 @@ trait WithAuthErrors
 
     public function passwordUsed()
     {
-        $this->validationErrorMessage(ErrorCodes::passwordUsed,'Password has already been used.');
+        $this->validationErrorMessage(ErrorCodes::passwordUsed, 'Password / Pin has already been used.');
     }
 
     public function passwordNotAged(int $minPasswordAge)
     {
-        $this->validationErrorMessage(ErrorCodes::passwordNotAged, 'Password cannot be changed for at least '.$minPasswordAge.' day/s.');
+        $this->validationErrorMessage(ErrorCodes::passwordNotAged, 'Password / Pin cannot be changed for at least ' . $minPasswordAge . ' day/s.');
     }
 
     public function otpTypeInvalid() {

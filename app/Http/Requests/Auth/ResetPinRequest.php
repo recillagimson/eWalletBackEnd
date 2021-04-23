@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\UsernameTypes;
 use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
-class VerifyPasswordRequest extends FormRequest
+class ResetPinRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,13 +26,17 @@ class VerifyPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'email' => 'required_without:' . UsernameTypes::MobileNumber . '|email',
             'mobile_number' => [
-                'required_without:email',
-                'max:20',
+                'required_without:' . UsernameTypes::Email,
                 new MobileNumber()
             ],
-            'email' => 'required_without:mobile_number|max:50|email',
-            'code' => 'required'
+            'pin_code' => [
+                'required',
+                'digits:4',
+                'confirmed',
+            ],
+            'pin_code_confirmation' => 'required|digits:4',
         ];
     }
 }

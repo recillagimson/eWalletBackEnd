@@ -11,4 +11,17 @@ class UserBalanceRepository extends Repository implements IUserBalanceRepository
     {
         parent::__construct($model);
     }
+
+    public function getUserBalanceInfoById(string $userAccountId) {
+        $balance = $this->model->where('user_account_id', $userAccountId)
+        ->orderBy('created_at', 'DESC')
+        ->first();
+
+        if($balance) {
+            return $balance->available_balance;
+        }
+        // Return 0 if no user balance info
+        return 0;
+    }
+
 }
