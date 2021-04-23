@@ -320,7 +320,9 @@ class DragonPayService implements IAddMoneyService
 
         $addMoneyTransCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
 
-        $serviceFee = $this->serviceFees->getAmountByTransactionAndUserAccountId($addMoneyTransCategory->id, $this->userAccountID);
+        $serviceFee = $this->serviceFees->getAmountByTransactionAndUserAccountId($addMoneyTransCategory->id, $user->tier_id);
+
+        if (!is_object($serviceFee) && $serviceFee == 0) $serviceFee = (object) ['id' => 'N/A','amount' => 0];
 
         // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
         if ($amount > $tier->daily_limit) return $this->tierLimitExceeded();
