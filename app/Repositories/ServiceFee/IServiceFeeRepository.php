@@ -7,7 +7,7 @@ use App\Repositories\IRepository;
 
 interface IServiceFeeRepository extends IRepository
 {
-    public function getByTierAndTransCategoryID(int $tier, string $transCategoryID);
+    public function getByTierAndTransCategoryID(string $tierId, string $transCategoryID);
     public function list($params = []);
     public function getAmountByTransactionAndTierId(string $transactionCategoryId, string $tierId);
 }

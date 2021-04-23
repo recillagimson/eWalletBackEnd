@@ -40,13 +40,14 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         }
     }
 
-    public function getByTierAndTransCategoryID(int $tier, string $tranCategoryID)
+    public function getByTierAndTransCategoryID(string $tierId, string $tranCategoryID)
     {
-        return $this->model->where('tier', $tier)->where('transaction_category_id', $tranCategoryID)->first();
+        return $this->model->where('tier', $tierId)->where('transaction_category_id', $tranCategoryID)->first();
     }
 
     public function getAmountByTransactionAndTierId(string $transactionCategoryId, string $tierId) {
         // Get User 
+        // get Current Date for query parameter for implementation date 
         $currentDate = Carbon::now()->format('Y-m-d');
 
         $amount = $this->model
