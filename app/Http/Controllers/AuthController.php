@@ -8,10 +8,7 @@ use App\Http\Requests\Auth\ConfirmTransactionRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
 use App\Http\Requests\Auth\MobileLoginValidateRequest;
-use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ResendOtpRequest;
-use App\Http\Requests\Auth\ValidateNewUserRequest;
-use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Http\Requests\Auth\VerifyLoginRequest;
 use App\Models\UserAccount;
 use App\Services\Auth\IAuthService;
@@ -29,38 +26,6 @@ class AuthController extends Controller
     {
         $this->authService = $authService;
         $this->responseService = $responseService;
-    }
-
-    /**
-     * Registers a user
-     *
-     * @param RegisterUserRequest $request
-     * @return JsonResponse
-     */
-    public function register(RegisterUserRequest $request): JsonResponse
-    {
-        $newUser = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $user = $this->authService->register($newUser, $usernameField);
-
-        return $this->responseService->createdResponse($user->toArray(), SuccessMessages::accountRegistered);
-    }
-
-    /**
-     * Validates User Registration Inputs
-     *
-     * @param ValidateNewUserRequest $request
-     * @return JsonResponse
-     */
-    public function registerValidate(ValidateNewUserRequest $request): JsonResponse
-    {
-        $newUser = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->authService->checkAccount($usernameField, $newUser[$usernameField]);
-
-        return $this->responseService->successResponse([
-            $usernameField => $newUser[$usernameField]
-        ], SuccessMessages::accountValidationPassed);
     }
 
     /**
@@ -110,21 +75,6 @@ class AuthController extends Controller
         return $this->responseService->successResponse([
             $usernameField => $login[$usernameField]
         ], SuccessMessages::loginValidationPassed);
-    }
-
-    /**
-     * Validates the registration otp and verifies the account
-     *
-     * @param VerifyAccountRequest $request
-     * @return JsonResponse
-     */
-    public function verifyAccount(VerifyAccountRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->authService->verifyAccount($usernameField, $data[$usernameField], $data['code']);
-
-        return $this->responseService->successResponse([$usernameField => $data[$usernameField]], SuccessMessages::accountVerification);
     }
 
     /**

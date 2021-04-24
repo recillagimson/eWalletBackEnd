@@ -5,7 +5,6 @@ namespace App\Traits\Errors;
 
 
 use App\Enums\ErrorCodes;
-use Illuminate\Validation\ValidationException;
 
 trait WithAuthErrors
 {
@@ -24,7 +23,8 @@ trait WithAuthErrors
 
     public function confirmationFailed()
     {
-        $this->validationErrorMessage(ErrorCodes::confirmationFailed, 'Transaction Confirmation Failed');
+        $this->validationErrorMessage(ErrorCodes::confirmationFailed,
+            'Transaction Confirmation Failed');
     }
 
     public function accountUnverified()
@@ -44,17 +44,20 @@ trait WithAuthErrors
 
     public function accountLockedOut()
     {
-        $this->validationErrorMessage(ErrorCodes::accountLockedOut, 'Account has been locked out. Due to 3 failed login attempts.');
+        $this->validationErrorMessage(ErrorCodes::accountLockedOut,
+            'Account has been locked out. Due to 3 failed login attempts.');
     }
 
     public function passwordUsed()
     {
-        $this->validationErrorMessage(ErrorCodes::passwordUsed, 'Password / Pin has already been used.');
+        $this->validationErrorMessage(ErrorCodes::passwordUsed,
+            'Password / Pin has already been used.');
     }
 
     public function passwordNotAged(int $minPasswordAge)
     {
-        $this->validationErrorMessage(ErrorCodes::passwordNotAged, 'Password / Pin cannot be changed for at least ' . $minPasswordAge . ' day/s.');
+        $this->validationErrorMessage(ErrorCodes::passwordNotAged,
+            'Password / Pin cannot be changed for at least ' . $minPasswordAge . ' day/s.');
     }
 
     public function otpTypeInvalid() {
@@ -73,13 +76,13 @@ trait WithAuthErrors
 
     public function otpMaxedAttempts()
     {
-        $this->validationErrorMessage(ErrorCodes::otpMaxedAttempts, 'Reached the maximum allowed attempts.');
+        $this->validationErrorMessage(ErrorCodes::otpMaxedAttempts,
+            'Reached the maximum allowed attempts.');
     }
 
-    public function accountAlreadyTaken() {
-        throw ValidationException::withMessages([
-            'error_code' => ErrorCodes::accountAlreadyTaken,
-            'message' => 'Email / Mobile Number is already taken.'
-        ]);
+    public function accountAlreadyTaken()
+    {
+        $this->validationErrorMessage(ErrorCodes::accountAlreadyTaken,
+            'Email / Mobile Number is already taken.');
     }
 }

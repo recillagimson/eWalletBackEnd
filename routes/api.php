@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\AddMoneyController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\ForgotPinController;
+use App\Http\Controllers\Auth\ForgotKeyController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\HelpCenterController;
@@ -16,6 +16,7 @@ use App\Http\Controllers\Send2BankController;
 use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\TierController;
+use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
@@ -62,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/image')->group(function () {
         Route::post('/upload/{module}', [ImageUploadController::class, 'uploadImage']);
     });
+
     /**
      * ROUTES FOR AUTHENTICATION ENDPOINTS AS WELL AS
      * OTP VERIFICATIONS
@@ -75,23 +77,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
         Route::post('/confirmation', [AuthController::class, 'confirmTransactions']);
 
-        Route::post('/register', [AuthController::class, 'register']);
-        Route::post('/register/validate', [AuthController::class, 'registerValidate']);
+        Route::post('/register', [RegisterController::class, 'register']);
+        Route::post('/register/validate', [RegisterController::class, 'registerValidate']);
 
-        Route::post('/forgot/password', [ForgotPasswordController::class, 'forgotPassword']);
-        Route::post('/reset/password', [ForgotPasswordController::class, 'resetPassword']);
-
-        Route::post('/forgot/pin', [ForgotPinController::class, 'forgotPin']);
-        Route::post('/reset/pin', [ForgotPinController::class, 'resetPin']);
+        Route::post('/forgot/{keyType}', [ForgotKeyController::class, 'forgotKey']);
+        Route::post('/reset/{keyType}', [ForgotKeyController::class, 'resetKey']);
 
         Route::post('/resend/otp', [AuthController::class, 'resendOTP']);
 
         Route::prefix('/verify')->group(function () {
-            Route::post('/account', [AuthController::class, 'verifyAccount']);
+            Route::post('/account', [RegisterController::class, 'verifyAccount']);
             Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin']);
-            Route::post('/password', [ForgotPasswordController::class, 'verifyPassword']);
-            Route::post('/pin', [ForgotPinController::class, 'verifyPin']);
+            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey']);
         });
+    });
+
+    Route::prefix('/user')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey']);
+        Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey']);
+        Route::put('/{keyType}', [ChangeKeyController::class, 'changeKey']);
     });
 
     Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {

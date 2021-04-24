@@ -17,7 +17,9 @@ class SuccessMessages
 
     const passwordRecoveryRequestSuccessful = 'Password / Pin recovery request successful';
     const passwordRecoveryVerificationSuccessful = 'Password / Pin recovery verification successful';
+    const passwordChangeVerificationSuccessful = 'Password / Pin change verification successful';
     const passwordUpdateSuccessful = 'Password / Pin has been updated';
+    const passwordValidationPassed = 'Password / Pin validation passed.';
 
     const otpSent = 'OTP has been sent.';
 
