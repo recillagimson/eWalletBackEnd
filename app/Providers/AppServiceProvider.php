@@ -162,13 +162,10 @@ class AppServiceProvider extends ServiceProvider
             ->needs(IAddMoneyService::class)
             ->give(function () {
                 $request = app(Request::class);
-                $encryptionService = $this->app->make(IEncryptionService::class);
 
                 if ($request->has('payload')) {
 
-                    $data = $encryptionService->decrypt($request->payload, $request->id, false);
-
-                    if ($data['provider'] === AddMoneyProviders::DragonPay) return $this->app->get(DragonPayService::class);
+                    if ($request['provider'] === AddMoneyProviders::DragonPay) return $this->app->get(DragonPayService::class);
                 }
 
                 return $this->app->get(DragonPayService::class);
