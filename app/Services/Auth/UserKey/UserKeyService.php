@@ -82,7 +82,7 @@ class UserKeyService implements IUserKeyService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         $this->validateUser($user);
 
-        $this->checkKey($user, '');
+        $this->checkKey($user->id, '');
         $this->authService->sendOTP($usernameField, $username, $otpType);
     }
 
