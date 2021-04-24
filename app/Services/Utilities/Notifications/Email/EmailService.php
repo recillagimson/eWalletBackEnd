@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services\Utilities\Notifications;
+namespace App\Services\Utilities\Notifications\Email;
 
 
 use App\Enums\OtpTypes;
@@ -14,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 use SendGrid;
 use SendGrid\Mail\Mail;
 
-class EmailService implements INotificationService
+class EmailService implements IEmailService
 {
     private string $fromAddress;
     private string $fromName;
@@ -32,12 +32,13 @@ class EmailService implements INotificationService
      *
      * @param string $to
      * @param string $otp
+     * @param string $otpType
      */
-    public function sendPasswordVerification(string $to, string $otp, string $otpType = OtpTypes::passwordRecovery)
+    public function sendPasswordVerification(string $to, string $otp, string $otpType)
     {
         $pinOrPassword = $otpType == OtpTypes::passwordRecovery ? 'password' : 'pin code';
         $subject = 'SquidPay - Account ' . ucwords($pinOrPassword) . ' Recovery Verification';
-        $template = new PasswordRecoveryEmail($otp);
+        $template = new PasswordRecoveryEmail($otp, $otpType);
         $this->sendMessage($to, $subject, $template);
     }
 

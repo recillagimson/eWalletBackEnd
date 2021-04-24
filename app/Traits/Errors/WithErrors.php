@@ -15,4 +15,11 @@ trait WithErrors
             'message' => $errorMessage
         ]);
     }
+
+    private function validationError($field, $errorMessage)
+    {
+        throw ValidationException::withMessages([
+            $field => $errorMessage
+        ]);
+    }
 }

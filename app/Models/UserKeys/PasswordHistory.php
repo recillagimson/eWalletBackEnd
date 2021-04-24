@@ -35,10 +35,10 @@ class PasswordHistory extends Model implements IUserKeyModel
         return false;
     }
 
-    public function isAtMinimumAge(int $minAge): bool
+    public function isAtMinimumAge(int $minAge = 1): bool
     {
         $currentAge = $this->key_age;
-        if($currentAge < $minAge) return false;
+        if ($currentAge < $minAge) return false;
         return true;
     }
 

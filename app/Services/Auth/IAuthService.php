@@ -3,6 +3,7 @@ namespace App\Services\Auth;
 
 
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Services\Utilities\Notifications\INotificationService;
 use Laravel\Sanctum\NewAccessToken;
 
 /**
@@ -84,6 +85,7 @@ interface IAuthService
      * @param string $usernameField
      * @param string $username
      * @param string $otpType
+     * @param INotificationService|null $notifService
      */
-    public function sendOTP(string $usernameField, string $username, string $otpType);
+    public function sendOTP(string $usernameField, string $username, string $otpType, INotificationService $notifService = null);
 }

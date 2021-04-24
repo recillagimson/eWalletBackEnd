@@ -5,6 +5,19 @@ namespace App\Services\Auth\UserKey;
 interface IUserKeyService
 {
     /**
+     * Validates a user inputs and generates otp
+     *
+     * @param string $userId
+     * @param string $currentKey
+     * @param string $newKey
+     * @param string $keyType
+     * @param bool $requireOtp
+     * @return mixed
+     */
+    public function validateKey(string $userId, string $currentKey, string $newKey, string $keyType,
+                                bool $requireOtp = true);
+
+    /**
      * Generates OTP for password / pin recovery
      *
      *
@@ -36,4 +49,18 @@ interface IUserKeyService
      */
     public function resetKey(string $usernameField, string $username, string $key, string $keyType,
                              string $otpType, bool $requireOtp = true);
+
+    /**
+     * Updates the authenticated user pin/password
+     *
+     * @param string $userId
+     * @param string $currentKey
+     * @param string $newKey
+     * @param string $keyType
+     * @param string $otpType
+     * @param bool $requireOtp
+     * @return mixed
+     */
+    public function changeKey(string $userId, string $currentKey, string $newKey, string $keyType, string $otpType,
+                              bool $requireOtp = true);
 }

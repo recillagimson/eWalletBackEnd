@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\Auth\ForgotKeyController;
-use App\Http\Controllers\Auth\ForgotPinController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
@@ -17,6 +16,7 @@ use App\Http\Controllers\Send2BankController;
 use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\TierController;
+use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
@@ -88,9 +88,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/verify')->group(function () {
             Route::post('/account', [RegisterController::class, 'verifyAccount']);
             Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin']);
-            Route::post('/password', [ForgotKeyController::class, 'verifyKey']);
-            Route::post('/pin', [ForgotPinController::class, 'verifyPin']);
+            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey']);
         });
+    });
+
+    Route::prefix('/user')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey']);
+        Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey']);
+        Route::put('/{keyType}', [ChangeKeyController::class, 'changeKey']);
     });
 
     Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {

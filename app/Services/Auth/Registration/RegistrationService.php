@@ -40,7 +40,7 @@ class RegistrationService implements IRegistrationService
         $this->pinCodeHistories = $pinCodeHistories;
     }
 
-    public function validateAccount(string $username, string $usernameField)
+    public function validateAccount(string $usernameField, string $username)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) return;

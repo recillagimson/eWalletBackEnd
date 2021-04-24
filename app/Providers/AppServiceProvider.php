@@ -30,18 +30,23 @@ use App\Services\SendMoney\SendMoneyService;
 use App\Services\ThirdParty\UBP\IUBPService;
 use App\Services\ThirdParty\UBP\UBPService;
 use App\Services\Transaction\ITransactionService;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Transaction\TransactionService;
+use App\Services\Transaction\TransactionValidationService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\UserProfile\UserProfileService;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\LogHistory\LogHistoryService;
-use App\Services\Utilities\Notifications\EmailService;
+use App\Services\Utilities\Notifications\Email\EmailService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\IPushNotificationService;
+use App\Services\Utilities\Notifications\NotificationService;
 use App\Services\Utilities\Notifications\PushNotificationService;
-use App\Services\Utilities\Notifications\SmsService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\Notifications\SMS\SmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\OTP\OtpService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
@@ -76,6 +81,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(IPushNotificationService::class, PushNotificationService::class);
         $this->app->singleton(ILogHistoryService::class, LogHistoryService::class);
         $this->app->singleton(ITransactionService::class, TransactionService::class);
+        $this->app->singleton(IEmailService::class, EmailService::class);
+        $this->app->singleton(ISmsService::class, SmsService::class);
 
         //3PP APIs
         $this->app->singleton(IUBPService::class, UBPService::class);
@@ -95,6 +102,8 @@ class AppServiceProvider extends ServiceProvider
         //APP SERVICES - CONTEXTUAL BINDINGS
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
+        $this->bindSend2BankService();
+        $this->bindAddMoneyService();
 
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
@@ -115,8 +124,7 @@ class AppServiceProvider extends ServiceProvider
         // Service Fee Service
         $this->app->bind(IServiceFeeService::class, ServiceFeeService::class);
 
-        $this->bindSend2BankService();
-        $this->bindAddMoneyService();
+
     }
 
     /**

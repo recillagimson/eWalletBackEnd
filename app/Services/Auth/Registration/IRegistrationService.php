@@ -13,7 +13,7 @@ interface IRegistrationService
      * @param string $username
      * @throws ValidationException
      */
-    public function validateAccount(string $username, string $usernameField);
+    public function validateAccount(string $usernameField, string $username);
 
     /**
      * Creates a new UserAccount record

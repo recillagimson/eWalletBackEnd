@@ -138,7 +138,7 @@ class AuthService implements IAuthService
         $this->sendOTP($usernameField, $username, OtpTypes::login);
     }
 
-    public function sendOTP(string $usernameField, string $username, string $otpType)
+    public function sendOTP(string $usernameField, string $username, string $otpType, INotificationService $notifService = null)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
@@ -146,12 +146,14 @@ class AuthService implements IAuthService
         $otp = $this->generateOTP($otpType, $user->id);
         if (App::environment('local')) return;
 
+        $notif = $notifService == null ? $this->notificationService : $notifService;
+
         if ($otpType === OtpTypes::registration)
-            $this->notificationService->sendAccountVerification($username, $otp->token);
+            $notif->sendAccountVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::login)
-            $this->notificationService->sendLoginVerification($username, $otp->token);
+            $notif->sendLoginVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::passwordRecovery || $otpType === OtpTypes::pinRecovery)
-            $this->notificationService->sendPasswordVerification($username, $otp->token, $otpType);
+            $notif->sendPasswordVerification($username, $otp->token, $otpType);
         else
             $this->otpTypeInvalid();
     }

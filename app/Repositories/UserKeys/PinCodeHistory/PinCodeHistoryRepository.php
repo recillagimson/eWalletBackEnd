@@ -29,11 +29,11 @@ class PinCodeHistoryRepository extends Repository implements IPinCodeHistoryRepo
             ->get();
     }
 
-    public function log(string $userId, string $pinCode)
+    public function log(string $userId, string $key)
     {
         $data = [
             'user_account_id' => $userId,
-            'pin_code' => $pinCode,
+            'key' => $key,
             'user_created' => $userId
         ];
 
