@@ -150,9 +150,10 @@ class UserKeyService implements IUserKeyService
         if ($keyType) {
             if ($userKey) {
                 $accountKey = $keyType === UserKeyTypes::pin ? $user->pin_code : $user->password;
+                $keyField = $this->getKeyFieldFromUserKeyType($keyType);
                 $keyMatched = Hash::check($userKey, $accountKey);
                 if (!$keyMatched) {
-                    $this->validationError('current_password', 'Incorrect Password.');
+                    $this->validationError($keyField, 'Incorrect ' . $keyType);
                 }
             }
         }
