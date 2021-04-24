@@ -10,6 +10,7 @@ use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
@@ -163,6 +164,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
         Route::post('/', [AddMoneyController::class, 'addMoney']);
         Route::post('/cancel', [AddMoneyController::class, 'cancel']);
+    });
+
+    Route::prefix('/paybills')->group(function (){
+        Route::post('/', [PayBillsController::class, 'payBills']);
+
     });
 
 
