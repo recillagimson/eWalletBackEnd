@@ -11,6 +11,8 @@ class OtpTypes
     public const passwordRecovery = 'password_recovery';
     public const pinRecovery = 'pin_recovery';
 
+    public const sendMoney = 'send_money';
+
     /**
      * INCLUDE HERE ALL THE OTP TYPE VALUES ABOVE
      */
@@ -19,11 +21,14 @@ class OtpTypes
         self::registration,
         self::passwordRecovery,
         self::pinRecovery,
+
+        self::sendMoney,
     ];
 
     /**
      * INCLUDE HERE ALL THE TRANSACTION OTP TYPE VALUES ONLY
      */
     public const transactionOtps = [
+        self::sendMoney
     ];
 }
