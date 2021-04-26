@@ -61,10 +61,12 @@ class VerificationService implements IVerificationService
             $path = $this->saveFile($idPhoto, $idPhotoName, 'id_photo');
             // Save record to DB
             $params = [
-                'id' => \Str::uuid(),
                 'user_account_id' => $data['user_account_id'],
                 'id_type_id' => $data['id_type_id'],
                 'photo_location' => $path,
+                'user_created' => request()->user()->id,
+                'user_updated' => request()->user()->id,
+
             ];
             $record = $this->userPhotoRepository->create($params);
             // Collect created record
