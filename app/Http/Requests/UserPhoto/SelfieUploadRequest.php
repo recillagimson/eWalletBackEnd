@@ -4,7 +4,7 @@ namespace App\Http\Requests\UserPhoto;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class VerificationRequest extends FormRequest
+class SelfieUploadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,12 +23,8 @@ class VerificationRequest extends FormRequest
      */
     public function rules()
     {
-        // return ['files.*' => "mimes:jpg,png,jpeg|max:20000"];
         return [
-            'id_type_id' => 'required',
-            // Validate if photo in array is less that 1MB
-            'id_photos.*' => 'required|max:1024|mimes:jpeg,png',
-            // 'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
+            'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
         ];
     }
 }
