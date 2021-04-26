@@ -86,15 +86,6 @@ class UserKeyService implements IUserKeyService
         $this->authService->sendOTP($usernameField, $username, $otpType);
     }
 
-    /**
-     * Verifies and validates otp for password recovery
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $otp
-     * @param string $otpType
-     * @throws ValidationException
-     */
     public function verifyKey(string $usernameField, string $username, string $otp, string $otpType)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
