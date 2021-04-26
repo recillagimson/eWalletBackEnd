@@ -4,21 +4,25 @@ namespace App\Services\Auth;
 
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
+use App\Enums\UsernameTypes;
 use App\Models\UserAccount;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserKeys\PasswordHistory\IPasswordHistoryRepository;
 use App\Repositories\UserKeys\PinCodeHistory\IPinCodeHistoryRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Traits\Errors\WithAuthErrors;
+use App\Traits\UserHelpers;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\NewAccessToken;
 
 class AuthService implements IAuthService
 {
-    use WithAuthErrors;
+    use UserHelpers, WithAuthErrors;
 
     private int $maxLoginAttempts;
     private int $daysToResetAttempts;
@@ -33,13 +37,16 @@ class AuthService implements IAuthService
 
     private INotificationService $notificationService;
     private IOtpService $otpService;
-
+    private IEmailService $emailService;
+    private ISmsService $smsService;
 
 
     public function __construct(IUserAccountRepository $userAccts,
                                 IPasswordHistoryRepository $passwordHistories,
                                 IPinCodeHistoryRepository $pinCodeHistories,
                                 IClientRepository $clients,
+                                IEmailService $emailService,
+                                ISmsService $smsService,
                                 INotificationService $notificationService,
                                 IOtpService $otpService)
     {
@@ -56,6 +63,8 @@ class AuthService implements IAuthService
 
         $this->otpService = $otpService;
         $this->notificationService = $notificationService;
+        $this->emailService = $emailService;
+        $this->smsService = $smsService;
     }
 
     public function login(string $usernameField, array $creds, string $ip): array
@@ -131,6 +140,15 @@ class AuthService implements IAuthService
         if (!$user) $this->accountDoesntExist();
 
         $this->verify($user->id, OtpTypes::login, $otp);
+    }
+
+    public function generateTransactionOTP(UserAccount $user, string $otpType)
+    {
+        $usernameField = $this->getUsernameFieldByAvailability($user);
+        $username = $this->getUsernameByField($user, $usernameField);
+        $notifService = $usernameField === UsernameTypes::MobileNumber ? $this->smsService : $this->emailService;
+
+        $this->sendOTP($usernameField, $username, $otpType, $notifService);
     }
 
     public function generateMobileLoginOTP(string $usernameField, string $username)

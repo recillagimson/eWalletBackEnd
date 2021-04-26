@@ -83,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/forgot/{keyType}', [ForgotKeyController::class, 'forgotKey']);
         Route::post('/reset/{keyType}', [ForgotKeyController::class, 'resetKey']);
 
+        Route::post('/generate/otp', [AuthController::class, 'generateTransactionOTP']);
         Route::post('/resend/otp', [AuthController::class, 'resendOTP']);
 
         Route::prefix('/verify')->group(function () {
