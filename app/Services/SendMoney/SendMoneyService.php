@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\SendMoney;
 
 use App\Enums\ReferenceNumberTypes;
@@ -10,10 +11,12 @@ use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithSendMoneyErrors;
 use Illuminate\Validation\ValidationException;
+
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -27,13 +30,19 @@ class SendMoneyService implements ISendMoneyService
     private IReferenceNumberService $referenceNumberService;
     private ILogHistoryRepository $loghistoryrepository;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
+    private IUserDetailRepository $userDetailRepository;
 
-    
-    public function __construct(IOutSendMoneyRepository $outSendMoney, IInReceiveMoneyRepository $inReceiveMoney,
-                                IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo,
-                                IQrTransactionsRepository $qrTransactions, IReferenceNumberService $referenceNumberService, ILogHistoryRepository $loghistoryrepository,
-                                IUserTransactionHistoryRepository $userTransactionHistoryRepository)
-    {
+    public function __construct(
+        IOutSendMoneyRepository $outSendMoney,
+        IInReceiveMoneyRepository $inReceiveMoney,
+        IUserAccountRepository $userAccts,
+        IUserBalanceInfoRepository $userBalanceInfo,
+        IQrTransactionsRepository $qrTransactions,
+        IReferenceNumberService $referenceNumberService,
+        ILogHistoryRepository $loghistoryrepository,
+        IUserTransactionHistoryRepository $userTransactionHistoryRepository,
+        IUserDetailRepository $userDetailRepository
+    ) {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
         $this->userAccounts = $userAccts;
@@ -42,6 +51,7 @@ class SendMoneyService implements ISendMoneyService
         $this->referenceNumberService = $referenceNumberService;
         $this->loghistoryrepository = $loghistoryrepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
+        $this->userDetailRepository = $userDetailRepository;
     }
 
 
@@ -57,7 +67,7 @@ class SendMoneyService implements ISendMoneyService
      * @param boolean $isEnough
      * @throws ValidationException
      */
-    public function send(string $username ,array $fillRequest, object $user)
+    public function send(string $username, array $fillRequest, object $user)
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
@@ -68,7 +78,7 @@ class SendMoneyService implements ISendMoneyService
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
 
-        $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);  
+        $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
         $this->outSendMoney($senderID, $receiverID, $fillRequest);
@@ -90,7 +100,7 @@ class SendMoneyService implements ISendMoneyService
      * @param boolean $isEnough
      * @throws ValidationException
      */
-    public function validateSend(string $username, array $fillRequest, object $user)
+    public function sendValidate(string $username, array $fillRequest, object $user)
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
@@ -100,6 +110,15 @@ class SendMoneyService implements ISendMoneyService
 
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
+
+        $user = $this->userDetailRepository->getByUserId($receiverID);
+        return [
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'middle_name' => $user->middle_name,
+            'name_extension' => $user->name_extension,
+            'selfie_location' => $user->selfie_loction,
+        ];
     }
 
 
@@ -133,7 +152,7 @@ class SendMoneyService implements ISendMoneyService
      *
      * @return array
      */
-    public function scanQr(string $id):array
+    public function scanQr(string $id)
     {
         $qrTransaction = $this->qrTransactions->get($id);
         if (!$qrTransaction) $this->invalidQr();
@@ -141,13 +160,47 @@ class SendMoneyService implements ISendMoneyService
         $user = $this->userAccounts->get($qrTransaction->user_account_id);
         if (!$user) $this->invalidAccount();
 
-        if ($user->mobile_number) {
-            return ['mobile_number' => $user->mobile_number, 'amount' => $qrTransaction->amount, 'message' => ''];
-        }
-        return ['email' => $user->email, 'amount' => $qrTransaction->amount, 'message' => ''];
+        $mobileOrEmail = $this->hasMobileOrEmail($user, $qrTransaction->amount);
+        $review = $this->sendMoneyReview($qrTransaction->user_account_id);
+
+        return  array_merge($mobileOrEmail, $review);
     }
 
 
+    private function hasMobileOrEmail($user, $amount)
+    {
+        if ($user->mobile_number) {
+            return [
+                'mobile_number' => $user->mobile_number,
+                'amount' => $amount,
+                'message' => ''
+            ];
+        }
+        return [
+            'email' => $user->email,
+            'amount' => $amount,
+            'message' => ''
+        ];
+    }
+
+
+    private function sendMoneyReview(string $userID)
+    {
+        $user = $this->userDetailRepository->getByUserId($userID);
+        return [
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'middle_name' => $user->middle_name,
+            'name_extension' => $user->name_extension,
+            'selfie_location' => $user->selfie_loction,
+        ];
+    }
+
+
+    private function isAmountExceeded($amount)
+    {
+        if ($amount > 500000.000000) return true;
+    }
 
     private function getUserID(string $usernameField, array $fillRequest)
     {
@@ -187,7 +240,7 @@ class SendMoneyService implements ISendMoneyService
         $this->userBalanceInfo->updateUserBalance($receiverID, $newBalance);
     }
 
-    
+
     private function outSendMoney(string $senderID, string $receiverID, array $fillRequest)
     {
         return $this->outSendMoney->create([
@@ -243,17 +296,17 @@ class SendMoneyService implements ISendMoneyService
         ]);
     }
 
-    
+
     private function userTransactionHistory($senderID, $fillRequest)
     {
         $this->userTransactionHistoryRepository->create([
             'user_account_id' => $senderID,
             'transaction_id' => SendMoneyConfig::CXSEND,
             'reference_number' => $fillRequest['refNo'],
+            'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             'transaction_category_id' => 'SM',
             'user_created' => $senderID,
             'user_updated' => ''
         ]);
     }
-
 }
