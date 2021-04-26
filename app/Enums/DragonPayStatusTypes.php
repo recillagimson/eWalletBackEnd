@@ -5,7 +5,7 @@ namespace App\Enums;
 class DragonPayStatusTypes
 {
     const Success = 'SUCCESS';
-    const Failure = 'FAILURE';
+    const Failure = 'FAILED';
     const Pending = 'PENDING';
     const Unknown = 'UNKNOWN';
     const Refund = 'REFUND';

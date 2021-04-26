@@ -15,6 +15,10 @@ use App\Services\AddMoney\Providers\DragonPayService;
 use App\Services\AddMoney\Providers\IAddMoneyService;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
+use App\Services\Auth\Registration\IRegistrationService;
+use App\Services\Auth\Registration\RegistrationService;
+use App\Services\Auth\UserKey\IUserKeyService;
+use App\Services\Auth\UserKey\UserKeyService;
 use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
@@ -26,17 +30,23 @@ use App\Services\SendMoney\SendMoneyService;
 use App\Services\ThirdParty\UBP\IUBPService;
 use App\Services\ThirdParty\UBP\UBPService;
 use App\Services\Transaction\ITransactionService;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Transaction\TransactionService;
+use App\Services\Transaction\TransactionValidationService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\UserProfile\UserProfileService;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\LogHistory\LogHistoryService;
-use App\Services\Utilities\Notifications\EmailService;
+use App\Services\Utilities\Notifications\Email\EmailService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\IPushNotificationService;
+use App\Services\Utilities\Notifications\NotificationService;
 use App\Services\Utilities\Notifications\PushNotificationService;
-use App\Services\Utilities\Notifications\SmsService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\Notifications\SMS\SmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\OTP\OtpService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
@@ -71,12 +81,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(IPushNotificationService::class, PushNotificationService::class);
         $this->app->singleton(ILogHistoryService::class, LogHistoryService::class);
         $this->app->singleton(ITransactionService::class, TransactionService::class);
+        $this->app->singleton(IEmailService::class, EmailService::class);
+        $this->app->singleton(ISmsService::class, SmsService::class);
 
         //3PP APIs
         $this->app->singleton(IUBPService::class, UBPService::class);
 
         //APP SERVICES
-        $this->app->bind(IAuthService::class, AuthService::class);
+        $this->app->singleton(IAuthService::class, AuthService::class);
+        $this->app->singleton(IUserKeyService::class, UserKeyService::class);
+        $this->app->singleton(IRegistrationService::class, RegistrationService::class);
+
         $this->app->bind(IInAddMoneyService::class, InAddMoneyService::class);
         $this->app->bind(IHandlePostBackService::class, HandlePostBackService::class);
         $this->app->bind(IUserProfileService::class, UserProfileService::class);
@@ -87,28 +102,29 @@ class AppServiceProvider extends ServiceProvider
         //APP SERVICES - CONTEXTUAL BINDINGS
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
-        
+        $this->bindSend2BankService();
+        $this->bindAddMoneyService();
+
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
-        // Push Notification 
-        $this->app->bind(IPushNotificationService::class, PushNotificationService::class);
+        // Push Notification
+        // $this->app->bind(IPushNotificationService::class, PushNotificationService::class);
 
         // Verification Service
         $this->app->bind(IVerificationService::class, VerificationService::class);
         // Log History Service
         $this->app->bind(ILogHistoryService::class, LogHistoryService::class);
-        
+
         // Transaction Service
         $this->app->bind(ITransactionService::class, TransactionService::class);
 
         // Validation Service
         $this->app->bind(ITransactionValidationService::class, TransactionValidationService::class);
-        
+
         // Service Fee Service
         $this->app->bind(IServiceFeeService::class, ServiceFeeService::class);
-        
-        $this->bindSend2BankService();
-        $this->bindAddMoneyService();
+
+
     }
 
     /**
@@ -161,13 +177,10 @@ class AppServiceProvider extends ServiceProvider
             ->needs(IAddMoneyService::class)
             ->give(function () {
                 $request = app(Request::class);
-                $encryptionService = $this->app->make(IEncryptionService::class);
 
                 if ($request->has('payload')) {
 
-                    $data = $encryptionService->decrypt($request->payload, $request->id, false);
-
-                    if ($data['provider'] === AddMoneyProviders::DragonPay) return $this->app->get(DragonPayService::class);
+                    if ($request['provider'] === AddMoneyProviders::DragonPay) return $this->app->get(DragonPayService::class);
                 }
 
                 return $this->app->get(DragonPayService::class);

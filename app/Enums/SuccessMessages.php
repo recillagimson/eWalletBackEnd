@@ -17,9 +17,12 @@ class SuccessMessages
 
     const passwordRecoveryRequestSuccessful = 'Password / Pin recovery request successful';
     const passwordRecoveryVerificationSuccessful = 'Password / Pin recovery verification successful';
+    const passwordChangeVerificationSuccessful = 'Password / Pin change verification successful';
     const passwordUpdateSuccessful = 'Password / Pin has been updated';
+    const passwordValidationPassed = 'Password / Pin validation passed.';
 
     const otpSent = 'OTP has been sent.';
+    const otpVerificationSuccessful = 'OTP verification successful.';
 
     const pinCodeUpdated = 'Account Pin Code has been updated.';
 
@@ -32,4 +35,12 @@ class SuccessMessages
     const success = 'Success';
     const recordSaved = 'Record has been saved.';
     const recordDeleted = 'Record has been deleted';
+
+    // Add Money Controller
+    const URLGenerated = 'Generate URL Successful';
+    const addMoneySuccess = 'Added money Successfully';
+    const addMoneyFailed = 'Add money Failed';
+    const addMoneyPending = 'Waiting for deposit to selected bank';
+    const addMoneyCancel = 'Add money request Cancelled';
+    const addMoneyStatusAcquired = 'Transaction status acquired Successfully';
 }

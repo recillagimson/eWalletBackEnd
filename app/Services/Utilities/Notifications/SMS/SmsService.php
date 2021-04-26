@@ -1,14 +1,14 @@
 <?php
 
 
-namespace App\Services\Utilities\Notifications;
+namespace App\Services\Utilities\Notifications\SMS;
 
 
 use App\Enums\OtpTypes;
 use App\Services\Utilities\API\IApiService;
 use Illuminate\Validation\ValidationException;
 
-class SmsService implements INotificationService
+class SmsService implements ISmsService
 {
     protected string $apiUrl;
 
@@ -32,7 +32,7 @@ class SmsService implements INotificationService
         $this->broadcastUrl = $this->apiUrl.'/broadcast';
     }
 
-    public function sendPasswordVerification(string $to, string $otp, string $otpType = OtpTypes::passwordRecovery)
+    public function sendPasswordVerification(string $to, string $otp, string $otpType)
     {
         $pinOrPassword = $otpType === OtpTypes::passwordRecovery ? 'password' : 'pin code';
         $content = 'Your ' . $pinOrPassword . ' recovery code is: ' . $otp;

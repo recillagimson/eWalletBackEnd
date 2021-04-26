@@ -7,7 +7,7 @@ use App\Rules\IsPasswordValid;
 use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ResetPasswordRequest extends FormRequest
+class ResetKeyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -33,14 +33,20 @@ class ResetPasswordRequest extends FormRequest
                 new MobileNumber()
             ],
             'password' => [
-                'required',
-                'min:'.config('auth.password_minlength'),
+                'required_without:pin_code',
+                'min:' . config('auth.password_minlength'),
                 'max:16',
                 'confirmed',
                 'different:email',
                 new IsPasswordValid()
             ],
-            'password_confirmation' => 'required|min:8|max:16',
+            'password_confirmation' => 'required_without:pin_code_confirmation|min:' . config('auth.password_minlength') . '|max:16',
+            'pin_code' => [
+                'required_without:password',
+                'digits:4',
+                'confirmed',
+            ],
+            'pin_code_confirmation' => 'required_without:password_confirmation|digits:4',
         ];
     }
 }

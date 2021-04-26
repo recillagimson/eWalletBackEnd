@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Rules\MobileNumber;
+use App\Enums\OtpTypes;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class VerifyPinOrPasswordRequest extends FormRequest
+class VerifyTransOtpRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,13 +26,11 @@ class VerifyPinOrPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mobile_number' => [
-                'required_without:email',
-                'max:20',
-                new MobileNumber()
+            'otp_type' => [
+                'required',
+                Rule::in(OtpTypes::transactionOtps)
             ],
-            'email' => 'required_without:mobile_number|max:50|email',
-            'code' => 'required'
+            'code' => 'required|digits:4'
         ];
     }
 }

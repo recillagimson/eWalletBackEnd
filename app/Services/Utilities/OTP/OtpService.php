@@ -172,6 +172,9 @@ class OtpService implements IOtpService
         if (!$otp) $this->otpInvalid();
         if ($otp->isExpired()) $this->otpIsExpired();
         if (!$otp->validated) $this->otpInvalid();
+
+        $otp->expired = true;
+        $otp->save();
     }
 
     public function expiredAt(string $identifier): object

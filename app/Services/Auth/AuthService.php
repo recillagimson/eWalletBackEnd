@@ -2,25 +2,33 @@
 
 namespace App\Services\Auth;
 
-use App\Enums\AccountTiers;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
+use App\Enums\UsernameTypes;
 use App\Models\UserAccount;
 use App\Repositories\Client\IClientRepository;
-use App\Repositories\PasswordHistory\IPasswordHistoryRepository;
-use App\Repositories\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserKeys\PasswordHistory\IPasswordHistoryRepository;
+use App\Repositories\UserKeys\PinCodeHistory\IPinCodeHistoryRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Traits\Errors\WithAuthErrors;
+use App\Traits\UserHelpers;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\NewAccessToken;
 
 class AuthService implements IAuthService
 {
-    use WithAuthErrors;
+    use UserHelpers, WithAuthErrors;
+
+    private int $maxLoginAttempts;
+    private int $daysToResetAttempts;
+    private int $remainingAgeToNotify;
+    private int $maxPasswordAge;
+    private int $tokenExpiration;
 
     public IUserAccountRepository $userAccounts;
     public IClientRepository $clients;
@@ -29,23 +37,25 @@ class AuthService implements IAuthService
 
     private INotificationService $notificationService;
     private IOtpService $otpService;
+    private IEmailService $emailService;
+    private ISmsService $smsService;
 
-    private int $maxLoginAttempts;
-    private int $daysToResetAttempts;
-
-    private int $remainingAgeToNotify;
-    private int $minPasswordAge;
-    private int $maxPasswordAge;
-    private int $tokenExpiration;
-    private int $passwordRepeatCount;
 
     public function __construct(IUserAccountRepository $userAccts,
                                 IPasswordHistoryRepository $passwordHistories,
                                 IPinCodeHistoryRepository $pinCodeHistories,
                                 IClientRepository $clients,
+                                IEmailService $emailService,
+                                ISmsService $smsService,
                                 INotificationService $notificationService,
                                 IOtpService $otpService)
     {
+        $this->maxLoginAttempts = config('auth.account_lockout_attempt');
+        $this->daysToResetAttempts = config('auth.account_lockout_attempt_reset');
+        $this->remainingAgeToNotify = config('auth.password_notify_expire');
+        $this->maxPasswordAge = config('auth.password_max_age_np');
+        $this->tokenExpiration = config('sanctum.expiration');
+
         $this->userAccounts = $userAccts;
         $this->clients = $clients;
         $this->passwordHistories = $passwordHistories;
@@ -53,50 +63,10 @@ class AuthService implements IAuthService
 
         $this->otpService = $otpService;
         $this->notificationService = $notificationService;
-
-        $this->maxLoginAttempts = config('auth.account_lockout_attempt');
-        $this->daysToResetAttempts = config('auth.account_lockout_attempt_reset');
-        $this->remainingAgeToNotify = config('auth.password_notify_expire');
-        $this->minPasswordAge = config('auth.password_min_age');
-        $this->maxPasswordAge = config('auth.password_max_age_np');
-        $this->passwordRepeatCount = config('auth.password_repeat_count');
-        $this->tokenExpiration = config('sanctum.expiration');
+        $this->emailService = $emailService;
+        $this->smsService = $smsService;
     }
 
-
-    /**
-     * Creates a new UserAccount record
-     *
-     * @param array $newUser
-     * @param string $usernameField
-     * @return mixed
-     * @throws ValidationException
-     */
-    public function register(array $newUser, string $usernameField)
-    {
-        $this->checkAccount($usernameField, $newUser[$usernameField]);
-
-        $newUser['password'] = Hash::make($newUser['password']);
-        $newUser['pin_code'] = Hash::make($newUser['pin_code']);
-        $newUser['tier_id'] = AccountTiers::tier1;
-
-        $user = $this->userAccounts->create($newUser);
-        $this->passwordHistories->log($user->id, $newUser['password']);
-        $this->pinCodeHistories->log($user->id, $newUser['pin_code']);
-
-        $this->sendOTP($usernameField, $newUser[$usernameField], OtpTypes::registration);
-        return $user;
-    }
-
-    /**
-     * Attempts to authenticate the user with the
-     * provided credentials when using a web client
-     *
-     * @param string $usernameField
-     * @param array $creds
-     * @param string $ip
-     * @return array
-     */
     public function login(string $usernameField, array $creds, string $ip): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
@@ -113,14 +83,6 @@ class AuthService implements IAuthService
         return $this->generateLoginToken($user, TokenNames::userWebToken);
     }
 
-    /**
-     * Attempts to authenticate the user with the
-     * provided credentials when using mobile apps.
-     *
-     * @param string $usernameField
-     * @param array $creds
-     * @return array
-     */
     public function mobileLogin(string $usernameField, array $creds): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
@@ -137,13 +99,6 @@ class AuthService implements IAuthService
         return $this->generateLoginToken($user, TokenNames::userMobileToken);
     }
 
-    /**
-     * Authenticates Client Applications
-     *
-     * @param string $clientId
-     * @param string $clientSecret
-     * @return NewAccessToken
-     */
     public function clientLogin(string $clientId, string $clientSecret): NewAccessToken
     {
         $client = $this->clients->getClient($clientId);
@@ -155,54 +110,6 @@ class AuthService implements IAuthService
         return $client->createToken(TokenNames::clientToken);
     }
 
-
-    /**
-     * Generates OTP for password / pin recovery
-     *
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $otpType
-     */
-    public function forgotPinOrPassword(string $usernameField, string $username, string $otpType = OtpTypes::passwordRecovery)
-    {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if (!$user) $this->accountDoesntExist();
-        $this->validateUser($user);
-
-        $this->checkPinOrPassword($user, '', $otpType);
-        $this->sendOTP($usernameField, $username, $otpType);
-    }
-
-    /**
-     * Reset forgotten password / pin
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $pinOrPassword
-     * @param string $otpType
-     */
-    public function resetPinOrPassword(string $usernameField, string $username, string $pinOrPassword,
-                                       string $otpType = OtpTypes::passwordRecovery)
-    {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if (!$user) $this->accountDoesntExist();
-        $this->validateUser($user);
-
-        $identifier = $otpType . ':' . $user->id;
-        $this->otpService->ensureValidated($identifier);
-
-        $this->checkPinOrPassword($user, $pinOrPassword, $otpType);
-        $this->updatedPinOrPassword($user, $pinOrPassword, $otpType);
-    }
-
-    /**
-     * Pin authentication for confirmation to
-     * proceed in transactions
-     *
-     * @param string $userId
-     * @param string $pinCode
-     */
     public function confirmTransactions(string $userId, string $pinCode)
     {
         $user = $this->userAccounts->get($userId);
@@ -215,14 +122,6 @@ class AuthService implements IAuthService
         }
     }
 
-    /**
-     * Verifies the validity of OTPs
-     *
-     *
-     * @param string $userId
-     * @param string $verificationType
-     * @param string $otp
-     */
     public function verify(string $userId, string $verificationType, string $otp)
     {
         if(App::environment('local')) {
@@ -235,35 +134,6 @@ class AuthService implements IAuthService
         if (!$otpValidity->status) $this->otpInvalid($otpValidity->message);
     }
 
-    /**
-     * Activates the user account by validating the otp
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $otp
-     * @return mixed
-     */
-    public function verifyAccount(string $usernameField, string $username, string $otp)
-    {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if (!$user) $this->accountDoesntExist();
-
-        $this->verify($user->id, OtpTypes::registration, $otp);
-
-        $user->verified = true;
-        $user->save();
-
-        return $user;
-    }
-
-    /**
-     * Validate OTP and provides user token
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $otp
-     * @return void
-     */
     public function verifyLogin(string $usernameField, string $username, string $otp)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
@@ -272,41 +142,21 @@ class AuthService implements IAuthService
         $this->verify($user->id, OtpTypes::login, $otp);
     }
 
-    /**
-     * Verifies and validates otp for password recovery
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $otp
-     */
-    public function verifyPinOrPassword(string $usernameField, string $username, string $otp,
-                                        string $otpType = OtpTypes::passwordRecovery)
+    public function generateTransactionOTP(UserAccount $user, string $otpType)
     {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if (!$user) $this->accountDoesntExist();
+        $usernameField = $this->getUsernameFieldByAvailability($user);
+        $username = $this->getUsernameByField($user, $usernameField);
+        $notifService = $usernameField === UsernameTypes::MobileNumber ? $this->smsService : $this->emailService;
 
-        $this->verify($user->id, OtpTypes::passwordRecovery, $otp);
+        $this->sendOTP($usernameField, $username, $otpType, $notifService);
     }
 
-    /**
-     * Generates an OTP for mobile login
-     *
-     * @param string $usernameField
-     * @param string $username
-     */
     public function generateMobileLoginOTP(string $usernameField, string $username)
     {
         $this->sendOTP($usernameField, $username, OtpTypes::login);
     }
 
-    /**
-     * Resend OTP
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $otpType
-     */
-    public function sendOTP(string $usernameField, string $username, string $otpType)
+    public function sendOTP(string $usernameField, string $username, string $otpType, INotificationService $notifService = null)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
@@ -314,30 +164,16 @@ class AuthService implements IAuthService
         $otp = $this->generateOTP($otpType, $user->id);
         if (App::environment('local')) return;
 
+        $notif = $notifService == null ? $this->notificationService : $notifService;
+
         if ($otpType === OtpTypes::registration)
-            $this->notificationService->sendAccountVerification($username, $otp->token);
+            $notif->sendAccountVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::login)
-            $this->notificationService->sendLoginVerification($username, $otp->token);
+            $notif->sendLoginVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::passwordRecovery || $otpType === OtpTypes::pinRecovery)
-            $this->notificationService->sendPasswordVerification($username, $otp->token, $otpType);
+            $notif->sendPasswordVerification($username, $otp->token, $otpType);
         else
             $this->otpTypeInvalid();
-    }
-
-    /**
-     * Validate accounts existence used only by registration
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @throws ValidationException
-     */
-    public function checkAccount(string $usernameField, string $username)
-    {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if(!$user) return;
-
-        if ($user->verified) $this->accountAlreadyTaken();
-        $user->forceDelete();
     }
 
     /*
@@ -345,58 +181,6 @@ class AuthService implements IAuthService
     | PRIVATE METHODS
     |--------------------------------------------------------------------------
     */
-
-    private function checkPinOrPassword(UserAccount $user, string $pinOrPassword, string $otpType = OtpTypes::passwordRecovery)
-    {
-        if ($otpType == OtpTypes::passwordRecovery) {
-            $this->checkPassword($user, $pinOrPassword);
-        } else {
-            $this->checkPin($user, $pinOrPassword);
-        }
-    }
-
-    private function checkPassword(UserAccount $user, string $password)
-    {
-        $latestPassword = $this->passwordHistories->getLatest($user->id);
-        if (!$latestPassword->isAtMinimumAge($this->minPasswordAge)) $this->passwordNotAged($this->minPasswordAge);
-
-        if ($password) {
-            $passwordHistories = $this->passwordHistories->getPrevious($this->passwordRepeatCount, $user->id);
-            foreach ($passwordHistories as $passwordHistory) {
-                $exists = Hash::check($password, $passwordHistory->password);
-                if ($exists === true) $this->passwordUsed();
-            }
-        }
-    }
-
-    private function checkPin(UserAccount $user, string $pinCode)
-    {
-        $latestPin = $this->pinCodeHistories->getLatest($user->id);
-        if (!$latestPin->isAtMinimumAge($this->minPasswordAge)) $this->passwordNotAged($this->minPasswordAge);
-
-        if ($pinCode) {
-            $pinCodeHistories = $this->pinCodeHistories->getPrevious($this->passwordRepeatCount, $user->id);
-            foreach ($pinCodeHistories as $pinCodeHistory) {
-                $exists = Hash::check($pinCode, $pinCodeHistory->pin_code);
-                if ($exists === true) $this->passwordUsed();
-            }
-        }
-    }
-
-    public function updatedPinOrPassword(UserAccount $user, string $pinOrPassword, string $otpType)
-    {
-        $hashedPinOrPassword = Hash::make($pinOrPassword);
-
-        if ($otpType === OtpTypes::passwordRecovery) {
-            $user->password = $hashedPinOrPassword;
-            $this->passwordHistories->log($user->id, $hashedPinOrPassword);
-        } else {
-            $user->pin_code = $hashedPinOrPassword;
-            $this->pinCodeHistories->log($user->id, $hashedPinOrPassword);
-        }
-
-        $user->save();
-    }
 
     private function generateLoginToken(UserAccount $user, string $tokenType): array
     {
@@ -413,9 +197,9 @@ class AuthService implements IAuthService
                 'expires_in' => $this->tokenExpiration
             ],
             'notify_password_expiration' => $passwordAboutToExpire,
-            'password_age' => $latestPassword ? $latestPassword->password_age : null,
+            'password_age' => $latestPassword ? $latestPassword->password_age : 0,
             'notify_pin_expiration' => $pinAboutToExpire,
-            'pin_age' => $latestPin ? $latestPin->pin_age : null
+            'pin_age' => $latestPin ? $latestPin->pin_age : 0
         ];
     }
 
