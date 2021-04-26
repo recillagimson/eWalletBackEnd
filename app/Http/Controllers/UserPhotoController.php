@@ -32,7 +32,7 @@ class UserPhotoController extends Controller
         $createRecord = $this->iVerificationService->create($params);
         // $encryptedResponse = $this->encryptionService->encrypt(array($createRecord));
         // return response()->json($encryptedResponse, Response::HTTP_OK);
-        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($createRecord, SuccessMessages::success);
     }
 
     public function createSelfieVerification(SelfieUploadRequest $request) {
