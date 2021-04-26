@@ -87,6 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/resend/otp', [AuthController::class, 'resendOTP']);
 
         Route::prefix('/verify')->group(function () {
+            Route::post('/otp', [AuthController::class, 'verifyTransactionOtp']);
             Route::post('/account', [RegisterController::class, 'verifyAccount']);
             Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin']);
             Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey']);
