@@ -40,23 +40,23 @@ class VerificationService implements IVerificationService
             array_push($recordsCreated, $record);
         }
 
-        // For Serfile Processing
-        // GET EXT NAME
-        $selfiePhotoExt = $this->getFileExtensionName($data['selfie_photo']);
-        // GENERATE NEW FILE NAME
-        $selfiePhotoName = $data['user_account_id'] . "/" . \Str::random(40) . "." . $selfiePhotoExt;
-        // PUT FILE TO STORAGE
-        $selfiePhotoPath = $this->saveFile($data['selfie_photo'], $selfiePhotoName, 'selfie_photo');
-        // SAVE SELFIE PHOTO
-        $params = [
-            'id' => \Str::uuid(),
-            'user_account_id' => $data['user_account_id'],
-            'id_type_id' => $data['id_type_id'],
-            'photo_location' => $selfiePhotoPath,
-        ];
-        $record = $this->userPhotoRepository->create($params);
-        // Collect created record
-        array_push($recordsCreated, $record);
+        // // For Serfile Processing
+        // // GET EXT NAME
+        // $selfiePhotoExt = $this->getFileExtensionName($data['selfie_photo']);
+        // // GENERATE NEW FILE NAME
+        // $selfiePhotoName = $data['user_account_id'] . "/" . \Str::random(40) . "." . $selfiePhotoExt;
+        // // PUT FILE TO STORAGE
+        // $selfiePhotoPath = $this->saveFile($data['selfie_photo'], $selfiePhotoName, 'selfie_photo');
+        // // SAVE SELFIE PHOTO
+        // $params = [
+        //     'id' => \Str::uuid(),
+        //     'user_account_id' => $data['user_account_id'],
+        //     'id_type_id' => $data['id_type_id'],
+        //     'photo_location' => $selfiePhotoPath,
+        // ];
+        // $record = $this->userPhotoRepository->create($params);
+        // // Collect created record
+        // array_push($recordsCreated, $record);
 
         // return to controller all created records
         return $recordsCreated;

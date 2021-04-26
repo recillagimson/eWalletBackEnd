@@ -69,6 +69,8 @@ Route::middleware('auth:sanctum')->group(function () {
      * OTP VERIFICATIONS
      */
     Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification']);
+    Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
+
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser']);
 

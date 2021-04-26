@@ -30,4 +30,8 @@ class UserPhotoController extends Controller
         $encryptedResponse = $this->encryptionService->encrypt(array($createRecord));
         return response()->json($encryptedResponse, Response::HTTP_OK);
     }
+
+    public function createSelfieVerification() {
+        
+    }
 }
