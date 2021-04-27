@@ -12,5 +12,12 @@ interface ISend2BankService
      */
     public function getBanks(): array;
 
+    /**
+     * Fund transfer to recepient bank acccount
+     *
+     * @param string $fromUserId
+     * @param array $recipient
+     * @throws Throwable
+     */
     public function fundTransfer(string $fromUserId, array $recipient);
 }
