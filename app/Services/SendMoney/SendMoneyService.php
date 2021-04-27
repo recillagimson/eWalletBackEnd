@@ -111,14 +111,7 @@ class SendMoneyService implements ISendMoneyService
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
 
-        $user = $this->userDetailRepository->getByUserId($receiverID);
-        return [
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'middle_name' => $user->middle_name,
-            'name_extension' => $user->name_extension,
-            'selfie_location' => $user->selfie_loction,
-        ];
+        return $this->sendMoneyReview($receiverID);
     }
 
 
@@ -151,7 +144,7 @@ class SendMoneyService implements ISendMoneyService
      * @param string $user
      *
      * @return array
-     */
+     */ 
     public function scanQr(string $id)
     {
         $qrTransaction = $this->qrTransactions->get($id);
