@@ -176,12 +176,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans']);
     });
 
-    Route::prefix('/paybills')->group(function (){
-        Route::post('/', [PayBillsController::class, 'payBills']);
-
-    });
-
-
 });
 
 // DragonPay PostBack
