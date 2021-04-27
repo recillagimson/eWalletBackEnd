@@ -12,7 +12,9 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithSendMoneyErrors;
 use Illuminate\Validation\ValidationException;
@@ -31,7 +33,10 @@ class SendMoneyService implements ISendMoneyService
     private ILogHistoryRepository $loghistoryrepository;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private IUserDetailRepository $userDetailRepository;
-
+    private INotificationService $notificationService;
+    private IEmailService $emailService;
+    private ISmsService $smsService;
+    
     public function __construct(
         IOutSendMoneyRepository $outSendMoney,
         IInReceiveMoneyRepository $inReceiveMoney,
@@ -41,7 +46,11 @@ class SendMoneyService implements ISendMoneyService
         IReferenceNumberService $referenceNumberService,
         ILogHistoryRepository $loghistoryrepository,
         IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-        IUserDetailRepository $userDetailRepository
+        IUserDetailRepository $userDetailRepository,
+        INotificationService $notificationService,
+        IEmailService $emailService,
+        ISmsService $smsService
+       
     ) {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
@@ -52,6 +61,9 @@ class SendMoneyService implements ISendMoneyService
         $this->loghistoryrepository = $loghistoryrepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->userDetailRepository = $userDetailRepository;
+        $this->notificationService = $notificationService;
+        $this->emailService = $emailService;
+        $this->smsService = $smsService;
     }
 
 
@@ -85,8 +97,25 @@ class SendMoneyService implements ISendMoneyService
         $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
         $this->logHistories($senderID, $receiverID, $fillRequest);
         $this->userTransactionHistory($senderID, $fillRequest);
+        $this->senderNotification($user->$username,$fillRequest, $receiverID, $senderID);
+        $this->recipientNotification($fillRequest[$username], $fillRequest, $senderID, $receiverID);
     }
 
+
+    private function senderNotification($username ,$fillRequest, $receiverID, $senderID)
+    {
+        $userDetail  = $this->userDetailRepository->getByUserId($receiverID);
+        $fillRequest['serviceFee'] = SendMoneyConfig::ServiceFee;
+        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
+        $this->notificationService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
+    }
+
+    private function recipientNotification($username, $fillRequest, $senderID, $receiverID)
+    {
+        $userDetail  = $this->userDetailRepository->getByUserId($senderID);
+        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
+        $this->notificationService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
+    }
 
     /**
      * Validates Send money
@@ -189,7 +218,7 @@ class SendMoneyService implements ISendMoneyService
         ];
     }
 
-
+    // for manual overide by KYC personel if true
     private function isAmountExceeded($amount)
     {
         if ($amount > 500000.000000) return true;

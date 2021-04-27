@@ -8,6 +8,10 @@ use App\Enums\OtpTypes;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\LoginVerification;
+use App\Mail\SendMoney\SendMoneyNotification;
+use App\Mail\SendMoney\SendMoneyRecipientNotification;
+use App\Mail\SendMoney\SendMoneySenderNotification;
+use App\Mail\SendMoney\SendMoneyVerification;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
 use Illuminate\Validation\ValidationException;
@@ -66,6 +70,47 @@ class EmailService implements IEmailService
     {
         $subject = 'SquidPay - Login Verification';
         $template = new LoginVerification($otp);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    /**
+     * Sends an email for send money verification
+     *
+     * @param string $to
+     * @param string $otp
+     */
+    public function sendMoneyVerification(string $to, string $otp)
+    {
+        $subject = 'SquidPay - Send Money Verification';
+        $template = new SendMoneyVerification($otp);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    /**
+     * Sends an email for sender 
+     *
+     * @param string $to
+     * @param string $amount
+     * @param string $sender
+     */
+    public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName)
+    {
+        $subject = 'SquidPay - Send Money Notification';
+        $template = new SendMoneySenderNotification($fillRequest, $receiverName);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    /**
+     * Sends an email for recipient
+     *
+     * @param string $to
+     * @param string $amount
+     * @param string $sender
+     */
+    public function sendMoneyRecipientNotification(string $to, array $fillRequest, string $senderName)
+    {
+        $subject = 'SquidPay - Send Money Notification';
+        $template = new SendMoneyRecipientNotification($fillRequest, $senderName);
         $this->sendMessage($to, $subject, $template);
     }
 
