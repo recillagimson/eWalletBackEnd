@@ -10,6 +10,7 @@ use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
@@ -69,6 +70,8 @@ Route::middleware('auth:sanctum')->group(function () {
      * OTP VERIFICATIONS
      */
     Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification']);
+    Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
+
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser']);
 
@@ -172,7 +175,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/status', [AddMoneyController::class, 'getStatus']);
         Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans']);
     });
-
 
 });
 

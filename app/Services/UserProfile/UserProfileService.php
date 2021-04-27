@@ -22,9 +22,12 @@ class UserProfileService implements IUserProfileService
        $details["user_account_status"]= $userAccount->status;
        $data = $this->addUserInput($details, $userAccount, $userProfile);
 
-       return (!$userProfile) ? 
+       $response = (!$userProfile) ? 
        $this->userDetailRepository->create($data)->toArray() : 
-       array($this->userDetailRepository->update($userProfile, $data));
+       $this->userDetailRepository->update($userProfile, $data);
+
+        return (!$userProfile) ? $response : 
+        $this->userDetailRepository->getByUserId($userAccount->id)->toArray();
     }
 
     public function addUserInput(array $details, object $userAccount, object $data=null) {

@@ -58,4 +58,17 @@ class TransactionService implements ITransactionService
         ]);
         return $record;
     }
+
+    public function createUserTransactionEntryUnauthenticated(string $userAccountId, string $transactionId, string $referenceNumber, float $total_amount, string $transactionCategoryId) {
+        $record = $this->userTransactionHistoryRepository->create([
+            'user_account_id' => $userAccountId,
+            'transaction_id' => $transactionId,
+            'reference_number' => $referenceNumber,
+            'total_amount' => $total_amount,
+            'transaction_category_id' => $transactionCategoryId,
+            'user_created' => $userAccountId,
+            'user_updated' => $userAccountId,
+        ]);
+        return $record;
+    }
 }
