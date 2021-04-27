@@ -2,6 +2,7 @@
 namespace App\Services\Auth;
 
 
+use App\Models\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\Notifications\INotificationService;
 use Laravel\Sanctum\NewAccessToken;
@@ -78,6 +79,15 @@ interface IAuthService
      * @param string $username
      */
     public function generateMobileLoginOTP(string $usernameField, string $username);
+
+    /**
+     * Generate otp for the authenticated user
+     *
+     * @param UserAccount $user
+     * @param string $otpType
+     * @return mixed
+     */
+    public function generateTransactionOTP(UserAccount $user, string $otpType);
 
     /**
      * Send OTP

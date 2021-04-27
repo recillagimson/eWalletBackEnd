@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\Auth\ConfirmTransactionRequest;
+use App\Http\Requests\Auth\GenerateTransOtpRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
 use App\Http\Requests\Auth\MobileLoginValidateRequest;
 use App\Http\Requests\Auth\ResendOtpRequest;
 use App\Http\Requests\Auth\VerifyLoginRequest;
+use App\Http\Requests\Auth\VerifyTransOtpRequest;
 use App\Models\UserAccount;
 use App\Services\Auth\IAuthService;
 use App\Services\Utilities\Responses\IResponseService;
@@ -112,6 +114,36 @@ class AuthController extends Controller
         ];
 
         return $this->responseService->successResponse($response, SuccessMessages::confirmationSuccessful);
+    }
+
+    /**
+     * Generate OTP for transactions.
+     *
+     * @param GenerateTransOtpRequest $request
+     * @return JsonResponse
+     */
+    public function generateTransactionOTP(GenerateTransOtpRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $data = $request->validated();
+        $this->authService->generateTransactionOTP($user, $data['otp_type']);
+
+        return $this->responseService->successResponse([], SuccessMessages::otpSent);
+    }
+
+    /**
+     * Verifies validity of transaction otps.
+     *
+     * @param VerifyTransOtpRequest $request
+     * @return JsonResponse
+     */
+    public function verifyTransactionOtp(VerifyTransOtpRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $data = $request->validated();
+        $this->authService->verify($user->id, $data['otp_type'], $data['code']);
+
+        return $this->responseService->successResponse([], SuccessMessages::otpVerificationSuccessful);
     }
 
     /**

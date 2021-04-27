@@ -22,6 +22,7 @@ class SuccessMessages
     const passwordValidationPassed = 'Password / Pin validation passed.';
 
     const otpSent = 'OTP has been sent.';
+    const otpVerificationSuccessful = 'OTP verification successful.';
 
     const pinCodeUpdated = 'Account Pin Code has been updated.';
 
