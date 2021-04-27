@@ -82,19 +82,10 @@ class UserKeyService implements IUserKeyService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         $this->validateUser($user);
 
-        $this->checkKey($user, '');
+        $this->checkKey($user->id, '');
         $this->authService->sendOTP($usernameField, $username, $otpType);
     }
 
-    /**
-     * Verifies and validates otp for password recovery
-     *
-     * @param string $usernameField
-     * @param string $username
-     * @param string $otp
-     * @param string $otpType
-     * @throws ValidationException
-     */
     public function verifyKey(string $usernameField, string $username, string $otp, string $otpType)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
@@ -110,7 +101,7 @@ class UserKeyService implements IUserKeyService
 
         $identifier = $otpType . ':' . $user->id;
         if ($requireOtp) $this->otpService->ensureValidated($identifier);
-        $this->checkKey($user, $key);
+        $this->checkKey($user->id, $key);
         $this->updateKey($user, $keyType, $key);
     }
 
@@ -150,9 +141,10 @@ class UserKeyService implements IUserKeyService
         if ($keyType) {
             if ($userKey) {
                 $accountKey = $keyType === UserKeyTypes::pin ? $user->pin_code : $user->password;
+                $keyField = $this->getKeyFieldFromUserKeyType($keyType);
                 $keyMatched = Hash::check($userKey, $accountKey);
                 if (!$keyMatched) {
-                    $this->validationError('current_password', 'Incorrect Password.');
+                    $this->validationError($keyField, 'Incorrect ' . $keyType);
                 }
             }
         }

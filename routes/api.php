@@ -10,6 +10,7 @@ use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
@@ -69,6 +70,8 @@ Route::middleware('auth:sanctum')->group(function () {
      * OTP VERIFICATIONS
      */
     Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification']);
+    Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
+
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser']);
 
@@ -83,9 +86,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/forgot/{keyType}', [ForgotKeyController::class, 'forgotKey']);
         Route::post('/reset/{keyType}', [ForgotKeyController::class, 'resetKey']);
 
+        Route::post('/generate/otp', [AuthController::class, 'generateTransactionOTP']);
         Route::post('/resend/otp', [AuthController::class, 'resendOTP']);
 
         Route::prefix('/verify')->group(function () {
+            Route::post('/otp', [AuthController::class, 'verifyTransactionOtp']);
             Route::post('/account', [RegisterController::class, 'verifyAccount']);
             Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin']);
             Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey']);
@@ -169,6 +174,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/cancel', [AddMoneyController::class, 'cancel']);
         Route::post('/status', [AddMoneyController::class, 'getStatus']);
         Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans']);
+    });
+
+    Route::prefix('/paybills')->group(function (){
+        Route::post('/', [PayBillsController::class, 'payBills']);
+
     });
 
 

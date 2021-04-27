@@ -38,6 +38,7 @@ class UserDetail extends Model
         'encoded_source_of_fund',
         'mother_maidenname',
         'currency_id',
+        'selfie_loction',
         'signup_host_id',
         'verification_status',
         'user_account_status',
