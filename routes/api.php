@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -173,6 +174,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/cancel', [AddMoneyController::class, 'cancel']);
         Route::post('/status', [AddMoneyController::class, 'getStatus']);
         Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans']);
+    });
+
+    Route::group(['prefix'   =>  'dashboard'], function(){
+        Route::get('/', [DashboardController::class, 'index']);
     });
 
 
