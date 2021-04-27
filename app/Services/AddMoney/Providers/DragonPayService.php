@@ -14,14 +14,13 @@ use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\Tier\ITierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
-use phpDocumentor\Reflection\Types\Null_;
 
 class DragonPayService implements IAddMoneyService
 {
@@ -75,6 +74,7 @@ class DragonPayService implements IAddMoneyService
     private ILogHistoryRepository $logHistory;
     private ITransactionCategoryRepository $transactionCategories;
     private ITierRepository $tiers;
+    private IUserBalanceInfoRepository $userBalanceInfos;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
@@ -84,7 +84,8 @@ class DragonPayService implements IAddMoneyService
                                 ITransactionCategoryRepository $transactionCategories,
                                 IUserTransactionHistoryRepository $userTransactions,
                                 ITierRepository $tiers,
-                                IUserDetailRepository $userDetails) {
+                                IUserDetailRepository $userDetails,
+                                IUserBalanceInfoRepository $userBalanceInfos) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -100,6 +101,7 @@ class DragonPayService implements IAddMoneyService
         $this->userTransactions = $userTransactions;
         $this->tiers = $tiers;
         $this->userDetails = $userDetails;
+        $this->userBalanceInfos = $userBalanceInfos;
     }
 
     /**
@@ -124,7 +126,7 @@ class DragonPayService implements IAddMoneyService
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
         $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
-        $totalAmount = $addMoneyServiceFee->amount + $amount;
+        $totalAmount = $amount;
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
         $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
 
@@ -336,10 +338,10 @@ class DragonPayService implements IAddMoneyService
      * Gets the status of the transaction from SquidPay DB. If the status from
      * DragonPay is not the same with SquidPay DB then updates SquidPay DB
      *
-     * @param UserAccount $var Description
+     * @param UserAccount $user
      * @param array $request
      * @return array
-     * @throws conditon
+     * @throws noRecordsFound
      **/
     public function getStatus(UserAccount $user, array $request)
     {
@@ -358,7 +360,7 @@ class DragonPayService implements IAddMoneyService
             case 'S':
                 $statusShouldBe = DragonPayStatusTypes::Success;
 
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
+                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe, $squidPayAddMoney->amount);
                 break;
 
             case 'F':
@@ -417,16 +419,23 @@ class DragonPayService implements IAddMoneyService
     /**
      * Validate that status from SquidPay DB and DragonPay are the same
      *
-     * @param InAddMoneyFromBank $squidPayTransStatus
+     * @param InAddMoneyFromBank $squidPayTransaction
      * @param string $statusShouldBe
-     * @return type
-     * @throws conditon
+     * @param float|null $amount
+     * @return string
      **/
-    private function validateStatus(InAddMoneyFromBank $squidPayTransaction, $statusShouldBe)
+    private function validateStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe, $amount = null)
     {
         if ($squidPayTransaction->status != $statusShouldBe) {
                     
             $this->updateTransStatus($squidPayTransaction, $statusShouldBe);
+
+            if ($amount) {
+                $userBalanceInfo = $this->userBalanceInfos->getByUserAccountID($this->userAccountID);
+
+                $newBalance = $userBalanceInfo->available_balance + $amount;
+                $this->userBalanceInfos->update($userBalanceInfo, ['available_balance' => $newBalance]);
+            }
         }
 
         return $statusShouldBe;
@@ -435,9 +444,9 @@ class DragonPayService implements IAddMoneyService
     /**
      * Update the transaction record with the correct status
      *
-     * @param Type $var Description
-     * @return type
-     * @throws conditon
+     * @param InAddMoneyFromBank $squidPayTransaction
+     * @param string $statusShouldBe
+     * @return string
      **/
     private function updateTransStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe)
     {
@@ -445,6 +454,7 @@ class DragonPayService implements IAddMoneyService
             $squidPayTransaction,
             ['status' => $statusShouldBe]
         );
+
         return $statusShouldBe;
     }
 
