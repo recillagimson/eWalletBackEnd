@@ -15,6 +15,7 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithSendMoneyErrors;
 use Illuminate\Validation\ValidationException;
@@ -36,6 +37,7 @@ class SendMoneyService implements ISendMoneyService
     private INotificationService $notificationService;
     private IEmailService $emailService;
     private ISmsService $smsService;
+    private IOtpService $otpService;
     
     public function __construct(
         IOutSendMoneyRepository $outSendMoney,
@@ -49,7 +51,8 @@ class SendMoneyService implements ISendMoneyService
         IUserDetailRepository $userDetailRepository,
         INotificationService $notificationService,
         IEmailService $emailService,
-        ISmsService $smsService
+        ISmsService $smsService,
+        IOtpService $otpService
        
     ) {
         $this->outSendMoney = $outSendMoney;
@@ -64,6 +67,7 @@ class SendMoneyService implements ISendMoneyService
         $this->notificationService = $notificationService;
         $this->emailService = $emailService;
         $this->smsService = $smsService;
+        $this->otpService = $otpService;;
     }
 
 
@@ -79,16 +83,18 @@ class SendMoneyService implements ISendMoneyService
      * @param boolean $isEnough
      * @throws ValidationException
      */
-    public function send(string $username, array $fillRequest, object $user)
+    public function send(string $username, array $fillRequest, object $user,string $otpType, bool $requireOtp = true)
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
+        $identifier = $otpType . ':' . $user->id;
 
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
+        if ($requireOtp) $this->otpService->ensureValidated($identifier);
 
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $this->subtractSenderBalance($senderID, $fillRequest);
