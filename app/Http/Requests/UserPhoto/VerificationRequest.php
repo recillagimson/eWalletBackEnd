@@ -27,6 +27,7 @@ class VerificationRequest extends FormRequest
         return [
             'id_type_id' => 'required',
             // Validate if photo in array is less that 1MB
+            "id_photos"    => "required|array|min:2",
             'id_photos.*' => 'required|max:1024|mimes:jpeg,png',
             // 'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
         ];

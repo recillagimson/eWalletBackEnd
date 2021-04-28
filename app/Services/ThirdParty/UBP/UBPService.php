@@ -19,6 +19,9 @@ class UBPService implements IUBPService
     private string $pesonetTransferUrl;
     private string $pesonetBanksUrl;
 
+    private string $instaPayTransferUrl;
+    private string $instaPayBanksUrl;
+
     private string $clientId;
     private string $clientSecret;
     private string $partnerId;
@@ -27,6 +30,7 @@ class UBPService implements IUBPService
     private string $scopes;
 
     private IApiService $apiService;
+    private array $defaultHeaders;
 
     public function __construct(IApiService $apiService)
     {
@@ -36,6 +40,9 @@ class UBPService implements IUBPService
         $this->pesonetTransferUrl = config('ubp.pesonet_transfer_url');
         $this->pesonetBanksUrl = config('ubp.pesonet_banks_url');
 
+        $this->instaPayTransferUrl = config('ubp.instapay_transfer_url');
+        $this->instaPayBanksUrl = config('ubp.instapay_banks_url');
+
         $this->clientId = config('ubp.client_id');
         $this->clientSecret = config('ubp.client_secret');
         $this->partnerId = config('ubp.partner_id');
@@ -44,8 +51,21 @@ class UBPService implements IUBPService
         $this->scopes = config('ubp.scopes');
 
         $this->apiService = $apiService;
+
+        $this->defaultHeaders = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'x-ibm-client-id' => $this->clientId,
+            'x-ibm-client-secret' => $this->clientSecret,
+            'x-partner-id' => $this->partnerId
+        ];
     }
 
+    /**
+     * UBP Partner Authentication
+     *
+     * @return object
+     */
     private function getToken(): object
     {
         $data = [
@@ -63,34 +83,20 @@ class UBPService implements IUBPService
         return (object)$response->json();
     }
 
-    public function getPesonetBanks(): Response
+    public function getBanks(string $provider): Response
     {
-        $headers = [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'x-ibm-client-id' => $this->clientId,
-            'x-ibm-client-secret' => $this->clientSecret,
-            'x-partner-id' => $this->partnerId
-        ];
-
-        $url = $this->baseUrl . $this->pesonetBanksUrl;
-        return $this->apiService->get($url, $headers);
+        $banksUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetBanksUrl : $this->instaPayBanksUrl;
+        $url = $this->baseUrl . $banksUrl;
+        return $this->apiService->get($url, $this->defaultHeaders);
     }
 
-    public function pesonetFundTransfer(string $refNo, string $fromFullName, int $bankCode, string $recepientAccountNumber,
-                                        string $recepientAccountName, float $amount, string $transactionDate,
-                                        string $instructions): Response
+    public function fundTransfer(string $refNo, string $fromFullName, int $bankCode, string $recepientAccountNumber,
+                                 string $recepientAccountName, float $amount, string $transactionDate,
+                                 string $instructions, string $provider): Response
     {
         $token = $this->getToken();
-
-        $headers = [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'x-ibm-client-id' => $this->clientId,
-            'x-ibm-client-secret' => $this->clientSecret,
-            'x-partner-id' => $this->partnerId,
-            'Authorization' => 'Bearer ' . $token->access_token,
-        ];
+        $headers = $this->defaultHeaders;
+        $headers['Authorization'] = 'Bearer ' . $token->access_token;
 
         $data = [
             "senderRefId" => $refNo,
@@ -127,7 +133,8 @@ class UBPService implements IUBPService
             ]
         ];
 
-        $url = $this->baseUrl . $this->pesonetTransferUrl;
+        $transferUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetTransferUrl : $this->instaPayTransferUrl;
+        $url = $this->baseUrl . $transferUrl;
         return $this->apiService->post($url, $data, $headers);
     }
 
