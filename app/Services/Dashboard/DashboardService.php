@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 
 //Repository
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 
 class DashboardService implements IDashboardService
 {
-    public IUserDetailRepository $userDetail;
+    public IUserAccountRepository $userDetail;
 
-    public function __construct(IUserDetailRepository $userdetail)
+    public function __construct(IUserAccountRepository $userdetail)
     {
         $this->userDetail = $userdetail;
     }

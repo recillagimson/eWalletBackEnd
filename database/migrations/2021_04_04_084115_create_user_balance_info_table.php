@@ -13,7 +13,7 @@ class CreateUserBalanceInfoTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_balance_infos', function (Blueprint $table) {
+        Schema::create('user_balance_info', function (Blueprint $table) {
             $table->uuid('id');
             $table->uuid('user_account_id');
             $table->foreign('user_account_id')->references('id')->on('user_accounts');
@@ -34,6 +34,6 @@ class CreateUserBalanceInfoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_balance_infos');
+        Schema::dropIfExists('user_balance_info');
     }
 }
