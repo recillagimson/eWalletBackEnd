@@ -51,6 +51,24 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
+    public function sendMoneyVerification(string $to, string $otp)
+    {
+        $content = 'Your send money verification code is: ' . $otp;
+        $this->sendMessages($to, $content);
+    }
+
+    public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName)
+    {
+        $content = 'You have sent P'. $fillRequest['amount'].' of SquidPay on '. date('Y-m-d H:i:s').' to '. $receiverName. '. Convenience fee for this transaction is P'.  $fillRequest['serviceFee']. '. Your new balance is P'. $fillRequest['newBalance'] .' with Ref No. '. $fillRequest['refNo']. '. Thank you for using SquidPay!';
+        $this->sendMessages($to, $content);
+    }
+
+    public function sendMoneyRecipientNotification(string $to, array $fillRequest, string $senderName)
+    {
+        $content = 'You have received P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' from ' . $senderName . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Use now to buy load, send money, pay bills and a lot more!';
+        $this->sendMessages($to, $content);
+    }
+
     private function sendMessages(string $to, string $content)
     {
         $message = $this->buildMessage($to, $content);
