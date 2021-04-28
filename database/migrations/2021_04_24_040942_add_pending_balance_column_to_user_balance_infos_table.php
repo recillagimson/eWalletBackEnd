@@ -13,7 +13,7 @@ class AddPendingBalanceColumnToUserBalanceInfosTable extends Migration
      */
     public function up()
     {
-        Schema::table('user_balance_info', function (Blueprint $table) {
+        Schema::table('user_balance_infos', function (Blueprint $table) {
             $table->decimal('available_balance', 19, 6)->default(0)->change();
             $table->decimal('pending_balance', 19, 6)->default(0);
         });
@@ -26,7 +26,7 @@ class AddPendingBalanceColumnToUserBalanceInfosTable extends Migration
      */
     public function down()
     {
-        Schema::table('user_balance_info', function (Blueprint $table) {
+        Schema::table('user_balance_infos', function (Blueprint $table) {
             $table->decimal('available_balance', 19, 6)->change();
             $table->dropColumn('pending_balance');
         });
