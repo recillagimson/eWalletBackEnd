@@ -6,9 +6,9 @@ use Illuminate\Http\Client\Response;
 
 interface IUBPService
 {
-    public function getPesonetBanks(): Response;
+    public function getBanks(string $provider): Response;
 
-    public function pesonetFundTransfer(string $refNo, string $fromFullName, int $bankCode, string $recepientAccountNumber,
-                                        string $recepientAccountName, float $amount, string $transactionDate,
-                                        string $instructions): Response;
+    public function fundTransfer(string $refNo, string $fromFullName, int $bankCode, string $recepientAccountNumber,
+                                 string $recepientAccountName, float $amount, string $transactionDate,
+                                 string $instructions, string $provider): Response;
 }
