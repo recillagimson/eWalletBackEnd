@@ -21,6 +21,17 @@ class DashboardService implements IDashboardService
     {
         //Get user details
         $UserDetails = $this->userDetail->getUserInfo($UserID);
+        
+        if($UserDetails)
+        {
+            $UserDetails = $this->userDetail->getUserInfo($UserID);    
+        }
+        else
+        {
+            throw ValidationException::withMessages([
+                'message' => 'Your are not registerd'
+            ]);
+        }
         return $UserDetails;
     }
 }
