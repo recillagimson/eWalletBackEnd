@@ -24,4 +24,9 @@ class UserTransactionHistoryController extends Controller
         $records = $this->userTransactionHistory->getByAuthUser();
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
+
+    public function show(string $id) {
+        $record = $this->userTransactionHistory->findTransactionWithRelation($id);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+    }
 }
