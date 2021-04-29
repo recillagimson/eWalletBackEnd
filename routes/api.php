@@ -1,17 +1,18 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BuyLoad\AtmController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PayBillsController;
+use App\Http\Controllers\PayBills\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
@@ -49,6 +50,11 @@ if (App::environment('local')) {
 
         Route::post('/encrypt/fixed', [PayloadController::class, 'encryptFixed']);
         Route::post('/decrypt/fixed', [PayloadController::class, 'decryptFixed']);
+    });
+
+    Route::prefix('/atm')->group(function () {
+        Route::post('/generate/signature', [AtmController::class, 'generate']);
+        Route::post('/verify/signature', [AtmController::class, 'verify']);
     });
 }
 
