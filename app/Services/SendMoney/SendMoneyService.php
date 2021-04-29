@@ -91,13 +91,15 @@ class SendMoneyService implements ISendMoneyService
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
-        $hasUserDetails = $this->userDetailRepository->getByUserId($receiverID);
+        $receiverDetails = $this->hasUserDetails($receiverID);
+        $senderDetails = $this->hasUserDetails($senderID);
         $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
         $this->otpService->ensureValidated($identifier);
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
-        if (!$hasUserDetails) $this->userDetailsNotFound();
+        if (!$receiverDetails) $this->recipientDetailsNotFound();
+        if (!$senderDetails) $this->senderDetailsNotFound();
         
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $this->subtractSenderBalance($senderID, $fillRequest);
@@ -130,11 +132,13 @@ class SendMoneyService implements ISendMoneyService
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
-        $hasUserDetails = $this->userDetailRepository->getByUserId($receiverID);
+        $receiverDetails = $this->hasUserDetails($receiverID);
+        $senderDetails = $this->hasUserDetails($senderID);
 
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
-        if (!$hasUserDetails) $this->userDetailsNotFound();
+        if (!$receiverDetails) $this->recipientDetailsNotFound();
+        if (!$senderDetails) $this->senderDetailsNotFound();
 
         return $this->sendMoneyReview($receiverID);
     }
@@ -227,6 +231,11 @@ class SendMoneyService implements ISendMoneyService
         return $user['id'];
     }
 
+
+    private function hasUserDetails($userID)
+    {
+        return $this->userDetailRepository->getByUserId($userID);
+    }
 
     private function isSelf(string $senderID, string $receiverID)
     {
