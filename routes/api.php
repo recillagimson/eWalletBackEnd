@@ -176,11 +176,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans']);
     });
 
-    Route::group(['prefix'   =>  'dashboard'], function(){
+    Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function(){
         Route::get('/', [DashboardController::class, 'index']);
     });
-
-
 });
 
 // DragonPay PostBack
