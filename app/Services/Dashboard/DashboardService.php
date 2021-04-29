@@ -29,7 +29,7 @@ class DashboardService implements IDashboardService
         else
         {
             throw ValidationException::withMessages([
-                'message' => 'Your are not registerd'
+                'message' => "Current user's details can't be found."
             ]);
         }
     }
