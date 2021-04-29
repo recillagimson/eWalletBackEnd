@@ -270,6 +270,7 @@ class SendMoneyService implements ISendMoneyService
 
     private function senderNotification($username, $fillRequest, $receiverID, $senderID)
     {
+        if(!$username) return null;
         $userDetail  = $this->userDetailRepository->getByUserId($receiverID);
         $fillRequest['serviceFee'] = SendMoneyConfig::ServiceFee;
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
@@ -279,6 +280,7 @@ class SendMoneyService implements ISendMoneyService
 
     private function recipientNotification($username, $fillRequest, $senderID, $receiverID)
     {
+        if (!$username) return null;
         $userDetail  = $this->userDetailRepository->getByUserId($senderID);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
         $this->notificationService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
