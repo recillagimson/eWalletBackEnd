@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
  *
  */
 interface ISendMoneyService{
-    public function send(string $usernameField, array $fillRequest, object $user,string $otpType, bool $requireOtp = true);
+    public function send(string $usernameField, array $fillRequest, object $user);
     public function sendValidate(string $usernameField, array $fillRequest, object $user);
     public function generateQR(object $user, array $fillRequest);
     public function scanQr(string $id);

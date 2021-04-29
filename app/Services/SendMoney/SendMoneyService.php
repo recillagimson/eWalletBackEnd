@@ -2,6 +2,7 @@
 
 namespace App\Services\SendMoney;
 
+use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SendMoneyConfig;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
@@ -83,19 +84,21 @@ class SendMoneyService implements ISendMoneyService
      * @param boolean $isEnough
      * @throws ValidationException
      */
-    public function send(string $username, array $fillRequest, object $user,string $otpType, bool $requireOtp = true)
+    public function send(string $username, array $fillRequest, object $user)
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
-        $identifier = $otpType . ':' . $user->id;
+        $hasUserDetails = $this->userDetailRepository->getByUserId($receiverID);
+        $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
+        $this->otpService->ensureValidated($identifier);
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
-        if ($requireOtp) $this->otpService->ensureValidated($identifier);
-
+        if (!$hasUserDetails) $this->userDetailsNotFound();
+        
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
@@ -107,21 +110,6 @@ class SendMoneyService implements ISendMoneyService
         $this->recipientNotification($fillRequest[$username], $fillRequest, $senderID, $receiverID);
     }
 
-
-    private function senderNotification($username ,$fillRequest, $receiverID, $senderID)
-    {
-        $userDetail  = $this->userDetailRepository->getByUserId($receiverID);
-        $fillRequest['serviceFee'] = SendMoneyConfig::ServiceFee;
-        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
-        $this->notificationService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
-    }
-
-    private function recipientNotification($username, $fillRequest, $senderID, $receiverID)
-    {
-        $userDetail  = $this->userDetailRepository->getByUserId($senderID);
-        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
-        $this->notificationService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
-    }
 
     /**
      * Validates Send money
@@ -142,9 +130,11 @@ class SendMoneyService implements ISendMoneyService
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
+        $hasUserDetails = $this->userDetailRepository->getByUserId($receiverID);
 
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
+        if (!$hasUserDetails) $this->userDetailsNotFound();
 
         return $this->sendMoneyReview($receiverID);
     }
@@ -266,6 +256,23 @@ class SendMoneyService implements ISendMoneyService
         $receiverBalance = $this->userBalanceInfo->getUserBalance($receiverID);
         $newBalance = $receiverBalance + $fillRequest['amount'];
         $this->userBalanceInfo->updateUserBalance($receiverID, $newBalance);
+    }
+
+
+    private function senderNotification($username, $fillRequest, $receiverID, $senderID)
+    {
+        $userDetail  = $this->userDetailRepository->getByUserId($receiverID);
+        $fillRequest['serviceFee'] = SendMoneyConfig::ServiceFee;
+        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
+        $this->notificationService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
+    }
+    
+
+    private function recipientNotification($username, $fillRequest, $senderID, $receiverID)
+    {
+        $userDetail  = $this->userDetailRepository->getByUserId($senderID);
+        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
+        $this->notificationService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
     }
 
 

@@ -38,5 +38,10 @@ trait WithSendMoneyErrors
         $this->validationErrorMessage(ErrorCodes::userInvalidQR, 'Qr transaction does not exists.');
     }
 
+    private function userDetailsNotFound()
+    {
+        $this->validationErrorMessage(ErrorCodes::userDetailsNotFound, 'User details not found. Please update your profile.');
+    }
+
 
 }

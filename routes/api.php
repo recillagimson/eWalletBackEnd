@@ -145,6 +145,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
     });
 
+    Route::prefix('pay/bills')->group(function () {
+        Route::get('/', [PayBillsController::class, 'payBills']);
+    });
+
     Route::prefix('/notifications')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [NotificationController::class, 'GetAll']);
         Route::post('/', [NotificationController::class, 'store']);
