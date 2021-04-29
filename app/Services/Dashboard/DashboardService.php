@@ -29,7 +29,7 @@ class DashboardService implements IDashboardService
         else
         {
             throw ValidationException::withMessages([
-                'message' => "Current user's details can't be found."
+                'user_details' => "Current user's details can't be found."
             ]);
         }
     }
