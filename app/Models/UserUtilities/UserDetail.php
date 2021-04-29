@@ -5,7 +5,7 @@ namespace App\Models\UserUtilities;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\UserAccount;
 class UserDetail extends Model
 {
     use UsesUuid, HasFactory;
@@ -56,5 +56,10 @@ class UserDetail extends Model
         "user_created",
         "user_updated",
     ];
+
+    public function getUserAccount()
+    {
+        return $this->hasOne(UserAccount::class, 'id');
+    }
 
 }
