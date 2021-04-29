@@ -12,9 +12,24 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         parent::__construct($model);
     }
 
-    public function getTotalTransactionAmountByUserAccountIdDateRange(string $userAccountId, string $from, $to) {
-        $total = $this->model->whereBetween('created_at', [$from, $to])->sum('total_amount');
-        return $total;
+    public function getTotalTransactionAmountByUserAccountIdDateRange(string $userAccountId, string $from, $to)
+    {
+        return $this->model->whereBetween('created_at', [$from, $to])->sum('total_amount');
+    }
+
+    public function log(string $userId, string $transactionCategoryId, string $transactionId, string $refNo,
+                        float $totalAmount, string $userCreated)
+    {
+        $data = [
+            'user_account_id' => $userId,
+            'transaction_id' => $transactionId,
+            'reference_number' => $refNo,
+            'total_amount' => $totalAmount,
+            'transaction_category_id' => $transactionCategoryId,
+            'user_created' => $userCreated
+        ];
+
+        return $this->create($data);
     }
 
 }

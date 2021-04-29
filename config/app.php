@@ -13,6 +13,9 @@ use App\Enums\SuccessMessages;
 use App\Enums\TokenNames;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategories;
+use App\Enums\TransactionCategoryIds;
+use App\Enums\TransactionStatuses;
+use App\Enums\UbpResponseCodes;
 use App\Enums\UserKeyTypes;
 use App\Enums\UsernameTypes;
 
@@ -258,11 +261,14 @@ return [
         'ReferenceNumberTypes' => ReferenceNumberTypes::class,
         'SquidPayModuleTypes' => SquidPayModuleTypes::class,
         'TransactionCategories' => TransactionCategories::class,
+        'TransactionCategoryIds' => TransactionCategoryIds::class,
         'ErrorCodes' => ErrorCodes::class,
         'TpaProviders' => TpaProviders::class,
         'AccountTiers' => AccountTiers::class,
         'Currencies' => Currencies::class,
         'UserKeyTypes' => UserKeyTypes::class,
+        'TransactionStatuses' => TransactionStatuses::class,
+        'UbpResponseCodes' => UbpResponseCodes::class,
 
         //Enums - Messages
         'SuccessMessages' => SuccessMessages::class,

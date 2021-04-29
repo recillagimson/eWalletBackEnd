@@ -38,9 +38,9 @@ class Send2BankController extends Controller
      */
     public function fundTransfer(FundTransferRequest $request): JsonResponse
     {
-        $recepient = $request->validated();
+        $recipient = $request->validated();
         $userId = $request->user()->id;
-        $this->send2BankService->fundTransfer($userId, $recepient);
+        $this->send2BankService->fundTransfer($userId, $recipient);
         return response()->json([], Response::HTTP_OK);
     }
 }

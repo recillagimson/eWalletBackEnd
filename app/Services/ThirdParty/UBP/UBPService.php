@@ -40,8 +40,8 @@ class UBPService implements IUBPService
         $this->pesonetTransferUrl = config('ubp.pesonet_transfer_url');
         $this->pesonetBanksUrl = config('ubp.pesonet_banks_url');
 
-        $this->instaPayTransferUrl = config('ubp.instapay_transfer_url');
         $this->instaPayBanksUrl = config('ubp.instapay_banks_url');
+        $this->instaPayTransferUrl = config('ubp.instapay_transfer_url');
 
         $this->clientId = config('ubp.client_id');
         $this->clientSecret = config('ubp.client_secret');

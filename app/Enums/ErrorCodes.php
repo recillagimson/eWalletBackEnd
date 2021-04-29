@@ -20,6 +20,7 @@ class ErrorCodes
     const otpTypeInvalid = 111;
     const accountAlreadyTaken = 112;
     const confirmationFailed = 113;
+    const accountDeactivated = 114;
 
     //ENCRYPTION ERRORS - 150
     const payloadInvalid = 151;
@@ -37,6 +38,8 @@ class ErrorCodes
     const userInsufficientBalance = 402;
     const userInvalidQR = 403;
     const userDetailsNotFound = 404;
+    const userMonthlyLimitExceeded = 405;
+    const userTierInvalid = 406;
 
 
 }
