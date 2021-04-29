@@ -3,7 +3,11 @@
 namespace App\Repositories\UserUtilities\UserDetail;
 
 use App\Models\UserUtilities\UserDetail;
+use App\Models\UserAccount;
 use App\Repositories\Repository;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserDetailRepository extends Repository implements IUserDetailRepository
 {
@@ -12,8 +16,8 @@ class UserDetailRepository extends Repository implements IUserDetailRepository
         parent::__construct($model);
     }
 
-    public function getByUserId(string $userId)
+    public function getByUserId(string $userAccountID)
     {
-        return $this->model->where('user_account_id', '=', $userId)->first();
+        return $this->model->where('user_account_id', '=', $userAccountID)->first();
     }
 }

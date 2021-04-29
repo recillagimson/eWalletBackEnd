@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -180,7 +181,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans']);
     });
 
+    Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/', [DashboardController::class, 'index']);
+    });
 });
+
 
 // DragonPay PostBack
 Route::prefix('/cashin')->group(function (){

@@ -7,6 +7,8 @@ use App\Enums\NetworkTypes;
 use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
 use App\Http\Controllers\Send2BankController;
+use App\Services\Dashboard\DashboardService;
+use App\Services\Dashboard\IDashboardService;
 use App\Services\AddMoney\DragonPay\HandlePostBackService;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
@@ -104,6 +106,9 @@ class AppServiceProvider extends ServiceProvider
         $this->bindPrepaidLoadService();
         $this->bindSend2BankService();
         $this->bindAddMoneyService();
+
+        //Dashboard
+        $this->app->bind(IDashboardService::class, DashboardService::class);
 
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
