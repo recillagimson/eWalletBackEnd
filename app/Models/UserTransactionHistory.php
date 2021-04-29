@@ -17,6 +17,7 @@ class UserTransactionHistory extends Model
         "user_account_id",
         "transaction_id",
         "reference_number",
+        "total_amount",
         "transaction_category_id",
         "user_created",
         "user_updated",

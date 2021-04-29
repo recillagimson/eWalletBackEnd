@@ -3,6 +3,7 @@
 namespace App\Services\AddMoney\DragonPay;
 
 use App\Enums\DragonPayStatusTypes;
+use App\Enums\SquidPayModuleTypes;
 use App\Enums\SuccessMessages;
 use App\Enums\TransactionCategories;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
@@ -10,6 +11,8 @@ use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Transaction\ITransactionService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -44,13 +47,17 @@ class HandlePostBackService implements IHandlePostBackService
     private ILogHistoryRepository $logHistories;
     private ITransactionCategoryRepository $transactionCategories;
     private IResponseService $responseService;
+    private ITransactionService $transactionService;
+    private ILogHistoryService $logHistoryService;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserBalanceInfoRepository $balanceInfos,
                                 IUserTransactionHistoryRepository $userTransactions,
                                 ILogHistoryRepository $logHistories,
                                 ITransactionCategoryRepository $transactionCategories,
-                                IResponseService $responseService) {
+                                IResponseService $responseService,
+                                ITransactionService $transactionService,
+                                ILogHistoryService $logHistoryService) {
 
         $this->moduleTransCategory = TransactionCategories::AddMoneyWebBankDragonPay;
 
@@ -60,6 +67,8 @@ class HandlePostBackService implements IHandlePostBackService
         $this->logHistories = $logHistories;
         $this->transactionCategories = $transactionCategories;
         $this->responseService = $responseService;
+        $this->transactionService = $transactionService;
+        $this->logHistoryService = $logHistoryService;
     }
 
     /**
@@ -103,8 +112,8 @@ class HandlePostBackService implements IHandlePostBackService
 
             $this->addAmountToUserBalance($addMoneyRow->user_account_id, $addMoneyRow->amount);
 
-            $this->logTransaction('Successfully added money ' . $addMoneyRow->amount);
-            $this->logSuccessInUserTransHistory($addMoneyRow->user_account_id, $addMoneyRow->id, $addMoneyRow->reference_number, $transactionCategory->id);
+            $this->logHistoryService->logUserHistoryUnauthenticated($this->userAccountID, $this->referenceNumber, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, __METHOD__, Carbon::now(), 'Add money postback amount ' . $addMoneyRow->amount);
+            $this->transactionService->createUserTransactionEntryUnauthenticated((string) $this->userAccountID, $addMoneyRow->id, $this->referenceNumber, (float) $addMoneyRow->amount,  $addMoneyRow->transaction_category_id);
 
             return $this->responseService->successResponse(
                 $amountForResponse, 
@@ -121,9 +130,9 @@ class HandlePostBackService implements IHandlePostBackService
                 'status' => DragonPayStatusTypes::Failure
             ]);
 
-            $this->logTransaction(SuccessMessages::addMoneyFailed);
+            $this->logHistoryService->logUserHistoryUnauthenticated($this->userAccountID, $this->referenceNumber, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, __METHOD__, Carbon::now(), SuccessMessages::addMoneyFailed);
 
-            return $this->responseService->noContentResponse(null, SuccessMessages::addMoneyFailed);
+            throw ValidationException::withMessages(['Message' => 'Add money Failed']);
         }
 
         if ($status == 'P') {
@@ -135,9 +144,9 @@ class HandlePostBackService implements IHandlePostBackService
                 'status' => DragonPayStatusTypes::Pending
             ]);
 
-            $this->logTransaction(SuccessMessages::addMoneyPending);
+            $this->logHistoryService->logUserHistoryUnauthenticated($this->userAccountID, $this->referenceNumber, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, __METHOD__, Carbon::now(), SuccessMessages::addMoneyPending);
 
-            return $this->responseService->noContentResponse(null, SuccessMessages::addMoneyPending);
+            return $this->responseService->successResponse(['dragonpay_reference' => $referenceNumber, 'amount' => $addMoneyRow->amount], SuccessMessages::addMoneyPending);
         }
     }
 
