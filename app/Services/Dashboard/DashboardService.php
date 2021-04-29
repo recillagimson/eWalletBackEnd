@@ -24,7 +24,7 @@ class DashboardService implements IDashboardService
         
         if($UserDetails)
         {
-            $UserDetails = $this->userDetail->getUserInfo($UserID);    
+            return $UserDetails;    
         }
         else
         {
@@ -32,6 +32,5 @@ class DashboardService implements IDashboardService
                 'message' => 'Your are not registerd'
             ]);
         }
-        return $UserDetails;
     }
 }
