@@ -21,6 +21,16 @@ class DashboardService implements IDashboardService
     {
         //Get user details
         $UserDetails = $this->userDetail->getUserInfo($UserID);
-        return $UserDetails;
+        
+        if($UserDetails)
+        {
+            return $UserDetails;    
+        }
+        else
+        {
+            throw ValidationException::withMessages([
+                'user_details' => "Current user's details can't be found."
+            ]);
+        }
     }
 }
