@@ -27,6 +27,7 @@ class DashboardController extends Controller
      */
     public function index(Request $request) : JsonResponse
     {
+
         $UserID = $request->user()->id;
         $Dashboard = $this->dashboardService->dashboard($UserID);
         return $this->responseService->successResponse($Dashboard->toArray(), SuccessMessages::success);

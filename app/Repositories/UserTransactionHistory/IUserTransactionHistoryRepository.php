@@ -10,4 +10,6 @@ interface IUserTransactionHistoryRepository extends IRepository
 
     public function log(string $userId, string $transactionCategoryId, string $transactionId, string $refNo,
                         float $totalAmount, string $userCreated);
+    public function getByAuthUser();
+    public function findTransactionWithRelation(string $id);
 }

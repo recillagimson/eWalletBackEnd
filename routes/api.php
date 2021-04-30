@@ -20,6 +20,7 @@ use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\TierController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\UserPhotoController;
+use App\Http\Controllers\UserTransactionHistoryController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
@@ -138,6 +139,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/user')->group(function (){
             Route::get('/profile', [UserProfileController::class, 'show']);
             Route::post('/profile', [UserProfileController::class, 'update']);
+
+            // TRANSACTION LOG HISTORY
+            Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
+            Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
+            
         });
     });
 
@@ -186,6 +192,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function(){
         Route::get('/', [DashboardController::class, 'index']);
     });
+
 });
 
 
