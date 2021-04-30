@@ -16,6 +16,14 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
         parent::__construct($model);
     }
 
+    public function getPending(string $userId)
+    {
+        return $this->model->where([
+            'user_account_id' => $userId,
+            'status' => TransactionStatuses::pending
+        ])->get();
+    }
+
     public function createTransaction(string $userId, string $refNo, string $accountName, string $accountNumber, string $message,
                                       float $amount, float $serviceFee, string $serviceFeeId, Carbon $transactionDate, string $transactionCategoryId,
                                       string $provider, string $notifyType, string $notifyTo, string $userCreated)

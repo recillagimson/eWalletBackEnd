@@ -138,5 +138,12 @@ class UBPService implements IUBPService
         return $this->apiService->post($url, $data, $headers);
     }
 
+    public function checkStatus(string $provider, string $refNo): Response
+    {
+        $transferUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetTransferUrl : $this->instaPayTransferUrl;
+        $url = $this->baseUrl . $transferUrl . '/' . $refNo;
+        return $this->apiService->get($url, $this->defaultHeaders);
+    }
+
 
 }

@@ -5,15 +5,18 @@ namespace App\Services\Utilities\Notifications\Email;
 
 
 use App\Enums\OtpTypes;
+use App\Enums\TpaProviders;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\LoginVerification;
-use App\Mail\SendMoney\SendMoneyNotification;
+use App\Mail\Send2Bank\SenderNotification;
 use App\Mail\SendMoney\SendMoneyRecipientNotification;
 use App\Mail\SendMoney\SendMoneySenderNotification;
 use App\Mail\SendMoney\SendMoneyVerification;
+use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use SendGrid;
 use SendGrid\Mail\Mail;
@@ -87,7 +90,7 @@ class EmailService implements IEmailService
     }
 
     /**
-     * Sends an email for sender 
+     * Sends an email for sender
      *
      * @param string $to
      * @param string $amount
@@ -104,8 +107,8 @@ class EmailService implements IEmailService
      * Sends an email for recipient
      *
      * @param string $to
-     * @param string $amount
-     * @param string $sender
+     * @param array $fillRequest
+     * @param string $senderName
      */
     public function sendMoneyRecipientNotification(string $to, array $fillRequest, string $senderName)
     {
@@ -113,6 +116,25 @@ class EmailService implements IEmailService
         $template = new SendMoneyRecipientNotification($fillRequest, $senderName);
         $this->sendMessage($to, $subject, $template);
     }
+
+    public function sendSend2BankSenderNotification(string $to, string $refNo, string $accountNo, float $amount,
+                                                    Carbon $transactionDate, float $serviceFee, float $newBalance,
+                                                    string $provider, string $remittanceId)
+    {
+        $hideAccountNo = Str::substr($accountNo, 0, -4);
+        $strAmount = number_format($amount, 2, '.', ',');
+        $strServiceFee = number_format($serviceFee, 2, '.', ',');
+        $strNewBalance = number_format($newBalance, 2, '.', ',');
+        $strDate = $transactionDate->toDayDateTimeString();
+        $strProvider = $provider === TpaProviders::ubpPesonet ? 'UBP: Pesonet' : 'UBP: Instapay';
+
+        $subject = 'SquidPay - Send To Bank Notification';
+        $template = new SenderNotification($hideAccountNo, $strAmount, $strServiceFee, $strNewBalance, $strDate,
+            $strProvider, $refNo, $remittanceId);
+
+        $this->sendMessage($to, $subject, $template);
+    }
+
 
     private function sendMessage(string $to, string $subject, Mailable $template): void
     {
@@ -134,4 +156,6 @@ class EmailService implements IEmailService
             'email' => 'Email provider failed to send the message. Please try again.'
         ]);
     }
+
+
 }

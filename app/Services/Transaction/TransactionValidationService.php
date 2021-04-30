@@ -71,6 +71,7 @@ class TransactionValidationService implements ITransactionValidationService
         if (!$user) $this->accountDoesntExist();
         if (!$user->is_active) $this->accountDeactivated();
         if (!$user->profile) $this->userProfileNotUpdated();
+        if (!$user->balanceInfo) $this->userInsufficientBalance();
     }
 
     public function checkUserMonthlyTransactionLimit(UserAccount $user, float $totalAmount)
