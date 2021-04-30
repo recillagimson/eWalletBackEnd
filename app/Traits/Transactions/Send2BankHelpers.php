@@ -107,7 +107,6 @@ trait Send2BankHelpers
 
     private function handleDirectTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
     {
-        \Log::info($response->json());
         if (!$response->successful()) {
             //$errors = $response->json();
             $this->transFailed();

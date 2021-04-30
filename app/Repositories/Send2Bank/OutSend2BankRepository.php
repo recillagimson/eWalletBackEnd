@@ -3,7 +3,7 @@
 
 namespace App\Repositories\Send2Bank;
 
-
+use App\Enums\TpaProviders;
 use App\Enums\TransactionStatuses;
 use App\Models\OutSend2Bank;
 use App\Repositories\Repository;
@@ -48,5 +48,13 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
         ];
 
         return $this->create($data);
+    }
+
+    public function getPendingDirectTransactionsByAuthUser() {
+        $records = $this->model->where('user_account_id', request()->user()->id)
+            ->where('status', TransactionStatuses::pending)
+            ->where('provider', TpaProviders::ubpDirect)
+            ->get();
+        return $records;
     }
 }

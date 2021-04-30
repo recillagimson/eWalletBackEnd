@@ -13,4 +13,5 @@ interface ISend2BankDirectService
      */
     // public function fundTransfer(string $fromUserId, array $recipient);
     public function fundTransferToUBPDirect(string $fromUserId, array $recipient, bool $requireOtp = true);
+    public function verifyPendingDirectTransactions();
 }

@@ -109,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
         Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
         Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect']);
+        Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions']);
     });
 
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function () {

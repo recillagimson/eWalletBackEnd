@@ -4,33 +4,34 @@
 namespace App\Services\Send2Bank;
 
 
-use App\Enums\ReferenceNumberTypes;
+use Exception;
+use Carbon\Carbon;
 use App\Enums\TpaProviders;
-use App\Enums\TransactionCategoryIds;
-use App\Enums\TransactionStatuses;
+use App\Models\UserAccount;
+use App\Traits\UserHelpers;
 use App\Enums\UsernameTypes;
 use App\Models\OutSend2Bank;
-use App\Models\UserAccount;
-use App\Repositories\Send2Bank\IOutSend2BankRepository;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Enums\UbpResponseCodes;
+use App\Enums\TransactionStatuses;
+use Illuminate\Support\Facades\DB;
+use App\Enums\ReferenceNumberTypes;
+use App\Traits\Errors\WithTpaErrors;
+use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithAuthErrors;
+use App\Traits\Errors\WithUserErrors;
 use App\Services\ThirdParty\UBP\IUBPService;
+use App\Traits\Errors\WithTransactionErrors;
+use App\Traits\Transactions\Send2BankHelpers;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\Send2Bank\IOutSend2BankRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithAuthErrors;
-use App\Traits\Errors\WithTpaErrors;
-use App\Traits\Errors\WithTransactionErrors;
-use App\Traits\Errors\WithUserErrors;
-use App\Traits\Transactions\Send2BankHelpers;
-use App\Traits\UserHelpers;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\DB;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class Send2BankDirectService implements ISend2BankDirectService
 {
@@ -114,6 +115,29 @@ class Send2BankDirectService implements ISend2BankDirectService
         catch(\Exception $e) {
             DB::rollback();
             throw $e;
+        }
+    }
+
+    public function verifyPendingDirectTransactions() {
+        $pendingTransactions = $this->send2banks->getPendingDirectTransactionsByAuthUser();
+        foreach($pendingTransactions as $transaction) {
+            $response = $this->ubpService->verifyPendingDirectTransaction($transaction->reference_number);
+            $data = $response->json();
+
+            $code = $data['record']['code'];
+            $status = TransactionStatuses::failed;
+            if ($code === UbpResponseCodes::receivedRequest || $code === UbpResponseCodes::processing
+                || $code === UbpResponseCodes::forConfirmation) {
+                $status = TransactionStatuses::pending;
+            } elseif ($code === UbpResponseCodes::successfulTransaction) {
+                $status = TransactionStatuses::success;
+            } else {
+                $this->transFailed();
+            }
+            
+            $transaction->update([
+                'status' => $status
+            ]);
         }
     }
 

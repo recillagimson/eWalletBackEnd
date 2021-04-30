@@ -178,5 +178,14 @@ class UBPService implements IUBPService
         return $this->apiService->post($url, $data, $headers);
     }
 
+    public function verifyPendingDirectTransaction(string $senderRefId) {
+        $token = $this->getToken();
+        $headers = $this->defaultHeaders;
+        $headers['Authorization'] = 'Bearer ' . $token->access_token;
+        $transferUrl = $this->directUBPTransferUrl;
+        $url = $this->baseUrl . $transferUrl . "/" . $senderRefId;
+        return $this->apiService->get($url, $headers);
+    }
+
 
 }
