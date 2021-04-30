@@ -91,13 +91,15 @@ class SendMoneyService implements ISendMoneyService
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
-        $hasUserDetails = $this->userDetailRepository->getByUserId($receiverID);
+        $receiverDetails = $this->hasUserDetails($receiverID);
+        $senderDetails = $this->hasUserDetails($senderID);
         $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
         $this->otpService->ensureValidated($identifier);
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
-        if (!$hasUserDetails) $this->userDetailsNotFound();
+        if (!$receiverDetails) $this->recipientDetailsNotFound();
+        if (!$senderDetails) $this->senderDetailsNotFound();
         
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $this->subtractSenderBalance($senderID, $fillRequest);
@@ -130,11 +132,13 @@ class SendMoneyService implements ISendMoneyService
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
-        $hasUserDetails = $this->userDetailRepository->getByUserId($receiverID);
+        $receiverDetails = $this->hasUserDetails($receiverID);
+        $senderDetails = $this->hasUserDetails($senderID);
 
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
-        if (!$hasUserDetails) $this->userDetailsNotFound();
+        if (!$receiverDetails) $this->recipientDetailsNotFound();
+        if (!$senderDetails) $this->senderDetailsNotFound();
 
         return $this->sendMoneyReview($receiverID);
     }
@@ -228,6 +232,11 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
+    private function hasUserDetails($userID)
+    {
+        return $this->userDetailRepository->getByUserId($userID);
+    }
+
     private function isSelf(string $senderID, string $receiverID)
     {
         if ($senderID == $receiverID) return true;
@@ -261,6 +270,7 @@ class SendMoneyService implements ISendMoneyService
 
     private function senderNotification($username, $fillRequest, $receiverID, $senderID)
     {
+        if(!$username) return null;
         $userDetail  = $this->userDetailRepository->getByUserId($receiverID);
         $fillRequest['serviceFee'] = SendMoneyConfig::ServiceFee;
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
@@ -270,6 +280,7 @@ class SendMoneyService implements ISendMoneyService
 
     private function recipientNotification($username, $fillRequest, $senderID, $receiverID)
     {
+        if (!$username) return null;
         $userDetail  = $this->userDetailRepository->getByUserId($senderID);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
         $this->notificationService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
