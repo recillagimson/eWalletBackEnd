@@ -153,6 +153,42 @@ class Send2BankPesonetService implements ISend2BankService
 
     }
 
+    // Direct to bank
+    public function fundTransferToUBPDirect(string $fromUserId, array $recipient, bool $requireOtp = true) {
+        DB::beginTransaction();
+        try {
 
+            $user = $this->users->getUser($fromUserId);
+            $this->transactionValidationService->validateUser($user);
+            
+            $serviceFee = $this->serviceFees
+            ->getByTierAndTransCategory($user->tier_id, TransactionCategoryIds::send2BankPesoNet);
+            
+            $serviceFeeId = $serviceFee ? $serviceFee->id : '';
+            $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
+            $totalAmount = $recipient['amount'] + $serviceFeeAmount;
+            
+            $this->transactionValidationService
+            ->validate($user, TransactionCategoryIds::send2BankPesoNet, $totalAmount);
+            
+            
+            $userFullName = ucwords($user->profile->full_name);
+            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
+            $currentDate = Carbon::now();
+            $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
+            // $notifyType = $this->getRecepientField($recipient);
+            // $notifyTo = $notifyType !== '' ? $recipient[$notifyType] : '';
+            
+            $balanceInfo = $this->updateUserBalance($user->balanceInfo, $totalAmount);
+            // public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName) : Response 
+            $transferResponse = $this->ubpService->send2BankUBPDirect($fromUserId, $transactionDate, $recipient['accountNo'], $recipient['amount'], $recipient['remarks'], $recipient['particulars'], $recipient['recipientName']);
+
+            DB::commit();
+        }    
+        catch(\Exception $e) {
+            DB::rollback();
+            dd($e->getMessage());
+        }
+    }
 
 }

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Send2Bank\FundTransferRequest;
-use App\Services\Send2Bank\ISend2BankService;
-use App\Services\Utilities\Responses\IResponseService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Services\Send2Bank\ISend2BankService;
+use App\Http\Requests\Send2Bank\FundTransferRequest;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Http\Requests\Send2Bank\Send2BankUBPDirectRequest;
 
 class Send2BankController extends Controller
 {
@@ -41,6 +42,13 @@ class Send2BankController extends Controller
         $recipient = $request->validated();
         $userId = $request->user()->id;
         $this->send2BankService->fundTransfer($userId, $recipient);
+        return response()->json([], Response::HTTP_OK);
+    }
+
+    public function send2BankUBPDirect(Send2BankUBPDirectRequest $request) : JsonResponse {
+        $recipient = $request->all();
+        $userId = $request->user()->id;
+        $this->send2BankService->fundTransferToUBPDirect($userId, $recipient);
         return response()->json([], Response::HTTP_OK);
     }
 }

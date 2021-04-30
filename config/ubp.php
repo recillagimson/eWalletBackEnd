@@ -2,7 +2,7 @@
 
 return [
     'base_url' => env('UBP_BASE_URL'),
-    'token_url' => env('ubp_token_url'),
+    'token_url' => env('UBP_TOKEN_URL'),
 
     'pesonet_transfer_url' => env('UBP_PESONET_TRANSFER_URL'),
     'pesonet_banks_url' => env('UBP_PESONET_BANKS_URL'),

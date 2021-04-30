@@ -13,4 +13,6 @@ interface IUBPService
                                  string $instructions, string $provider): Response;
 
     public function checkStatus(string $provider, string $refNo): Response;
+
+    public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName) : Response;
 }

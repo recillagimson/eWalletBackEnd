@@ -146,4 +146,34 @@ class UBPService implements IUBPService
     }
 
 
+    public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName) : Response 
+    {
+        $token = $this->getToken();
+        $headers = $this->defaultHeaders;
+        $headers['Authorization'] = 'Bearer ' . $token->access_token;
+
+        $data = [
+            "senderRefId" => $senderRefId,
+            "tranRequestDate" => $transactionDate,
+            "accountNo" => $accountNo,
+            "amount" => [
+                "currency" => "PHP",
+                "value" => $amount
+            ],
+            "remarks" => $remarks,
+            "particulars" => $particulars,
+            "info" => [
+                [
+                    "index" => 1,
+                    "name" => "Recipient",
+                    "value" => $recipientName 
+                ]
+            ]
+        ];
+        dd($data);
+        $url = "";
+        return $this->apiService->get($url, $this->defaultHeaders);
+    }
+
+
 }
