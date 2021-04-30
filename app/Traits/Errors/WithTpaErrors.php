@@ -25,4 +25,9 @@ trait WithTpaErrors
     {
         $this->validationErrorMessage(ErrorCodes::tpaErrorOccured, 'TPA:' . $provider . ' Error Occured. Please Try Again.');
     }
+
+    public function tpaInvalidProvider()
+    {
+        $this->validationErrorMessage(ErrorCodes::tpaInvalidProvider, 'Invalid Provider.');
+    }
 }
