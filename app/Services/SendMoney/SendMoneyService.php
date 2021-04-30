@@ -91,8 +91,8 @@ class SendMoneyService implements ISendMoneyService
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
-        $receiverDetails = $this->hasUserDetails($receiverID);
-        $senderDetails = $this->hasUserDetails($senderID);
+        $receiverDetails = $this->userDetails($receiverID);
+        $senderDetails = $this->userDetails($senderID);
         $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
         $this->otpService->ensureValidated($identifier);
@@ -108,8 +108,10 @@ class SendMoneyService implements ISendMoneyService
         $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
         $this->logHistories($senderID, $receiverID, $fillRequest);
         $this->userTransactionHistory($senderID, $fillRequest);
-        $this->senderNotification($user->$username,$fillRequest, $receiverID, $senderID);
-        $this->recipientNotification($fillRequest[$username], $fillRequest, $senderID, $receiverID);
+        // $this->senderNotification($user->$username,$fillRequest, $receiverID, $senderID);
+        // $this->recipientNotification($fillRequest[$username], $fillRequest, $senderID, $receiverID);
+
+        return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username);
     }
 
 
@@ -132,8 +134,8 @@ class SendMoneyService implements ISendMoneyService
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
-        $receiverDetails = $this->hasUserDetails($receiverID);
-        $senderDetails = $this->hasUserDetails($senderID);
+        $receiverDetails = $this->userDetails($receiverID);
+        $senderDetails = $this->userDetails($senderID);
 
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
@@ -218,11 +220,22 @@ class SendMoneyService implements ISendMoneyService
         ];
     }
 
-    // for manual overide by KYC personel if true
-    private function isAmountExceeded($amount)
+
+    private function sendMoneyResponse($receiverDetails, $fillRequest, $username)
     {
-        if ($amount > 500000.000000) return true;
+        return [
+            'first name' => $receiverDetails->first_name,
+            'middle name' => $receiverDetails->middle_name,
+            'last name' =>  $receiverDetails->last_name,
+            'name extension' => $receiverDetails->extension,
+            $username => $fillRequest[$username],
+            'message' => $fillRequest['message'],
+            'reference number' =>  $fillRequest['refNo'],
+            'total amount' =>   $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'transaction date' => date('l jS \of F Y h:i:s A')
+        ];
     }
+
 
     private function getUserID(string $usernameField, array $fillRequest)
     {
@@ -232,10 +245,11 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function hasUserDetails($userID)
+    private function userDetails($userID)
     {
         return $this->userDetailRepository->getByUserId($userID);
     }
+    
 
     private function isSelf(string $senderID, string $receiverID)
     {
