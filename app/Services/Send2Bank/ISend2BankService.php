@@ -20,5 +20,4 @@ interface ISend2BankService
      * @throws Throwable
      */
     public function fundTransfer(string $fromUserId, array $recipient);
-    public function fundTransferToUBPDirect(string $fromUserId, array $recipient, bool $requireOtp = true);
 }
