@@ -36,5 +36,11 @@ return [
             'secret' => env('GLOBE_APP_SECRET'),
             'rewards_token' => env('GLOBE_REWARDS_TOKEN'),
         ],
+        'atm' => [
+            'url' => env('ATM_PREPAID_SOLUTIONS_URL'),
+            'id' => env('ATM_PREPAID_SOLUTIONS_ID'),
+            'uid' => env('ATM_PREPAID_SOLUTIONS_UID'),
+            'password' => env('ATM_PREPAID_SOLUTIONS_PASSWORD'),
+        ],
     ]
 ];

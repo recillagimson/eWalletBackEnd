@@ -56,6 +56,7 @@ if (App::environment('local')) {
     Route::prefix('/atm')->group(function () {
         Route::post('/generate/signature', [AtmController::class, 'generate']);
         Route::post('/verify/signature', [AtmController::class, 'verify']);
+        Route::get('/network-types', [AtmController::class, 'showPrefixNetworkList']);
     });
 }
 
@@ -149,6 +150,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
             
         });
+
+        Route::prefix('/atm')->group(function () {
+            Route::get('/network-types', [AtmController::class, 'showPrefixNetworkList']);
+            Route::get('/product-list', [AtmController::class, 'showProductList']);
+            Route::post('/load', [AtmController::class, 'load']);
+        });
+    
     });
 
     Route::prefix('send/money')->middleware(['decrypt.request'])->group(function () {

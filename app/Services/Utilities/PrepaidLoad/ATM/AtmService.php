@@ -6,23 +6,18 @@ namespace App\Services\Utilities\PrepaidLoad\ATM;
 
 use App\Traits\Errors\WithTransactionErrors;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Enums\ReferenceNumberTypes;
 
 class AtmService implements IAtmService
 {
     use WithTransactionErrors;
+    private IReferenceNumberService $referenceNumberService;
 
-    public function __construct()
+    public function __construct(IReferenceNumberService $referenceNumberService)
     {
-    }
-
-    public function load(array $items): array
-    {
-        // TODO: Implement load() method.
-    }
-
-    public function showNetworkPromos(): array
-    {
-        // TODO: Implement showNetworkPromos() method.
+        $this->referenceNumberService = $referenceNumberService;
     }
 
     public function generateSignature(array $data): string
@@ -57,5 +52,64 @@ class AtmService implements IAtmService
 
         $certificateCApem = 'partnerid.public' . '.pem';
         Storage::disk('local')->put('/key/' . $certificateCApem, $certificateCApemContent);
+    }
+
+    public function showNetworkAndPrefix(): array
+    {
+        $signature = $this->generateSignature($this->createATMPostBody());
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Signature' => $signature
+        ])->post(config('services.load.atm.url').'/prefix-list', 
+        $this->createATMPostBody());
+
+        $result = json_decode($response->body());
+        
+        return $result->data;
+    }
+
+    public function showProductList(): array
+    {
+        $signature = $this->generateSignature($this->createATMPostBody());
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Signature' => $signature
+        ])->post(config('services.load.atm.url').'/product-list', 
+        $this->createATMPostBody());
+
+        $result = json_decode($response->body());
+        
+        return $result->data;
+    }
+
+    public function atmload(object $items): array
+    {
+        $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::BuyLoad);
+        $items->agentRefNo = $referenceNumber;
+        $signature = $this->generateSignature($this->createATMPostBody($items));
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Signature' => $signature
+        ])->post(config('services.load.atm.url').' /topup-request', 
+        $this->createATMPostBody($items));
+
+        $result = json_decode($response->body());
+        
+        
+        return $result->data;
+    }
+
+    public function createATMPostBody(object $items=null):array {
+        $body = (object)[];
+
+        $body->id = config('services.load.atm.id');
+        $body->uid = config('services.load.atm.uid');
+        $body->pwd = config('services.load.atm.password');
+        $body->data = $items;
+
+        return json_decode(json_encode($body), true);;
     }
 }
