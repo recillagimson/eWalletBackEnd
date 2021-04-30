@@ -4,6 +4,7 @@
 namespace App\Services\Send2Bank;
 
 
+use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategoryIds;
@@ -18,6 +19,7 @@ use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithAuthErrors;
 use App\Traits\Errors\WithTpaErrors;
@@ -38,6 +40,7 @@ class Send2BankPesonetService implements ISend2BankService
     private ITransactionValidationService $transactionValidationService;
     private INotificationService $notificationService;
     private IUBPService $ubpService;
+    private IOtpService $otpService;
 
     private IUserAccountRepository $users;
     private IUserBalanceInfoRepository $userBalances;
@@ -49,6 +52,7 @@ class Send2BankPesonetService implements ISend2BankService
                                 INotificationService $notificationService,
                                 ISmsService $smsService,
                                 IEmailService $emailService,
+                                IOtpService $otpService,
                                 IUserAccountRepository $users,
                                 IUserBalanceInfoRepository $userBalances,
                                 IOutSend2BankRepository $send2banks,
@@ -61,6 +65,7 @@ class Send2BankPesonetService implements ISend2BankService
         $this->notificationService = $notificationService;
         $this->smsService = $smsService;
         $this->emailService = $emailService;
+        $this->otpService = $otpService;
 
         $this->users = $users;
         $this->userBalances = $userBalances;
@@ -78,7 +83,24 @@ class Send2BankPesonetService implements ISend2BankService
         return json_decode($response->body())->records;
     }
 
-    public function fundTransfer(string $fromUserId, array $recipient, bool $requireOtp = true): array
+    public function validateFundTransfer(string $userId, array $recipient)
+    {
+        $transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
+
+        $user = $this->users->getUser($userId);
+        $this->transactionValidationService->validateUser($user);
+
+        $serviceFee = $this->serviceFees
+            ->getByTierAndTransCategory($user->tier_id, $transactionCategoryId);
+
+        $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
+        $totalAmount = $recipient['amount'] + $serviceFeeAmount;
+
+        $this->transactionValidationService
+            ->validate($user, $transactionCategoryId, $totalAmount);
+    }
+
+    public function fundTransfer(string $userId, array $recipient, bool $requireOtp = true): array
     {
         $updateReferenceCounter = false;
 
@@ -87,7 +109,7 @@ class Send2BankPesonetService implements ISend2BankService
             $transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
             $provider = TpaProviders::ubpPesonet;
 
-            $user = $this->users->getUser($fromUserId);
+            $user = $this->users->getUser($userId);
             $this->transactionValidationService->validateUser($user);
 
             $serviceFee = $this->serviceFees
@@ -100,16 +122,19 @@ class Send2BankPesonetService implements ISend2BankService
             $this->transactionValidationService
                 ->validate($user, $transactionCategoryId, $totalAmount);
 
+
+            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
+
             $userFullName = ucwords($user->profile->full_name);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
             $otherPurpose = $recipient['other_purpose'] ?? '';
 
-            $send2Bank = $this->send2banks->createTransaction($fromUserId, $refNo, $recipient['bank_code'], $recipient['bank_name'],
+            $send2Bank = $this->send2banks->createTransaction($userId, $refNo, $recipient['bank_code'], $recipient['bank_name'],
                 $recipient['account_name'], $recipient['account_number'], $recipient['purpose'], $otherPurpose,
                 $recipient['amount'], $serviceFeeAmount, $serviceFeeId, $currentDate, $transactionCategoryId, $provider,
-                $recipient['send_receipt_to'], $fromUserId);
+                $recipient['send_receipt_to'], $userId);
 
             if (!$send2Bank) $this->transactionFailed();
 
