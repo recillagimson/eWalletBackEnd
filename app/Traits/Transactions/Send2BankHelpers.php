@@ -7,20 +7,27 @@ namespace App\Traits\Transactions;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionStatuses;
 use App\Enums\UbpResponseCodes;
+use App\Enums\UsernameTypes;
 use App\Models\OutSend2Bank;
+use App\Models\UserAccount;
 use App\Models\UserBalanceInfo;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Traits\Errors\WithUserErrors;
+use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
 
 trait Send2BankHelpers
 {
-    use WithUserErrors;
+    use WithUserErrors, UserHelpers;
 
     private IOutSend2BankRepository $send2banks;
     private IUserTransactionHistoryRepository $transactionHistories;
+    private ISmsService $smsService;
+    private IEmailService $emailService;
 
     private function updateUserBalance(UserBalanceInfo $balanceInfo, float $amount): UserBalanceInfo
     {
@@ -89,6 +96,11 @@ trait Send2BankHelpers
             $data = $response->json()['record'];
             $code = $data['code'];
 
+            if ($code === UbpResponseCodes::receivedRequest || $code === UbpResponseCodes::processing
+                || $code === UbpResponseCodes::forConfirmation || $code === UbpResponseCodes::networkIssue) {
+                return $send2Bank;
+            }
+
             if ($code === UbpResponseCodes::successfulTransaction) {
                 $send2Bank->status = TransactionStatuses::success;
             }
@@ -102,6 +114,19 @@ trait Send2BankHelpers
             $send2Bank->save();
 
             return $send2Bank;
+        }
+    }
+
+    private function sendNotifications(UserAccount $user, OutSend2Bank $send2Bank, float $userBalance)
+    {
+        $usernameField = $this->getUsernameFieldByAvailability($user);
+        $username = $this->getUsernameByField($user, $usernameField);
+        $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
+
+        if ($send2Bank->status === TransactionStatuses::success) {
+            $notifService->sendSend2BankSenderNotification($username, $send2Bank->reference_number, $send2Bank->account_number,
+                $send2Bank->amount, $send2Bank->transaction_date, $send2Bank->service_fee, $userBalance, $send2Bank->provider,
+                $send2Bank->remittance_id);
         }
     }
 }

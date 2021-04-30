@@ -8,9 +8,6 @@ use App\Enums\ReferenceNumberTypes;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
-use App\Enums\UsernameTypes;
-use App\Models\OutSend2Bank;
-use App\Models\UserAccount;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -41,33 +38,37 @@ class Send2BankPesonetService implements ISend2BankService
     private ITransactionValidationService $transactionValidationService;
     private INotificationService $notificationService;
     private IUBPService $ubpService;
-    private ISmsService $smsService;
-    private IEmailService $emailService;
+
 
     private IUserAccountRepository $users;
     private IUserBalanceInfoRepository $userBalances;
     private IServiceFeeRepository $serviceFees;
 
-    public function __construct(IUBPService $ubpService, IReferenceNumberService $referenceNumberService,
+    public function __construct(IUBPService $ubpService,
+                                IReferenceNumberService $referenceNumberService,
                                 ITransactionValidationService $transactionValidationService,
-                                INotificationService $notificationService, ISmsService $smsService,
+                                INotificationService $notificationService,
+                                ISmsService $smsService,
                                 IEmailService $emailService,
-                                IUserAccountRepository $users, IUserBalanceInfoRepository $userBalances,
-                                IOutSend2BankRepository $send2banks, IServiceFeeRepository $serviceFees,
+                                IUserAccountRepository $users,
+                                IUserBalanceInfoRepository $userBalances,
+                                IOutSend2BankRepository $send2banks,
+                                IServiceFeeRepository $serviceFees,
                                 IUserTransactionHistoryRepository $transactionHistories)
     {
         $this->ubpService = $ubpService;
         $this->referenceNumberService = $referenceNumberService;
         $this->transactionValidationService = $transactionValidationService;
         $this->notificationService = $notificationService;
+        $this->smsService = $smsService;
+        $this->emailService = $emailService;
 
         $this->users = $users;
         $this->userBalances = $userBalances;
         $this->serviceFees = $serviceFees;
         $this->send2banks = $send2banks;
         $this->transactionHistories = $transactionHistories;
-        $this->smsService = $smsService;
-        $this->emailService = $emailService;
+
     }
 
 
@@ -125,33 +126,30 @@ class Send2BankPesonetService implements ISend2BankService
         }
     }
 
-    public function processPending(string $userId)
+    public function processPending(string $userId): array
     {
         $user = $this->users->getUser($userId);
         $pendingSend2Banks = $this->send2banks->getPending($userId);
-        //$processedCount = 0;
+        $successCount = 0;
+        $failCount = 0;
 
         foreach ($pendingSend2Banks as $send2Bank) {
             $response = $this->ubpService->checkStatus(TpaProviders::ubpPesonet, $send2Bank->reference_number);
             $send2Bank = $this->handleStatusResponse($send2Bank, $response);
             $this->sendNotifications($user, $send2Bank, $user->balanceInfo->available_balance);
-        }
-    }
 
-    private function sendNotifications(UserAccount $user, OutSend2Bank $send2Bank, float $userBalance)
-    {
-        $usernameField = $this->getUsernameFieldByAvailability($user);
-        $username = $this->getUsernameByField($user, $usernameField);
-        $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
-
-        if ($send2Bank->status === TransactionStatuses::success) {
-            $notifService->sendSend2BankSenderNotification($username, $send2Bank->reference_number, $send2Bank->account_number,
-                $send2Bank->amount, $send2Bank->transaction_date, $send2Bank->service_fee, $userBalance, $send2Bank->provider,
-                $send2Bank->remittance_id);
+            if ($send2Bank->status === TransactionStatuses::success) $successCount++;
+            if ($send2Bank->status === TransactionStatuses::failed) $failCount++;
         }
 
-
+        return [
+            'total_pending_count' => $pendingSend2Banks->count(),
+            'success_count' => $successCount,
+            'failed_count' => $failCount
+        ];
     }
+
+
 
 
 
