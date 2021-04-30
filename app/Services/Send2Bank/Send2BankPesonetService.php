@@ -171,23 +171,31 @@ class Send2BankPesonetService implements ISend2BankService
             $this->transactionValidationService
             ->validate($user, TransactionCategoryIds::send2BankPesoNet, $totalAmount);
             
-            
             $userFullName = ucwords($user->profile->full_name);
-            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
+            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank) . "testing1";
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
-            // $notifyType = $this->getRecepientField($recipient);
-            // $notifyTo = $notifyType !== '' ? $recipient[$notifyType] : '';
+            $notifyType = $this->getRecepientField($recipient);
+            $notifyTo = $notifyType !== '' ? $recipient[$notifyType] : '';
             
-            $balanceInfo = $this->updateUserBalance($user->balanceInfo, $totalAmount);
-            // public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName) : Response 
-            $transferResponse = $this->ubpService->send2BankUBPDirect($fromUserId, $transactionDate, $recipient['accountNo'], $recipient['amount'], $recipient['remarks'], $recipient['particulars'], $recipient['recipientName']);
+            $send2Bank = $this->updateUserTransactions($user->id, $refNo, $recipient['recipientName'],
+                $recipient['accountNo'], $recipient['remarks'], $recipient['amount'], $serviceFeeAmount,
+                $serviceFeeId, $currentDate, $notifyType, $notifyTo, TransactionCategoryIds::send2BankUBP,
+                TpaProviders::ubpDirect);
+                
 
+                if (!$send2Bank) $this->transFailed();
+
+                $balanceInfo = $this->updateUserBalance($user->balanceInfo, $totalAmount);
+
+            $transferResponse = $this->ubpService->send2BankUBPDirect($refNo, $transactionDate, $recipient['accountNo'], $recipient['amount'], $recipient['remarks'], $recipient['particulars'], $recipient['recipientName']);
+            $send2Bank = $this->handleDirectTransferResponse($send2Bank, $transferResponse);
+            // $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
         }    
         catch(\Exception $e) {
             DB::rollback();
-            dd($e->getMessage());
+            throw $e;
         }
     }
 

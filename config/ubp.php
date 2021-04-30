@@ -10,6 +10,8 @@ return [
     'instapay_transfer_url' => env('UBP_INSTAPAY_TRANSFER_URL'),
     'instapay_banks_url' => env('UBP_INSTAPAY_BANKS_URL'),
 
+    'direct_ubp_transfer_url' => env('UBP_PARTNER_TRANSFER_URL'),
+
     'client_id' => env('UBP_CLIENT_ID'),
     'client_secret' => env('UBP_CLIENT_SECRET'),
     'partner_id' => env('UBP_PARTNER_ID'),

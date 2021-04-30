@@ -104,4 +104,40 @@ trait Send2BankHelpers
             return $send2Bank;
         }
     }
+
+    private function handleDirectTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
+    {
+        \Log::info($response->json());
+        if (!$response->successful()) {
+            //$errors = $response->json();
+            $this->transFailed();
+        } else {
+            $data = $response->json();
+            $code = $data['code'];
+
+            $provider = TpaProviders::ubpDirect;
+            $status = '';
+            $providerTransactionId = $data['ubpTranId'];
+            $providerRemittanceId = $data['uuid'];
+
+            if ($code === UbpResponseCodes::receivedRequest || $code === UbpResponseCodes::processing
+                || $code === UbpResponseCodes::forConfirmation) {
+                $status = TransactionStatuses::pending;
+            } elseif ($code === UbpResponseCodes::successfulTransaction) {
+                $status = TransactionStatuses::success;
+            } else {
+                $this->transFailed();
+            }
+
+            $send2Bank->status = $status;
+            $send2Bank->provider = $provider;
+            $send2Bank->provider_transaction_id = $providerTransactionId;
+            $send2Bank->provider_remittance_id = $providerRemittanceId;
+            $send2Bank->user_updated = $send2Bank->user_account_id;
+            $send2Bank->transaction_response = json_encode($data);
+            $send2Bank->save();
+
+            return $send2Bank;
+        }
+    }
 }

@@ -43,6 +43,8 @@ class UBPService implements IUBPService
         $this->instaPayBanksUrl = config('ubp.instapay_banks_url');
         $this->instaPayTransferUrl = config('ubp.instapay_transfer_url');
 
+        $this->directUBPTransferUrl = config('ubp.direct_ubp_transfer_url');
+
         $this->clientId = config('ubp.client_id');
         $this->clientSecret = config('ubp.client_secret');
         $this->partnerId = config('ubp.partner_id');
@@ -170,9 +172,10 @@ class UBPService implements IUBPService
                 ]
             ]
         ];
-        dd($data);
-        $url = "";
-        return $this->apiService->get($url, $this->defaultHeaders);
+
+        $transferUrl = $this->directUBPTransferUrl;
+        $url = $this->baseUrl . $transferUrl;
+        return $this->apiService->post($url, $data, $headers);
     }
 
 
