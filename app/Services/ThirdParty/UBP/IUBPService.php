@@ -13,4 +13,6 @@ interface IUBPService
                                  string $instructions, string $provider): Response;
 
     public function checkStatus(string $provider, string $refNo): Response;
+
+    public function updateTransaction(string $status, string $remittanceId): Response;
 }

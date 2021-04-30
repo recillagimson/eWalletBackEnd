@@ -1,17 +1,17 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PayBillsController;
+use App\Http\Controllers\PayBills\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
@@ -106,7 +106,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/process/pending', [Send2BankController::class, 'processPending']);
         Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
+        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction']);
         Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
     });
 

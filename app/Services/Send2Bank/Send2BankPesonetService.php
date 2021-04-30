@@ -8,9 +8,6 @@ use App\Enums\ReferenceNumberTypes;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
-use App\Enums\UsernameTypes;
-use App\Models\OutSend2Bank;
-use App\Models\UserAccount;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -41,33 +38,36 @@ class Send2BankPesonetService implements ISend2BankService
     private ITransactionValidationService $transactionValidationService;
     private INotificationService $notificationService;
     private IUBPService $ubpService;
-    private ISmsService $smsService;
-    private IEmailService $emailService;
 
     private IUserAccountRepository $users;
     private IUserBalanceInfoRepository $userBalances;
     private IServiceFeeRepository $serviceFees;
 
-    public function __construct(IUBPService $ubpService, IReferenceNumberService $referenceNumberService,
+    public function __construct(IUBPService $ubpService,
+                                IReferenceNumberService $referenceNumberService,
                                 ITransactionValidationService $transactionValidationService,
-                                INotificationService $notificationService, ISmsService $smsService,
+                                INotificationService $notificationService,
+                                ISmsService $smsService,
                                 IEmailService $emailService,
-                                IUserAccountRepository $users, IUserBalanceInfoRepository $userBalances,
-                                IOutSend2BankRepository $send2banks, IServiceFeeRepository $serviceFees,
+                                IUserAccountRepository $users,
+                                IUserBalanceInfoRepository $userBalances,
+                                IOutSend2BankRepository $send2banks,
+                                IServiceFeeRepository $serviceFees,
                                 IUserTransactionHistoryRepository $transactionHistories)
     {
         $this->ubpService = $ubpService;
         $this->referenceNumberService = $referenceNumberService;
         $this->transactionValidationService = $transactionValidationService;
         $this->notificationService = $notificationService;
+        $this->smsService = $smsService;
+        $this->emailService = $emailService;
 
         $this->users = $users;
         $this->userBalances = $userBalances;
         $this->serviceFees = $serviceFees;
         $this->send2banks = $send2banks;
         $this->transactionHistories = $transactionHistories;
-        $this->smsService = $smsService;
-        $this->emailService = $emailService;
+
     }
 
 
@@ -78,81 +78,103 @@ class Send2BankPesonetService implements ISend2BankService
         return json_decode($response->body())->records;
     }
 
-    public function fundTransfer(string $fromUserId, array $recipient, bool $requireOtp = true)
+    public function fundTransfer(string $fromUserId, array $recipient, bool $requireOtp = true): array
     {
+        $updateReferenceCounter = false;
+
         try {
             DB::beginTransaction();
+            $transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
+            $provider = TpaProviders::ubpPesonet;
 
             $user = $this->users->getUser($fromUserId);
             $this->transactionValidationService->validateUser($user);
 
             $serviceFee = $this->serviceFees
-                ->getByTierAndTransCategory($user->tier_id, TransactionCategoryIds::send2BankPesoNet);
+                ->getByTierAndTransCategory($user->tier_id, $transactionCategoryId);
 
             $serviceFeeId = $serviceFee ? $serviceFee->id : '';
             $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
             $totalAmount = $recipient['amount'] + $serviceFeeAmount;
 
             $this->transactionValidationService
-                ->validate($user, TransactionCategoryIds::send2BankPesoNet, $totalAmount);
+                ->validate($user, $transactionCategoryId, $totalAmount);
 
             $userFullName = ucwords($user->profile->full_name);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
-            $notifyType = $this->getRecepientField($recipient);
-            $notifyTo = $notifyType !== '' ? $recipient[$notifyType] : '';
+            $otherPurpose = $recipient['other_purpose'] ?? '';
 
-            $send2Bank = $this->updateUserTransactions($user->id, $refNo, $recipient['account_name'],
-                $recipient['account_number'], $recipient['message'], $recipient['amount'], $serviceFeeAmount,
-                $serviceFeeId, $currentDate, $notifyType, $notifyTo, TransactionCategoryIds::send2BankPesoNet,
-                TpaProviders::ubpPesonet);
+            $send2Bank = $this->send2banks->createTransaction($fromUserId, $refNo, $recipient['bank_code'], $recipient['bank_name'],
+                $recipient['account_name'], $recipient['account_number'], $recipient['purpose'], $otherPurpose,
+                $recipient['amount'], $serviceFeeAmount, $serviceFeeId, $currentDate, $transactionCategoryId, $provider,
+                $recipient['send_receipt_to'], $fromUserId);
 
-            if (!$send2Bank) $this->transFailed();
-
-            $balanceInfo = $this->updateUserBalance($user->balanceInfo, $totalAmount);
+            if (!$send2Bank) $this->transactionFailed();
 
             $transferResponse = $this->ubpService->fundTransfer($refNo, $userFullName, $recipient['bank_code'],
                 $recipient['account_number'], $recipient['account_name'], $recipient['amount'], $transactionDate,
-                $recipient['message'], TpaProviders::ubpPesonet);
+                ' ', $provider);
 
+            $updateReferenceCounter = true;
             $send2Bank = $this->handleTransferResponse($send2Bank, $transferResponse);
+
+            $balanceInfo = $user->balanceInfo;
+            $balanceInfo->available_balance -= $totalAmount;
+            if ($send2Bank->status === TransactionStatuses::pending) $balanceInfo->pending_balance += $totalAmount;
+            if ($send2Bank->status === TransactionStatuses::failed) $balanceInfo->available_balance += $totalAmount;
+            $balanceInfo->save();
+
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
+
+            return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();
+
+            if ($updateReferenceCounter === true)
+                $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
+
             throw $e;
         }
     }
 
-    public function processPending(string $userId)
+    public function processPending(string $userId): array
     {
         $user = $this->users->getUser($userId);
         $pendingSend2Banks = $this->send2banks->getPending($userId);
-        //$processedCount = 0;
+        $successCount = 0;
+        $failCount = 0;
 
         foreach ($pendingSend2Banks as $send2Bank) {
             $response = $this->ubpService->checkStatus(TpaProviders::ubpPesonet, $send2Bank->reference_number);
             $send2Bank = $this->handleStatusResponse($send2Bank, $response);
-            $this->sendNotifications($user, $send2Bank, $user->balanceInfo->available_balance);
+            $balanceInfo = $this->updateUserBalance($user->balanceInfo, $send2Bank->total_amount, $send2Bank->status);
+            $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
+
+            if ($send2Bank->status === TransactionStatuses::success) $successCount++;
+            if ($send2Bank->status === TransactionStatuses::failed) $failCount++;
         }
+
+        return [
+            'total_pending_count' => $pendingSend2Banks->count(),
+            'success_count' => $successCount,
+            'failed_count' => $failCount
+        ];
     }
 
-    private function sendNotifications(UserAccount $user, OutSend2Bank $send2Bank, float $userBalance)
+    public function updateTransaction(string $status, string $refNo)
     {
-        $usernameField = $this->getUsernameFieldByAvailability($user);
-        $username = $this->getUsernameByField($user, $usernameField);
-        $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
+        $send2Bank = $this->send2banks->getByReferenceNo($refNo);
+        if (!$send2Bank) $this->transactionNotFound();
 
-        if ($send2Bank->status === TransactionStatuses::success) {
-            $notifService->sendSend2BankSenderNotification($username, $send2Bank->reference_number, $send2Bank->account_number,
-                $send2Bank->amount, $send2Bank->transaction_date, $send2Bank->service_fee, $userBalance, $send2Bank->provider,
-                $send2Bank->remittance_id);
-        }
+        $response = $this->ubpService->updateTransaction($status, $send2Bank->provider_remittance_id);
+        if ($response->successful()) return $response->json();
 
-
+        $errors = $response->json();
+        $this->transactionFailed();
     }
-
 
 
 }

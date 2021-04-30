@@ -15,10 +15,13 @@ class OutSend2Bank extends Model
     protected $fillable = [
         'user_account_id',
         'reference_number',
+        'bank_code',
+        'bank_name',
         'account_name',
         'account_number',
         'sender_recepient_to',
         'purpose',
+        'other_purpose',
         'amount',
         'service_fee',
         'service_fee_id',
@@ -29,9 +32,12 @@ class OutSend2Bank extends Model
         'status',
         'provider',
         'provider_reference',
-        'notify_type',
-        'notify_to',
+        'send_receipt_to',
         'user_created',
         'user_updated',
+    ];
+
+    protected $casts = [
+        'transaction_date' => 'datetime'
     ];
 }

@@ -28,10 +28,12 @@ class ErrorCodes
     //3RD PARTY APIS - 200
     const tpaFailedAuthentication = 201;
     const tpaErrorOccured = 202;
+    const tpaInvalidProvider = 203;
 
     //TRANSACTIONS - 300
     const transactionInvalid = 301;
     const transactionFailed = 302;
+    const transactionDoesntExists = 303;
 
     //USER ERRORS - 400
     const userProfileNotUpdated = 401;

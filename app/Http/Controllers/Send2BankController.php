@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Send2Bank\FundTransferRequest;
+use App\Http\Requests\Send2Bank\TransactionUpdateRequest;
 use App\Services\Send2Bank\ISend2BankService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
+use Illuminate\Http\Request;
 
 class Send2BankController extends Controller
 {
@@ -40,7 +41,23 @@ class Send2BankController extends Controller
     {
         $recipient = $request->validated();
         $userId = $request->user()->id;
-        $this->send2BankService->fundTransfer($userId, $recipient);
-        return response()->json([], Response::HTTP_OK);
+        $response = $this->send2BankService->fundTransfer($userId, $recipient);
+        return $this->responseService->successResponse($response);
     }
+
+    public function processPending(Request $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+        $response = $this->send2BankService->processPending($userId);
+        return $this->responseService->successResponse($response);
+    }
+
+    public function updateTransaction(TransactionUpdateRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $response = $this->send2BankService->updateTransaction($data['status'], $data['reference_number']);
+        return $this->responseService->successResponse($response);
+    }
+
+
 }

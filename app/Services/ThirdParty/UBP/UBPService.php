@@ -17,6 +17,7 @@ class UBPService implements IUBPService
     private string $tokenUrl;
 
     private string $pesonetTransferUrl;
+    private string $pesonetTransactionUpdateUrl;
     private string $pesonetBanksUrl;
 
     private string $instaPayTransferUrl;
@@ -38,6 +39,7 @@ class UBPService implements IUBPService
         $this->tokenUrl = config('ubp.token_url');
 
         $this->pesonetTransferUrl = config('ubp.pesonet_transfer_url');
+        $this->pesonetTransactionUpdateUrl = config('ubp.pesonet_transaction_update_url');
         $this->pesonetBanksUrl = config('ubp.pesonet_banks_url');
 
         $this->instaPayBanksUrl = config('ubp.instapay_banks_url');
@@ -94,9 +96,7 @@ class UBPService implements IUBPService
                                  string $recepientAccountName, float $amount, string $transactionDate,
                                  string $instructions, string $provider): Response
     {
-        $token = $this->getToken();
-        $headers = $this->defaultHeaders;
-        $headers['Authorization'] = 'Bearer ' . $token->access_token;
+        $headers = $this->getAuthorizationHeaders();
 
         $data = [
             "senderRefId" => $refNo,
@@ -143,6 +143,30 @@ class UBPService implements IUBPService
         $transferUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetTransferUrl : $this->instaPayTransferUrl;
         $url = $this->baseUrl . $transferUrl . '/' . $refNo;
         return $this->apiService->get($url, $this->defaultHeaders);
+    }
+
+    public function updateTransaction(string $status, string $remittanceId): Response
+    {
+        $headers = $this->getAuthorizationHeaders();
+
+        $data = [
+            'status' => $status,
+            'remittanceId' => $remittanceId
+        ];
+
+        $updateUrl = $this->pesonetTransactionUpdateUrl;
+        $url = $this->baseUrl . $updateUrl;
+
+        return $this->apiService->post($url, $data, $headers);
+    }
+
+    private function getAuthorizationHeaders(): array
+    {
+        $token = $this->getToken();
+        $headers = $this->defaultHeaders;
+        $headers['Authorization'] = 'Bearer ' . $token->access_token;
+
+        return $headers;
     }
 
 
