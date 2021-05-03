@@ -23,6 +23,8 @@ use App\Repositories\OtpRepository\IOtpRepository;
 use App\Repositories\OtpRepository\OtpRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutBuyLoad\OutBuyLoadRepository;
+use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Repositories\OutPayBills\OutPayBillsRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\OutSendMoney\OutSendMoneyRepository;
 use App\Repositories\Payload\IPayloadRepository;
@@ -157,6 +159,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
 
         $this->app->bind(IOutSend2BankRepository::class, OutSend2BankRepository::class);
+
+        //Pay Bills Repositories
+        $this->app->bind(IOutPayBillsRepository::class, OutPayBillsRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();

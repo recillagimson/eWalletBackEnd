@@ -11,7 +11,7 @@ use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PayBills\PayBillsController;
+use App\Http\Controllers\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
@@ -157,7 +157,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('pay/bills')->group(function () {
-        Route::get('/', [PayBillsController::class, 'payBills']);
+        Route::get('/', [PayBillsController::class, 'getBillers']);
+        Route::post('/create/payment', [PayBillsController::class, 'createPayment']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->group(function () {

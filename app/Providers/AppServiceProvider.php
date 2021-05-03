@@ -25,6 +25,8 @@ use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
+use App\Services\PayBills\IPayBillsService;
+use App\Services\PayBills\PayBillsService;
 use App\Services\Send2Bank\ISend2BankService;
 use App\Services\Send2Bank\Send2BankPesonetService;
 use App\Services\SendMoney\ISendMoneyService;
@@ -100,6 +102,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
         $this->app->bind(IVerificationService::class, VerificationService::class);
+        $this->app->bind(IPayBillsService::class, PayBillsService::class);
 
         //APP SERVICES - CONTEXTUAL BINDINGS
         $this->bindNotificationService();
