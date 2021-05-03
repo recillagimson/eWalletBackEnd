@@ -24,11 +24,10 @@ class Send2BankUBPDirectRequest extends FormRequest
     public function rules()
     {
         return [
-            "accountNo" => "required",
-            "amount" => "required",
+            "recipient_account_no" => "required",
+            "recipient_name" => "required",
             "remarks" => "required",
             "particulars" => "required",
-            "recipientName" => "required",
         ];
     }
 }

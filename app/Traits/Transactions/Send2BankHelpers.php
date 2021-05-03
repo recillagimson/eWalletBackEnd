@@ -133,28 +133,20 @@ trait Send2BankHelpers
             $this->transFailed();
         } else {
             $data = $response->json();
+            $code = $data['code'];
 
             $provider = TpaProviders::ubpDirect;
-            $status = '';
             $providerTransactionId = $data['ubpTranId'];
             $providerRemittanceId = $data['uuid'];
 
-            $state = $data['state'];
-
-            if ($state === UbpResponseStates::receivedRequest || $state === UbpResponseStates::sentForProcessing
-                || $state === UbpResponseStates::forConfirmation || $state === UbpResponseStates::networkIssue) {
-                return $send2Bank;
-            }
-
-            if ($state === UbpResponseStates::creditedToAccount) {
+            if ($code === UbpResponseCodes::successfulTransaction) {
                 $send2Bank->status = TransactionStatuses::success;
-            }
-
-            if ($state === UbpResponseStates::failedToCreditAccount) {
+            } else if($code === UbpResponseCodes::receivedRequest || UbpResponseCodes::processing || UbpResponseCodes::forConfirmation) {
+                $send2Bank->status = TransactionStatuses::pending;
+            } else {
                 $send2Bank->status = TransactionStatuses::failed;
             }
 
-            $send2Bank->status = $status;
             $send2Bank->provider = $provider;
             $send2Bank->provider_transaction_id = $providerTransactionId;
             $send2Bank->provider_remittance_id = $providerRemittanceId;
