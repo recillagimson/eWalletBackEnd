@@ -547,6 +547,95 @@ class DragonPayService implements IAddMoneyService
         ]);
     }
 
+    /**
+     * Update all users transaction status
+     *
+     * @param Type $var Description
+     * @return type
+     * @throws conditon
+     **/
+    public function updateUserTransactionStatus(UserAccount $user)
+    {
+        $dateTomorrow = Carbon::now()->addDay(1);
+
+        $threeMonthsBeforeTomorrow = Carbon::now()->addDay(1)->subMonth(3);
+
+        $squidPayTrans = $this->addMoneys->getBetweenDates($threeMonthsBeforeTomorrow, $dateTomorrow);
+
+        $dragPayTrans = $this->dragonpayRequest('/transactions?startdate=' . $threeMonthsBeforeTomorrow . '&enddate=' . $dateTomorrow)->json();
+
+        $refNos = [];
+        $dragPayDataToInsert = [];
+
+        foreach ($dragPayTrans as $trans) {
+
+            switch ($trans['Status']) {
+                case 'S':
+                    $statusShouldBe = DragonPayStatusTypes::Success;
+                    break;
+    
+                case 'F':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                case 'P':
+                    $statusShouldBe = DragonPayStatusTypes::Pending;
+                    break;
+    
+                case 'U':
+                    $statusShouldBe = DragonPayStatusTypes::Pending;
+                    break;
+    
+                case 'R':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                case 'K':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                case 'V':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                case 'A':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                default:
+                    return $this->noStatusReceived();
+                    break;
+            }
+
+            $refNos[] = $trans['TxnId'];
+            $dragPayDataToInsert[] = [
+                'reference_number' => $trans['TxnId'],
+                'dragonpay_reference' => $trans['RefNo'],
+                'dragonpay_channel_reference_number' => $trans['ProcId'],
+                'transaction_remarks' => $trans['Description'],
+                'status' => $statusShouldBe
+            ];
+        }
+
+        $result = [];
+        foreach ($squidPayTrans as $trans) {
+            $result[] = $trans->reference_number;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Format date to YYYY-MM-DD
+     *
+     * @param object $dateToFormat
+     * @return string
+     **/
+    public function dateToYYYYMMDD(object $dateToFormat)
+    {
+        return $dateToFormat->isoFormat('YYYY-MM-DD');
+    }
+
 
 
 

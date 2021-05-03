@@ -85,4 +85,11 @@ class AddMoneyController extends Controller
 
         return $this->responseService->successResponse($transaction, SuccessMessages::success);
     }
+
+    public function updateUserTrans(Request $request)
+    {
+        $user = $request->user();
+
+        return $this->addMoneyService->updateUserTransactionStatus($user);
+    }
 }
