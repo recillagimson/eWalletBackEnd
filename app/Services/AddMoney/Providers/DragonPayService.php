@@ -618,8 +618,16 @@ class DragonPayService implements IAddMoneyService
         }
 
         $result = [];
-        foreach ($squidPayTrans as $trans) {
-            $result[] = $trans->reference_number;
+        
+        foreach ($squidPayTrans as $squidPayTrans) {
+
+            foreach ($dragPayDataToInsert as $dragPayData) {
+                
+                if ($squidPayTrans->reference_number == $dragPayData['reference_number']) {
+                    
+                    $result[] = $this->addMoneys->update($squidPayTrans, $dragPayData);
+                }
+            }
         }
 
         return $result;
