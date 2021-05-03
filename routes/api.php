@@ -1,17 +1,17 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AddMoneyController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PayBillsController;
+use App\Http\Controllers\PayBills\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
@@ -106,10 +106,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {
-        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
         Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
         Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect']);
         Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions']);
+        Route::get('/process/pending', [Send2BankController::class, 'processPending']);
+
+        Route::post('/validate', [Send2BankController::class, 'validateFundTransfer']);
+        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
+        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction']);
     });
 
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function () {
@@ -143,7 +147,7 @@ Route::middleware('auth:sanctum')->group(function () {
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
-            
+
         });
     });
 

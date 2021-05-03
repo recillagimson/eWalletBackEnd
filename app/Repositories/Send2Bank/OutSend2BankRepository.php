@@ -16,6 +16,11 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
         parent::__construct($model);
     }
 
+    public function getByReferenceNo(string $refNo)
+    {
+        return $this->model->where('reference_number', $refNo)->first();
+    }
+
     public function getPending(string $userId)
     {
         return $this->model->where([
@@ -24,16 +29,19 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
         ])->get();
     }
 
-    public function createTransaction(string $userId, string $refNo, string $accountName, string $accountNumber, string $message,
-                                      float $amount, float $serviceFee, string $serviceFeeId, Carbon $transactionDate, string $transactionCategoryId,
-                                      string $provider, string $notifyType, string $notifyTo, string $userCreated)
+
+    public function createTransaction(string $userId, string $refNo, string $bankCode, string $bankName, string $accountName,
+                                      string $accountNumber, string $purpose, string $otherPurpose, float $amount,
+                                      float $serviceFee, string $serviceFeeId, Carbon $transactionDate,
+                                      string $transactionCategoryId, string $provider, string $sendReceiptTo, string $userCreated)
     {
         $data = [
             'user_account_id' => $userId,
             'reference_number' => $refNo,
+            'bank_code' => $bankCode,
+            'bank_name' => $bankName,
             'account_name' => $accountName,
             'account_number' => $accountNumber,
-            'message' => $message,
             'amount' => $amount,
             'service_fee' => $serviceFee,
             'total_amount' => $amount + $serviceFee,
@@ -41,8 +49,9 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
             'transaction_date' => $transactionDate,
             'transaction_category_id' => $transactionCategoryId,
             'provider' => $provider,
-            'notify_type' => $notifyType,
-            'notify_to' => $notifyTo,
+            'send_receipt_to' => $sendReceiptTo,
+            'purpose' => $purpose,
+            'other_purpose' => $otherPurpose,
             'status' => TransactionStatuses::pending,
             'user_created' => $userCreated,
         ];

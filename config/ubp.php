@@ -5,6 +5,7 @@ return [
     'token_url' => env('UBP_TOKEN_URL'),
 
     'pesonet_transfer_url' => env('UBP_PESONET_TRANSFER_URL'),
+    'pesonet_transaction_update_url' => env('UBP_PESONET_TRANSACTION_UPDATE_URL'),
     'pesonet_banks_url' => env('UBP_PESONET_BANKS_URL'),
 
     'instapay_transfer_url' => env('UBP_INSTAPAY_TRANSFER_URL'),

@@ -16,6 +16,7 @@ use App\Enums\TransactionCategories;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Enums\UbpResponseCodes;
+use App\Enums\UbpResponseStates;
 use App\Enums\UserKeyTypes;
 use App\Enums\UsernameTypes;
 
@@ -269,6 +270,7 @@ return [
         'UserKeyTypes' => UserKeyTypes::class,
         'TransactionStatuses' => TransactionStatuses::class,
         'UbpResponseCodes' => UbpResponseCodes::class,
+        'UbpResponseStates' => UbpResponseStates::class,
 
         //Enums - Messages
         'SuccessMessages' => SuccessMessages::class,

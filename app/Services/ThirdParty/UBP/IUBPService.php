@@ -16,4 +16,5 @@ interface IUBPService
 
     public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName) : Response;
     public function verifyPendingDirectTransaction(string $senderRefId);
+    public function updateTransaction(string $status, string $remittanceId): Response;
 }

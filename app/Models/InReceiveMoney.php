@@ -20,6 +20,7 @@ class InReceiveMoney extends Model
         'user_account_id',
         'sender_id',
         'reference_number',
+        'out_send_money_reference_number',
         'amount',
         'message',
         'transaction_date',

@@ -43,4 +43,7 @@ class SuccessMessages
     const addMoneyPending = 'Waiting for deposit to selected bank';
     const addMoneyCancel = 'Add money request Cancelled';
     const addMoneyStatusAcquired = 'Transaction status acquired Successfully';
+
+    //Transactions
+    const transactionValidationSuccessful = 'Transaction Validation Successful';
 }
