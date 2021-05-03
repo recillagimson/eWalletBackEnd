@@ -6,67 +6,76 @@ namespace App\Traits\Transactions;
 
 use App\Enums\TpaProviders;
 use App\Enums\TransactionStatuses;
-use App\Enums\UbpResponseCodes;
+use App\Enums\UbpResponseStates;
+use App\Enums\UsernameTypes;
 use App\Models\OutSend2Bank;
+use App\Models\UserAccount;
 use App\Models\UserBalanceInfo;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithUserErrors;
-use Carbon\Carbon;
+use App\Traits\UserHelpers;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Str;
 
 trait Send2BankHelpers
 {
-    use WithUserErrors;
+    use WithUserErrors, UserHelpers, WithTpaErrors;
 
     private IOutSend2BankRepository $send2banks;
     private IUserTransactionHistoryRepository $transactionHistories;
+    private ISmsService $smsService;
+    private IEmailService $emailService;
 
-    private function updateUserBalance(UserBalanceInfo $balanceInfo, float $amount): UserBalanceInfo
+    private function getSend2BankProviderCaption(string $provider): string
     {
-        if ($balanceInfo->available_balance < $amount) $this->userInsufficientBalance();
-        $balanceInfo->available_balance -= $amount;
-        $balanceInfo->save();
+        if ($provider === TpaProviders::ubpPesonet) return 'UBP: Pesonet';
+        if ($provider === TpaProviders::ubpInstapay) return 'UBP: Instapay';
+        if ($provider === TpaProviders::ubp) return 'UBP';
 
-        return $balanceInfo;
+        $this->tpaInvalidProvider();
     }
 
-    private function updateUserTransactions(string $userId, string $refNo, string $accountName,
-                                            string $accountNumber, string $message, float $amount, float $serviceFeeAmount,
-                                            string $serviceFeeId, Carbon $transactionDate, string $notifyType,
-                                            string $notifyTo, string $transactionCategoryId, string $provider)
+    private function updateUserBalance(UserBalanceInfo $balanceInfo, float $amount,
+                                       string $status): UserBalanceInfo
     {
-        $send2bank = $this->send2banks->createTransaction($userId, $refNo, $accountName, $accountNumber, $message, $amount,
-            $serviceFeeAmount, $serviceFeeId, $transactionDate, $transactionCategoryId, $provider,
-            $notifyType, $notifyTo, $userId);
+        if ($status === TransactionStatuses::success) {
+            if ($balanceInfo->pending_balance > 0) $balanceInfo->pending_balance -= $amount;
+        }
 
-        $this->transactionHistories->log($userId, $transactionCategoryId, $send2bank->id, $refNo,
-            $send2bank->total_amount, $userId);
+        if ($status === TransactionStatuses::failed) {
+            $balanceInfo->available_balance += $amount;
+            $balanceInfo->pending_balance -= $amount;
+        }
 
-        return $send2bank;
+        $balanceInfo->save();
+        return $balanceInfo;
     }
 
     private function handleTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
     {
         if (!$response->successful()) {
-            //$errors = $response->json();
-            $this->transFailed();
+            $errors = $response->json();
+            $this->transactionFailed();
         } else {
             $data = $response->json();
-            $code = $data['code'];
+            $state = $data['state'];
 
             $provider = TpaProviders::ubpPesonet;
             $status = '';
             $providerTransactionId = $data['ubpTranId'];
             $providerRemittanceId = $data['remittanceId'];
 
-            if ($code === UbpResponseCodes::receivedRequest || $code === UbpResponseCodes::processing
-                || $code === UbpResponseCodes::forConfirmation) {
+            if ($state === UbpResponseStates::receivedRequest || $state === UbpResponseStates::sentForProcessing
+                || $state === UbpResponseStates::forConfirmation) {
                 $status = TransactionStatuses::pending;
-            } elseif ($code === UbpResponseCodes::successfulTransaction) {
+            } elseif ($state === UbpResponseStates::creditedToAccount) {
                 $status = TransactionStatuses::success;
             } else {
-                $this->transFailed();
+                $this->transactionFailed();
             }
 
             $send2Bank->status = $status;
@@ -76,6 +85,12 @@ trait Send2BankHelpers
             $send2Bank->user_updated = $send2Bank->user_account_id;
             $send2Bank->transaction_response = json_encode($data);
             $send2Bank->save();
+
+            if ($status === TransactionStatuses::success) {
+                $this->transactionHistories->log($send2Bank->user_account_id,
+                    $send2Bank->transaction_category_id, $send2bank->id, $send2Bank->reference_number,
+                    $send2bank->total_amount, $send2Bank->user_account_id);
+            }
 
             return $send2Bank;
         }
@@ -87,13 +102,18 @@ trait Send2BankHelpers
             return;
         } else {
             $data = $response->json()['record'];
-            $code = $data['code'];
+            $state = $data['state'];
 
-            if ($code === UbpResponseCodes::successfulTransaction) {
+            if ($state === UbpResponseStates::receivedRequest || $state === UbpResponseStates::sentForProcessing
+                || $state === UbpResponseStates::forConfirmation || $state === UbpResponseStates::networkIssue) {
+                return $send2Bank;
+            }
+
+            if ($state === UbpResponseStates::creditedToAccount) {
                 $send2Bank->status = TransactionStatuses::success;
             }
 
-            if ($code === UbpResponseCodes::failedTransaction) {
+            if ($state === UbpResponseStates::failedToCreditAccount) {
                 $send2Bank->status = TransactionStatuses::failed;
             }
 
@@ -103,5 +123,35 @@ trait Send2BankHelpers
 
             return $send2Bank;
         }
+    }
+
+    private function sendNotifications(UserAccount $user, OutSend2Bank $send2Bank, float $availableBalance)
+    {
+        $usernameField = $this->getUsernameFieldByAvailability($user);
+        $username = $this->getUsernameByField($user, $usernameField);
+        $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
+
+        if ($send2Bank->status === TransactionStatuses::success) {
+            $notifService->sendSend2BankSenderNotification($username, $send2Bank->reference_number, $send2Bank->account_number,
+                $send2Bank->amount, $send2Bank->transaction_date, $send2Bank->service_fee, $availableBalance, $send2Bank->provider,
+                $send2Bank->provider_remittance_id);
+
+            if ($send2Bank->send_receipt_to) {
+                $this->emailService->sendSend2BankReceipt($send2Bank->send_receipt_to, $send2Bank);
+            }
+        }
+    }
+
+    private function createTransferResponse(OutSend2Bank $send2Bank): array
+    {
+        return [
+            'bank_name' => $send2Bank->bank_name,
+            'account_number' => $send2Bank->account_number,
+            'account_name' => $send2Bank->account_name,
+            'amount' => $send2Bank->amount,
+            'send_receipt_to' => $send2Bank->send_receipt_to,
+            'purpose' => Str::lower($send2Bank->purpose) === 'others' ? $send2Bank->other_purpose : $send2Bank->purpose,
+            'transaction_number' => $send2Bank->reference_number
+        ];
     }
 }
