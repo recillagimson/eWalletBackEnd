@@ -132,7 +132,7 @@ class Send2BankDirectService implements ISend2BankDirectService
             if ($send2Bank->status === TransactionStatuses::failed) $balanceInfo->available_balance += $totalAmount;
             $balanceInfo->save();
 
-            // $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
+            $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
 
             return $this->createTransferResponse($send2Bank);
