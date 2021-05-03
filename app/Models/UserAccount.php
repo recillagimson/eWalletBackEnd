@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 
 class UserAccount extends Authenticatable
 {
@@ -66,7 +67,6 @@ class UserAccount extends Authenticatable
         return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
     }
 
-
     public function updateLockout(int $maxLoginAttempts)
     {
         $this->login_failed_attempts += 1;
@@ -97,6 +97,4 @@ class UserAccount extends Authenticatable
     {
         $this->tokens()->where('name', $tokenName)->delete();
     }
-
-
 }

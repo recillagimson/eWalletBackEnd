@@ -27,4 +27,14 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
     {
         return $this->model->with(['profile', 'balanceInfo']);
     }
+
+    private function getUserDetailsBaseQuery() : Builder
+    {
+        return $this->model->with(['profile','balanceInfo','tier']);
+    }
+
+    public function getUserInfo(string $userAccountID)
+    {
+        return $this->getUserDetailsBaseQuery()->where('id', '=', $userAccountID)->first();
+    }
 }

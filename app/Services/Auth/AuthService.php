@@ -172,6 +172,8 @@ class AuthService implements IAuthService
             $notif->sendLoginVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::passwordRecovery || $otpType === OtpTypes::pinRecovery)
             $notif->sendPasswordVerification($username, $otp->token, $otpType);
+        elseif ($otpType === OtpTypes::sendMoney)
+            $notif->sendMoneyVerification($username, $otp->token);
         else
             $this->otpTypeInvalid();
     }

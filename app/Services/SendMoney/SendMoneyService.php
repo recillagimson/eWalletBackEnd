@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Services\SendMoney;
 
+use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SendMoneyConfig;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
@@ -10,10 +12,15 @@ use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithSendMoneyErrors;
 use Illuminate\Validation\ValidationException;
+
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -27,13 +34,28 @@ class SendMoneyService implements ISendMoneyService
     private IReferenceNumberService $referenceNumberService;
     private ILogHistoryRepository $loghistoryrepository;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
-
+    private IUserDetailRepository $userDetailRepository;
+    private INotificationService $notificationService;
+    private IEmailService $emailService;
+    private ISmsService $smsService;
+    private IOtpService $otpService;
     
-    public function __construct(IOutSendMoneyRepository $outSendMoney, IInReceiveMoneyRepository $inReceiveMoney,
-                                IUserAccountRepository $userAccts, IUserBalanceInfoRepository $userBalanceInfo,
-                                IQrTransactionsRepository $qrTransactions, IReferenceNumberService $referenceNumberService, ILogHistoryRepository $loghistoryrepository,
-                                IUserTransactionHistoryRepository $userTransactionHistoryRepository)
-    {
+    public function __construct(
+        IOutSendMoneyRepository $outSendMoney,
+        IInReceiveMoneyRepository $inReceiveMoney,
+        IUserAccountRepository $userAccts,
+        IUserBalanceInfoRepository $userBalanceInfo,
+        IQrTransactionsRepository $qrTransactions,
+        IReferenceNumberService $referenceNumberService,
+        ILogHistoryRepository $loghistoryrepository,
+        IUserTransactionHistoryRepository $userTransactionHistoryRepository,
+        IUserDetailRepository $userDetailRepository,
+        INotificationService $notificationService,
+        IEmailService $emailService,
+        ISmsService $smsService,
+        IOtpService $otpService
+       
+    ) {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
         $this->userAccounts = $userAccts;
@@ -42,6 +64,11 @@ class SendMoneyService implements ISendMoneyService
         $this->referenceNumberService = $referenceNumberService;
         $this->loghistoryrepository = $loghistoryrepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
+        $this->userDetailRepository = $userDetailRepository;
+        $this->notificationService = $notificationService;
+        $this->emailService = $emailService;
+        $this->smsService = $smsService;
+        $this->otpService = $otpService;;
     }
 
 
@@ -57,24 +84,35 @@ class SendMoneyService implements ISendMoneyService
      * @param boolean $isEnough
      * @throws ValidationException
      */
-    public function send(string $username ,array $fillRequest, object $user)
+    public function send(string $username, array $fillRequest, object $user)
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
+        $receiverDetails = $this->userDetails($receiverID);
+        $senderDetails = $this->userDetails($senderID);
+        $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
+        $this->otpService->ensureValidated($identifier);
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
-
-        $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);  
+        if (!$receiverDetails) $this->recipientDetailsNotFound();
+        if (!$senderDetails) $this->senderDetailsNotFound();
+        
+        $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
+        $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
         $this->outSendMoney($senderID, $receiverID, $fillRequest);
         $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
         $this->logHistories($senderID, $receiverID, $fillRequest);
         $this->userTransactionHistory($senderID, $fillRequest);
+        // $this->senderNotification($user->$username,$fillRequest, $receiverID, $senderID);
+        // $this->recipientNotification($fillRequest[$username], $fillRequest, $senderID, $receiverID);
+
+        return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username);
     }
 
 
@@ -90,16 +128,22 @@ class SendMoneyService implements ISendMoneyService
      * @param boolean $isEnough
      * @throws ValidationException
      */
-    public function validateSend(string $username, array $fillRequest, object $user)
+    public function sendValidate(string $username, array $fillRequest, object $user)
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
+        $receiverDetails = $this->userDetails($receiverID);
+        $senderDetails = $this->userDetails($senderID);
 
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
+        if (!$receiverDetails) $this->recipientDetailsNotFound();
+        if (!$senderDetails) $this->senderDetailsNotFound();
+
+        return $this->sendMoneyReview($receiverID);
     }
 
 
@@ -132,8 +176,8 @@ class SendMoneyService implements ISendMoneyService
      * @param string $user
      *
      * @return array
-     */
-    public function scanQr(string $id):array
+     */ 
+    public function scanQr(string $id)
     {
         $qrTransaction = $this->qrTransactions->get($id);
         if (!$qrTransaction) $this->invalidQr();
@@ -141,12 +185,57 @@ class SendMoneyService implements ISendMoneyService
         $user = $this->userAccounts->get($qrTransaction->user_account_id);
         if (!$user) $this->invalidAccount();
 
-        if ($user->mobile_number) {
-            return ['mobile_number' => $user->mobile_number, 'amount' => $qrTransaction->amount, 'message' => ''];
-        }
-        return ['email' => $user->email, 'amount' => $qrTransaction->amount, 'message' => ''];
+        $mobileOrEmail = $this->hasMobileOrEmail($user, $qrTransaction->amount);
+        $review = $this->sendMoneyReview($qrTransaction->user_account_id);
+
+        return  array_merge($mobileOrEmail, $review);
     }
 
+
+    private function hasMobileOrEmail($user, $amount)
+    {
+        if ($user->mobile_number) {
+            return [
+                'mobile_number' => $user->mobile_number,
+                'amount' => $amount,
+                'message' => ''
+            ];
+        }
+        return [
+            'email' => $user->email,
+            'amount' => $amount,
+            'message' => ''
+        ];
+    }
+
+
+    private function sendMoneyReview(string $userID)
+    {
+        $user = $this->userDetailRepository->getByUserId($userID);
+        return [
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'middle_name' => $user->middle_name,
+            'name_extension' => $user->name_extension,
+            'selfie_location' => $user->selfie_loction,
+        ];
+    }
+
+
+    private function sendMoneyResponse($receiverDetails, $fillRequest, $username)
+    {
+        return [
+            'first name' => $receiverDetails->first_name,
+            'middle name' => $receiverDetails->middle_name,
+            'last name' =>  $receiverDetails->last_name,
+            'name extension' => $receiverDetails->extension,
+            $username => $fillRequest[$username],
+            'message' => $fillRequest['message'],
+            'reference number' =>  $fillRequest['refNo'],
+            'total amount' =>   $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'transaction date' => date('l jS \of F Y h:i:s A')
+        ];
+    }
 
 
     private function getUserID(string $usernameField, array $fillRequest)
@@ -156,6 +245,12 @@ class SendMoneyService implements ISendMoneyService
         return $user['id'];
     }
 
+
+    private function userDetails($userID)
+    {
+        return $this->userDetailRepository->getByUserId($userID);
+    }
+    
 
     private function isSelf(string $senderID, string $receiverID)
     {
@@ -187,7 +282,26 @@ class SendMoneyService implements ISendMoneyService
         $this->userBalanceInfo->updateUserBalance($receiverID, $newBalance);
     }
 
+
+    private function senderNotification($username, $fillRequest, $receiverID, $senderID)
+    {
+        if(!$username) return null;
+        $userDetail  = $this->userDetailRepository->getByUserId($receiverID);
+        $fillRequest['serviceFee'] = SendMoneyConfig::ServiceFee;
+        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
+        $this->notificationService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
+    }
     
+
+    private function recipientNotification($username, $fillRequest, $senderID, $receiverID)
+    {
+        if (!$username) return null;
+        $userDetail  = $this->userDetailRepository->getByUserId($senderID);
+        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
+        $this->notificationService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
+    }
+
+
     private function outSendMoney(string $senderID, string $receiverID, array $fillRequest)
     {
         return $this->outSendMoney->create([
@@ -215,7 +329,8 @@ class SendMoneyService implements ISendMoneyService
         return $this->inReceiveMoney->create([
             'user_account_id' => $receiverID,
             'sender_id' => $senderID,
-            'reference_number' => $fillRequest['refNo'],
+            'reference_number' => $fillRequest['refNoRM'],
+            'out_send_money_reference_number' => $fillRequest['refNo'],
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
             'transaction_date' => date('Y-m-d H:i:s'),
@@ -243,17 +358,26 @@ class SendMoneyService implements ISendMoneyService
         ]);
     }
 
-    
+
     private function userTransactionHistory($senderID, $fillRequest)
     {
         $this->userTransactionHistoryRepository->create([
             'user_account_id' => $senderID,
             'transaction_id' => SendMoneyConfig::CXSEND,
             'reference_number' => $fillRequest['refNo'],
+            'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             'transaction_category_id' => 'SM',
             'user_created' => $senderID,
             'user_updated' => ''
         ]);
+        $this->userTransactionHistoryRepository->create([
+            'user_account_id' => $senderID,
+            'transaction_id' => SendMoneyConfig::CXRECEIVE,
+            'reference_number' => $fillRequest['refNoRM'],
+            'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'transaction_category_id' => 'RM',
+            'user_created' => $senderID,
+            'user_updated' => ''
+        ]);
     }
-
 }

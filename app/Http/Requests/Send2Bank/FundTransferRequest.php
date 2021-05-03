@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Send2Bank;
 
-use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class FundTransferRequest extends FormRequest
@@ -25,17 +24,14 @@ class FundTransferRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'bank_code' => 'required',
+            'bank_code' => 'required|max:50',
+            'bank_name' => 'required|max:150',
             'account_number' => 'required|max:20',
             'account_name' => 'required|max:150',
             'amount' => 'required|numeric',
-            'message' => 'required|max:60',
-            'mobile_number' => [
-                'sometimes',
-                'max:20',
-                new MobileNumber(),
-            ],
-            'email' => 'sometimes|max:50|email',
+            'purpose' => 'required|max:50',
+            'other_purpose' => 'required_if:purpose,Others|max:50',
+            'send_receipt_to' => 'required|email'
         ];
     }
 }

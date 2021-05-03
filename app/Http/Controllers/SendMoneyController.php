@@ -14,12 +14,12 @@ use App\Http\Requests\SendMoney\ScanQrRequest;
 use App\Services\Utilities\Responses\IResponseService;
 
 class SendMoneyController extends Controller
-{       
+{
     private ISendMoneyService $sendMoneyService;
     private IResponseService $responseService;
 
     public function __construct(ISendMoneyService $sendMoneyService, IResponseService $responseService)
-    {   
+    {
         $this->sendMoneyService = $sendMoneyService;
         $this->responseService = $responseService;
     }
@@ -34,13 +34,13 @@ class SendMoneyController extends Controller
      * @param string $username
      * @return JsonResponse
      */
-     public function send(SendMoneyRequest $request): JsonResponse
+    public function send(SendMoneyRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
         $usernameField = $this->getUsernameField($request);
-        $this->sendMoneyService->send($usernameField, $fillRequest, $request->user());
+        $postback = $this->sendMoneyService->send($usernameField, $fillRequest, $request->user());
 
-        return $this->responseService->successResponse(['status' => 'success'], SuccessMessages::sendMoneySuccessFul);
+        return $this->responseService->successResponse($postback, SuccessMessages::sendMoneySuccessFul);
     }
 
     /**
@@ -51,13 +51,13 @@ class SendMoneyController extends Controller
      * @param string $username
      * @return JsonResponse
      */
-    public function sendValidate(SendMoneyRequest $request) : JsonResponse
+    public function sendValidate(SendMoneyRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
         $usernameField = $this->getUsernameField($request);
-        $this->sendMoneyService->validateSend($usernameField, $fillRequest, $request->user());
+        $review = $this->sendMoneyService->sendValidate($usernameField, $fillRequest, $request->user());
 
-        return $this->responseService->successResponse($fillRequest, SuccessMessages::validateSendMoney);
+        return $this->responseService->successResponse(array_merge($fillRequest,$review), SuccessMessages::validateSendMoney);
     }
 
 
@@ -104,12 +104,7 @@ class SendMoneyController extends Controller
     {
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
     }
-    
 
-
-
-    
 
 }
-
 

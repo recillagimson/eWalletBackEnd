@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\IdType;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Enums\SuccessMessages;
 use Illuminate\Http\JsonResponse;
@@ -28,20 +29,14 @@ class IdTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(): JsonResponse 
+    public function index(Request $request): JsonResponse 
     {
-        $records = $this->idTypeRepository->getAll();
+        $is_primary = 1;
+        if($request->has('is_primary')) {
+            $is_primary = $request->is_primary;
+        }
+        $records = $this->idTypeRepository->getIdType($is_primary);
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -70,16 +65,6 @@ class IdTypeController extends Controller
         return $this->responseService->successResponse($idType->toArray(), SuccessMessages::success);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

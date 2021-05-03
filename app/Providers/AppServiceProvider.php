@@ -7,6 +7,8 @@ use App\Enums\NetworkTypes;
 use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
 use App\Http\Controllers\Send2BankController;
+use App\Services\Dashboard\DashboardService;
+use App\Services\Dashboard\IDashboardService;
 use App\Services\AddMoney\DragonPay\HandlePostBackService;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
@@ -23,6 +25,8 @@ use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
+use App\Services\PayBills\IPayBillsService;
+use App\Services\PayBills\PayBillsService;
 use App\Services\Send2Bank\ISend2BankService;
 use App\Services\Send2Bank\Send2BankPesonetService;
 use App\Services\SendMoney\ISendMoneyService;
@@ -98,12 +102,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
         $this->app->bind(IVerificationService::class, VerificationService::class);
+        $this->app->bind(IPayBillsService::class, PayBillsService::class);
 
         //APP SERVICES - CONTEXTUAL BINDINGS
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
         $this->bindSend2BankService();
         $this->bindAddMoneyService();
+
+        //Dashboard
+        $this->app->bind(IDashboardService::class, DashboardService::class);
 
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);

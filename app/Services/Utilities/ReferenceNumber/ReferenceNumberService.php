@@ -20,7 +20,7 @@ class ReferenceNumberService implements IReferenceNumberService
     public function generate(string $referenceType): string
     {
         $ref = $this->refCounters->getByCode($referenceType);
-        if (!$ref) $this->transInvalid();
+        if (!$ref) $this->transactionInvalid();
 
         $ref->counter += 1;
         $ref->save();
