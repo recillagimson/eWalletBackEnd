@@ -102,6 +102,7 @@ class SendMoneyService implements ISendMoneyService
         if (!$senderDetails) $this->senderDetailsNotFound();
         
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
+        $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
         $this->outSendMoney($senderID, $receiverID, $fillRequest);
@@ -328,7 +329,8 @@ class SendMoneyService implements ISendMoneyService
         return $this->inReceiveMoney->create([
             'user_account_id' => $receiverID,
             'sender_id' => $senderID,
-            'reference_number' => $fillRequest['refNo'],
+            'reference_number' => $fillRequest['refNoRM'],
+            'out_send_money_reference_number' => $fillRequest['refNo'],
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
             'transaction_date' => date('Y-m-d H:i:s'),
@@ -365,6 +367,15 @@ class SendMoneyService implements ISendMoneyService
             'reference_number' => $fillRequest['refNo'],
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             'transaction_category_id' => 'SM',
+            'user_created' => $senderID,
+            'user_updated' => ''
+        ]);
+        $this->userTransactionHistoryRepository->create([
+            'user_account_id' => $senderID,
+            'transaction_id' => SendMoneyConfig::CXRECEIVE,
+            'reference_number' => $fillRequest['refNoRM'],
+            'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'transaction_category_id' => 'RM',
             'user_created' => $senderID,
             'user_updated' => ''
         ]);
