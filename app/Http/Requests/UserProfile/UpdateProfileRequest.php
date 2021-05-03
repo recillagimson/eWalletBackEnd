@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests\UserProfile;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProfileRequest  extends FormRequest
 {
@@ -24,7 +25,7 @@ class UpdateProfileRequest  extends FormRequest
      */
     public function rules()
     {
-        return [
+        $required_fields =  [
             // 'entity_id'=>'required',
             // 'title'=>['required', 'max:10'],
             'last_name'=>['required', 'max:50'],
@@ -54,5 +55,19 @@ class UpdateProfileRequest  extends FormRequest
             // 'emergency_lock_status'=>['required', 'max:10'],
             // 'report_exception_status'=>['required', 'max:10'],
         ];
+        
+        $inputs = request()->input();
+        
+        if($inputs['birth_date']) {
+            $birthdate = Carbon::parse($inputs['birth_date']);
+            $age = $birthdate->diffInYears(Carbon::now());
+            if($age < 18) {
+                $required_fields['guardian_name'] = 'required';
+                $required_fields['guardian_mobile_number'] = 'required';
+                $required_fields['is_accept_parental_consent'] = 'required';
+            }
+        }
+        
+        return $required_fields;
     }
 }
