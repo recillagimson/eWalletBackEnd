@@ -113,8 +113,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {
-        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
         Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
+        Route::get('/process/pending', [Send2BankController::class, 'processPending']);
+
+        Route::post('/validate', [Send2BankController::class, 'validateFundTransfer']);
+        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
+        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction']);
     });
 
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function () {
@@ -148,7 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
-            
+
         });
 
         Route::prefix('/atm')->group(function () {

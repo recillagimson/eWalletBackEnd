@@ -9,10 +9,12 @@ use App\Enums\TpaProviders;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\LoginVerification;
+use App\Mail\Send2Bank\Send2BankReceipt;
 use App\Mail\Send2Bank\SenderNotification;
 use App\Mail\SendMoney\SendMoneyRecipientNotification;
 use App\Mail\SendMoney\SendMoneySenderNotification;
 use App\Mail\SendMoney\SendMoneyVerification;
+use App\Models\OutSend2Bank;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
@@ -132,6 +134,13 @@ class EmailService implements IEmailService
         $template = new SenderNotification($hideAccountNo, $strAmount, $strServiceFee, $strNewBalance, $strDate,
             $strProvider, $refNo, $remittanceId);
 
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendSend2BankReceipt(string $to, OutSend2Bank $send2Bank)
+    {
+        $subject = 'SquidPay - Send to Bank Transaction Receipt';
+        $template = new Send2BankReceipt($send2Bank);
         $this->sendMessage($to, $subject, $template);
     }
 

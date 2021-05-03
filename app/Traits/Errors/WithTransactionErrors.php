@@ -16,13 +16,18 @@ trait WithTransactionErrors
     |--------------------------------------------------------------------------
     */
 
-    public function transInvalid()
+    public function transactionInvalid()
     {
         $this->validationErrorMessage(ErrorCodes::transactionInvalid, 'Transaction type is invalid.');
     }
 
-    public function transFailed()
+    public function transactionFailed()
     {
         $this->validationErrorMessage(ErrorCodes::transactionFailed, 'Transaction failed. Please try again.');
+    }
+
+    public function transactionNotFound()
+    {
+        $this->validationErrorMessage(ErrorCodes::transactionDoesntExists, 'Transaction does not exists.');
     }
 }
