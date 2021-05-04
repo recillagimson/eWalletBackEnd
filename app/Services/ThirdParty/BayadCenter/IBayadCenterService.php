@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Services\ThirdParty\UBP;
+namespace App\Services\ThirdParty\BayadCenter;
 
 use Illuminate\Http\Client\Response;
 
-interface IUBPService
+interface IBayadCenterService
 {
     public function getBanks(string $provider): Response;
 

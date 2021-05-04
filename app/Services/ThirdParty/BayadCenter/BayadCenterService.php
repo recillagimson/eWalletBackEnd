@@ -1,15 +1,14 @@
 <?php
 
 
-namespace App\Services\ThirdParty\UBP;
+namespace App\Services\ThirdParty\BayadCenter;
 
 
-use App\Enums\TpaProviders;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
-use Illuminate\Http\Client\Response;
 
-class UBPService implements IUBPService
+
+class BayadCenterService implements IBayadCenterService
 {
     use WithTpaErrors;
 
@@ -63,34 +62,6 @@ class UBPService implements IUBPService
         ];
     }
 
-    /**
-     * UBP Partner Authentication
-     *
-     * @return object
-     */
-    private function getToken(): object
-    {
-        $data = [
-            'grant_type' => 'password',
-            'client_id' => $this->clientId,
-            'username' => $this->username,
-            'password' => $this->password,
-            'scope' => $this->scopes
-        ];
-
-        $url = $this->baseUrl . $this->tokenUrl;
-        $response = $this->apiService->postAsForm($url, $data);
-
-        if (!$response->successful()) $this->tpaFailedAuthentication(TpaProviders::ubp);
-        return (object)$response->json();
-    }
-
-    public function getBanks(string $provider): Response
-    {
-        $banksUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetBanksUrl : $this->instaPayBanksUrl;
-        $url = $this->baseUrl . $banksUrl;
-        return $this->apiService->get($url, $this->defaultHeaders);
-    }
 
 
 }
