@@ -47,7 +47,7 @@ class UpdateProfileSilverRequest  extends FormRequest
             'occupation'=>'required',
             'house_no_street'=>'required',
             'city'=>'required',
-            'provice_state'=>'required',
+            'province_state'=>'required',
             // 'municipality'=>'required',
             'postal_code'=>'required',
             'nature_of_work_id'=>'required',

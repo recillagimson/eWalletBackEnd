@@ -43,7 +43,7 @@ class UpdateProfileBronzeRequest  extends FormRequest
             'postal_code'=>'required',
             'house_no_street'=>'required',
             'city'=>'required',
-            'provice_state'=>'required',
+            'province_state'=>'required',
         ];
         
         $inputs = request()->input();
