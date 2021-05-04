@@ -33,7 +33,7 @@ class UpdateProfileSilverRequest  extends FormRequest
             'middle_name'=>['required', 'max:50'],
             // 'name_extension'=>['required', 'max:50'],
             'nationality_id'=>'required',
-            'birth_date'=>'required',
+            'birth_date'=>['required', 'after:yesterday', 'date'],
             'country_id'=>'required',
             //'currency_id'=>'required',
             //'signup_host_id'=>'required',
