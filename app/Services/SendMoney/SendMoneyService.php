@@ -232,7 +232,7 @@ class SendMoneyService implements ISendMoneyService
             $username => $fillRequest[$username],
             'message' => $fillRequest['message'],
             'reference_number' =>  $fillRequest['refNo'],
-            'total_amount' =>   $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'total_amount' =>  number_format($fillRequest['amount'] + SendMoneyConfig::ServiceFee, 2),
             'transaction_date' => date('l jS \of F Y h:i:s A')
         ];
     }
