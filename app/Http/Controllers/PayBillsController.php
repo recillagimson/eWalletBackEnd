@@ -14,11 +14,13 @@ class PayBillsController extends Controller
         $this->payBillsService = $payBillsService;
     }
     
-    public function getBillers(){
+    public function getBillers()
+    {
         return $this->payBillsService->getBillers('services');
     }
 
-    public function createPayment(PayBillsRequest $request){
+    public function createPayment(PayBillsRequest $request)
+    {
         $fillRequest = $request->validated();
         return $this->payBillsService->createPayment($request->user());
     }
