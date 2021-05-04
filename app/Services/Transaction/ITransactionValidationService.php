@@ -8,11 +8,35 @@ use App\Models\UserAccount;
 
 interface ITransactionValidationService
 {
-    public function transactionValidation(string $userAccountId, string $transactionCategoryId, $total_amount);
-    public function checkUserStatus(string $userAccountId);
-    public function checkUserLockStatus(string $userAccountId);
-    public function getTransactionCategory(string $transactionCategoryId);
-    public function checkUserTier(string $userAccountId);
-    public function checkUserMonthlyTransactionLimit(string $userAccountId, $totalAmount);
-    public function checkUserBalance(string $userAccountId, $totalAmount);
+    /**
+     * Transactions validation logic
+     *
+     * @param UserAccount $user
+     * @param string $transactionCategoryId
+     * @param float $totalAmount
+     * @return mixed
+     */
+    public function validate(UserAccount $user, string $transactionCategoryId, float $totalAmount);
+
+    /**
+     * Check if transaction exceeds total monthly limit of
+     * user account.
+     *
+     * @param UserAccount $user
+     * @param float $totalAmount
+     * @return mixed
+     */
+    public function checkUserMonthlyTransactionLimit(UserAccount $user, float $totalAmount);
+
+    /**
+     * Check if transaction exceeds remaining user account
+     * balance.
+     *
+     * @param UserAccount $user
+     * @param $totalAmount
+     * @return mixed
+     */
+    public function checkUserBalance(UserAccount $user, $totalAmount);
+
+    public function validateUser(UserAccount $user);
 }

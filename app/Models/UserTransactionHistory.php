@@ -22,4 +22,8 @@ class UserTransactionHistory extends Model
         "user_created",
         "user_updated",
     ];
+
+    public function transaction_category() {
+        return $this->hasOne(TransactionCategory::class, 'id', 'transaction_category_id');
+    }
 }

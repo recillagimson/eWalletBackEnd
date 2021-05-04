@@ -7,6 +7,8 @@ use App\Enums\NetworkTypes;
 use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
 use App\Http\Controllers\Send2BankController;
+use App\Services\Dashboard\DashboardService;
+use App\Services\Dashboard\IDashboardService;
 use App\Services\AddMoney\DragonPay\HandlePostBackService;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
@@ -23,7 +25,9 @@ use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
+use App\Services\Send2Bank\ISend2BankDirectService;
 use App\Services\Send2Bank\ISend2BankService;
+use App\Services\Send2Bank\Send2BankDirectService;
 use App\Services\Send2Bank\Send2BankPesonetService;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Services\SendMoney\SendMoneyService;
@@ -105,6 +109,9 @@ class AppServiceProvider extends ServiceProvider
         $this->bindSend2BankService();
         $this->bindAddMoneyService();
 
+        //Dashboard
+        $this->app->bind(IDashboardService::class, DashboardService::class);
+
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
         // Push Notification
@@ -123,6 +130,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Service Fee Service
         $this->app->bind(IServiceFeeService::class, ServiceFeeService::class);
+        
+        // UBP Send to bank service
+        $this->app->bind(ISend2BankDirectService::class, Send2BankDirectService::class);
 
 
     }

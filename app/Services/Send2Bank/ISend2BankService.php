@@ -2,6 +2,8 @@
 
 namespace App\Services\Send2Bank;
 
+use Throwable;
+
 interface ISend2BankService
 {
     /**
@@ -13,11 +15,37 @@ interface ISend2BankService
     public function getBanks(): array;
 
     /**
+     * Validates user qualification for fund transfer
+     *
+     * @param string $userId
+     * @param array $recipient
+     * @return mixed
+     */
+    public function validateFundTransfer(string $userId, array $recipient);
+
+    /**
      * Fund transfer to recepient bank acccount
      *
-     * @param string $fromUserId
+     * @param string $userId
      * @param array $recipient
      * @throws Throwable
      */
-    public function fundTransfer(string $fromUserId, array $recipient);
+    public function fundTransfer(string $userId, array $recipient);
+
+    /**
+     * Check updates on pending transactions and process them accordingly
+     *
+     * @param string $userId
+     * @return array
+     */
+    public function processPending(string $userId): array;
+
+    /**
+     * Endpoint to manually update transaction status. For testing purposes only.
+     *
+     * @param string $status
+     * @param string $refNo
+     * @return mixed
+     */
+    public function updateTransaction(string $status, string $refNo);
 }

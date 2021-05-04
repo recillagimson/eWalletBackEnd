@@ -5,12 +5,13 @@ use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PayBillsController;
+use App\Http\Controllers\PayBills\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\TierController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\UserPhotoController;
+use App\Http\Controllers\UserTransactionHistoryController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
@@ -104,8 +106,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {
-        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
         Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
+        Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect']);
+        Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions']);
+        Route::get('/process/pending', [Send2BankController::class, 'processPending']);
+
+        Route::post('/validate', [Send2BankController::class, 'validateFundTransfer']);
+        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
+        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction']);
     });
 
     Route::prefix('/load')->middleware(['decrypt.request'])->group(function () {
@@ -135,6 +143,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/user')->group(function (){
             Route::get('/profile', [UserProfileController::class, 'show']);
             Route::post('/profile', [UserProfileController::class, 'update']);
+
+            // TRANSACTION LOG HISTORY
+            Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
+            Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
+
         });
     });
 
@@ -143,6 +156,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/validate', [SendMoneyController::class, 'sendValidate']);
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
+    });
+
+    Route::prefix('pay/bills')->group(function () {
+        Route::get('/', [PayBillsController::class, 'payBills']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->group(function () {
@@ -177,7 +194,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/update/transactions', [AddMoneyController::class, 'updateUserTrans']);
     });
 
+    Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/', [DashboardController::class, 'index']);
+    });
+
 });
+
 
 // DragonPay PostBack
 Route::prefix('/cashin')->group(function (){

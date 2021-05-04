@@ -5,6 +5,7 @@ namespace App\Enums;
 class ReferenceNumberTypes
 {
     const SendMoney = 'SM';
+    const ReceiveMoney = 'RM';
     const SendToBank = 'SB';
     const PayBills = 'PB';
     const Remittance = 'RM';
