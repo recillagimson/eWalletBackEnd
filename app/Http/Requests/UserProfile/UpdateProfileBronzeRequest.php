@@ -44,7 +44,7 @@ class UpdateProfileBronzeRequest  extends FormRequest
         
         $inputs = request()->input();
         
-        if($inputs['birth_date']) {
+        if(isset($inputs['birth_date'])) {
             $birthdate = Carbon::parse($inputs['birth_date']);
             $age = $birthdate->diffInYears(Carbon::now());
             if($age < 18) {

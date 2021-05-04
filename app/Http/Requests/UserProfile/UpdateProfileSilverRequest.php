@@ -43,12 +43,12 @@ class UpdateProfileSilverRequest  extends FormRequest
 
             'place_of_birth'=>'required',
             'marital_status_id'=>'required',
-            'encoded_nationality'=>'required_with:nationality_id',
+            // 'encoded_nationality'=>'required_with:nationality_id',
             'occupation'=>'required',
             'house_no_street'=>'required',
             'city'=>'required',
             'provice_state'=>'required',
-            'municipality'=>'required',
+            // 'municipality'=>'required',
             'postal_code'=>'required',
             'nature_of_work_id'=>'required',
             'encoded_nature_of_work'=>Rule::requiredIf($this->nature_of_work_id === '0ed96f01-9131-11eb-b44f-1c1b0d14e211'),
@@ -59,7 +59,7 @@ class UpdateProfileSilverRequest  extends FormRequest
         
         $inputs = request()->input();
         
-        if($inputs['birth_date']) {
+        if(isset($inputs['birth_date'])) {
             $birthdate = Carbon::parse($inputs['birth_date']);
             $age = $birthdate->diffInYears(Carbon::now());
             if($age < 18) {
