@@ -28,6 +28,7 @@ class Send2BankUBPDirectRequest extends FormRequest
             "recipient_name" => "required",
             "remarks" => "required",
             "particulars" => "required",
+            "amount" => 'required'
         ];
     }
 }

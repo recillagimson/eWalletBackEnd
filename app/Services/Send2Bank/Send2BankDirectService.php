@@ -159,9 +159,10 @@ class Send2BankDirectService implements ISend2BankDirectService
                 $status = TransactionStatuses::pending;
             } elseif ($code === UbpResponseCodes::successfulTransaction) {
                 $status = TransactionStatuses::success;
-            } else {
-                $this->transFailed();
             }
+                // } else {
+            //     $this->transFailed();
+            // }
             
             $transaction->update([
                 'status' => $status
