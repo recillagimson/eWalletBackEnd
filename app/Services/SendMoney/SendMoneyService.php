@@ -225,15 +225,15 @@ class SendMoneyService implements ISendMoneyService
     private function sendMoneyResponse($receiverDetails, $fillRequest, $username)
     {
         return [
-            'first name' => $receiverDetails->first_name,
-            'middle name' => $receiverDetails->middle_name,
-            'last name' =>  $receiverDetails->last_name,
-            'name extension' => $receiverDetails->extension,
+            'first_name' => $receiverDetails->first_name,
+            'middle_name' => $receiverDetails->middle_name,
+            'last_name' =>  $receiverDetails->last_name,
+            'name_extension' => $receiverDetails->extension,
             $username => $fillRequest[$username],
             'message' => $fillRequest['message'],
-            'reference number' =>  $fillRequest['refNo'],
-            'total amount' =>   $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
-            'transaction date' => date('l jS \of F Y h:i:s A')
+            'reference_number' =>  $fillRequest['refNo'],
+            'total_amount' =>   $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'transaction_date' => date('l jS \of F Y h:i:s A')
         ];
     }
 
