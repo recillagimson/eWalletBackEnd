@@ -49,6 +49,7 @@ class UserDetail extends Model
         'guardian_name',
         'guardian_mobile_number',
         'is_accept_parental_consent',
+        'avatar_location',
     ];
 
     public function getFullNameAttribute(): string

@@ -73,6 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification']);
     Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
+    Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar']);
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser']);

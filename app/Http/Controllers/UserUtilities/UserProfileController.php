@@ -5,6 +5,7 @@ namespace App\Http\Controllers\UserUtilities;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserProfile\UpdateProfileRequest;
+use App\Http\Requests\UserProfile\AvatarUploadRequest;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Services\Encryption\IEncryptionService;
@@ -15,6 +16,7 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class UserProfileController extends Controller
 {
+
     private IEncryptionService $encryptionService;
     private IUserProfileService $userProfileService;
     private IResponseService $responseService;
@@ -59,6 +61,13 @@ class UserProfileController extends Controller
         return ($user_detail) ? 
         $this->responseService->successResponse($user_detail->toArray(), SuccessMessages::success) :
         $this->responseService->notFound("No Data Found.");
+    }
+
+    public function changeAvatar(AvatarUploadRequest $request) 
+    {
+        $createRecord = $this->userProfileService->changeAvatar($request->validated());
+
+        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::success);
     }
 
 }
