@@ -40,6 +40,10 @@ class UpdateProfileBronzeRequest  extends FormRequest
             // 'verification_status'=>['required', 'max:10'],
             // 'emergency_lock_status'=>['required', 'max:10'],
             // 'report_exception_status'=>['required', 'max:10'],
+            'postal_code'=>'required',
+            'house_no_street'=>'required',
+            'city'=>'required',
+            'provice_state'=>'required',
         ];
         
         $inputs = request()->input();
