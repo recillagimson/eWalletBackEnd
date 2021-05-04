@@ -14,6 +14,8 @@ use App\Services\Auth\IAuthService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use Carbon\Carbon;
 use App\Traits\Errors\WithAuthErrors;
 use App\Traits\Errors\WithErrors;
 use App\Traits\RouteParamHelpers;
@@ -37,9 +39,12 @@ class UserKeyService implements IUserKeyService
     private IOtpService $otpService;
     private IEmailService $emailService;
     private ISmsService $smsService;
+    private ILogHistoryService $loghistoryService;
+
 
 
     public function __construct(IAuthService $authService,
+                                ILogHistoryService $loghistoryService,
                                 IOtpService $otpService,
                                 IEmailService $emailService,
                                 ISmsService $smsService,
@@ -53,6 +58,8 @@ class UserKeyService implements IUserKeyService
         $this->passwordRepeatCount = config('auth.password_repeat_count');
 
         $this->authService = $authService;
+        $this->loghistoryService = $loghistoryService;
+
         $this->otpService = $otpService;
         $this->emailService = $emailService;
         $this->smsService = $smsService;
@@ -172,6 +179,17 @@ class UserKeyService implements IUserKeyService
         $user->save();
 
         $this->keyLogs->log($user->id, $hashedKey);
+
+        //log history
+        $user_account_id = $user->id;
+        $squidpay_module = 'Registration';
+        $namespace = 'App\Services\Auth\Registration';
+        $transaction_date = Carbon::now();
+        $remarks = '';
+        $operation = 'Register squidpay user';
+        $reference_number = '';
+        $this->loghistoryService->logUserHistory($user_account_id, $reference_number, $squidpay_module, $namespace, $transaction_date, $remarks, $operation);
+
     }
 
 

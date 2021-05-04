@@ -14,12 +14,15 @@ use App\Repositories\UserKeys\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Services\Auth\IAuthService;
 use App\Traits\Errors\WithAuthErrors;
 use Illuminate\Support\Facades\Hash;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use Carbon\Carbon;
 
 class RegistrationService implements IRegistrationService
 {
     use WithAuthErrors;
 
     private IAuthService $authService;
+    private ILogHistoryService $loghistoryService;
 
     private IUserAccountRepository $userAccounts;
     private IUserBalanceInfoRepository $userBalances;
@@ -27,12 +30,14 @@ class RegistrationService implements IRegistrationService
     private IPinCodeHistoryRepository $pinCodeHistories;
 
     public function __construct(IAuthService $authService,
+                                ILogHistoryService $loghistoryService,
                                 IUserAccountRepository $userAccounts,
                                 IUserBalanceInfoRepository $userBalances,
                                 IPasswordHistoryRepository $passwordHistories,
                                 IPinCodeHistoryRepository $pinCodeHistories)
     {
         $this->authService = $authService;
+        $this->loghistoryService = $loghistoryService;
 
         $this->userAccounts = $userAccounts;
         $this->userBalances = $userBalances;
@@ -64,6 +69,17 @@ class RegistrationService implements IRegistrationService
         $this->pinCodeHistories->log($user->id, $newUser['pin_code']);
 
         $this->authService->sendOTP($usernameField, $newUser[$usernameField], OtpTypes::registration);
+
+        //log history
+         $user_account_id = $user->id;
+         $squidpay_module = 'Registration';
+         $namespace = 'App\Services\Auth\Registration';
+         $transaction_date = Carbon::now();
+         $remarks = '';
+         $operation = 'Register squidpay user';
+         $reference_number = '';
+         $this->loghistoryService->logUserHistory($user_account_id, $reference_number, $squidpay_module, $namespace, $transaction_date, $remarks, $operation);
+ 
         return $user;
     }
 

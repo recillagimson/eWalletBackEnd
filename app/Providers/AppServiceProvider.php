@@ -118,7 +118,7 @@ class AppServiceProvider extends ServiceProvider
         // Verification Service
         $this->app->bind(IVerificationService::class, VerificationService::class);
         // Log History Service
-        $this->app->bind(ILogHistoryService::class, LogHistoryService::class);
+        //$this->app->bind(ILogHistoryService::class, LogHistoryService::class);
 
         // Transaction Service
         $this->app->bind(ITransactionService::class, TransactionService::class);
