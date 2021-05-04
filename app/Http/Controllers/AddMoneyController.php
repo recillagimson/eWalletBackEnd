@@ -81,15 +81,15 @@ class AddMoneyController extends Controller
 
         $transaction = $this->addMoneys->getLatestPendingByUserAccountID($user->id);
 
-        if ($transaction) $transaction->toArray();
-
-        return $this->responseService->successResponse($transaction, SuccessMessages::success);
+        return $this->responseService->successResponse($transaction->toArray(), SuccessMessages::success);
     }
 
     public function updateUserTrans(Request $request)
     {
         $user = $request->user();
 
-        return $this->addMoneyService->updateUserTransactionStatus($user);
+        $updatedTransactions = $this->addMoneyService->updateUserTransactionStatus($user);
+
+        return $this->responseService->successResponse($updatedTransactions->toArray(), SuccessMessages::success);
     }
 }
