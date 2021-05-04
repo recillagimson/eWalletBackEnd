@@ -2,23 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use App\Enums\SuccessMessages;
 use App\Http\Requests\Send2Bank\FundTransferRequest;
 use App\Http\Requests\Send2Bank\TransactionUpdateRequest;
 use App\Services\Send2Bank\ISend2BankService;
+use App\Services\Send2Bank\ISend2BankDirectService;
 use App\Services\Utilities\Responses\IResponseService;
-use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Send2Bank\Send2BankUBPDirectRequest;
 use Illuminate\Http\Request;
 use Throwable;
 
 class Send2BankController extends Controller
 {
     private ISend2BankService $send2BankService;
+    private ISend2BankDirectService $send2BankDirectService;
     private IResponseService $responseService;
 
-    public function __construct(ISend2BankService $send2BankService, IResponseService $responseService)
+    public function __construct(ISend2BankService $send2BankService, IResponseService $responseService, ISend2BankDirectService $send2BankDirectService)
     {
         $this->send2BankService = $send2BankService;
+        $this->send2BankDirectService = $send2BankDirectService;
         $this->responseService = $responseService;
     }
 
@@ -90,5 +95,15 @@ class Send2BankController extends Controller
         return $this->responseService->successResponse($response);
     }
 
+    public function send2BankUBPDirect(Send2BankUBPDirectRequest $request) : JsonResponse {
+        $recipient = $request->all();
+        $userId = $request->user()->id;
+        $this->send2BankDirectService->fundTransferToUBPDirect($userId, $recipient);
+        return response()->json([], Response::HTTP_OK);
+    }
 
+    public function verifyDirectTransactions() : JsonResponse {
+        $this->send2BankDirectService->verifyPendingDirectTransactions();
+        return response()->json([], Response::HTTP_OK);
+    }
 }
