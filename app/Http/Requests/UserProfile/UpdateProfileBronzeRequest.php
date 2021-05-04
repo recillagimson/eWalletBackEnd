@@ -33,18 +33,20 @@ class UpdateProfileBronzeRequest  extends FormRequest
             'middle_name'=>['required', 'max:50'],
             // 'name_extension'=>['required', 'max:50'],
             'nationality_id'=>'required',
-            'birth_date'=>['required', 'after:yesterday', 'date'],
+            'birth_date'=>['required', 'before:today'],
             'country_id'=>'required',
             //'currency_id'=>'required',
             //'signup_host_id'=>'required',
             // 'verification_status'=>['required', 'max:10'],
             // 'emergency_lock_status'=>['required', 'max:10'],
             // 'report_exception_status'=>['required', 'max:10'],
-            'postal_code'=>'required',
-            'house_no_street'=>'required',
-            'city'=>'required',
-            'province_state'=>'required',
+            'postal_code'=>['required', 'max:5'],
+            'house_no_street'=>['required', 'max:50'],
+            'city'=>['required', 'max:50'],
+            'province_state'=>['required', 'max:50'],
         ];
+        
+        $inputs = request()->input();
         
         $inputs = request()->input();
         
@@ -52,11 +54,12 @@ class UpdateProfileBronzeRequest  extends FormRequest
             $birthdate = Carbon::parse($inputs['birth_date']);
             $age = $birthdate->diffInYears(Carbon::now());
             if($age < 18) {
-                $required_fields_default['guardian_name'] = 'required';
-                $required_fields_default['guardian_mobile_number'] = 'required';
+                $required_fields_default['guardian_name'] = ['required', 'max:50'];
+                $required_fields_default['guardian_mobile_number'] = ['required', 'max:11',  new MobileNumber()];
                 $required_fields_default['is_accept_parental_consent'] = 'required';
             }
         }
+
 
         return $required_fields_default;
     }
