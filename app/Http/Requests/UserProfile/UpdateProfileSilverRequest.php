@@ -54,7 +54,9 @@ class UpdateProfileSilverRequest  extends FormRequest
             'encoded_nature_of_work'=>Rule::requiredIf($this->nature_of_work_id === '0ed96f01-9131-11eb-b44f-1c1b0d14e211'),
             'source_of_fund_id'=>'required',
             'encoded_source_of_fund'=>Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211'),
-            'mother_maidenname'=>'required'
+            'mother_maidenname'=>'required',
+            'employer'=>'required',
+            'contact_no'=>'required'
         ];
         
         $inputs = request()->input();
