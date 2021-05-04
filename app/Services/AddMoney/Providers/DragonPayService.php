@@ -548,12 +548,11 @@ class DragonPayService implements IAddMoneyService
     }
 
     /**
-     * Update all users transaction status
+     * Update all user transaction from the last 3 months
      *
-     * @param Type $var Description
-     * @return type
-     * @throws conditon
-     **/
+     * @param UserAccount $user
+     * @return object
+     */
     public function updateUserTransactionStatus(UserAccount $user)
     {
         $dateTomorrow = Carbon::now()->addDay(1);
@@ -564,7 +563,6 @@ class DragonPayService implements IAddMoneyService
 
         $dragPayTrans = $this->dragonpayRequest('/transactions?startdate=' . $threeMonthsBeforeTomorrow . '&enddate=' . $dateTomorrow)->json();
 
-        $refNos = [];
         $dragPayDataToInsert = [];
 
         foreach ($dragPayTrans as $trans) {
@@ -607,8 +605,7 @@ class DragonPayService implements IAddMoneyService
                     break;
             }
 
-            $refNos[] = $trans['TxnId'];
-            $dragPayDataToInsert[] = [
+            $dragPayDataToInsert[$trans['TxnId']] = [
                 'reference_number' => $trans['TxnId'],
                 'dragonpay_reference' => $trans['RefNo'],
                 'dragonpay_channel_reference_number' => $trans['ProcId'],
@@ -617,20 +614,18 @@ class DragonPayService implements IAddMoneyService
             ];
         }
 
-        $result = [];
-        
         foreach ($squidPayTrans as $squidPayTrans) {
-
-            foreach ($dragPayDataToInsert as $dragPayData) {
+            
+            if (array_key_exists($squidPayTrans->reference_number, $dragPayDataToInsert)) {
                 
-                if ($squidPayTrans->reference_number == $dragPayData['reference_number']) {
-                    
-                    $result[] = $this->addMoneys->update($squidPayTrans, $dragPayData);
-                }
+                $this->addMoneys->update($squidPayTrans, $dragPayDataToInsert[$squidPayTrans->reference_number]);
+            } else {
+                
+                $this->addMoneys->update($squidPayTrans, ['status' => DragonPayStatusTypes::Failure]);
             }
         }
 
-        return $result;
+        return $this->addMoneys->getBetweenDates($threeMonthsBeforeTomorrow, $dateTomorrow);
     }
 
     /**
