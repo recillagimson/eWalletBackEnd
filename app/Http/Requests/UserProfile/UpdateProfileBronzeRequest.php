@@ -4,6 +4,7 @@ namespace App\Http\Requests\UserProfile;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProfileBronzeRequest  extends FormRequest
