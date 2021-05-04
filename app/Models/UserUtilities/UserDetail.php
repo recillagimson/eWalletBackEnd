@@ -55,6 +55,12 @@ class UserDetail extends Model
         "report_exception_status",
         "user_created",
         "user_updated",
+        "guardian_name",
+        "guardian_mobile_number",
+        "is_accept_parental_consent",
+        "occupation",
+        "employer",
+
     ];
 
     public function getUserAccount()
