@@ -35,7 +35,7 @@ class ValidateNewUserRequest extends FormRequest
             'password' => [
                 'required',
                 'min:'.config('auth.password_minlength'),
-                'max:16',
+                'max:20',
                 'confirmed',
                 'different:email',
                 new IsPasswordValid()
