@@ -54,12 +54,16 @@ class UpdateProfileRequest  extends FormRequest
             }
         }
 
-        // Check if tier 2
-        if(request()->user() && request()->user()->tier_id) {
-
-            $tier = request()->user()->tier;
-            // SILVER TIER 
-            if($tier && $tier->account_status === 'FULLY VERIFIED') {
+        
+        if(request()->user() && request()->user()->profile) {
+            // Check if account has user details
+            // If yes user is verifying for tier 2
+            // Must require fields need for tier 2
+            $profile = request()->user()->profile;
+            // If has last name in user_details or first name requesting for tier 2 validation
+            // If doesnt have profile or last_name
+            // Simple user update or user still in bronze not moving to silver
+            if($profile && $profile->last_name != "" && $profile->first_name != "") {
                 $required_fields_default = array_merge($required_fields_default, [
                     'place_of_birth'=>'required',
                     'marital_status_id'=>'required',
