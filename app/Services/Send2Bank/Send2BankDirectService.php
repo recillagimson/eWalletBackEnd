@@ -84,7 +84,7 @@ class Send2BankDirectService implements ISend2BankDirectService
 
         try {
             DB::beginTransaction();
-            $transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
+            $transactionCategoryId = TransactionCategoryIds::send2BankUBP;
             $provider = TpaProviders::ubpDirect;
 
             $user = $this->users->getUser($userId);
