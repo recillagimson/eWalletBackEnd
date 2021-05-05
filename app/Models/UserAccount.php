@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Model;
 
 class UserAccount extends Authenticatable
 {
@@ -75,13 +74,18 @@ class UserAccount extends Authenticatable
         $this->save();
     }
 
-    public function resetLoginAttempts(int $daysToReset)
+    public function resetLoginAttempts(int $daysToReset, bool $resetLockout = false)
     {
-        if($this->last_failed_attempt)
-        {
+        if ($resetLockout) {
+            $this->login_failed_attempts = 0;
+            $this->is_lockout = false;
+            $this->save();
+            return;
+        }
+
+        if ($this->last_failed_attempt) {
             $diffInDays = $this->last_failed_attempt->diffInDays(Carbon::now());
-            if($diffInDays >= $daysToReset)
-            {
+            if ($diffInDays >= $daysToReset) {
                 $this->login_failed_attempts = 0;
                 $this->save();
             }
