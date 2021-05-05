@@ -28,7 +28,7 @@ class UserDetail extends Model
         'occupation',
         'house_no_street',
         'city',
-        'provice_state',
+        'province_state',
         'municipality',
         'country_id',
         'postal_code',

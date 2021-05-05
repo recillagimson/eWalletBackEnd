@@ -27,4 +27,9 @@ class InAddMoneyService implements IInAddMoneyService
     {
         return $this->addMoneyService->getStatus($user, $request);
     }
+
+    public function updateUserTransactionStatus(UserAccount $user)
+    {
+        return $this->addMoneyService->updateUserTransactionStatus($user);
+    }
 }

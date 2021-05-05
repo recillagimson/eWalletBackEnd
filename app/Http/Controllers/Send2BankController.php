@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Throwable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
 use App\Enums\SuccessMessages;
-use App\Http\Requests\Send2Bank\FundTransferRequest;
-use App\Http\Requests\Send2Bank\TransactionUpdateRequest;
+use Illuminate\Http\JsonResponse;
+use App\Enums\TransactionCategoryIds;
 use App\Services\Send2Bank\ISend2BankService;
 use App\Services\Send2Bank\ISend2BankDirectService;
+use App\Http\Requests\Send2Bank\FundTransferRequest;
 use App\Services\Utilities\Responses\IResponseService;
+use App\Http\Requests\Send2Bank\TransactionUpdateRequest;
 use App\Http\Requests\Send2Bank\Send2BankUBPDirectRequest;
-use Illuminate\Http\Request;
-use Throwable;
 
 class Send2BankController extends Controller
 {
@@ -95,6 +96,12 @@ class Send2BankController extends Controller
         return $this->responseService->successResponse($response);
     }
 
+    /**
+     * Endpoint for Send 2 Bank directly to UBP account
+     *
+     * @param Send2BankUBPDirectRequest $request
+     * @return JsonResponse
+     */
     public function send2BankUBPDirect(Send2BankUBPDirectRequest $request) : JsonResponse {
         $recipient = $request->all();
         $userId = $request->user()->id;
@@ -102,8 +109,30 @@ class Send2BankController extends Controller
         return response()->json([], Response::HTTP_OK);
     }
 
+    /**
+     * Endpoint for verification Send 2 Bank directly to UBP account transactions
+     *
+     * @param null
+     * @return JsonResponse
+     */
     public function verifyDirectTransactions() : JsonResponse {
         $this->send2BankDirectService->verifyPendingDirectTransactions();
         return response()->json([], Response::HTTP_OK);
+    }
+
+    /**
+     * Validates user qualification for fund transfer direct to UBP
+     *
+     * @param Send2BankUBPDirectRequest $request
+     * @return JsonResponse
+     */
+    public function validateFundTransferDirectUBP(Send2BankUBPDirectRequest $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+        $recipient = $request->validated();
+        $this->send2BankService->validateFundTransfer($userId, $recipient, TransactionCategoryIds::send2BankUBP);
+
+        return $this->responseService->successResponse(null,
+            SuccessMessages::transactionValidationSuccessful);
     }
 }

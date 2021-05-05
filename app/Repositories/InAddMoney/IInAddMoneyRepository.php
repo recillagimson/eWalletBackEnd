@@ -9,4 +9,6 @@ interface IInAddMoneyRepository extends IRepository
     public function getLastByReferenceNumber();
     public function getByReferenceNumber(string $referenceNumber);
     public function getLatestPendingByUserAccountID(string $userAccountID);
+    public function getByMultipleReferenceNumber(array $referenceNumbers);
+    public function getByUserAccountID(string $userAccountID);
 }
