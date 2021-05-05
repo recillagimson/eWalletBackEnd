@@ -135,7 +135,8 @@ class UserKeyService implements IUserKeyService
      */
     private function validateUser(UserAccount $user, string $keyType = null, string $userKey = null)
     {
-        if (!$user || !$user->verified) $this->accountDoesntExist();
+        if (!$user) $this->accountDoesntExist();
+        if (!$user->verified) $this->accountDoesntExist();
         if ($user->is_lockout) $this->accountLockedOut();
 
         if ($keyType) {
