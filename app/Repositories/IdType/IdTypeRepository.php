@@ -12,4 +12,8 @@ class IdTypeRepository extends Repository implements IIdTypeRepository
     {
         parent::__construct($model);
     }
+
+    public function getIdType($is_primary = 1) {
+        return $this->model->where('is_primary', $is_primary)->get();
+    }
 }

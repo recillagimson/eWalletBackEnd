@@ -38,9 +38,9 @@ class SendMoneyController extends Controller
     {
         $fillRequest = $request->validated();
         $usernameField = $this->getUsernameField($request);
-        $this->sendMoneyService->send($usernameField, $fillRequest, $request->user());
+        $postback = $this->sendMoneyService->send($usernameField, $fillRequest, $request->user());
 
-        return $this->responseService->successResponse(['status' => 'success'], SuccessMessages::sendMoneySuccessFul);
+        return $this->responseService->successResponse($postback, SuccessMessages::sendMoneySuccessFul);
     }
 
     /**
