@@ -84,32 +84,38 @@ class AtmService implements IAtmService
         return $result->data;
     }
 
-    public function atmload(object $items): array
+    public function atmload(array $items): array
     {
+        
         $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::BuyLoad);
-        $items->agentRefNo = $referenceNumber;
-        $signature = $this->generateSignature($this->createATMPostBody($items));
-
+        $items["agentRefNo"] = $referenceNumber;
+        $post_data = $this->createATMPostBody($items);
+        $signature = $this->generateSignature($post_data);
+        $sample = array(
+            "data"=>$post_data,
+            "signature"=>$signature
+        );
+        // dd($sample);
         $response = Http::withHeaders([
+            'Accept' => 'application/json',
             'Content-Type' => 'application/json',
             'Signature' => $signature
         ])->post(config('services.load.atm.url').' /topup-request', 
-        $this->createATMPostBody($items));
-
+        $post_data);
+            // dd($response->json());
         $result = json_decode($response->body());
-        
-        
-        return $result->data;
+        // dd($result);
+        return $result;
     }
 
-    public function createATMPostBody(object $items=null):array {
-        $body = (object)[];
+    private function createATMPostBody(array $items=null):array {
+        $body = [
+            'id' => config('services.load.atm.id'),
+            'uid' => config('services.load.atm.uid'),
+            'pwd' => config('services.load.atm.password'),
+            'data' => $items
+        ];
 
-        $body->id = config('services.load.atm.id');
-        $body->uid = config('services.load.atm.uid');
-        $body->pwd = config('services.load.atm.password');
-        $body->data = $items;
-
-        return json_decode(json_encode($body), true);;
+        return $body;
     }
 }

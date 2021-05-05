@@ -65,7 +65,7 @@ class AtmController extends Controller
     public function load(ATMTopUpRequest $atmrequest): JsonResponse {
         $details = $atmrequest->validated();
 
-        $records = $this->atmService->atmload(json_decode(json_encode($details)));
+        $records = $this->atmService->atmload($details);
 
         return $this->responseService->successResponse($records, SuccessMessages::success);
     }

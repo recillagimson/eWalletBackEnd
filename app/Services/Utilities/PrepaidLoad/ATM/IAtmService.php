@@ -12,9 +12,7 @@ interface IAtmService
 
     public function verifySignature(array $data, string $base64Signature);
 
-    public function createATMPostBody(object $items=null): array;
-
     public function showNetworkAndPrefix(): array;
 
-    public function atmload(object $items): array;
+    public function atmload(array $items): array;
 }
