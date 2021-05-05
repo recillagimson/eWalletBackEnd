@@ -36,8 +36,8 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
         return $this->model->whereIn('reference_number', $referenceNumbers)->get();
     }
 
-    public function getBetweenDates(string $startDate, string $endDate)
+    public function getByUserAccountID(string $userAccountID)
     {
-        return $this->model->whereBetween('created_at', [$startDate, $endDate])->get();
+        return $this->model->where('user_account_id', $userAccountID)->orderBy('created_at', 'asc')->get();
     }
 }

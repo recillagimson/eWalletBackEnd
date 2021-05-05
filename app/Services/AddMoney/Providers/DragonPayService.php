@@ -17,6 +17,7 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -75,6 +76,7 @@ class DragonPayService implements IAddMoneyService
     private ITransactionCategoryRepository $transactionCategories;
     private ITierRepository $tiers;
     private IUserBalanceInfoRepository $userBalanceInfos;
+    private ILogHistoryService $logHistoryService;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
@@ -85,7 +87,8 @@ class DragonPayService implements IAddMoneyService
                                 IUserTransactionHistoryRepository $userTransactions,
                                 ITierRepository $tiers,
                                 IUserDetailRepository $userDetails,
-                                IUserBalanceInfoRepository $userBalanceInfos) {
+                                IUserBalanceInfoRepository $userBalanceInfos,
+                                ILogHistoryService $logHistoryService) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -102,6 +105,7 @@ class DragonPayService implements IAddMoneyService
         $this->tiers = $tiers;
         $this->userDetails = $userDetails;
         $this->userBalanceInfos = $userBalanceInfos;
+        $this->logHistoryService = $logHistoryService;
     }
 
     /**
@@ -548,20 +552,21 @@ class DragonPayService implements IAddMoneyService
     }
 
     /**
-     * Update all user transaction from the last 3 months
+     * Update all user transaction from the 1st add money transaction to the date tomorrow
      *
      * @param UserAccount $user
      * @return object
      */
     public function updateUserTransactionStatus(UserAccount $user)
     {
-        $dateTomorrow = Carbon::now()->addDay(1);
+        $this->setUserAccountID($user->id);
 
-        $threeMonthsBeforeTomorrow = Carbon::now()->addDay(1)->subMonth(3);
+        $squidPayTrans = $this->addMoneys->getByUserAccountID($this->userAccountID);
 
-        $squidPayTrans = $this->addMoneys->getBetweenDates($threeMonthsBeforeTomorrow, $dateTomorrow);
+        $dateOf1stTrans = $this->dateToYYYYMMDD($squidPayTrans->first()->created_at);
+        $dateTomorrow = $this->dateToYYYYMMDD(Carbon::now()->addDay(1));
 
-        $dragPayTrans = $this->dragonpayRequest('/transactions?startdate=' . $threeMonthsBeforeTomorrow . '&enddate=' . $dateTomorrow)->json();
+        $dragPayTrans = $this->dragonpayRequest('/transactions?startdate=' . $dateOf1stTrans . '&enddate=' . $dateTomorrow)->json();
 
         $dragPayDataToInsert = [];
 
@@ -625,7 +630,16 @@ class DragonPayService implements IAddMoneyService
             }
         }
 
-        return $this->addMoneys->getBetweenDates($threeMonthsBeforeTomorrow, $dateTomorrow);
+        $this->logHistoryService->logUserHistory(
+            $this->userAccountID,
+            null,
+            SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
+            __METHOD__,
+            Carbon::now(),
+            'Update user`s add money transaction statuses',
+            null
+        );
+        return $squidPayTrans = $this->addMoneys->getByUserAccountID($this->userAccountID);
     }
 
     /**
