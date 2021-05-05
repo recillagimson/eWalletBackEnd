@@ -17,6 +17,7 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -75,6 +76,7 @@ class DragonPayService implements IAddMoneyService
     private ITransactionCategoryRepository $transactionCategories;
     private ITierRepository $tiers;
     private IUserBalanceInfoRepository $userBalanceInfos;
+    private ILogHistoryService $logHistoryService;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
@@ -85,7 +87,8 @@ class DragonPayService implements IAddMoneyService
                                 IUserTransactionHistoryRepository $userTransactions,
                                 ITierRepository $tiers,
                                 IUserDetailRepository $userDetails,
-                                IUserBalanceInfoRepository $userBalanceInfos) {
+                                IUserBalanceInfoRepository $userBalanceInfos,
+                                ILogHistoryService $logHistoryService) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -102,6 +105,7 @@ class DragonPayService implements IAddMoneyService
         $this->tiers = $tiers;
         $this->userDetails = $userDetails;
         $this->userBalanceInfos = $userBalanceInfos;
+        $this->logHistoryService = $logHistoryService;
     }
 
     /**
@@ -545,6 +549,108 @@ class DragonPayService implements IAddMoneyService
             'user_created' => $this->userAccountID,
             'user_updated' => $this->userAccountID
         ]);
+    }
+
+    /**
+     * Update all user transaction from the 1st add money transaction to the date tomorrow
+     *
+     * @param UserAccount $user
+     * @return object
+     */
+    public function updateUserTransactionStatus(UserAccount $user)
+    {
+        $this->setUserAccountID($user->id);
+
+        $squidPayTrans = $this->addMoneys->getByUserAccountID($this->userAccountID);
+
+        $dateOf1stTrans = $this->dateToYYYYMMDD($squidPayTrans->first()->created_at);
+        $dateTomorrow = $this->dateToYYYYMMDD(Carbon::now()->addDay(1));
+
+        $dragPayTrans = $this->dragonpayRequest('/transactions?startdate=' . $dateOf1stTrans . '&enddate=' . $dateTomorrow)->json();
+
+        $dragPayDataToInsert = [];
+
+        foreach ($dragPayTrans as $trans) {
+
+            switch ($trans['Status']) {
+                case 'S':
+                    $statusShouldBe = DragonPayStatusTypes::Success;
+                    break;
+    
+                case 'F':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                case 'P':
+                    $statusShouldBe = DragonPayStatusTypes::Pending;
+                    break;
+    
+                case 'U':
+                    $statusShouldBe = DragonPayStatusTypes::Pending;
+                    break;
+    
+                case 'R':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                case 'K':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                case 'V':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                case 'A':
+                    $statusShouldBe = DragonPayStatusTypes::Failure;
+                    break;
+    
+                default:
+                    return $this->noStatusReceived();
+                    break;
+            }
+
+            $dragPayDataToInsert[$trans['TxnId']] = [
+                'reference_number' => $trans['TxnId'],
+                'dragonpay_reference' => $trans['RefNo'],
+                'dragonpay_channel_reference_number' => $trans['ProcId'],
+                'transaction_remarks' => $trans['Description'],
+                'status' => $statusShouldBe
+            ];
+        }
+
+        foreach ($squidPayTrans as $squidPayTrans) {
+            
+            if (array_key_exists($squidPayTrans->reference_number, $dragPayDataToInsert)) {
+                
+                $this->addMoneys->update($squidPayTrans, $dragPayDataToInsert[$squidPayTrans->reference_number]);
+            } else {
+                
+                $this->addMoneys->update($squidPayTrans, ['status' => DragonPayStatusTypes::Failure]);
+            }
+        }
+
+        $this->logHistoryService->logUserHistory(
+            $this->userAccountID,
+            null,
+            SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
+            __METHOD__,
+            Carbon::now(),
+            'Update user`s add money transaction statuses',
+            null
+        );
+        return $squidPayTrans = $this->addMoneys->getByUserAccountID($this->userAccountID);
+    }
+
+    /**
+     * Format date to YYYY-MM-DD
+     *
+     * @param object $dateToFormat
+     * @return string
+     **/
+    public function dateToYYYYMMDD(object $dateToFormat)
+    {
+        return $dateToFormat->isoFormat('YYYY-MM-DD');
     }
 
 
