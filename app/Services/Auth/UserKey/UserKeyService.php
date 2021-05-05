@@ -127,13 +127,13 @@ class UserKeyService implements IUserKeyService
     /**
      * Validates a user
      *
-     * @param UserAccount $user
+     * @param UserAccount|null $user
      * @param string|null $keyType User account key type (password / pin). Supply a value to this parameter to match
      * $userKey with the user account. Optional.
      * @param string|null $userKey User account key (password / pin code) to match with the user.  Optional.
      * @throws ValidationException
      */
-    private function validateUser(UserAccount $user, string $keyType = null, string $userKey = null)
+    private function validateUser(?UserAccount $user, string $keyType = null, string $userKey = null)
     {
         if (!$user) $this->accountDoesntExist();
         if (!$user->verified) $this->accountDoesntExist();
