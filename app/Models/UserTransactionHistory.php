@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
+use ReflectionClass;
 use App\Traits\UsesUuid;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserTransactionHistory extends Model
 {
     use HasFactory, SoftDeletes;
     use UsesUuid;
 
-    protected $appends = ['signed_total_amount', 'transaction_type'];
+    protected $appends = ['signed_total_amount', 'transaction_type', 'transactable'];
 
     protected $table = 'user_transaction_histories';
     protected $fillable = [
@@ -33,18 +34,27 @@ class UserTransactionHistory extends Model
     // Attributes
     public function getSignedTotalAmountAttribute() {
         // dd($this->transaction_category);
-        $signed_transaction = $this->transaction_category->old_transaction_category_id;
-        if($signed_transaction === "Positive Value") {
+        $signedTransaction = $this->transaction_category->old_transaction_category_id;
+        if($signedTransaction === "Positive Value") {
             return "+" . $this->total_amount;
         }
         return "-" . $this->total_amount;
     }
 
     public function getTransactionTypeAttribute() {
-        $signed_transaction = $this->transaction_category->old_transaction_category_id;
-        if($signed_transaction === "Positive Value") {
+        $signedTransaction = $this->transaction_category->old_transaction_category_id;
+        if($signedTransaction === "Positive Value") {
             return "RECEIVED";
         }
         return "SENT";
+    }
+
+    public function getTransactableAttribute() {
+        $className = $this->transaction_category->transactable;
+        if($className) {
+            $model = app($className);
+            return $model->find($this->transaction_id);
+        }
+        return [];
     }
 }
