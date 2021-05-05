@@ -30,4 +30,14 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
                             ->orderBy('created_at', 'desc')
                             ->first();
     }
+
+    public function getByMultipleReferenceNumber(array $referenceNumbers)
+    {
+        return $this->model->whereIn('reference_number', $referenceNumbers)->get();
+    }
+
+    public function getByUserAccountID(string $userAccountID)
+    {
+        return $this->model->where('user_account_id', $userAccountID)->orderBy('created_at', 'asc')->get();
+    }
 }

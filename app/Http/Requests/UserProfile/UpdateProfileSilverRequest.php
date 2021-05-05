@@ -4,6 +4,7 @@ namespace App\Http\Requests\UserProfile;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProfileSilverRequest  extends FormRequest
@@ -33,30 +34,29 @@ class UpdateProfileSilverRequest  extends FormRequest
             'middle_name'=>['required', 'max:50'],
             // 'name_extension'=>['required', 'max:50'],
             'nationality_id'=>'required',
-            'birth_date'=>'required',
+            'birth_date'=>['required', 'before:today'],
             'country_id'=>'required',
             //'currency_id'=>'required',
             //'signup_host_id'=>'required',
             // 'verification_status'=>['required', 'max:10'],
             // 'emergency_lock_status'=>['required', 'max:10'],
             // 'report_exception_status'=>['required', 'max:10'],
+            'postal_code'=>['required', 'max:5'],
+            'house_no_street'=>['required', 'max:50'],
+            'city'=>['required', 'max:50'],
+            'province_state'=>['required', 'max:50'],
 
-            'place_of_birth'=>'required',
+            'place_of_birth'=>['required', 'max:50'],
             'marital_status_id'=>'required',
             // 'encoded_nationality'=>'required_with:nationality_id',
-            'occupation'=>'required',
-            'house_no_street'=>'required',
-            'city'=>'required',
-            'province_state'=>'required',
-            // 'municipality'=>'required',
-            'postal_code'=>'required',
+            'occupation'=>['required', 'max:50'],
             'nature_of_work_id'=>'required',
             'encoded_nature_of_work'=>Rule::requiredIf($this->nature_of_work_id === '0ed96f01-9131-11eb-b44f-1c1b0d14e211'),
             'source_of_fund_id'=>'required',
             'encoded_source_of_fund'=>Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211'),
             'mother_maidenname'=>'required',
-            'employer'=>'required',
-            'contact_no'=>'required'
+            'employer'=>['required', 'max:50'],
+            'contact_no'=>['required', 'max:11',  new MobileNumber()]
         ];
         
         $inputs = request()->input();
@@ -65,8 +65,8 @@ class UpdateProfileSilverRequest  extends FormRequest
             $birthdate = Carbon::parse($inputs['birth_date']);
             $age = $birthdate->diffInYears(Carbon::now());
             if($age < 18) {
-                $required_fields_default['guardian_name'] = 'required';
-                $required_fields_default['guardian_mobile_number'] = 'required';
+                $required_fields_default['guardian_name'] = ['required', 'max:50'];
+                $required_fields_default['guardian_mobile_number'] = ['required', 'max:11',  new MobileNumber()];
                 $required_fields_default['is_accept_parental_consent'] = 'required';
             }
         }
