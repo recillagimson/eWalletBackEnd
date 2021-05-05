@@ -22,10 +22,6 @@ class UserTransactionHistoryController extends Controller
 
     public function index() {
         $records = $this->userTransactionHistory->getByAuthUser();
-        // dd($records);
-        foreach($records as $record) {
-            dd($record->toArray());
-        }
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
