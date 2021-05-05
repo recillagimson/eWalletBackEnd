@@ -31,7 +31,7 @@ class AddMoneyRequest extends FormRequest
                     'DragonPay',
                 ]),
             ],
-            'amount' => 'bail|required|regex:/^\d*(\.\d{2})?$/',
+            'amount' => 'bail|required|integer|min:1|regex:/^\d*(\.\d{2})?$/',
         ];
     }
 }
