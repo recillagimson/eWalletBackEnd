@@ -25,7 +25,9 @@ use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
+use App\Services\Send2Bank\ISend2BankDirectService;
 use App\Services\Send2Bank\ISend2BankService;
+use App\Services\Send2Bank\Send2BankDirectService;
 use App\Services\Send2Bank\Send2BankPesonetService;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Services\SendMoney\SendMoneyService;
@@ -131,6 +133,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Service Fee Service
         $this->app->bind(IServiceFeeService::class, ServiceFeeService::class);
+        
+        // UBP Send to bank service
+        $this->app->bind(ISend2BankDirectService::class, Send2BankDirectService::class);
 
 
     }

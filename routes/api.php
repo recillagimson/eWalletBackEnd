@@ -114,7 +114,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {
         Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
+        Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect']);
+        Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions']);
         Route::get('/process/pending', [Send2BankController::class, 'processPending']);
+        Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP']);
 
         Route::post('/validate', [Send2BankController::class, 'validateFundTransfer']);
         Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
@@ -147,7 +150,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::prefix('/user')->group(function (){
             Route::get('/profile', [UserProfileController::class, 'show']);
-            Route::post('/profile', [UserProfileController::class, 'update']);
+            Route::post('/profile/tobronze', [UserProfileController::class, 'updateBronze']);
+            Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);

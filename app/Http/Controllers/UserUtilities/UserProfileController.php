@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\UserUtilities;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\UserProfile\UpdateProfileRequest;
 use Illuminate\Http\Response;
+use App\Enums\SuccessMessages;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\Utilities\Responses\IResponseService;
-use App\Enums\SuccessMessages;
+use App\Http\Requests\UserProfile\UpdateProfileBronzeRequest;
+use App\Http\Requests\UserProfile\UpdateProfileSilverRequest;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class UserProfileController extends Controller
@@ -32,12 +33,27 @@ class UserProfileController extends Controller
     }
 
     /**
-     * Add or Update
+     * Add or Update for Bronze Users
      *
      * @param PrepaidLoadRequest $request
      * @return JsonResponse
      */
-    public function update(UpdateProfileRequest $request): JsonResponse
+    public function updateBronze(UpdateProfileBronzeRequest $request): JsonResponse
+    {
+        $details = $request->validated();
+        $addOrUpdate = $this->userProfileService->update($request->user(), $details);
+        
+        // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
+        return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
+    }
+
+    /**
+     * Add or Update for Silver Upgrade Users
+     *
+     * @param PrepaidLoadRequest $request
+     * @return JsonResponse
+     */
+    public function updateSilver(UpdateProfileSilverRequest $request): JsonResponse
     {
         $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $details);

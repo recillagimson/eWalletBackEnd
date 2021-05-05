@@ -40,7 +40,7 @@ class ResetKeyRequest extends FormRequest
                 'different:email',
                 new IsPasswordValid()
             ],
-            'password_confirmation' => 'required_without:pin_code_confirmation|min:' . config('auth.password_minlength') . '|max:16',
+            'password_confirmation' => 'required_without:pin_code_confirmation|min:' . config('auth.password_minlength') . '|max:20',
             'pin_code' => [
                 'required_without:password',
                 'digits:4',

@@ -45,6 +45,8 @@ class UBPService implements IUBPService
         $this->instaPayBanksUrl = config('ubp.instapay_banks_url');
         $this->instaPayTransferUrl = config('ubp.instapay_transfer_url');
 
+        $this->directUBPTransferUrl = config('ubp.direct_ubp_transfer_url');
+
         $this->clientId = config('ubp.client_id');
         $this->clientSecret = config('ubp.client_secret');
         $this->partnerId = config('ubp.partner_id');
@@ -167,6 +169,46 @@ class UBPService implements IUBPService
         $headers['Authorization'] = 'Bearer ' . $token->access_token;
 
         return $headers;
+    }
+
+
+    public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName) : Response 
+    {
+        $token = $this->getToken();
+        $headers = $this->defaultHeaders;
+        $headers['Authorization'] = 'Bearer ' . $token->access_token;
+
+        $data = [
+            "senderRefId" => $senderRefId,
+            "tranRequestDate" => $transactionDate,
+            "accountNo" => $accountNo,
+            "amount" => [
+                "currency" => "PHP",
+                "value" => $amount
+            ],
+            "remarks" => $remarks,
+            "particulars" => $particulars,
+            "info" => [
+                [
+                    "index" => 1,
+                    "name" => "Recipient",
+                    "value" => $recipientName 
+                ]
+            ]
+        ];
+
+        $transferUrl = $this->directUBPTransferUrl;
+        $url = $this->baseUrl . $transferUrl;
+        return $this->apiService->post($url, $data, $headers);
+    }
+
+    public function verifyPendingDirectTransaction(string $senderRefId) {
+        $token = $this->getToken();
+        $headers = $this->defaultHeaders;
+        $headers['Authorization'] = 'Bearer ' . $token->access_token;
+        $transferUrl = $this->directUBPTransferUrl;
+        $url = $this->baseUrl . $transferUrl . "/" . $senderRefId;
+        return $this->apiService->get($url, $headers);
     }
 
 

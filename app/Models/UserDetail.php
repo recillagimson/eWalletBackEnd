@@ -28,7 +28,7 @@ class UserDetail extends Model
         'occupation',
         'house_no_street',
         'city',
-        'provice_state',
+        'province_state',
         'municipality',
         'country_id',
         'postal_code',
@@ -46,6 +46,9 @@ class UserDetail extends Model
         'report_exception_status',
         'user_created',
         'user_updated',
+        'guardian_name',
+        'guardian_mobile_number',
+        'is_accept_parental_consent',
     ];
 
     public function getFullNameAttribute(): string

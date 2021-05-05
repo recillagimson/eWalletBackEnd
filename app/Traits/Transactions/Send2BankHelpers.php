@@ -5,21 +5,22 @@ namespace App\Traits\Transactions;
 
 
 use App\Enums\TpaProviders;
-use App\Enums\TransactionStatuses;
-use App\Enums\UbpResponseStates;
+use App\Models\UserAccount;
+use App\Traits\UserHelpers;
+use Illuminate\Support\Str;
 use App\Enums\UsernameTypes;
 use App\Models\OutSend2Bank;
-use App\Models\UserAccount;
+use App\Enums\UbpResponseCodes;
 use App\Models\UserBalanceInfo;
-use App\Repositories\Send2Bank\IOutSend2BankRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\Notifications\Email\IEmailService;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Enums\UbpResponseStates;
+use App\Enums\TransactionStatuses;
 use App\Traits\Errors\WithTpaErrors;
-use App\Traits\Errors\WithUserErrors;
-use App\Traits\UserHelpers;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Str;
+use App\Traits\Errors\WithUserErrors;
+use App\Repositories\Send2Bank\IOutSend2BankRepository;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 trait Send2BankHelpers
 {
@@ -88,8 +89,8 @@ trait Send2BankHelpers
 
             if ($status === TransactionStatuses::success) {
                 $this->transactionHistories->log($send2Bank->user_account_id,
-                    $send2Bank->transaction_category_id, $send2bank->id, $send2Bank->reference_number,
-                    $send2bank->total_amount, $send2Bank->user_account_id);
+                    $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
+                    $send2Bank->total_amount, $send2Bank->user_account_id);
             }
 
             return $send2Bank;
@@ -125,6 +126,37 @@ trait Send2BankHelpers
         }
     }
 
+    private function handleDirectTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
+    {
+        if (!$response->successful()) {
+            //$errors = $response->json();
+            $this->transFailed();
+        } else {
+            $data = $response->json();
+            $code = $data['code'];
+
+            $provider = TpaProviders::ubpDirect;
+            $providerTransactionId = $data['ubpTranId'];
+            $providerRemittanceId = $data['uuid'];
+
+            if ($code === UbpResponseCodes::successfulTransaction) {
+                $send2Bank->status = TransactionStatuses::success;
+            } else if($code === UbpResponseCodes::receivedRequest || UbpResponseCodes::processing || UbpResponseCodes::forConfirmation) {
+                $send2Bank->status = TransactionStatuses::pending;
+            } else {
+                $send2Bank->status = TransactionStatuses::failed;
+            }
+
+            $send2Bank->provider = $provider;
+            $send2Bank->provider_transaction_id = $providerTransactionId;
+            $send2Bank->provider_remittance_id = $providerRemittanceId;
+            $send2Bank->user_updated = $send2Bank->user_account_id;
+            $send2Bank->transaction_response = json_encode($data);
+            $send2Bank->save();
+
+            return $send2Bank;
+        }
+    }
     private function sendNotifications(UserAccount $user, OutSend2Bank $send2Bank, float $availableBalance)
     {
         $usernameField = $this->getUsernameFieldByAvailability($user);

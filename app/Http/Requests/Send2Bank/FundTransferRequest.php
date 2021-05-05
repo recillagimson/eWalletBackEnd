@@ -31,7 +31,7 @@ class FundTransferRequest extends FormRequest
             'amount' => 'required|numeric',
             'purpose' => 'required|max:50',
             'other_purpose' => 'required_if:purpose,Others|max:50',
-            'send_receipt_to' => 'required|email'
+            'send_receipt_to' => 'email'
         ];
     }
 }
