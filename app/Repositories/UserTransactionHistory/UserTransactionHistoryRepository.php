@@ -34,11 +34,11 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     }
 
     public function getByAuthUser() {
-        return $this->model->with(['transaction_category'])->where('user_account_id', request()->user()->id)->get();
+        return $this->model->with(['transaction_category'])->where('user_account_id', request()->user()->id)->orderBy('created_at', 'DESC')->get();
     }
 
     public function findTransactionWithRelation(string $id) {
-        $record = $this->model->with(['transaction_category'])->where('id', $id)->first();
+        $record = $this->model->with(['transaction_category'])->where('id', $id)->first()->append('transactable');
         if(!$record) {
             ValidationException::withMessages([
                 'record_not_found' => 'Record not found'
