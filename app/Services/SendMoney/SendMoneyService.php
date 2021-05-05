@@ -371,12 +371,12 @@ class SendMoneyService implements ISendMoneyService
             'user_updated' => ''
         ]);
         $this->userTransactionHistoryRepository->create([
-            'user_account_id' => $receiverID,
+            'user_account_id' => $senderID,
             'transaction_id' => SendMoneyConfig::CXRECEIVE,
             'reference_number' => $fillRequest['refNoRM'],
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
-            'user_created' => $receiverID,
+            'user_created' => $senderID,
             'user_updated' => ''
         ]);
     }
