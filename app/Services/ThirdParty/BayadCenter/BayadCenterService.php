@@ -3,7 +3,7 @@
 
 namespace App\Services\ThirdParty\BayadCenter;
 
-
+use App\Enums\TpaProviders;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 
@@ -15,18 +15,18 @@ class BayadCenterService implements IBayadCenterService
     private string $baseUrl;
     private string $tokenUrl;
 
-    private string $pesonetTransferUrl;
-    private string $pesonetTransactionUpdateUrl;
-    private string $pesonetBanksUrl;
+    private string $billersUrl;
+    private string $billerInformationUrl;
+    private string $otherChargesUrl;
 
-    private string $instaPayTransferUrl;
-    private string $instaPayBanksUrl;
+    private string $validateAccountUrl;
+    private string $createPaymentUrl;
+    private string $inquirePaymentUrl;
+    private string $getWalletBalanceUrl;
 
+    private string $tpaId;
     private string $clientId;
     private string $clientSecret;
-    private string $partnerId;
-    private string $username;
-    private string $password;
     private string $scopes;
 
     private IApiService $apiService;
@@ -34,21 +34,21 @@ class BayadCenterService implements IBayadCenterService
 
     public function __construct(IApiService $apiService)
     {
-        $this->baseUrl = config('ubp.base_url');
-        $this->tokenUrl = config('ubp.token_url');
+        $this->baseUrl = config('bc.base_url');
+        $this->tokenUrl = config('bc.token_url');
 
-        $this->pesonetTransferUrl = config('ubp.pesonet_transfer_url');
-        $this->pesonetTransactionUpdateUrl = config('ubp.pesonet_transaction_update_url');
-        $this->pesonetBanksUrl = config('ubp.pesonet_banks_url');
+        $this->billersUrl = config('bc.biller_url');
+        $this->billerInformationUrl = config('bc.biller_information_url');
+        $this->otherChargesUrl = config('bc.otherChargesUrl');
 
-        $this->instaPayBanksUrl = config('ubp.instapay_banks_url');
-        $this->instaPayTransferUrl = config('ubp.instapay_transfer_url');
+        $this->validateAccountUrl = config('bc.validate_account_url');
+        $this->createPaymentUrl = config('bc.create_payment_url');
+        $this->inquirePaymentUrl = config('bc.inquire_payment_url');
+        $this->getWalletBalanceUrl = config('bc.get_wallet_balance_url');
 
-        $this->clientId = config('ubp.client_id');
-        $this->clientSecret = config('ubp.client_secret');
-        $this->partnerId = config('ubp.partner_id');
-        $this->username = config('ubp.username');
-        $this->password = config('ubp.password');
+        $this->tpaId = config('bc.tpa_id');
+        $this->clientId = config('bc.client_id');
+        $this->clientSecret = config('bc.client_secret');
         $this->scopes = config('ubp.scopes');
 
         $this->apiService = $apiService;
@@ -62,6 +62,37 @@ class BayadCenterService implements IBayadCenterService
         ];
     }
 
+    /**
+     * UBP Partner Authentication
+     *
+     * @return object
+     */
+    private function getToken(): object
+    {
+        $data = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $this->clientId,
+            'scope' => $this->scopes
+        ];
+
+        return $response = Http::withBasicAuth(
+            '5o2eg36qrrfmohroq1di6d94hs',
+            'capgl33osf8m0gn8ohonch3aubij8pan3nalgl3hhhs5pjvl1ja'
+        )->post(
+            'https://stg.bc-api.bayad.com/v3/partners/oauth/token',
+            [
+                'grant_type' => 'password',
+                'client_id' => $this->clientId,
+                'scope' => $this->scopes
+            ]
+        );
+
+        $url = $this->baseUrl . $this->tokenUrl;
+        $response = $this->apiService->postAsForm($url, $data);
+
+        if (!$response->successful()) $this->tpaFailedAuthentication(TpaProviders::ubp);
+        return (object)$response->json();
+    }
 
 
 }
