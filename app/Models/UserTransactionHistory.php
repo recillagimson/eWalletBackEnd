@@ -13,7 +13,7 @@ class UserTransactionHistory extends Model
     use HasFactory, SoftDeletes;
     use UsesUuid;
 
-    protected $appends = ['signed_total_amount', 'transaction_type', 'transactable'];
+    protected $appends = ['signed_total_amount', 'transaction_type'];
 
     protected $table = 'user_transaction_histories';
     protected $fillable = [
@@ -33,17 +33,16 @@ class UserTransactionHistory extends Model
 
     // Attributes
     public function getSignedTotalAmountAttribute() {
-        // dd($this->transaction_category);
-        $signedTransaction = $this->transaction_category->old_transaction_category_id;
-        if($signedTransaction === "Positive Value") {
+        $signedTransaction = $this->transaction_category->transaction_type;
+        if($signedTransaction === "POSITIVE") {
             return "+" . $this->total_amount;
         }
         return "-" . $this->total_amount;
     }
 
     public function getTransactionTypeAttribute() {
-        $signedTransaction = $this->transaction_category->old_transaction_category_id;
-        if($signedTransaction === "Positive Value") {
+        $signedTransaction = $this->transaction_category->transaction_type;
+        if($signedTransaction === "POSITIVE") {
             return "RECEIVED";
         }
         return "SENT";

@@ -15,6 +15,7 @@ class AddModelNameToTransactionHistories extends Migration
     {
         Schema::table('transaction_categories', function (Blueprint $table) {
             $table->string('transactable', 50)->after('status');
+            $table->string('transaction_type', 50)->default('POSITIVE')->after('transactable');
         });
     }
 
@@ -27,6 +28,7 @@ class AddModelNameToTransactionHistories extends Migration
     {
         Schema::table('transaction_categories', function (Blueprint $table) {
             $table->dropColumn('transactable');
+            $table->dropColumn('transaction_type');
         });
     }
 }
