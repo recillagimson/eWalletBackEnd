@@ -84,27 +84,23 @@ class AtmService implements IAtmService
         return $result->data;
     }
 
-    public function atmload(array $items): array
+    public function atmload(array $items): object
     {
         
         $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::BuyLoad);
         $items["agentRefNo"] = $referenceNumber;
         $post_data = $this->createATMPostBody($items);
         $signature = $this->generateSignature($post_data);
-        $sample = array(
-            "data"=>$post_data,
-            "signature"=>$signature
-        );
-        // dd($sample);
+
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
             'Signature' => $signature
-        ])->post(config('services.load.atm.url').' /topup-request', 
+        ])->post(config('services.load.atm.url').'/topup-request', 
         $post_data);
-            // dd($response->json());
+            
         $result = json_decode($response->body());
-        // dd($result);
+       
         return $result;
     }
 

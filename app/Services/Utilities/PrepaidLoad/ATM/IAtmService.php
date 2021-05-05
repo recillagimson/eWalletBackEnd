@@ -14,5 +14,5 @@ interface IAtmService
 
     public function showNetworkAndPrefix(): array;
 
-    public function atmload(array $items): array;
+    public function atmload(array $items): object;
 }
