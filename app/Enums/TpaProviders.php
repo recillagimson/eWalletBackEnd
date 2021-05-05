@@ -10,4 +10,5 @@ class TpaProviders
     const ubpPesonet = 'ubp-pesonet';
     const ubpInstapay = 'ubp-instapay';
     const ubpDirect = 'ubp-direct';
+    const bc = 'bayad center';
 }

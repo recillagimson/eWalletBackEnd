@@ -6,5 +6,5 @@ use Illuminate\Http\Client\Response;
 
 interface IBayadCenterService
 {
-
+    public function getToken();
 }

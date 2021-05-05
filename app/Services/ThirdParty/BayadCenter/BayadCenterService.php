@@ -6,7 +6,8 @@ namespace App\Services\ThirdParty\BayadCenter;
 use App\Enums\TpaProviders;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
-
+use Http;
+use Illuminate\Http\Client\Response;
 
 class BayadCenterService implements IBayadCenterService
 {
@@ -49,49 +50,39 @@ class BayadCenterService implements IBayadCenterService
         $this->tpaId = config('bc.tpa_id');
         $this->clientId = config('bc.client_id');
         $this->clientSecret = config('bc.client_secret');
-        $this->scopes = config('ubp.scopes');
+        $this->scopes = config('bc.scopes');
 
         $this->apiService = $apiService;
 
         $this->defaultHeaders = [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
+            'Content-Type' => 'application/x-www-form-urlencoded',
             'x-ibm-client-id' => $this->clientId,
             'x-ibm-client-secret' => $this->clientSecret,
-            'x-partner-id' => $this->partnerId
         ];
     }
 
-    /**
-     * UBP Partner Authentication
-     *
-     * @return object
-     */
-    private function getToken(): object
+    public function getToken()
     {
         $data = [
             'grant_type' => 'client_credentials',
             'client_id' => $this->clientId,
+            'tpa_id' => $this->tpaId,
             'scope' => $this->scopes
         ];
 
-        return $response = Http::withBasicAuth(
-            '5o2eg36qrrfmohroq1di6d94hs',
-            'capgl33osf8m0gn8ohonch3aubij8pan3nalgl3hhhs5pjvl1ja'
-        )->post(
-            'https://stg.bc-api.bayad.com/v3/partners/oauth/token',
-            [
-                'grant_type' => 'password',
-                'client_id' => $this->clientId,
-                'scope' => $this->scopes
-            ]
-        );
-
         $url = $this->baseUrl . $this->tokenUrl;
-        $response = $this->apiService->postAsForm($url, $data);
+        $response = Http::withBasicAuth($this->clientId, $this->clientSecret)->post($url, $data);
 
-        if (!$response->successful()) $this->tpaFailedAuthentication(TpaProviders::ubp);
-        return (object)$response->json();
+        if (!$response->successful()) $this->tpaFailedAuthentication(TpaProviders::bc);
+        return $response->json();
+    }
+
+    public function getBanks(string $provider): Response
+    {
+        $banksUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetBanksUrl : $this->instaPayBanksUrl;
+        $url = $this->baseUrl . $banksUrl;
+        return $this->apiService->get($url, $this->defaultHeaders);
     }
 
 
