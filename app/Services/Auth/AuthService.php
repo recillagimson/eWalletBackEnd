@@ -82,7 +82,7 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
         if (!$user) $this->loginFailed();
         $this->validateUser($user);
-        $this->tryLogin($user, $creds['pin_code'], $user->password);
+        $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken);
     }
