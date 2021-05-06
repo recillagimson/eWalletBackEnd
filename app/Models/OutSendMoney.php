@@ -29,7 +29,7 @@ class OutSendMoney extends Model
         'message',
         'status',
         'transaction_date',
-        'transction_category_id',
+        'transaction_category_id',
         'transaction_remarks',
         'user_created',
         'user_updated'
