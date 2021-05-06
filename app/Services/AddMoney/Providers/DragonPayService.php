@@ -555,11 +555,15 @@ class DragonPayService implements IAddMoneyService
      * Update all user transaction from the 1st add money transaction to the date tomorrow
      *
      * @param UserAccount $user
-     * @return object
+     * @return array
      */
     public function updateUserTransactionStatus(UserAccount $user)
     {
         $this->setUserAccountID($user->id);
+
+        $successTransCount = 0;
+        $failedTransCount = 0;
+        $pendingTransCount = 0;
 
         $squidPayTrans = $this->addMoneys->getByUserAccountID($this->userAccountID);
 
@@ -622,10 +626,29 @@ class DragonPayService implements IAddMoneyService
         foreach ($squidPayTrans as $squidPayTrans) {
             
             if (array_key_exists($squidPayTrans->reference_number, $dragPayDataToInsert)) {
-                
+
+                switch ($dragPayDataToInsert[$squidPayTrans->reference_number]['status']) {
+                    case DragonPayStatusTypes::Success:
+                        $successTransCount = $successTransCount + 1;
+                        break;
+
+                    case DragonPayStatusTypes::Pending:
+                        $pendingTransCount = $pendingTransCount + 1;
+                        break;
+
+                    case DragonPayStatusTypes::Failure:
+                        $failedTransCount = $failedTransCount + 1;
+                        break;
+                    
+                    default:
+                        return $this->unrecognizableStatusFound();
+                        break;
+                }
+
                 $this->addMoneys->update($squidPayTrans, $dragPayDataToInsert[$squidPayTrans->reference_number]);
             } else {
                 
+                $failedTransCount = $failedTransCount + 1;
                 $this->addMoneys->update($squidPayTrans, ['status' => DragonPayStatusTypes::Failure]);
             }
         }
@@ -639,7 +662,12 @@ class DragonPayService implements IAddMoneyService
             'Update user`s add money transaction statuses',
             null
         );
-        return $squidPayTrans = $this->addMoneys->getByUserAccountID($this->userAccountID);
+
+        return [
+            'success' => $successTransCount,
+            'pending' => $pendingTransCount,
+            'failed' => $failedTransCount
+        ];
     }
 
     /**
@@ -751,6 +779,27 @@ class DragonPayService implements IAddMoneyService
             'namespace' => __METHOD__,
             'transaction_date' => Carbon::now(),
             'remarks' => 'Can`t write to table.',
+            'user_created' => $this->userAccountID,
+            'user_updated' => $this->userAccountID
+        ]);
+
+        $this->throw500();
+    }
+
+    /**
+     * Thrown when there an unrecognizable status found in DragonPays response
+     *
+     * @return error500
+     */
+    private function unrecognizableStatusFound()
+    {
+        $this->logHistory->create([
+            'user_account_id' => $this->userAccountID,
+            'reference_number' => 'N/A',
+            'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
+            'namespace' => __METHOD__,
+            'transaction_date' => Carbon::now(),
+            'remarks' => 'Unrecognizable Status Exists.',
             'user_created' => $this->userAccountID,
             'user_updated' => $this->userAccountID
         ]);

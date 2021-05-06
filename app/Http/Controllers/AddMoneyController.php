@@ -90,6 +90,6 @@ class AddMoneyController extends Controller
 
         $updatedTransactions = $this->addMoneyService->updateUserTransactionStatus($user);
 
-        return $this->responseService->successResponse($updatedTransactions->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($updatedTransactions, SuccessMessages::success);
     }
 }
