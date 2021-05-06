@@ -317,7 +317,7 @@ class SendMoneyService implements ISendMoneyService
             'message' => $fillRequest['message'],
             'status' => true,
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transction_category_id' => SendMoneyConfig::CXSEND,
+            'transaction_category_id' => SendMoneyConfig::CXSEND,
             'transaction_remarks' => '',
             'user_created' => $senderID,
             'user_updated' => ''
@@ -335,7 +335,7 @@ class SendMoneyService implements ISendMoneyService
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transction_category_id' => SendMoneyConfig::CXRECEIVE,
+            'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
             'transaction_remarks' => '',
             'status' => true,
             'user_created' => $senderID,
