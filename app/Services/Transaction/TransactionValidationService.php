@@ -85,7 +85,7 @@ class TransactionValidationService implements ITransactionValidationService
                 ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to);
 
             $sumUp = $totalTransactionCurrentMonth + $totalAmount;
-            if ($tier->monthly_limit >= $sumUp) return;
+            if ($sumUp >= $tier->monthly_limit) return;
             $this->userMonthlyLimitExceeded();
         }
 
