@@ -5,22 +5,22 @@ namespace App\Traits\Transactions;
 
 
 use App\Enums\TpaProviders;
-use App\Models\UserAccount;
-use App\Traits\UserHelpers;
-use Illuminate\Support\Str;
+use App\Enums\TransactionStatuses;
+use App\Enums\UbpResponseCodes;
+use App\Enums\UbpResponseStates;
 use App\Enums\UsernameTypes;
 use App\Models\OutSend2Bank;
-use App\Enums\UbpResponseCodes;
+use App\Models\UserAccount;
 use App\Models\UserBalanceInfo;
-use App\Enums\UbpResponseStates;
-use App\Enums\TransactionStatuses;
-use App\Traits\Errors\WithTpaErrors;
-use Illuminate\Http\Client\Response;
-use App\Traits\Errors\WithUserErrors;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Traits\Errors\WithTpaErrors;
+use App\Traits\Errors\WithUserErrors;
+use App\Traits\UserHelpers;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Str;
 
 trait Send2BankHelpers
 {
@@ -121,6 +121,12 @@ trait Send2BankHelpers
             $send2Bank->user_updated = $send2Bank->user_account_id;
             $send2Bank->transaction_response = json_encode($data);
             $send2Bank->save();
+
+            if ($send2Bank->status === TransactionStatuses::success) {
+                $this->transactionHistories->log($send2Bank->user_account_id,
+                    $send2Bank->transaction_category_id, $send2bank->id, $send2Bank->reference_number,
+                    $send2bank->total_amount, $send2Bank->user_account_id);
+            }
 
             return $send2Bank;
         }
