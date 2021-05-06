@@ -103,14 +103,15 @@ class SendMoneyService implements ISendMoneyService
         
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
+        
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
-        $this->outSendMoney($senderID, $receiverID, $fillRequest);
-        $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
+
+        $outSendMoney = $this->outSendMoney($senderID, $receiverID, $fillRequest);
+        $inReceiveMoney = $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
+
         $this->logHistories($senderID, $receiverID, $fillRequest);
-        $this->userTransactionHistory($senderID, $fillRequest);
-        // $this->senderNotification($user->$username,$fillRequest, $receiverID, $senderID);
-        // $this->recipientNotification($fillRequest[$username], $fillRequest, $senderID, $receiverID);
+        $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest);
 
         return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username);
     }
@@ -359,11 +360,11 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function userTransactionHistory($senderID, $fillRequest)
+    private function userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest)
     {
         $this->userTransactionHistoryRepository->create([
             'user_account_id' => $senderID,
-            'transaction_id' => SendMoneyConfig::CXSEND,
+            'transaction_id' => $outSendMoney->id,
             'reference_number' => $fillRequest['refNo'],
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             'transaction_category_id' => SendMoneyConfig::CXSEND,
@@ -371,8 +372,8 @@ class SendMoneyService implements ISendMoneyService
             'user_updated' => ''
         ]);
         $this->userTransactionHistoryRepository->create([
-            'user_account_id' => $senderID,
-            'transaction_id' => SendMoneyConfig::CXRECEIVE,
+            'user_account_id' => $receiverID,
+            'transaction_id' => $inReceiveMoney->id,
             'reference_number' => $fillRequest['refNoRM'],
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
