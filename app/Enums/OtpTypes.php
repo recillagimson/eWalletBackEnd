@@ -12,6 +12,7 @@ class OtpTypes
     public const pinRecovery = 'pin_recovery';
 
     public const sendMoney = 'send_money';
+    public const send2Bank = 'send2bank';
 
     /**
      * INCLUDE HERE ALL THE OTP TYPE VALUES ABOVE
@@ -23,12 +24,14 @@ class OtpTypes
         self::pinRecovery,
 
         self::sendMoney,
+        self::send2Bank,
     ];
 
     /**
      * INCLUDE HERE ALL THE TRANSACTION OTP TYPE VALUES ONLY
      */
     public const transactionOtps = [
-        self::sendMoney
+        self::sendMoney,
+        self::send2Bank,
     ];
 }

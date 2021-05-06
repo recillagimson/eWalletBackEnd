@@ -31,5 +31,16 @@ trait UserHelpers
         return $keyType === UserKeyTypes::pin ? 'pin_code' : 'password';
     }
 
+    private function getRecepientField(array $recipient): string
+    {
+        $recepientCollection = collect($recipient);
+        if ($recepientCollection->has(UsernameTypes::Email))
+            return UsernameTypes::Email;
+        elseif ($recepientCollection->has(UsernameTypes::MobileNumber))
+            return UsernameTypes::MobileNumber;
+        else
+            return '';
+    }
+
 
 }

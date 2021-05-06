@@ -4,8 +4,8 @@ namespace App\Enums;
 
 class TransactionCategories
 {
-    const SendMoneyToBankInstaPay = 'WITHDRAWUBPINSTAPAY';
-    const SendMoneyToBankPesoNet = 'WITHDRAWUBPPESONET';
+    const Send2BankInstaPay = 'WITHDRAWUBPINSTAPAY';
+    const Send2BankPesoNet = 'WITHDRAWUBPPESONET';
     const MerchantSendMoney = 'MXTRANSFER';
     const SendMoneyToSettlementAcct = 'CASHOUT';
     const AddMoneyWebBankDragonPay = 'CASHINDRAGONPAY';

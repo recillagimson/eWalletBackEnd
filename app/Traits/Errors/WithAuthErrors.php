@@ -45,7 +45,8 @@ trait WithAuthErrors
     public function accountLockedOut()
     {
         $this->validationErrorMessage(ErrorCodes::accountLockedOut,
-            'Account has been locked out. Due to 3 failed login attempts.');
+            'Your Account has been locked, Please contact Squidpay Support for assistance
+            in unlocking your account.');
     }
 
     public function passwordUsed()
@@ -84,5 +85,11 @@ trait WithAuthErrors
     {
         $this->validationErrorMessage(ErrorCodes::accountAlreadyTaken,
             'Email / Mobile Number is already taken.');
+    }
+
+    public function accountDeactivated()
+    {
+        $this->validationErrorMessage(ErrorCodes::accountDeactivated,
+            'Your account is disabled. Please contact Squidpay support.');
     }
 }

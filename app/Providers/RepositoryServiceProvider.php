@@ -33,6 +33,8 @@ use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\QrTransactions\QrTransactionsRepository;
 use App\Repositories\ReferenceCounter\IReferenceCounterRepository;
 use App\Repositories\ReferenceCounter\ReferenceCounterRepository;
+use App\Repositories\Send2Bank\IOutSend2BankRepository;
+use App\Repositories\Send2Bank\OutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\ServiceFee\ServiceFeeRepository;
 use App\Repositories\Tier\ITierRepository;
@@ -153,6 +155,8 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Service Fee Repository
         $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
+
+        $this->app->bind(IOutSend2BankRepository::class, OutSend2BankRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
