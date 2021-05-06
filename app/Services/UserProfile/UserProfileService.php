@@ -3,16 +3,20 @@
 namespace App\Services\UserProfile;
 
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-
+use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Traits\HasFileUploads;
 
 class UserProfileService implements IUserProfileService
 {
+    use HasFileUploads;
     
     public IUserDetailRepository $userDetailRepository;
+    public IUserPhotoRepository $userPhotoRepository;
 
-    public function __construct(IUserDetailRepository $userDetailRepository)
+    public function __construct(IUserDetailRepository $userDetailRepository, IUserPhotoRepository $userPhotoRepository)
     {
         $this->userDetailRepository = $userDetailRepository;
+        $this->userPhotoRepository = $userPhotoRepository;
 
     }
 
@@ -39,6 +43,33 @@ class UserProfileService implements IUserProfileService
             $details['user_updated'] = $userAccount->id;
         }
         return $details;
+    }
+
+    public function changeAvatar(array $data) {
+        // Delete existing first
+        // Get details first 
+        $userDetails = $this->userDetailRepository->getByUserId(request()->user()->id);
+        // If no user Details
+        if(!$userDetails) {
+            throw ValidationException::withMessages([
+                'user_detail_not_found' => 'User Detail not found'
+            ]);
+        }
+        // Delete file using path from current detail
+        $this->deleteFile($userDetails->avatar_loction);
+
+        // For Serfile Processing
+        // GET EXT NAME
+        $avatarPhotoExt = $this->getFileExtensionName($data['avatar_photo']);
+        // GENERATE NEW FILE NAME
+        $avatarPhotoName = request()->user()->id . "/" . \Str::random(40) . "." . $avatarPhotoExt;
+        // PUT FILE TO STORAGE
+        $avatarPhotoPath = $this->saveFile($data['avatar_photo'], $avatarPhotoName, 'avatar_photo');
+        // SAVE AVATAR LOCATION ON USER DETAILS
+        $record = $this->userPhotoRepository->updateAvatarPhoto($avatarPhotoPath);
+
+        return $record;
+        // return to controller all created records
     }
 
 }
