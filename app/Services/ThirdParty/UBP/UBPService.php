@@ -22,6 +22,7 @@ class UBPService implements IUBPService
 
     private string $instaPayTransferUrl;
     private string $instaPayBanksUrl;
+    private string $instapayLibUrl;
 
     private string $clientId;
     private string $clientSecret;
@@ -44,6 +45,7 @@ class UBPService implements IUBPService
 
         $this->instaPayBanksUrl = config('ubp.instapay_banks_url');
         $this->instaPayTransferUrl = config('ubp.instapay_transfer_url');
+        $this->instapayLibUrl = config('ubp.instapay_lib_url');
 
         $this->directUBPTransferUrl = config('ubp.direct_ubp_transfer_url');
 
@@ -94,9 +96,15 @@ class UBPService implements IUBPService
         return $this->apiService->get($url, $this->defaultHeaders);
     }
 
-    public function fundTransfer(string $refNo, string $fromFullName, int $bankCode, string $recepientAccountNumber,
+    public function getPurposes(): Response
+    {
+        $url = $this->baseUrl . $this->instapayLibUrl . 'purpose';
+        return $this->apiService->get($url, $this->defaultHeaders);
+    }
+
+    public function fundTransfer(string $refNo, string $fromFullName, string $zipCode, int $bankCode, string $recepientAccountNumber,
                                  string $recepientAccountName, float $amount, string $transactionDate,
-                                 string $instructions, string $provider): Response
+                                 string $instructions, string $provider, string $purpose = "1003"): Response
     {
         $headers = $this->getAuthorizationHeaders();
 
@@ -110,7 +118,7 @@ class UBPService implements IUBPService
                     "line2" => " ",
                     "city" => " ",
                     "province" => " ",
-                    "zipCode" => " ",
+                    "zipCode" => $zipCode,
                     "country" => " "
                 ]
             ],
@@ -127,10 +135,10 @@ class UBPService implements IUBPService
                 ]
             ],
             "remittance" => [
-                "amount" => $amount,
+                "amount" => number_format($amount, 2),
                 "currency" => "PHP",
                 "receivingBank" => $bankCode,
-                "purpose" => "1001",
+                "purpose" => $purpose,
                 "instructions" => $instructions
             ]
         ];
@@ -172,7 +180,7 @@ class UBPService implements IUBPService
     }
 
 
-    public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName) : Response 
+    public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName): Response
     {
         $token = $this->getToken();
         $headers = $this->defaultHeaders;
@@ -192,7 +200,7 @@ class UBPService implements IUBPService
                 [
                     "index" => 1,
                     "name" => "Recipient",
-                    "value" => $recipientName 
+                    "value" => $recipientName
                 ]
             ]
         ];
