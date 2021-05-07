@@ -15,6 +15,7 @@ class UserPhoto extends Model
 
     protected $fillable = [
         'id',
+        'id_number',
         'user_account_id',
         'id_type_id',
         'old_id_type',
