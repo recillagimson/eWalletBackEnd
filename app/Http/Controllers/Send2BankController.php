@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Throwable;
+use App\Enums\SuccessMessages;
+use App\Http\Requests\Send2Bank\FundTransferRequest;
+use App\Http\Requests\Send2Bank\Send2BankUBPDirectRequest;
+use App\Http\Requests\Send2Bank\TransactionUpdateRequest;
+use App\Services\Send2Bank\ISend2BankDirectService;
+use App\Services\Send2Bank\ISend2BankService;
+use App\Services\Utilities\Responses\IResponseService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Enums\SuccessMessages;
-use Illuminate\Http\JsonResponse;
-use App\Enums\TransactionCategoryIds;
-use App\Services\Send2Bank\ISend2BankService;
-use App\Services\Send2Bank\ISend2BankDirectService;
-use App\Http\Requests\Send2Bank\FundTransferRequest;
-use App\Services\Utilities\Responses\IResponseService;
-use App\Http\Requests\Send2Bank\TransactionUpdateRequest;
-use App\Http\Requests\Send2Bank\Send2BankUBPDirectRequest;
+use Throwable;
 
 class Send2BankController extends Controller
 {
@@ -37,6 +36,17 @@ class Send2BankController extends Controller
     {
         $banks = $this->send2BankService->getBanks();
         return $this->responseService->successResponse($banks);
+    }
+
+    /**
+     * Endpoint to retrieve list of instapay transaction purposes
+     *
+     * @return JsonResponse
+     */
+    public function getPurposes(): JsonResponse
+    {
+        $purposes = $this->send2BankService->getPurposes();
+        return $this->responseService->successResponse($purposes);
     }
 
     /**
@@ -130,7 +140,7 @@ class Send2BankController extends Controller
     {
         $userId = $request->user()->id;
         $recipient = $request->validated();
-        $this->send2BankService->validateFundTransfer($userId, $recipient, TransactionCategoryIds::send2BankUBP);
+        $this->send2BankService->validateFundTransfer($userId, $recipient);
 
         return $this->responseService->successResponse(null,
             SuccessMessages::transactionValidationSuccessful);

@@ -29,10 +29,13 @@ use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\PayBills\PayBillsService;
+use App\Services\Send2Bank\Instapay\Send2BankInstapayService;
 use App\Services\Send2Bank\ISend2BankDirectService;
 use App\Services\Send2Bank\ISend2BankService;
+use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
+use App\Services\Send2Bank\Pesonet\Send2BankPesonetService;
 use App\Services\Send2Bank\Send2BankDirectService;
-use App\Services\Send2Bank\Send2BankPesonetService;
+use App\Services\Send2Bank\Send2BankService;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Services\SendMoney\SendMoneyService;
 use App\Services\ThirdParty\BayadCenter\BayadCenterService;
@@ -142,7 +145,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Service Fee Service
         $this->app->bind(IServiceFeeService::class, ServiceFeeService::class);
-        
+
         // UBP Send to bank service
         $this->app->bind(ISend2BankDirectService::class, Send2BankDirectService::class);
 
@@ -211,6 +214,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function bindSend2BankService()
     {
+        $this->app->bind(ISend2BankPesonetService::class, Send2BankPesonetService::class);
         $this->app->when(Send2BankController::class)
             ->needs(ISend2BankService::class)
             ->give(function () {
@@ -220,9 +224,10 @@ class AppServiceProvider extends ServiceProvider
                 if ($provider) {
                     $provider = Str::lower($provider);
                     if ($provider == TpaProviders::ubpPesonet) return $this->app->get(Send2BankPesonetService::class);
+                    if ($provider == TpaProviders::ubpInstapay) return $this->app->get(Send2BankInstapayService::class);
                 }
 
-                return $this->app->get(Send2BankPesonetService::class);
+                return $this->app->get(Send2BankService::class);
             });
     }
 
