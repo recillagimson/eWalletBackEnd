@@ -25,10 +25,12 @@ class OutBuyLoad extends Model
      */
     protected $fillable = [
         'user_account_id',
-        'prepaid_load_id',
+        'reference_number',
         'total_amount',
         'transaction_date',
         'transaction_category_id',
-        'transaction_remarks',
+        'atm_reference_number',
+        'user_created',
+        'user_updated',
     ];
 }
