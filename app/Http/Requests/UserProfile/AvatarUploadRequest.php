@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Send2Bank;
+namespace App\Http\Requests\UserProfile;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class Send2BankUBPDirectRequest extends FormRequest
+class AvatarUploadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,7 @@ class Send2BankUBPDirectRequest extends FormRequest
     public function rules()
     {
         return [
-            "recipient_account_no" => "required",
-            "recipient_name" => "required",
-            "remarks" => "required",
-            "particulars" => "required",
-            "amount" => 'required'
+            'avatar_photo' => 'required|max:1024|mimes:jpeg,png,jpg',
         ];
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Send2Bank;
+namespace App\Http\Requests\PrepaidLoad;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class Send2BankUBPDirectRequest extends FormRequest
+class ATMTopUpRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,9 @@ class Send2BankUBPDirectRequest extends FormRequest
     public function rules()
     {
         return [
-            "recipient_account_no" => "required",
-            "recipient_name" => "required",
-            "remarks" => "required",
-            "particulars" => "required",
-            "amount" => 'required'
+            'productCode' => 'required',
+            'mobileNo' => 'required|regex:/(09)[0-9]{9}/',
+            'amount' => 'required|numeric',
         ];
     }
 }

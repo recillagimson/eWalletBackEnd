@@ -28,14 +28,14 @@ class RegisterUserRequest extends FormRequest
         return [
             'mobile_number' => [
                 'required_without:email',
-                'max:20',
+                'max:11',
                 new MobileNumber(),
             ],
             'email' => 'required_without:mobile_number|max:50|email',
             'password' => [
                 'required',
                 'min:'.config('auth.password_minlength'),
-                'max:16',
+                'max:20',
                 'confirmed',
                 'different:email',
                 new IsPasswordValid()

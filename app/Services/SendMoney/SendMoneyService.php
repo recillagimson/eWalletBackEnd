@@ -103,14 +103,15 @@ class SendMoneyService implements ISendMoneyService
         
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
+        
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
-        $this->outSendMoney($senderID, $receiverID, $fillRequest);
-        $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
+
+        $outSendMoney = $this->outSendMoney($senderID, $receiverID, $fillRequest);
+        $inReceiveMoney = $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
+
         $this->logHistories($senderID, $receiverID, $fillRequest);
-        $this->userTransactionHistory($senderID, $fillRequest);
-        // $this->senderNotification($user->$username,$fillRequest, $receiverID, $senderID);
-        // $this->recipientNotification($fillRequest[$username], $fillRequest, $senderID, $receiverID);
+        $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest);
 
         return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username);
     }
@@ -232,7 +233,7 @@ class SendMoneyService implements ISendMoneyService
             $username => $fillRequest[$username],
             'message' => $fillRequest['message'],
             'reference_number' =>  $fillRequest['refNo'],
-            'total_amount' =>   $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'total_amount' =>  number_format($fillRequest['amount'] + SendMoneyConfig::ServiceFee, 2),
             'transaction_date' => date('l jS \of F Y h:i:s A')
         ];
     }
@@ -316,7 +317,7 @@ class SendMoneyService implements ISendMoneyService
             'message' => $fillRequest['message'],
             'status' => true,
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transction_category_id' => SendMoneyConfig::CXSEND,
+            'transaction_category_id' => SendMoneyConfig::CXSEND,
             'transaction_remarks' => '',
             'user_created' => $senderID,
             'user_updated' => ''
@@ -334,7 +335,7 @@ class SendMoneyService implements ISendMoneyService
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transction_category_id' => SendMoneyConfig::CXRECEIVE,
+            'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
             'transaction_remarks' => '',
             'status' => true,
             'user_created' => $senderID,
@@ -359,23 +360,23 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function userTransactionHistory($senderID, $fillRequest)
+    private function userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest)
     {
         $this->userTransactionHistoryRepository->create([
             'user_account_id' => $senderID,
-            'transaction_id' => SendMoneyConfig::CXSEND,
+            'transaction_id' => $outSendMoney->id,
             'reference_number' => $fillRequest['refNo'],
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
-            'transaction_category_id' => 'SM',
+            'transaction_category_id' => SendMoneyConfig::CXSEND,
             'user_created' => $senderID,
             'user_updated' => ''
         ]);
         $this->userTransactionHistoryRepository->create([
-            'user_account_id' => $senderID,
-            'transaction_id' => SendMoneyConfig::CXRECEIVE,
+            'user_account_id' => $receiverID,
+            'transaction_id' => $inReceiveMoney->id,
             'reference_number' => $fillRequest['refNoRM'],
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
-            'transaction_category_id' => 'RM',
+            'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
             'user_created' => $senderID,
             'user_updated' => ''
         ]);

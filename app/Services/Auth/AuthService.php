@@ -72,13 +72,7 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
         if (!$user) $this->loginFailed();
         $this->validateUser($user);
-
-        $passwordMatched = Hash::check($creds['password'], $user->password);
-        if(!$passwordMatched) {
-            $user->updateLockout($this->maxLoginAttempts);
-            $this->loginFailed();
-        }
-
+        $this->tryLogin($user, $creds['password'], $user->password);
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userWebToken);
     }
@@ -88,13 +82,7 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
         if (!$user) $this->loginFailed();
         $this->validateUser($user);
-
-        $passwordMatched = Hash::check($creds['pin_code'], $user->pin_code);
-        if (!$passwordMatched) {
-            $user->updateLockout($this->maxLoginAttempts);
-            $this->loginFailed();
-        }
-
+        $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken);
     }
@@ -228,6 +216,17 @@ class AuthService implements IAuthService
         if ($user->is_lockout) $this->accountLockedOut();
 
         $user->resetLoginAttempts($this->daysToResetAttempts);
+    }
+
+    private function tryLogin(UserAccount $user, string $key, string $hashedKey)
+    {
+        $passwordMatched = Hash::check($key, $hashedKey);
+        if (!$passwordMatched) {
+            $user->updateLockout($this->maxLoginAttempts);
+            $this->loginFailed();
+        }
+
+        $user->resetLoginAttempts($this->daysToResetAttempts, true);
     }
 
 

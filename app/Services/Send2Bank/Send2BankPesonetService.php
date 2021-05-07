@@ -83,9 +83,11 @@ class Send2BankPesonetService implements ISend2BankService
         return json_decode($response->body())->records;
     }
 
-    public function validateFundTransfer(string $userId, array $recipient)
+    public function validateFundTransfer(string $userId, array $recipient, string $transactionCategoryId = TransactionCategoryIds::send2BankPesoNet)
     {
-        $transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
+        // Change to optional param to handle multiple transfer validation
+        // set default to TransactionCategoryIds::send2BankPesoNet
+        // $transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
 
         $user = $this->users->getUser($userId);
         $this->transactionValidationService->validateUser($user);

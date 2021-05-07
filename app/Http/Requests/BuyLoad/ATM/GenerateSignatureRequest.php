@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\BuyLoad\ATM;
 
-use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
-class VerifyLoginRequest extends FormRequest
+class GenerateSignatureRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,13 +24,7 @@ class VerifyLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mobile_number' => [
-                'required_without:email',
-                'max:11',
-                new MobileNumber()
-            ],
-            'email' => 'required_without:mobile_number|max:50|email',
-            'code' => 'required'
+            //
         ];
     }
 }

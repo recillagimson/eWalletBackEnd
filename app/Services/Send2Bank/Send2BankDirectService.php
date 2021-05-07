@@ -84,7 +84,7 @@ class Send2BankDirectService implements ISend2BankDirectService
 
         try {
             DB::beginTransaction();
-            $transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
+            $transactionCategoryId = TransactionCategoryIds::send2BankUBP;
             $provider = TpaProviders::ubpDirect;
 
             $user = $this->users->getUser($userId);
@@ -159,9 +159,10 @@ class Send2BankDirectService implements ISend2BankDirectService
                 $status = TransactionStatuses::pending;
             } elseif ($code === UbpResponseCodes::successfulTransaction) {
                 $status = TransactionStatuses::success;
-            } else {
-                $this->transFailed();
             }
+                // } else {
+            //     $this->transFailed();
+            // }
             
             $transaction->update([
                 'status' => $status

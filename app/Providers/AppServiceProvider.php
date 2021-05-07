@@ -9,8 +9,6 @@ use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
 use App\Http\Controllers\PayBillsController;
 use App\Http\Controllers\Send2BankController;
-use App\Services\Dashboard\DashboardService;
-use App\Services\Dashboard\IDashboardService;
 use App\Services\AddMoney\DragonPay\HandlePostBackService;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
@@ -23,6 +21,8 @@ use App\Services\Auth\Registration\IRegistrationService;
 use App\Services\Auth\Registration\RegistrationService;
 use App\Services\Auth\UserKey\IUserKeyService;
 use App\Services\Auth\UserKey\UserKeyService;
+use App\Services\Dashboard\DashboardService;
+use App\Services\Dashboard\IDashboardService;
 use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
@@ -59,6 +59,8 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\Notifications\SMS\SmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\OTP\OtpService;
+use App\Services\Utilities\PrepaidLoad\ATM\AtmService;
+use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
@@ -97,6 +99,7 @@ class AppServiceProvider extends ServiceProvider
         //3PP APIs
         $this->app->singleton(IUBPService::class, UBPService::class);
         $this->app->singleton(IBayadCenterService::class, BayadCenterService::class);
+        $this->app->singleton(IAtmService::class, AtmService::class);
 
         //APP SERVICES
         $this->app->singleton(IAuthService::class, AuthService::class);
