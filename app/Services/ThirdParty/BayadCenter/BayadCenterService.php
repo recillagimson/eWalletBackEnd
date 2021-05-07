@@ -8,6 +8,7 @@ use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Http;
 use Illuminate\Http\Client\Response;
+use Illuminate\Http\JsonResponse;
 
 class BayadCenterService implements IBayadCenterService
 {
@@ -62,7 +63,7 @@ class BayadCenterService implements IBayadCenterService
         ];
     }
 
-    public function getToken()
+    public function getToken(): object
     {
         $data = [
             'grant_type' => 'client_credentials',
@@ -75,14 +76,24 @@ class BayadCenterService implements IBayadCenterService
         $response = Http::withBasicAuth($this->clientId, $this->clientSecret)->post($url, $data);
 
         if (!$response->successful()) $this->tpaFailedAuthentication(TpaProviders::bc);
-        return $response->json();
+        return (object)$response->json();
     }
 
-    public function getBanks(string $provider): Response
+    public function getAuthorizationHeaders(): array
     {
-        $banksUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetBanksUrl : $this->instaPayBanksUrl;
-        $url = $this->baseUrl . $banksUrl;
-        return $this->apiService->get($url, $this->defaultHeaders);
+        $token = $this->getToken();
+        $headers = $this->defaultHeaders;
+        $headers['Authorization'] = 'Bearer ' . $token->access_token;
+
+        return $headers;
+    }
+
+
+    public function getBillers() : Response
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = $this->baseUrl . $this->billersUrl;
+        return $this->apiService->get($url, $headers);
     }
 
 

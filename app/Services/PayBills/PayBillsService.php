@@ -5,9 +5,13 @@ namespace App\Services\PayBills;
 use App\Models\UserAccount;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
+use App\Traits\Errors\WithTpaErrors;
+use Illuminate\Http\JsonResponse;
+use Response;
 
 class PayBillsService implements IPayBillsService
 {
+    use WithTpaErrors;
 
     private IOutPayBillsRepository $outPayBills;
     private IBayadCenterService $bayadCenterService;
@@ -17,9 +21,11 @@ class PayBillsService implements IPayBillsService
         $this->bayadCenterService = $bayadCenterService;
     }
 
-    public function getBillers($var)
+    public function getBillers(): array
     {
-        return $this->bayadCenterService->getToken();
+        $response = $this->bayadCenterService->getBillers();
+        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        return (array)json_decode($response->body());
     }
 
     public function createPayment(UserAccount $user)
@@ -32,7 +38,7 @@ class PayBillsService implements IPayBillsService
             'service_fee' => '0.00',
             'total_amount' => '1400.45',
             'transction_category_id' => 'c5b62dbd-95a0-11eb-8473-1c1b0d14e211',
-        'transaction_remarks' => 'user pay the bills',
+            'transaction_remarks' => 'user pay the bills',
             'email_or_mobile' => 'I do not know',
             'message' => 'random message',
             'status' => '1',

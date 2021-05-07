@@ -176,7 +176,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
     });
 
-    Route::prefix('pay/bills')->group(function () {
+    Route::prefix('pay/bills')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [PayBillsController::class, 'getBillers']);
         Route::post('/create/payment', [PayBillsController::class, 'createPayment']);
     });

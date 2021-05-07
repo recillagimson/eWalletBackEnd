@@ -11,6 +11,6 @@ use App\Models\UserAccount;
  */
 interface IPayBillsService
 {
-    public function getBillers($var);
+    public function getBillers();
     public function createPayment(UserAccount $user);
 }
