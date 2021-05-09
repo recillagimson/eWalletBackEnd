@@ -38,13 +38,13 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     }
 
     public function findTransactionWithRelation(string $id) {
-        $record = $this->model->with(['transaction_category'])->where('id', $id)->first()->append('transactable');
+        $record = $this->model->with(['transaction_category'])->where('id', $id)->first();
         if(!$record) {
             ValidationException::withMessages([
                 'record_not_found' => 'Record not found'
             ]);
         }
-        return $record;
+        return $record->append('transactable');
     }
 
 }
