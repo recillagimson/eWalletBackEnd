@@ -178,6 +178,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('pay/bills')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [PayBillsController::class, 'getBillers']);
+        Route::get('/get/biller/information/{biller_code}', [PayBillsController::class, 'getBillerInformation']);
+        Route::get('/get/other/charges/{biller_code}', [PayBillsController::class, 'getOtherCharges']);
         Route::post('/create/payment', [PayBillsController::class, 'createPayment']);
     });
 

@@ -9,6 +9,7 @@ use App\Traits\Errors\WithTpaErrors;
 use Http;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
+use Str;
 
 class BayadCenterService implements IBayadCenterService
 {
@@ -88,11 +89,26 @@ class BayadCenterService implements IBayadCenterService
         return $headers;
     }
 
-
     public function getBillers() : Response
     {
         $headers = $this->getAuthorizationHeaders();
         $url = $this->baseUrl . $this->billersUrl;
+        return $this->apiService->get($url, $headers);
+    }
+
+    public function getBillerInformation(string $billerCode): Response 
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = $this->baseUrl . $this->billerInformationUrl . $billerCode;
+        
+        return $this->apiService->get($url, $headers);
+    }
+
+    public function getOtherCharges(string $billerCode): Response
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->otherChargesUrl);
+
         return $this->apiService->get($url, $headers);
     }
 

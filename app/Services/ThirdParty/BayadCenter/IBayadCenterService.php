@@ -9,4 +9,6 @@ interface IBayadCenterService
     public function getToken();
     public function getAuthorizationHeaders();
     public function getBillers();
+    public function getBillerInformation(string $billerCode);
+    public function getOtherCharges(string $billerCode);
 }

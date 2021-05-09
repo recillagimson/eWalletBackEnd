@@ -28,6 +28,21 @@ class PayBillsService implements IPayBillsService
         return (array)json_decode($response->body());
     }
 
+    public function getBillerInformation(string $billerCode): array
+    {
+        $response = $this->bayadCenterService->getBillerInformation($billerCode);
+        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        return (array)json_decode($response->body());
+    }
+
+    public function getOtherCharges(string $billerCode): array
+    {
+        $response = $this->bayadCenterService->getOtherCharges($billerCode);
+        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        return (array)json_decode($response->body());
+    }
+    
+
     public function createPayment(UserAccount $user)
     {
         return $this->outPayBills->create([

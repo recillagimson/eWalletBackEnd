@@ -13,4 +13,6 @@ interface IPayBillsService
 {
     public function getBillers();
     public function createPayment(UserAccount $user);
+    public function getBillerInformation(string $billerCode);
+    public function getOtherCharges(string $billerCode);
 }

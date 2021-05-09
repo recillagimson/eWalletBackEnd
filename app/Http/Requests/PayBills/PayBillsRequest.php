@@ -24,7 +24,7 @@ class PayBillsRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'biller_code' => ''
         ];
     }
 }
