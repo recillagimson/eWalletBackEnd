@@ -79,6 +79,7 @@ class AtmController extends Controller
 
     public function load(ATMTopUpRequest $atmrequest): JsonResponse {
         $details = $atmrequest->validated();
+        $details["mobileNo"] = $this->atmService->convertMobileNumberPrefixToAreaCode($details["mobileNo"]);
         $copyATMDetails = $details;
         $copyATMDetails = $this->removeFieldsFromInput($copyATMDetails);
         $buyLoadTransactionCategory = $this->transactionCategoryRepository->getByName(TransactionCategories::BuyLoad);
@@ -96,7 +97,9 @@ class AtmController extends Controller
     }
 
     public function showNetworkProductList(MobileNumberRequest $atmRequest) {
-        $records = $this->atmService->showNetworkProuductList($atmRequest);
+        $details = $atmRequest->validated();
+        $details["mobileNo"] = $this->atmService->convertMobileNumberPrefixToAreaCode($details["mobileNo"]);
+        $records = $this->atmService->showNetworkProuductList($details);
 
         return $this->responseService->successResponse($records, SuccessMessages::success);
     }
