@@ -19,6 +19,7 @@ use App\Http\Controllers\Send2BankController;
 use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\TierController;
+use App\Http\Controllers\TierServiceController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\UserTransactionHistoryController;
@@ -213,6 +214,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function(){
         Route::get('/', [DashboardController::class, 'index']);
+    });
+
+    Route::prefix('/tiers')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/', [TierServiceController::class, 'index']);
     });
 
 });
