@@ -93,7 +93,7 @@ class Send2BankService implements ISend2BankService
         return json_decode($response->body())->records;
     }
 
-    public function validateFundTransfer(string $userId, array $recipient)
+    public function validateFundTransfer(string $userId, array $recipient): array
     {
         $user = $this->users->getUser($userId);
         $this->transactionValidationService->validateUser($user);
@@ -106,6 +106,10 @@ class Send2BankService implements ISend2BankService
 
         $this->transactionValidationService
             ->validate($user, $this->transactionCategoryId, $totalAmount);
+
+        return [
+            'service_fee' => $serviceFeeAmount
+        ];
     }
 
     public function fundTransfer(string $userId, array $recipient, bool $requireOtp = true): array
