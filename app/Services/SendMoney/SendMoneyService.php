@@ -377,7 +377,7 @@ class SendMoneyService implements ISendMoneyService
             'reference_number' => $fillRequest['refNoRM'],
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
-            'user_created' => $senderID,
+            'user_created' => $receiverID,
             'user_updated' => ''
         ]);
     }

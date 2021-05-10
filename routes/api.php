@@ -116,11 +116,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {
         Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
-        Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect']);
+        Route::get('/{provider}/purposes', [Send2BankController::class, 'getPurposes']);
         Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions']);
         Route::get('/process/pending', [Send2BankController::class, 'processPending']);
-        Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP']);
 
+        Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect']);
+        Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP']);
         Route::post('/validate', [Send2BankController::class, 'validateFundTransfer']);
         Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
         Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction']);
@@ -166,7 +167,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/product-list', [AtmController::class, 'showProductList']);
             Route::post('/load', [AtmController::class, 'load']);
         });
-    
+
     });
 
     Route::prefix('send/money')->middleware(['decrypt.request'])->group(function () {

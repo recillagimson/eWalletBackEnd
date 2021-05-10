@@ -15,6 +15,13 @@ interface ISend2BankService
     public function getBanks(): array;
 
     /**
+     * Returns purpose library for instapay only.
+     *
+     * @return array
+     */
+    public function getPurposes(): array;
+
+    /**
      * Validates user qualification for fund transfer
      *
      * @param string $userId

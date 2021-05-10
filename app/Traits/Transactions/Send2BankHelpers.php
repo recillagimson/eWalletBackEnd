@@ -65,10 +65,10 @@ trait Send2BankHelpers
             $data = $response->json();
             $state = $data['state'];
 
-            $provider = TpaProviders::ubpPesonet;
+            $provider = $send2Bank->provider;
             $status = '';
             $providerTransactionId = $data['ubpTranId'];
-            $providerRemittanceId = $data['remittanceId'];
+            $providerRemittanceId = $provider === TpaProviders::ubpPesonet ? $data['remittanceId'] : $data['traceNo'];
 
             if ($state === UbpResponseStates::receivedRequest || $state === UbpResponseStates::sentForProcessing
                 || $state === UbpResponseStates::forConfirmation) {
@@ -80,7 +80,6 @@ trait Send2BankHelpers
             }
 
             $send2Bank->status = $status;
-            $send2Bank->provider = $provider;
             $send2Bank->provider_transaction_id = $providerTransactionId;
             $send2Bank->provider_remittance_id = $providerRemittanceId;
             $send2Bank->user_updated = $send2Bank->user_account_id;
