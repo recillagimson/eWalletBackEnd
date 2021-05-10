@@ -26,9 +26,9 @@ interface ISend2BankService
      *
      * @param string $userId
      * @param array $recipient
-     * @return mixed
+     * @return array
      */
-    public function validateFundTransfer(string $userId, array $recipient);
+    public function validateFundTransfer(string $userId, array $recipient): array;
 
     /**
      * Fund transfer to recepient bank acccount

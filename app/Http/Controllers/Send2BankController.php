@@ -59,9 +59,9 @@ class Send2BankController extends Controller
     {
         $userId = $request->user()->id;
         $recipient = $request->validated();
-        $this->send2BankService->validateFundTransfer($userId, $recipient);
+        $response = $this->send2BankService->validateFundTransfer($userId, $recipient);
 
-        return $this->responseService->successResponse(null,
+        return $this->responseService->successResponse($response,
             SuccessMessages::transactionValidationSuccessful);
     }
 
