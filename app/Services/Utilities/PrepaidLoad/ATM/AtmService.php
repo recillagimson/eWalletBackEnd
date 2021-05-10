@@ -84,7 +84,7 @@ class AtmService implements IAtmService
         return $result->data;
     }
 
-    public function atmload(array $items): object
+    public function atmload(array $items): array
     {
         
         $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::BuyLoad);
@@ -98,10 +98,22 @@ class AtmService implements IAtmService
             'Signature' => $signature
         ])->post(config('services.load.atm.url').'/topup-request', 
         $post_data);
-            
-        $result = json_decode($response->body());
-       
-        return $result;
+
+        $result = $response->json();
+        
+        return array("result"=>$result, "response"=>$response->body());
+    }
+    
+    public function showNetworkProuductList(object $items): array
+    {
+        $getPrefixList = $this->showNetworkAndPrefix();
+        $currentMobileNumber = $this->getMobileNumberPrefix($items->mobileNo);
+
+        $getNetwork = $this->findMobileNumberAndNetwork($getPrefixList, $currentMobileNumber);
+        $showProductList = $this->showProductList();
+        $getProductList = $this->findAtmProducts($showProductList, $getNetwork);
+
+        return $getProductList;
     }
 
     private function createATMPostBody(array $items=null):array {
@@ -113,5 +125,29 @@ class AtmService implements IAtmService
         ];
 
         return $body;
+    }
+
+    private function getMobileNumberPrefix(string $mobileNo): string {
+        return str_split($mobileNo, 5)[0];
+    }
+
+    private function findMobileNumberAndNetwork(array $prefixLists, string $mobileNo, object $result=null): object {
+        foreach($prefixLists as $list) {
+            if($list->prefix == $mobileNo) {
+                $result = $list;
+            }
+        }
+
+        return $result;
+    }
+
+    private function findAtmProducts(array $products, object $items, array $result=[]): array {
+        foreach($products as $product) {
+            if($product->provider == $items->provider) {
+                array_push($result, $product);
+            }
+        }
+
+        return $result;
     }
 }

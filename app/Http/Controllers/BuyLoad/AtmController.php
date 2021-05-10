@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\PrepaidLoad\ATMTopUpRequest;
+use App\Http\Requests\PrepaidLoad\MobileNumberRequest;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use Carbon\Carbon;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
@@ -79,31 +80,48 @@ class AtmController extends Controller
     public function load(ATMTopUpRequest $atmrequest): JsonResponse {
         $details = $atmrequest->validated();
         $copyATMDetails = $details;
-        unset($copyATMDetails["amount"]);
+        $copyATMDetails = $this->removeFieldsFromInput($copyATMDetails);
         $buyLoadTransactionCategory = $this->transactionCategoryRepository->getByName(TransactionCategories::BuyLoad);
 
         $records = $this->atmService->atmload($copyATMDetails);
-        
-        $createOutBuyLoadBody = $this->createOutBuyLoadBody($details, $records->data, $atmrequest->user(), $buyLoadTransactionCategory);
-        $addUserCreateAndUpdate = $this->userProfileService->addUserInput($createOutBuyLoadBody, $atmrequest->user());
 
-        $result = ($records->responseCode == 101) ? 
+        $createOutBuyLoadBody = $this->createOutBuyLoadBody($details, $records, $atmrequest->user(), $buyLoadTransactionCategory);
+        $addUserCreateAndUpdate = $this->userProfileService->addUserInput($createOutBuyLoadBody, $atmrequest->user());
+        
+        $result = ($records["result"]["responseCode"] == 101) ? 
         $this->outBuyLoadRepository->create($addUserCreateAndUpdate)->toArray() :
-        array($records);
+        array($records["result"]);
 
         return $this->responseService->successResponse($result, SuccessMessages::success);
     }
 
-    private function createOutBuyLoadBody(array $details, object $records, object $user, object $buyLoadTransactionCategory):array {
+    public function showNetworkProductList(MobileNumberRequest $atmRequest) {
+        $records = $this->atmService->showNetworkProuductList($atmRequest);
+
+        return $this->responseService->successResponse($records, SuccessMessages::success);
+    }
+
+    private function createOutBuyLoadBody(array $details, array $records, object $user, object $buyLoadTransactionCategory):array {
         $body = [
             'user_account_id'=> $user->id,
             'total_amount'=> $details["amount"],
             'transaction_date' => Carbon::now(),
             'transaction_category_id'=>$buyLoadTransactionCategory->id,
-            'reference_number'=>$records->referenceNo,
-            'atm_reference_number'=>$records->transactionNo,
+            'reference_number'=>$records["result"]["data"]["referenceNo"],
+            'atm_reference_number'=>$records["result"]["data"]["transactionNo"],
+            'recipient_mobile_number'=>$details["mobileNo"],
+            'provider'=>$details["provider"],
+            'product_code'=>$details["productCode"],
+            'transaction_response'=>$records["response"],
         ];
 
         return $body;
+    }
+
+    private function removeFieldsFromInput(array $items): array {
+        unset($items["amount"]);
+        unset($items["provider"]);
+
+        return $items;
     }
 }

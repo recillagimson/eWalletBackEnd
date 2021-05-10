@@ -166,6 +166,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/network-types', [AtmController::class, 'showPrefixNetworkList']);
             Route::get('/product-list', [AtmController::class, 'showProductList']);
             Route::post('/load', [AtmController::class, 'load']);
+            Route::post('/network/products', [AtmController::class, 'showNetworkProductList']);
         });
 
     });
