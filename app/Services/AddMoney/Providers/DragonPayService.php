@@ -6,6 +6,7 @@ use App\Enums\DragonPayStatusTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TransactionCategories;
+use App\Enums\TransactionStatuses;
 use App\Models\InAddMoneyFromBank;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
@@ -199,7 +200,7 @@ class DragonPayService implements IAddMoneyService
      * Build the DragonPay token to be
      * used as the Auth token
      *
-     * @return string-base64
+     * @return base64
      */
     protected function getToken()
     {
@@ -305,7 +306,7 @@ class DragonPayService implements IAddMoneyService
             'transaction_category_id' => $transactionCategoryID,
             'transaction_remarks' => $transactionRemarks,
             'user_created' => $userAccountID,
-            'status' => 'PENDING',
+            'status' => TransactionStatuses::pending,
         ];
 
         return $rowInserted = $this->addMoneys->create($row);
@@ -323,9 +324,8 @@ class DragonPayService implements IAddMoneyService
      */
     public function validateTiersAndLimits(UserAccount $user, float $amount)
     {
-        $latestPendingtrans = $this->addMoneys->getLatestPendingByUserAccountID($user->id);
-
-        $totalAddMoney = $latestPendingtrans->amount + $amount;
+        $totalOfPending = $this->getTotalOfStatus($user->id, TransactionStatuses::pending);
+        $totalAddMoney = $totalOfPending + $amount;
 
         $tier = $this->tiers->get($user->tier_id);
 
@@ -336,10 +336,23 @@ class DragonPayService implements IAddMoneyService
         if (!is_object($serviceFee) && $serviceFee == 0) $serviceFee = (object) ['id' => 'N/A','amount' => 0];
 
         // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
-        if ($totalAddMoney > $tier->daily_limit) return $this->tierLimitExceeded();
+        if ($totalAddMoney > $tier->daily_limit) return $this->tierLimitExceeded($totalAddMoney);
 
         // return $addMoneyServiceFee;
         return $serviceFee;
+    }
+
+    public function getTotalOfStatus(string $userAccountID, string $status)
+    {
+        $transactions = $this->addMoneys->getByUserAccountIDAndStatus($userAccountID, $status);
+
+        $amount = 0;
+        foreach ($transactions as $trans) {
+            
+            $amount = $amount + $trans->amount;
+        }
+
+        return $amount;
     }
 
 
@@ -815,10 +828,11 @@ class DragonPayService implements IAddMoneyService
     /**
      * Thrown when the request amount exceeded the limit
      */
-    private function tierLimitExceeded()
+    private function tierLimitExceeded($amount)
     {
         throw ValidationException::withMessages([
-            'amount' => 'The requested amount (pending & current) exceeded the limits for this account.'
+            'amount' => 'The requested amount (pending & current) exceeded the limits for this account.',
+            'total_amount' => $amount
         ]);
     }
 

@@ -40,4 +40,9 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
     {
         return $this->model->where('user_account_id', $userAccountID)->orderBy('created_at', 'asc')->get();
     }
+
+    public function getByUserAccountIDAndStatus(string $userAccountID, $status)
+    {
+        return $this->model->where('user_account_id', $userAccountID)->where('status', $status)->get();
+    }
 }
