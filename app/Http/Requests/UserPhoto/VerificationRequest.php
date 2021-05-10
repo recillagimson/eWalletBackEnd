@@ -29,7 +29,7 @@ class VerificationRequest extends FormRequest
             // Validate if photo in array is less that 1MB
             "id_photos"    => "required|array|min:2",
             'id_photos.*' => 'required|max:1024|mimes:jpeg,png',
-            'id_number' => 'required|min:1|max:50'
+            'id_number' => 'max:50'
         ];
     }
 }
