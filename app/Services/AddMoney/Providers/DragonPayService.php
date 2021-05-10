@@ -9,6 +9,7 @@ use App\Enums\TransactionCategories;
 use App\Models\InAddMoneyFromBank;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
+use App\Repositories\InAddMoney\InAddMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\Tier\ITierRepository;
@@ -322,6 +323,10 @@ class DragonPayService implements IAddMoneyService
      */
     public function validateTiersAndLimits(UserAccount $user, float $amount)
     {
+        $latestPendingtrans = $this->addMoneys->getLatestPendingByUserAccountID($user->id);
+
+        $totalAddMoney = $latestPendingtrans->amount + $amount;
+
         $tier = $this->tiers->get($user->tier_id);
 
         $addMoneyTransCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
@@ -331,7 +336,7 @@ class DragonPayService implements IAddMoneyService
         if (!is_object($serviceFee) && $serviceFee == 0) $serviceFee = (object) ['id' => 'N/A','amount' => 0];
 
         // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
-        if ($amount > $tier->daily_limit) return $this->tierLimitExceeded();
+        if ($totalAddMoney > $tier->daily_limit) return $this->tierLimitExceeded();
 
         // return $addMoneyServiceFee;
         return $serviceFee;
@@ -813,7 +818,7 @@ class DragonPayService implements IAddMoneyService
     private function tierLimitExceeded()
     {
         throw ValidationException::withMessages([
-            'amount' => 'The requested amount exceeded the limits for this account.'
+            'amount' => 'The requested amount (pending & current) exceeded the limits for this account.'
         ]);
     }
 
