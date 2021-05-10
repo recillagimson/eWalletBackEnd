@@ -25,7 +25,7 @@ class ATMTopUpRequest extends FormRequest
     {
         return [
             'productCode' => 'required',
-            'mobileNo' => 'required|regex:/(639)[0-9]{9}/',
+            'mobileNo' => array('required', 'regex:/^((639)|(09))[0-9]{9}$/'),
             'amount' => 'required|numeric',
             'provider' => 'required',
         ];
@@ -39,7 +39,7 @@ class ATMTopUpRequest extends FormRequest
     public function messages()
     {
         return [
-            'mobileNo.regex' => 'Please follow mobile number format starting with Philippine Area Code(e.g. 639123456789).',
+            'mobileNo.regex' => 'Please follow mobile number format starting with 09 or 639.',
         ];
     }
 }

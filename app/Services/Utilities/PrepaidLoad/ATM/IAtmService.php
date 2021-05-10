@@ -16,5 +16,7 @@ interface IAtmService
 
     public function atmload(array $items): array;
 
-    public function showNetworkProuductList(object $items): array;
+    public function showNetworkProuductList(array $items): array;
+
+    public function convertMobileNumberPrefixToAreaCode(string $mobileNo): string;
 }

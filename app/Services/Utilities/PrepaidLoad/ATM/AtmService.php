@@ -104,10 +104,10 @@ class AtmService implements IAtmService
         return array("result"=>$result, "response"=>$response->body());
     }
     
-    public function showNetworkProuductList(object $items): array
+    public function showNetworkProuductList(array $items): array
     {
         $getPrefixList = $this->showNetworkAndPrefix();
-        $currentMobileNumber = $this->getMobileNumberPrefix($items->mobileNo);
+        $currentMobileNumber = $this->getMobileNumberPrefix($items["mobileNo"]);
 
         $getNetwork = $this->findMobileNumberAndNetwork($getPrefixList, $currentMobileNumber);
         $showProductList = $this->showProductList();
@@ -129,6 +129,15 @@ class AtmService implements IAtmService
 
     private function getMobileNumberPrefix(string $mobileNo): string {
         return str_split($mobileNo, 5)[0];
+    }
+
+    public function convertMobileNumberPrefixToAreaCode(string $mobileNo): string {
+        $strSplit = str_split($mobileNo);
+        if(intval($strSplit[0]) == 0) {
+            $strSplit[0] = '63';
+        }
+
+        return join("",$strSplit);
     }
 
     private function findMobileNumberAndNetwork(array $prefixLists, string $mobileNo, object $result=null): object {
