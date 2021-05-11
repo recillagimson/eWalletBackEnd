@@ -66,13 +66,14 @@ class UserProfileController extends Controller
         // IF REQUESTING FOR TIER UPDATE
         if(request()->user() && request()->user()->tier && request()->user()->tier->id !== AccountTiers::tier2) {
             // CREATE APPROVAL RECORD FOR ADMIN
-            $this->userApprovalRepository->create([
+            $res = $this->userApprovalRepository->updateOrCreateApprovalRequest([
                 'user_account_id' => request()->user()->id,
                 'request_tier_id' => AccountTiers::tier2,
-                'status' => 'PENDING'
+                'status' => 'PENDING',
+                'user_created' => request()->user()->id,
+                'user_updated' => request()->user()->id
             ]);
         }
-
         $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $details);
         
