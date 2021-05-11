@@ -21,8 +21,8 @@ class CreateTierApprovalsTable extends Migration
             $table->uuid('request_tier_id')->references('id')
                 ->on('tiers')
                 ->onDelete('restrict');
-            $table->string('status', 20);
-            $table->string('remarks', 50);
+            $table->string('status', 20)->default('PENDING')->comment('PENDING,APPROVED,REJECTED');
+            $table->string('remarks', 50)->nullable();
             $table->uuid('user_created')->references('id')
                 ->on('user_accounts')
                 ->onDelete('restrict');
