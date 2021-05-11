@@ -15,7 +15,7 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
     public function updateOrCreateApprovalRequest(array $attr) {
         $record = $this->model
             ->where('user_account_id', $attr['user_account_id'])
-            ->where('status', $attr['status'])
+            ->orderBy('created_at', 'DESC')
             ->first();
 
         if($record) {
