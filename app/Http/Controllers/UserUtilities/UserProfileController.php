@@ -58,6 +58,9 @@ class UserProfileController extends Controller
      */
     public function updateSilver(UpdateProfileSilverRequest $request): JsonResponse
     {
+
+        
+
         $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $details);
         
