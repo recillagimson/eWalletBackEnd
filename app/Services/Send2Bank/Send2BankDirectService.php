@@ -146,28 +146,67 @@ class Send2BankDirectService implements ISend2BankDirectService
         }
     }
 
-    public function verifyPendingDirectTransactions() {
-        $pendingTransactions = $this->send2banks->getPendingDirectTransactionsByAuthUser();
-        foreach($pendingTransactions as $transaction) {
-            $response = $this->ubpService->verifyPendingDirectTransaction($transaction->reference_number);
-            $data = $response->json();
+    public function validateFundTransfer(string $userId, array $recipient)
+    {
+        $user = $this->users->getUser($userId);
+        $this->transactionValidationService->validateUser($user);
 
-            $code = $data['record']['code'];
-            $status = TransactionStatuses::failed;
-            if ($code === UbpResponseCodes::receivedRequest || $code === UbpResponseCodes::processing
-                || $code === UbpResponseCodes::forConfirmation) {
-                $status = TransactionStatuses::pending;
-            } elseif ($code === UbpResponseCodes::successfulTransaction) {
-                $status = TransactionStatuses::success;
-            }
-                // } else {
-            //     $this->transFailed();
-            // }
-            
-            $transaction->update([
-                'status' => $status
-            ]);
-        }
+        $serviceFee = $this->serviceFees
+            ->getByTierAndTransCategory($user->tier_id, TpaProviders::ubpDirect);
+
+        $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
+        $totalAmount = $recipient['amount'] + $serviceFeeAmount;
+
+        $this->transactionValidationService
+            ->validate($user, TpaProviders::ubpDirect, $totalAmount);
     }
+
+    public function verifyPendingDirectTransactions(string $userId): array
+    {
+        $user = $this->users->getUser($userId);
+        $pendingSend2Banks = $this->send2banks->getPending($userId);
+        $successCount = 0;
+        $failCount = 0;
+
+        foreach ($pendingSend2Banks as $send2Bank) {
+            $response = $this->ubpService->checkStatus(TpaProviders::ubpDirect, $send2Bank->reference_number);
+            $send2Bank = $this->handleStatusResponse($send2Bank, $response);
+            $balanceInfo = $this->updateUserBalance($user->balanceInfo, $send2Bank->total_amount, $send2Bank->status);
+            $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
+
+            if ($send2Bank->status === TransactionStatuses::success) $successCount++;
+            if ($send2Bank->status === TransactionStatuses::failed) $failCount++;
+        }
+
+        return [
+            'total_pending_count' => $pendingSend2Banks->count(),
+            'success_count' => $successCount,
+            'failed_count' => $failCount
+        ];
+    }
+
+    // public function verifyPendingDirectTransactions() {
+    //     $pendingTransactions = $this->send2banks->getPendingDirectTransactionsByAuthUser();
+    //     foreach($pendingTransactions as $transaction) {
+    //         $response = $this->ubpService->verifyPendingDirectTransaction($transaction->reference_number);
+    //         $data = $response->json();
+
+    //         $code = $data['record']['code'];
+    //         $status = TransactionStatuses::failed;
+    //         if ($code === UbpResponseCodes::receivedRequest || $code === UbpResponseCodes::processing
+    //             || $code === UbpResponseCodes::forConfirmation) {
+    //             $status = TransactionStatuses::pending;
+    //         } elseif ($code === UbpResponseCodes::successfulTransaction) {
+    //             $status = TransactionStatuses::success;
+    //         }
+    //             // } else {
+    //         //     $this->transFailed();
+    //         // }
+            
+    //         $transaction->update([
+    //             'status' => $status
+    //         ]);
+    //     }
+    // }
 
 }

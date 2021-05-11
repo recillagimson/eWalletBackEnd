@@ -23,7 +23,6 @@ class VerificationService implements IVerificationService
     public function createSelfieVerification(array $data) {
         // Delete existing first
         // Get details first 
-        dd($data);
         $userDetails = $this->userDetailRepository->getByUserId(request()->user()->id);
         // If no user Details
         if(!$userDetails) {

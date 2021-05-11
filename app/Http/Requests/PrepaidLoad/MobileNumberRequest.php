@@ -4,7 +4,7 @@ namespace App\Http\Requests\PrepaidLoad;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ATMTopUpRequest extends FormRequest
+class MobileNumberRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,14 +24,11 @@ class ATMTopUpRequest extends FormRequest
     public function rules()
     {
         return [
-            'productCode' => 'required',
             'mobileNo' => array('required', 'regex:/^((639)|(09))[0-9]{9}$/'),
-            'amount' => 'required|numeric',
-            'provider' => 'required',
         ];
     }
 
-      /**
+    /**
      * Get the error messages for the defined validation rules.
      *
      * @return array
