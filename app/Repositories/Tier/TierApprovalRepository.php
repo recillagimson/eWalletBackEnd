@@ -24,4 +24,14 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
 
         return $this->model->create($attr);
     }
+
+    public function list(array $attr) {
+        $records = $this->model->with([]);
+
+        if(isset($attr['status'])) {
+            $records = $records->where('status', $attr['status']);
+        }
+
+        return $records->get();
+    }
 }

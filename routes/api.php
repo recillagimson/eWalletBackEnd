@@ -18,6 +18,7 @@ use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
 use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\ServiceFeeController;
+use App\Http\Controllers\Tier\TierApprovalController;
 use App\Http\Controllers\TierController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\UserPhotoController;
@@ -189,7 +190,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{notification}', [NotificationController::class, 'update']);
         Route::delete('/{notification}', [NotificationController::class, 'delete']);
     });
-
+    
+    Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/', [TierApprovalController::class, 'index']);
+        // Route::post('/', [TierApprovalController::class, 'store']);
+        Route::get('/{tierApproval}', [TierApprovalController::class, 'show']);
+        Route::put('/{tierApproval}', [TierApprovalController::class, 'update']);
+        Route::delete('/{tierApproval}', [TierApprovalController::class, 'destroy']);
+    });
+    
     Route::prefix('/tiers')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [TierController::class, 'index']);
         Route::post('/', [TierController::class, 'store']);
@@ -197,6 +206,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{tier}', [TierController::class, 'update']);
         Route::delete('/{tier}', [TierController::class, 'destroy']);
     });
+
 
     Route::prefix('/service/fees')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [ServiceFeeController::class, 'index']);

@@ -6,5 +6,6 @@ use App\Repositories\IRepository;
 
 interface ITierApprovalRepository extends IRepository
 {
-    public function updateOrCreateApprovalRequest(array $attr) ;
+    public function updateOrCreateApprovalRequest(array $attr);
+    public function list(array $attr);
 }
