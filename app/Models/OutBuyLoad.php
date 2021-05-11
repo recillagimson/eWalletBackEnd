@@ -30,6 +30,10 @@ class OutBuyLoad extends Model
         'transaction_date',
         'transaction_category_id',
         'atm_reference_number',
+        'recipient_mobile_number',
+        'provider',
+        'product_code',
+        'transaction_response',
         'user_created',
         'user_updated',
     ];
