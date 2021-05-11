@@ -12,7 +12,10 @@ use App\Models\UserAccount;
 interface IPayBillsService
 {
     public function getBillers();
-    public function createPayment(UserAccount $user);
     public function getBillerInformation(string $billerCode);
     public function getOtherCharges(string $billerCode);
+    public function verifyAccount(string $billerCode, string $accountNumber, $data);
+    public function createPayment(string $billerCode, array $data);
+    public function inquirePayment(string $billerCode, string $clientReference);
+    public function getWalletBalance();
 }

@@ -22,7 +22,7 @@ class BayadCenterService implements IBayadCenterService
     private string $billerInformationUrl;
     private string $otherChargesUrl;
 
-    private string $validateAccountUrl;
+    private string $verifyAccountUrl;
     private string $createPaymentUrl;
     private string $inquirePaymentUrl;
     private string $getWalletBalanceUrl;
@@ -44,7 +44,7 @@ class BayadCenterService implements IBayadCenterService
         $this->billerInformationUrl = config('bc.biller_information_url');
         $this->otherChargesUrl = config('bc.otherChargesUrl');
 
-        $this->validateAccountUrl = config('bc.validate_account_url');
+        $this->verifyAccountUrl = config('bc.validate_account_url');
         $this->createPaymentUrl = config('bc.create_payment_url');
         $this->inquirePaymentUrl = config('bc.inquire_payment_url');
         $this->getWalletBalanceUrl = config('bc.get_wallet_balance_url');
@@ -58,7 +58,7 @@ class BayadCenterService implements IBayadCenterService
 
         $this->defaultHeaders = [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Content-Type' => 'application/json',
             'x-ibm-client-id' => $this->clientId,
             'x-ibm-client-secret' => $this->clientSecret,
         ];
@@ -89,12 +89,14 @@ class BayadCenterService implements IBayadCenterService
         return $headers;
     }
 
+
     public function getBillers() : Response
     {
         $headers = $this->getAuthorizationHeaders();
         $url = $this->baseUrl . $this->billersUrl;
         return $this->apiService->get($url, $headers);
     }
+
 
     public function getBillerInformation(string $billerCode): Response 
     {
@@ -104,11 +106,51 @@ class BayadCenterService implements IBayadCenterService
         return $this->apiService->get($url, $headers);
     }
 
+
     public function getOtherCharges(string $billerCode): Response
     {
         $headers = $this->getAuthorizationHeaders();
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->otherChargesUrl);
 
+        return $this->apiService->get($url, $headers);
+    }
+
+
+    public function verifyAccount(string $billerCode, string $accountNumber,  $data): Response
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->verifyAccountUrl);
+        $url = str_replace(':ACCOUNT-NUMBER', $accountNumber, $url);
+
+        return $this->apiService->post($url, $data, $headers);
+    }
+
+
+    public function createPayment(string $billerCode, array $data): Response
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->createPaymentUrl);
+        $clientReference = array('clientReference' => (string) Str::uuid());
+
+        return $this->apiService->post($url, array_merge($data, $clientReference), $headers);
+    }
+
+
+    public function inquirePayment(string $billerCode, string $clientReference): Response
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->inquirePaymentUrl);
+        $url = str_replace(':CLIENT-REFERENCE', $clientReference, $url);
+
+       return $this->apiService->get($url, $headers);
+    }
+
+    
+    public function getWalletBalance(): Response
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = $this->baseUrl . $this->getWalletBalanceUrl;
+        
         return $this->apiService->get($url, $headers);
     }
 
