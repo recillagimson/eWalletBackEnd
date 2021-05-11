@@ -3,8 +3,10 @@
 namespace App\Repositories\InAddMoney;
 
 use App\Enums\DragonPayStatusTypes;
+use App\Enums\TransactionStatuses;
 use App\Models\InAddMoneyFromBank;
 use App\Repositories\Repository;
+use Illuminate\Support\Carbon;
 
 class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
 {
@@ -46,8 +48,12 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
         return $this->model->where('user_account_id', $userAccountID)->where('status', $status)->get();
     }
 
-    public function getByUserAccountIDBetweenDates(string $userAccountID, string $startDate, string $endDate)
+    public function getByUserAccountIDBetweenDates(string $userAccountID, Carbon $startDate, Carbon $endDate)
     {
-        return $this->model->where('user_account_id', $userAccountID)->whereBetween('created_at', [$startDate, $endDate])->get();
+        return $this->model
+            ->where('user_account_id', $userAccountID)
+            ->where('status', '!=', TransactionStatuses::failed)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
     }
 }

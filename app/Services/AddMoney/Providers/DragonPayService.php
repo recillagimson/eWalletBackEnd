@@ -11,6 +11,7 @@ use App\Models\InAddMoneyFromBank;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\InAddMoney\InAddMoneyRepository;
+use App\Repositories\InReceiveMoney\InReceiveMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\Tier\ITierRepository;
@@ -21,6 +22,8 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
+use App\Services\Utilities\TierAndLimits\ITierAndLimitsService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
@@ -79,6 +82,8 @@ class DragonPayService implements IAddMoneyService
     private ITierRepository $tiers;
     private IUserBalanceInfoRepository $userBalanceInfos;
     private ILogHistoryService $logHistoryService;
+    private InReceiveMoneyRepository $receiveMoneys;
+    private ITierAndLimitsService $tierAndLimitsService;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
@@ -90,7 +95,9 @@ class DragonPayService implements IAddMoneyService
                                 ITierRepository $tiers,
                                 IUserDetailRepository $userDetails,
                                 IUserBalanceInfoRepository $userBalanceInfos,
-                                ILogHistoryService $logHistoryService) {
+                                ILogHistoryService $logHistoryService,
+                                InReceiveMoneyRepository $receiveMoneys,
+                                ITierAndLimitsService $tierAndLimitsService) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -108,6 +115,8 @@ class DragonPayService implements IAddMoneyService
         $this->userDetails = $userDetails;
         $this->userBalanceInfos = $userBalanceInfos;
         $this->logHistoryService = $logHistoryService;
+        $this->receiveMoneys = $receiveMoneys;
+        $this->tierAndLimitsService = $tierAndLimitsService;
     }
 
     /**
@@ -126,15 +135,17 @@ class DragonPayService implements IAddMoneyService
         $email = $this->getEmail($user);
         $userAccountID = $user->id;
         $amount = $urlParams['amount'];
+        
+        return $this->tierAndLimitsService->validateTierAndLimits($amount, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay);
 
         $token = $this->getToken();
         $txnID =  $this->referenceNumber;
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
-        $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
+        $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
+        $addMoneyServiceFee = $this->serviceFees->getAmountByTransactionAndUserAccountId($transactionCategoryID->id, $user->tier_id);
         $totalAmount = $amount + $addMoneyServiceFee->amount;
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
-        $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
 
         $response = Http::withHeaders([
             'Accept' => 'application/json',
@@ -326,16 +337,11 @@ class DragonPayService implements IAddMoneyService
     {
         $startOfThisMonth = $this->dateToYYYYMMDD(Carbon::now()->startOfMonth());
         $endOfThisMonth = $this->dateToYYYYMMDD( Carbon::now()->endOfMonth());
-        $transactions = $this->addMoneys->getByUserAccountIDBetweenDates($user->id, $startOfThisMonth, $endOfThisMonth);
 
-        $totalOfTransThisMonth = 0;
-        foreach ($transactions as $trans) {
+        $addMoneyTransactions = $this->addMoneys->getByUserAccountIDBetweenDates($user->id, $startOfThisMonth, $endOfThisMonth);
+        $receiveMoneyTransactions = $this->receiveMoneys->getByUserAccountIDBetweenDates($user->id, $startOfThisMonth, $endOfThisMonth);
 
-            $totalOfTransThisMonth = $totalOfTransThisMonth + $trans->amount;
-        }
-
-        $totalAddMoney = $totalOfTransThisMonth + $amount;
-
+        $totalAddMoney = $addMoneyTransactions->sum('amount') + $receiveMoneyTransactions->sum('amount') + $amount;
 
         $tier = $this->tiers->get($user->tier_id);
 
