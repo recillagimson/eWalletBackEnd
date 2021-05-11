@@ -2,9 +2,10 @@
 
 namespace App\Services\UserProfile;
 
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Traits\HasFileUploads;
+use Illuminate\Validation\ValidationException;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class UserProfileService implements IUserProfileService
 {
