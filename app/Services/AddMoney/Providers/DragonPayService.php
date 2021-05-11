@@ -132,7 +132,7 @@ class DragonPayService implements IAddMoneyService
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
         $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
-        $totalAmount = $amount;
+        $totalAmount = $amount + $addMoneyServiceFee->amount;
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
         $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
 
@@ -324,8 +324,18 @@ class DragonPayService implements IAddMoneyService
      */
     public function validateTiersAndLimits(UserAccount $user, float $amount)
     {
-        $totalOfPending = $this->getTotalOfStatus($user->id, TransactionStatuses::pending);
-        $totalAddMoney = $totalOfPending + $amount;
+        $startOfThisMonth = $this->dateToYYYYMMDD(Carbon::now()->startOfMonth());
+        $endOfThisMonth = $this->dateToYYYYMMDD( Carbon::now()->endOfMonth());
+        $transactions = $this->addMoneys->getByUserAccountIDBetweenDates($user->id, $startOfThisMonth, $endOfThisMonth);
+
+        $totalOfTransThisMonth = 0;
+        foreach ($transactions as $trans) {
+
+            $totalOfTransThisMonth = $totalOfTransThisMonth + $trans->amount;
+        }
+
+        $totalAddMoney = $totalOfTransThisMonth + $amount;
+
 
         $tier = $this->tiers->get($user->tier_id);
 
@@ -336,23 +346,10 @@ class DragonPayService implements IAddMoneyService
         if (!is_object($serviceFee) && $serviceFee == 0) $serviceFee = (object) ['id' => 'N/A','amount' => 0];
 
         // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
-        if ($totalAddMoney > $tier->daily_limit) return $this->tierLimitExceeded($totalAddMoney);
+        if ($totalAddMoney > $tier->monthly_limit) return $this->tierLimitExceeded($totalAddMoney);
 
         // return $addMoneyServiceFee;
         return $serviceFee;
-    }
-
-    public function getTotalOfStatus(string $userAccountID, string $status)
-    {
-        $transactions = $this->addMoneys->getByUserAccountIDAndStatus($userAccountID, $status);
-
-        $amount = 0;
-        foreach ($transactions as $trans) {
-            
-            $amount = $amount + $trans->amount;
-        }
-
-        return $amount;
     }
 
 
