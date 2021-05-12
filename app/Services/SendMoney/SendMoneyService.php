@@ -19,6 +19,7 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithSendMoneyErrors;
+use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 
 
@@ -234,7 +235,7 @@ class SendMoneyService implements ISendMoneyService
             'message' => $fillRequest['message'],
             'reference_number' =>  $fillRequest['refNo'],
             'total_amount' =>  number_format($fillRequest['amount'] + SendMoneyConfig::ServiceFee, 2),
-            'transaction_date' => date('l jS \of F Y h:i:s A')
+            'transaction_date' => Carbon::now()
         ];
     }
 

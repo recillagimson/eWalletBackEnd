@@ -38,6 +38,8 @@ use App\Services\SendMoney\ISendMoneyService;
 use App\Services\SendMoney\SendMoneyService;
 use App\Services\ThirdParty\UBP\IUBPService;
 use App\Services\ThirdParty\UBP\UBPService;
+use App\Services\Tier\ITierApprovalService;
+use App\Services\Tier\TierApprovalService;
 use App\Services\Transaction\ITransactionService;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Transaction\TransactionService;
@@ -144,6 +146,11 @@ class AppServiceProvider extends ServiceProvider
 
         //User Account Service
         $this->app->bind(IUserAccountService::class, UserAccountService::class);
+
+        // Tier Approval Service
+        $this->app->bind(ITierApprovalService::class, TierApprovalService::class);
+
+
     }
 
     /**

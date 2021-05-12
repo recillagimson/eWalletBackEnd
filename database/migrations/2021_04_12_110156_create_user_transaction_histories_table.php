@@ -21,7 +21,7 @@ class CreateUserTransactionHistoriesTable extends Migration
             $table->uuid('transaction_id');
             $table->string('reference_number');
             $table->uuid('transaction_category_id')->references('id')->on('transaction_categories')
-                ->onDelete('restrict');;
+                ->onDelete('restrict');
             $table->uuid('user_created')->references('id')->on('user_accounts')
                 ->onDelete('restrict');
             $table->uuid('user_updated')->references('id')->on('user_accounts')
