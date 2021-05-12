@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\UserUtilities;
 
+use App\Enums\AccountTiers;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserProfile\UpdateProfileRequest;
 use App\Http\Requests\UserProfile\AvatarUploadRequest;
@@ -14,6 +15,7 @@ use App\Services\UserProfile\IUserProfileService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\UserProfile\UpdateProfileBronzeRequest;
 use App\Http\Requests\UserProfile\UpdateProfileSilverRequest;
+use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class UserProfileController extends Controller
@@ -23,16 +25,19 @@ class UserProfileController extends Controller
     private IUserProfileService $userProfileService;
     private IResponseService $responseService;
     private IUserDetailRepository $userDetailRepository;
+    private ITierApprovalRepository $userApprovalRepository;
 
     public function __construct(IEncryptionService $encryptionService, 
                                 IUserProfileService $userProfileService,
                                 IResponseService $responseService,
+                                ITierApprovalRepository $userApprovalRepository,
                                 IUserDetailRepository $userDetailRepository)
     {
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
         $this->responseService = $responseService;
         $this->userDetailRepository = $userDetailRepository;
+        $this->userApprovalRepository = $userApprovalRepository;
     }
 
     /**
@@ -58,6 +63,17 @@ class UserProfileController extends Controller
      */
     public function updateSilver(UpdateProfileSilverRequest $request): JsonResponse
     {
+        // IF REQUESTING FOR TIER UPDATE
+        if(request()->user() && request()->user()->tier && request()->user()->tier->id !== AccountTiers::tier2) {
+            // CREATE APPROVAL RECORD FOR ADMIN
+            $res = $this->userApprovalRepository->updateOrCreateApprovalRequest([
+                'user_account_id' => request()->user()->id,
+                'request_tier_id' => AccountTiers::tier2,
+                'status' => 'PENDING',
+                'user_created' => request()->user()->id,
+                'user_updated' => request()->user()->id
+            ]);
+        }
         $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $details);
         

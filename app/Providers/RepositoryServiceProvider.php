@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
+use App\Models\TierApproval;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
@@ -37,7 +38,9 @@ use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\Send2Bank\OutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\ServiceFee\ServiceFeeRepository;
+use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\Tier\ITierRepository;
+use App\Repositories\Tier\TierApprovalRepository;
 use App\Repositories\Tier\TierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
@@ -152,6 +155,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Tier Repository
         $this->app->bind(ITierRepository::class, TierRepository::class);
+        $this->app->bind(ITierApprovalRepository::class, TierApprovalRepository::class);
 
         // Service Fee Repository
         $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
