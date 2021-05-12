@@ -21,9 +21,11 @@ class UserAccountService implements IUserAccountService
     }
 
     public function updateEmail(string $emailField, string $email, object $user) {
-        
+
         $identifier = OtpTypes::updateEmail . ':' . $user->id;
         $this->otpService->ensureValidated($identifier);
+
+        $this->validateEmail($emailField, $email);
 
         $this->userAccountRepository->update($user, [
             $emailField => $email
