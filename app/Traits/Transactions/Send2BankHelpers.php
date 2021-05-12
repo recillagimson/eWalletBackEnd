@@ -188,7 +188,9 @@ trait Send2BankHelpers
             'amount' => $send2Bank->amount,
             'send_receipt_to' => $send2Bank->send_receipt_to,
             'purpose' => Str::lower($send2Bank->purpose) === 'others' ? $send2Bank->other_purpose : $send2Bank->purpose,
-            'transaction_number' => $send2Bank->reference_number
+            'transaction_number' => $send2Bank->reference_number,
+            'service_fee' => $send2Bank->service_fee,
+            'transaction_date' => $send2Bank->transaction_date,
         ];
     }
 }

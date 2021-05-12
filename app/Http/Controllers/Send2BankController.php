@@ -59,9 +59,9 @@ class Send2BankController extends Controller
     {
         $userId = $request->user()->id;
         $recipient = $request->validated();
-        $this->send2BankService->validateFundTransfer($userId, $recipient);
+        $response = $this->send2BankService->validateFundTransfer($userId, $recipient);
 
-        return $this->responseService->successResponse(null,
+        return $this->responseService->successResponse($response,
             SuccessMessages::transactionValidationSuccessful);
     }
 
@@ -126,7 +126,7 @@ class Send2BankController extends Controller
      * @return JsonResponse
      */
     public function verifyDirectTransactions() : JsonResponse {
-        $this->send2BankDirectService->verifyPendingDirectTransactions();
+        $this->send2BankDirectService->verifyPendingDirectTransactions(request()->user()->id);
         return response()->json([], Response::HTTP_OK);
     }
 
@@ -140,7 +140,7 @@ class Send2BankController extends Controller
     {
         $userId = $request->user()->id;
         $recipient = $request->validated();
-        $this->send2BankService->validateFundTransfer($userId, $recipient);
+        $this->send2BankDirectService->validateFundTransfer($userId, $recipient);
 
         return $this->responseService->successResponse(null,
             SuccessMessages::transactionValidationSuccessful);

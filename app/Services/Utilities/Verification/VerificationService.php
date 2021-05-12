@@ -50,7 +50,6 @@ class VerificationService implements IVerificationService
     public function create(array $data) {
 
         $recordsCreated = [];
-
         // PROCESS IDS
         foreach($data['id_photos'] as $idPhoto) {
             // Get file extension name
@@ -66,7 +65,7 @@ class VerificationService implements IVerificationService
                 'photo_location' => $path,
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
-
+                'id_number' => $data['id_number']
             ];
             $record = $this->userPhotoRepository->create($params);
             // Collect created record
