@@ -77,10 +77,10 @@ class UserDetail extends Model
         return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
     }
 
-    public function getEmailAttribute(): string {
+    public function getEmailAttribute() {
         return $this->user_account ? $this->user_account->email : "";
     }
-    public function getMobileNumberAttribute(): string {
+    public function getMobileNumberAttribute() {
         return $this->user_account ? $this->user_account->mobile_number : "";
     }
 
