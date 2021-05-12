@@ -7,6 +7,8 @@ use App\Enums\NetworkTypes;
 use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
 use App\Http\Controllers\Send2BankController;
+use App\Services\UserAccount\UserAccountService;
+use App\Services\UserAccount\IUserAccountService;
 use App\Services\AddMoney\DragonPay\HandlePostBackService;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
@@ -140,7 +142,8 @@ class AppServiceProvider extends ServiceProvider
         // UBP Send to bank service
         $this->app->bind(ISend2BankDirectService::class, Send2BankDirectService::class);
 
-
+        //User Account Service
+        $this->app->bind(IUserAccountService::class, UserAccountService::class);
     }
 
     /**

@@ -92,6 +92,19 @@ class EmailService implements IEmailService
     }
 
     /**
+     * Sends an email for update email verification
+     *
+     * @param string $to
+     * @param string $otp
+     */
+    public function updateEmailVerification(string $to, string $otp)
+    {
+        $subject = 'SquidPay - Update Email Verification';
+        $template = new SendMoneyVerification($otp);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    /**
      * Sends an email for sender
      *
      * @param string $to

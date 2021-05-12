@@ -68,7 +68,7 @@ class SendMoneyService implements ISendMoneyService
         $this->notificationService = $notificationService;
         $this->emailService = $emailService;
         $this->smsService = $smsService;
-        $this->otpService = $otpService;;
+        $this->otpService = $otpService;
     }
 
 
