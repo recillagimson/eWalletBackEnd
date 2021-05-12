@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Enums\ReferenceNumberTypes;
+use Illuminate\Validation\ValidationException;
 
 class AtmService implements IAtmService
 {
@@ -86,7 +87,7 @@ class AtmService implements IAtmService
 
     public function atmload(array $items): array
     {
-        
+        $getProductList = $this->showNetworkProuductList($items);
         $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::BuyLoad);
         $items["agentRefNo"] = $referenceNumber;
         $post_data = $this->createATMPostBody($items);
@@ -105,13 +106,11 @@ class AtmService implements IAtmService
     }
     
     public function showNetworkProuductList(array $items): array
-    {
-        $getPrefixList = $this->showNetworkAndPrefix();
-        $currentMobileNumber = $this->getMobileNumberPrefix($items["mobileNo"]);
+    {        
+        $getNetwork = $this->verifyMobileNumberFromAtmList($items);
 
-        $getNetwork = $this->findMobileNumberAndNetwork($getPrefixList, $currentMobileNumber);
         $showProductList = $this->showProductList();
-        $getProductList = $this->findAtmProducts($showProductList, $getNetwork);
+        $getProductList = $this->findAtmProducts($showProductList, (array) $getNetwork, $items);
 
         return $getProductList;
     }
@@ -146,17 +145,37 @@ class AtmService implements IAtmService
                 $result = $list;
             }
         }
+        if(!$result) throw ValidationException::withMessages(['mobileNo' => 'The number is not valid for any network provider.']);
 
         return $result;
     }
 
-    private function findAtmProducts(array $products, object $items, array $result=[]): array {
-        foreach($products as $product) {
-            if($product->provider == $items->provider) {
-                array_push($result, $product);
+    private function findAtmProducts(array $products, array $items, array $details=null ,array $result=[]): array {
+        if(array_key_exists('productCode', $details)) {
+            foreach($products as $product) {
+                if($product->productCode == $details["productCode"]) {
+                    array_push($result, $product);
+                }
+            }
+            if(sizeof($result) == 0) throw ValidationException::withMessages(['productCode' => 'The product code is not valid.']);
+        }else {
+            foreach($products as $product) {
+                if($product->provider == $items["provider"]) {
+                    array_push($result, $product);
+                }
             }
         }
 
         return $result;
+    }
+
+    private function verifyMobileNumberFromAtmList(array $items): object {
+
+        $getPrefixList = $this->showNetworkAndPrefix();
+        $currentMobileNumber = $this->getMobileNumberPrefix($items["mobileNo"]);
+        
+        $getNetwork = $this->findMobileNumberAndNetwork($getPrefixList, $currentMobileNumber);
+
+        return $getNetwork;
     }
 }

@@ -26,7 +26,7 @@ class ATMTopUpRequest extends FormRequest
         return [
             'productCode' => 'required',
             'mobileNo' => array('required', 'regex:/^((639)|(09))[0-9]{9}$/'),
-            'amount' => 'required|numeric',
+            'amount' => 'required|numeric|min:1',
             'provider' => 'required',
         ];
     }
