@@ -37,4 +37,9 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
     {
         return $this->getUserDetailsBaseQuery()->where('id', '=', $userAccountID)->first();
     }
+
+    public function getByEmail(string $emailField, string $email)
+    {
+        return $this->model->where($emailField, '=', $email)->first();
+    }
 }

@@ -28,6 +28,11 @@ class NotificationService implements INotificationService
         // TODO: Implement sendMoneyVerification() method.
     }
 
+    public function updateEmailVerification(string $to, string $otp)
+    {
+        // TODO: Implement updateEmailVerification() method.
+    }
+
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName)
     {
         // TODO: Implement sendMoneySenderNotification() method.

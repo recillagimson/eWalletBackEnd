@@ -21,6 +21,7 @@ use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\Tier\TierApprovalController;
 use App\Http\Controllers\TierController;
 use App\Http\Controllers\User\ChangeKeyController;
+use App\Http\Controllers\User\UpdateEmailController;
 use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\UserTransactionHistoryController;
 use App\Http\Controllers\UserUtilities\CountryController;
@@ -109,6 +110,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/user')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/email/validate', [UpdateEmailController::class, 'validateEmail']);
+        Route::post('/email/update', [UpdateEmailController::class, 'updateEmail']);
+
         Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey']);
         Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey']);
         Route::put('/{keyType}', [ChangeKeyController::class, 'changeKey']);

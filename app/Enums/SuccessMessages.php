@@ -46,4 +46,8 @@ class SuccessMessages
 
     //Transactions
     const transactionValidationSuccessful = 'Transaction Validation Successful';
+
+    //Update Email Controller
+    const validateUpdateEmail = "Update email validation successful";
+    const updateEmailSuccessful = "Update email successful";
 }
