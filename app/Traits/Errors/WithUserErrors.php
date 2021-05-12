@@ -39,4 +39,10 @@ trait WithUserErrors
         $this->validationErrorMessage(ErrorCodes::userTierInvalid,
             'Oops! To completely access all Squidpay services, please update your profile. Thank you.');
     }
+
+    public function emailAlreadyTaken()
+    {
+        $this->validationErrorMessage(ErrorCodes::emailAlreadyTaken,
+            'Oops! Email is already taken.');
+    }
 }

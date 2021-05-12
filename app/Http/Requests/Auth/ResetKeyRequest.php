@@ -35,7 +35,7 @@ class ResetKeyRequest extends FormRequest
             'password' => [
                 'required_without:pin_code',
                 'min:' . config('auth.password_minlength'),
-                'max:16',
+                'max:20',
                 'confirmed',
                 'different:email',
                 new IsPasswordValid()

@@ -42,6 +42,7 @@ class ErrorCodes
     const userDetailsNotFound = 404;
     const userMonthlyLimitExceeded = 405;
     const userTierInvalid = 406;
+    const emailAlreadyTaken = 407;
 
 
 }

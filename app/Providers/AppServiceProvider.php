@@ -7,6 +7,8 @@ use App\Enums\NetworkTypes;
 use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
 use App\Http\Controllers\Send2BankController;
+use App\Services\UserAccount\UserAccountService;
+use App\Services\UserAccount\IUserAccountService;
 use App\Services\AddMoney\DragonPay\HandlePostBackService;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
@@ -147,6 +149,9 @@ class AppServiceProvider extends ServiceProvider
         // Tier, Service and Limits validation
         $this->app->bind(ITierAndLimitsService::class, TierAndLimitsService::class);
         
+        //User Account Service
+        $this->app->bind(IUserAccountService::class, UserAccountService::class);
+
         // Tier Approval Service
         $this->app->bind(ITierApprovalService::class, TierApprovalService::class);
 
