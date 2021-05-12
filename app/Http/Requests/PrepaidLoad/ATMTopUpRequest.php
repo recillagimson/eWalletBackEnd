@@ -3,6 +3,8 @@
 namespace App\Http\Requests\PrepaidLoad;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Enums\NetworkTypes;
 
 class ATMTopUpRequest extends FormRequest
 {
@@ -27,7 +29,14 @@ class ATMTopUpRequest extends FormRequest
             'productCode' => 'required',
             'mobileNo' => array('required', 'regex:/^((639)|(09))[0-9]{9}$/'),
             'amount' => 'required|numeric|min:1',
-            'provider' => 'required',
+            'provider' => array('required', Rule::in(
+                    [
+                        NetworkTypes::Globe, 
+                        NetworkTypes::Smart, 
+                        NetworkTypes::Sun, 
+                        NetworkTypes::LoadCentral
+                    ]
+                )),
         ];
     }
 
