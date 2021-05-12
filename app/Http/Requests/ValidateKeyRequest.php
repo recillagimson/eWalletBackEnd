@@ -35,7 +35,7 @@ class ValidateKeyRequest extends FormRequest
                 'different:email',
                 new IsPasswordValid()
             ],
-            'new_password_confirmation' => 'required_without:new_pin_code_confirmation|min:' . config('auth.password_minlength') . '|max:16',
+            'new_password_confirmation' => 'required_without:new_pin_code_confirmation|min:' . config('auth.password_minlength') . '|max:20',
             'new_pin_code' => [
                 'required_without:new_password',
                 'digits:4',
