@@ -11,6 +11,7 @@ class UserDetail extends Model
 {
     use HasFactory, UsesUuid, SoftDeletes;
 
+    
     protected $table = 'user_details';
     protected $fillable = [
         'entity_id',
