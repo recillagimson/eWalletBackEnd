@@ -67,7 +67,7 @@ class UpdateProfileSilverRequest  extends FormRequest
             if($age < 18) {
                 $required_fields_default['guardian_name'] = ['required', 'max:50'];
                 $required_fields_default['guardian_mobile_number'] = ['required', 'max:11',  new MobileNumber()];
-                $required_fields_default['is_accept_parental_consent'] = 'required';
+                $required_fields_default['is_accept_parental_consent'] = ['required','min:0','max:1', 'integer'];
             }
         }
 
