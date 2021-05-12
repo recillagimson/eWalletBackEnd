@@ -234,7 +234,7 @@ class SendMoneyService implements ISendMoneyService
             'message' => $fillRequest['message'],
             'reference_number' =>  $fillRequest['refNo'],
             'total_amount' =>  number_format($fillRequest['amount'] + SendMoneyConfig::ServiceFee, 2),
-            'transaction_date' => date('l jS \of F Y h:i:s A')
+            'transaction_date' => date('Y-m-d H:i:s')
         ];
     }
 
