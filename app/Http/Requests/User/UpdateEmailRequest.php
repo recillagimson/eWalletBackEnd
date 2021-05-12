@@ -26,7 +26,8 @@ class UpdateEmailRequest extends FormRequest
         return [
             'email' => [
                 'required',
-                'email:rfc,dns'
+                'email:rfc,dns',
+                'max:50'
             ]
         ];
     }
