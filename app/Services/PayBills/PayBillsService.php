@@ -24,7 +24,7 @@ class PayBillsService implements IPayBillsService
     public function getBillers(): array
     {
         $response = $this->bayadCenterService->getBillers();
-        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        if (!$response->successful()) $this->tpaErrorCatch($response);
         return (array)json_decode($response->body());
     }
 
@@ -32,15 +32,20 @@ class PayBillsService implements IPayBillsService
     public function getBillerInformation(string $billerCode): array
     {
         $response = $this->bayadCenterService->getBillerInformation($billerCode);
-        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        if (!$response->successful()) $this->tpaErrorCatch($response);
         return (array)json_decode($response->body());
+    }
+
+    public function getRequiredFields(string $billerCode)
+    {
+        return $this->bayadCenterService->getRequiredFields($billerCode);
     }
 
 
     public function getOtherCharges(string $billerCode): array
     {
         $response = $this->bayadCenterService->getOtherCharges($billerCode);
-        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        if (!$response->successful()) $this->tpaErrorCatch($response);
         return (array)json_decode($response->body());
     }
 
@@ -48,7 +53,7 @@ class PayBillsService implements IPayBillsService
     public function getWalletBalance(): array
     {
         $response = $this->bayadCenterService->getWalletBalance();
-        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        if (!$response->successful()) $this->tpaErrorCatch($response);
         return (array)json_decode($response->body());
     }
 
@@ -56,7 +61,7 @@ class PayBillsService implements IPayBillsService
     public function verifyAccount(string $billerCode, string $accountNumber, $data): array
     {
         $response = $this->bayadCenterService->verifyAccount($billerCode, $accountNumber, $data);
-        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        if (!$response->successful()) $this->tpaErrorCatch($response);
         return (array)json_decode($response->body());
     }
 
@@ -64,7 +69,7 @@ class PayBillsService implements IPayBillsService
     public function createPayment(string $billerCode, array $data): array
     {
         $response = $this->bayadCenterService->createPayment($billerCode, $data);
-        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        if (!$response->successful()) $this->tpaErrorCatch($response);
         return (array)json_decode($response->body());
     }
 
@@ -72,7 +77,7 @@ class PayBillsService implements IPayBillsService
     public function inquirePayment(string $billerCode, string $clientReference): array
     {
         $response = $this->bayadCenterService->inquirePayment($billerCode, $clientReference);
-        if (!$response->successful()) $this->tpaErrorOccured('Bayad Center');
+        if (!$response->successful()) $this->tpaErrorCatch($response);
         return (array)json_decode($response->body());
     }
 

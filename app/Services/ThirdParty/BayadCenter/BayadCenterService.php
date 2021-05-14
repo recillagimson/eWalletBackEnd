@@ -9,6 +9,7 @@ use App\Traits\Errors\WithTpaErrors;
 use Http;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 use Str;
 
 class BayadCenterService implements IBayadCenterService
@@ -106,6 +107,23 @@ class BayadCenterService implements IBayadCenterService
         return $this->apiService->get($url, $headers);
     }
 
+    
+    public function getRequiredFields(string $billerCode)
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = $this->baseUrl . $this->billerInformationUrl . $billerCode;
+        $billers = $this->apiService->get($url, $headers);
+
+        $billers = json_decode($billers, true);
+        $requiredFields = array();
+
+        for ($x = 4; $x < count(array_keys($billers['data']['parameters']['verify'])); $x++) {
+            $requiredFields[] = array_keys($billers['data']['parameters']['verify'][$x]);
+        }
+        
+        return $this->dataFormat($requiredFields);
+    }
+
 
     public function getOtherCharges(string $billerCode): Response
     {
@@ -155,4 +173,19 @@ class BayadCenterService implements IBayadCenterService
     }
 
 
+
+    // Private Methods
+    private function dataFormat($requiredFields)
+    {
+        $data = "";
+        $data = json_encode($requiredFields);
+        $data = str_replace('[', '', $data);
+        $data = str_replace(']', '', $data);
+        $data = str_replace('otherInfo', '', $data);
+        $data = str_replace('.', '', $data);
+        $data = str_replace('"', '', $data);
+
+        return explode(",", $data);
+    }
+    
 }

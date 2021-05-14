@@ -178,9 +178,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
     });
 
-    Route::prefix('pay/bills')->group(function () {
+    Route::prefix('pay/bills')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [PayBillsController::class, 'getBillers']);
         Route::get('/get/biller/information/{biller_code}', [PayBillsController::class, 'getBillerInformation']);
+        Route::get('/get/required/fields/{biller_code}', [PayBillsController::class, 'getRequiredFields']);
         Route::get('/get/other/charges/{biller_code}', [PayBillsController::class, 'getOtherCharges']);
         Route::post('/verify/account/{biller_code}/{account_number}', [PayBillsController::class, 'verifyAccount']);
         Route::post('/create/payment/{biller_code}', [PayBillsController::class, 'createPayment']);
