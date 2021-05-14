@@ -8,6 +8,7 @@ use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\ValidationException;
 
 class UserDetailRepository extends Repository implements IUserDetailRepository
 {
@@ -18,6 +19,14 @@ class UserDetailRepository extends Repository implements IUserDetailRepository
 
     public function getByUserId(string $userAccountID)
     {
-        return $this->model->where('user_account_id', '=', $userAccountID)->first();
+        $record =  $this->model->where('user_account_id', '=', $userAccountID)->first();
+
+        if($record) {
+            return $record;
+        }
+
+        ValidationException::withMessages([
+            'user_detail_not_found' => 'User Detail not found'
+        ]);
     }
 }

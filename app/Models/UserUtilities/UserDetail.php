@@ -10,6 +10,9 @@ class UserDetail extends Model
 {
     use UsesUuid, HasFactory;
 
+    protected $appends = [
+        'email', 'mobile_number'
+    ];
     /**
      * The table associated with the model.
      *
@@ -67,6 +70,18 @@ class UserDetail extends Model
     public function getUserAccount()
     {
         return $this->hasOne(UserAccount::class, 'id');
+    }
+
+    public function user_account()
+    {
+        return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
+    }
+
+    public function getEmailAttribute() {
+        return $this->user_account ? $this->user_account->email : "";
+    }
+    public function getMobileNumberAttribute() {
+        return $this->user_account ? $this->user_account->mobile_number : "";
     }
 
 }
