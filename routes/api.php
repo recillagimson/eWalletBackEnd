@@ -12,7 +12,7 @@ use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PayBills\PayBillsController;
+use App\Http\Controllers\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
@@ -183,8 +183,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
     });
 
-    Route::prefix('pay/bills')->group(function () {
-        Route::get('/', [PayBillsController::class, 'payBills']);
+    Route::prefix('pay/bills')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/', [PayBillsController::class, 'getBillers']);
+        Route::get('/get/biller/information/{biller_code}', [PayBillsController::class, 'getBillerInformation']);
+        Route::get('/get/required/fields/{biller_code}', [PayBillsController::class, 'getRequiredFields']);
+        Route::get('/get/other/charges/{biller_code}', [PayBillsController::class, 'getOtherCharges']);
+        Route::post('/verify/account/{biller_code}/{account_number}', [PayBillsController::class, 'verifyAccount']);
+        Route::post('/create/payment/{biller_code}', [PayBillsController::class, 'createPayment']);
+        Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
+        Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->group(function () {

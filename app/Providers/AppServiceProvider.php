@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Enums\AddMoneyProviders;
 use App\Enums\NetworkTypes;
+use App\Enums\PayBillsConfig;
 use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
+use App\Http\Controllers\PayBillsController;
 use App\Http\Controllers\Send2BankController;
 use App\Services\UserAccount\UserAccountService;
 use App\Services\UserAccount\IUserAccountService;
@@ -27,6 +29,8 @@ use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
+use App\Services\PayBills\IPayBillsService;
+use App\Services\PayBills\PayBillsService;
 use App\Services\Send2Bank\Instapay\Send2BankInstapayService;
 use App\Services\Send2Bank\ISend2BankDirectService;
 use App\Services\Send2Bank\ISend2BankService;
@@ -36,6 +40,8 @@ use App\Services\Send2Bank\Send2BankDirectService;
 use App\Services\Send2Bank\Send2BankService;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Services\SendMoney\SendMoneyService;
+use App\Services\ThirdParty\BayadCenter\BayadCenterService;
+use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Services\ThirdParty\UBP\IUBPService;
 use App\Services\ThirdParty\UBP\UBPService;
 use App\Services\Tier\ITierApprovalService;
@@ -99,6 +105,7 @@ class AppServiceProvider extends ServiceProvider
 
         //3PP APIs
         $this->app->singleton(IUBPService::class, UBPService::class);
+        $this->app->singleton(IBayadCenterService::class, BayadCenterService::class);
         $this->app->singleton(IAtmService::class, AtmService::class);
 
         //APP SERVICES
@@ -112,12 +119,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
         $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
         $this->app->bind(IVerificationService::class, VerificationService::class);
+        $this->app->bind(IPayBillsService::class, PayBillsService::class);
 
         //APP SERVICES - CONTEXTUAL BINDINGS
         $this->bindNotificationService();
         $this->bindPrepaidLoadService();
         $this->bindSend2BankService();
         $this->bindAddMoneyService();
+        $this->bindPayBillsService();
 
         //Dashboard
         $this->app->bind(IDashboardService::class, DashboardService::class);
@@ -229,6 +238,21 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 return $this->app->get(Send2BankService::class);
+            });
+    }
+
+    private function bindPayBillsService()
+    {
+        $this->app->when(PayBillsService::class)
+            ->needs(IBayadCenterService::class)
+            ->give(function () {
+                $request = app(Request::class);
+
+                if ($request->has('payload')) {
+                    if ($request['provider'] === PayBillsConfig::BayadCenter) return $this->app->get(BayadCenterService::class);
+                }
+
+            return $this->app->get(BayadCenterService::class);
             });
     }
 
