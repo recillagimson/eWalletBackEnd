@@ -5,6 +5,7 @@ namespace App\Services\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Traits\Errors\WithUserErrors;
 use App\Enums\OtpTypes;
+use App\Models\UserAccount;
 use App\Services\Utilities\OTP\IOtpService;
 
 class UserAccountService implements IUserAccountService
@@ -47,5 +48,10 @@ class UserAccountService implements IUserAccountService
         return [
             $emailField => $email,
         ];
+    }
+
+    public function isAUserAccount($userAccount)
+    {
+        if (!is_a($userAccount, UserAccount::class)) return $this->notAUserAccount();
     }
 }

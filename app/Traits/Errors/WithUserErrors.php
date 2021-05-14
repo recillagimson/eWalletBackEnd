@@ -45,4 +45,9 @@ trait WithUserErrors
         $this->validationErrorMessage(ErrorCodes::emailAlreadyTaken,
             'Oops! Email is already taken.');
     }
+
+    public function notAUserAccount()
+    {
+        $this->validationError('user_token', 'Please supply a valid User Token. It is a common mistake to supply Client Token');
+    }
 }
