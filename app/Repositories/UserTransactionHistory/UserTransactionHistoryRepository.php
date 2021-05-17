@@ -34,7 +34,10 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     }
 
     public function getByAuthUser() {
-        return $this->model->with(['transaction_category'])->where('user_account_id', request()->user()->id)->orderBy('created_at', 'DESC')->paginate();
+        return $this->model->with(['transaction_category'])
+            ->where('user_account_id', request()->user()->id)
+            ->orderBy('created_at', 'DESC')
+            ->paginate();
     }
 
     public function findTransactionWithRelation(string $id) {

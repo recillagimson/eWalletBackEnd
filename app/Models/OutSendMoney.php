@@ -35,4 +35,12 @@ class OutSendMoney extends Model
         'user_updated'
     ];
 
+    public function receiver() {
+        return $this->hasOne(UserAccount::class, 'id', 'receiver_id');
+    }
+
+    public function receiver_details() {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'receiver_id');
+    }
+
 }
