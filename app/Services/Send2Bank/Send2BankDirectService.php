@@ -159,6 +159,10 @@ class Send2BankDirectService implements ISend2BankDirectService
 
         $this->transactionValidationService
             ->validate($user, TpaProviders::ubpDirect, $totalAmount);
+
+        return [
+            'service_fee' => $serviceFeeAmount
+        ];
     }
 
     public function verifyPendingDirectTransactions(string $userId): array
