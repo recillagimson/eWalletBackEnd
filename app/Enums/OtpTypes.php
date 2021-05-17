@@ -16,6 +16,7 @@ class OtpTypes
     public const updateProfile = 'update_profile';
     public const updateEmail = 'update_email';
     public const buyLoad = 'buy_load';
+    public const updateMobile = 'update_mobile';
 
     /**
      * INCLUDE HERE ALL THE OTP TYPE VALUES ABOVE
@@ -30,6 +31,7 @@ class OtpTypes
         self::send2Bank,
         self::updateEmail,
         self::buyLoad,
+        self::updateMobile,
 
     ];
 
@@ -42,5 +44,6 @@ class OtpTypes
         self::updateProfile,
         self::updateEmail,
         self::buyLoad,
+        self::updateMobile,
     ];
 }

@@ -42,10 +42,39 @@ class UserAccountService implements IUserAccountService
         $user->forceDelete();
     }
 
+    public function updateMobile(string $mobileField, string $mobile, object $user) {
+
+        $identifier = OtpTypes::updateMobile . ':' . $user->id;
+        $this->otpService->ensureValidated($identifier);
+
+        $this->validateMobile($mobileField, $mobile);
+
+        $this->userAccountRepository->update($user, [
+            $mobileField => $mobile
+        ]);
+
+        return $this->updateMobileResponse($mobileField, $mobile);
+    }
+
+    public function validateMobile(string $mobileField, string $mobile) {
+        $user = $this->userAccountRepository->getByUsername($mobileField, $mobile);
+        if (!$user) return;
+
+        if ($user->verified) $this->mobileAlreadyTaken();
+        $user->forceDelete();
+    }
+
     private function updateEmailResponse($emailField, $email)
     {
         return [
             $emailField => $email,
+        ];
+    }
+
+    private function updateMobileResponse($mobileField, $mobile)
+    {
+        return [
+            $mobileField => $mobile,
         ];
     }
 }
