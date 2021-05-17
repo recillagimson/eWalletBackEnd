@@ -33,7 +33,9 @@ class OutBuyLoad extends Model
         'recipient_mobile_number',
         'provider',
         'product_code',
+        'product_name',
         'transaction_response',
+        'status',
         'user_created',
         'user_updated',
     ];

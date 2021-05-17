@@ -11,4 +11,6 @@ class TpaProviders
     const ubpInstapay = 'ubp-instapay';
     const ubpDirect = 'ubp-direct';
     const bc = 'bayad center';
+    const atm = 'atm';
+
 }

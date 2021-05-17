@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateInReceiveMoneyAddColumn extends Migration
+class AddStatusToOutBuyLoadsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class UpdateInReceiveMoneyAddColumn extends Migration
      */
     public function up()
     {
-        Schema::table('in_receive_money', function (Blueprint $table) {
-            $table->string('out_send_money_reference_number', 50)->after('reference_number')->change();
+        Schema::table('out_buy_loads', function (Blueprint $table) {
+            $table->string('status', 10);
         });
     }
 
@@ -25,6 +25,8 @@ class UpdateInReceiveMoneyAddColumn extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('out_buy_loads', function (Blueprint $table) {
+            $table->dropColumn('status', 10);
+        });
     }
 }

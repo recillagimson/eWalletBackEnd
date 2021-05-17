@@ -24,4 +24,7 @@ interface INotificationService
     public function sendSend2BankSenderNotification(string $to, string $refNo, string $accountNo, float $amount,
                                                     Carbon $transactionDate, float $serviceFee, float $newBalance,
                                                     string $provider, string $remittanceId);
+
+    public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber,
+                                        Carbon $transactionDate, float $newBalance, string $refNo);
 }

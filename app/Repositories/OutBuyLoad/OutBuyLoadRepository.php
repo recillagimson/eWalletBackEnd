@@ -2,8 +2,10 @@
 
 namespace App\Repositories\OutBuyLoad;
 
+use App\Enums\TransactionStatuses;
 use App\Models\OutBuyLoad;
 use App\Repositories\Repository;
+use Carbon\Carbon;
 
 class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
 {
@@ -11,4 +13,33 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
     {
         parent::__construct($model);
     }
+
+    public function getPending(string $userId)
+    {
+        return $this->model->where([
+            'user_account_id' => $userId,
+            'status' => TransactionStatuses::pending
+        ])->get();
+    }
+
+    public function createTransaction(string $userId, string $refNo, string $productCode, string $productName,
+                                      string $recipientMobileNumber, float $amount, Carbon $transactionDate,
+                                      string $transactionCategoryId, string $userCreated): OutBuyLoad
+    {
+        $data = [
+            'user_account_id' => $userId,
+            'reference_number' => $refNo,
+            'product_code' => $productCode,
+            'product_name' => $productName,
+            'recipient_mobile_number' => $recipientMobileNumber,
+            'total_amount' => $amount,
+            'transaction_date' => $transactionDate,
+            'transaction_category_id' => $transactionCategoryId,
+            'status' => TransactionStatuses::pending,
+            'user_created' => $userCreated
+        ];
+
+        return $this->create($data);
+    }
+
 }

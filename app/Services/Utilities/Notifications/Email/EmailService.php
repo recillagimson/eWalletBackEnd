@@ -8,6 +8,7 @@ use App\Enums\OtpTypes;
 use App\Enums\TpaProviders;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
+use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
 use App\Mail\LoginVerification;
 use App\Mail\Send2Bank\Send2BankReceipt;
 use App\Mail\Send2Bank\SenderNotification;
@@ -154,6 +155,19 @@ class EmailService implements IEmailService
     {
         $subject = 'SquidPay - Send to Bank Transaction Receipt';
         $template = new Send2BankReceipt($send2Bank);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber,
+                                        Carbon $transactionDate, float $newBalance, string $refNo)
+    {
+        $subject = 'SquidPay - Buy Load Notification';
+        $strAmount = number_format($amount, 2);
+        $strBalance = number_format($amount, 2);
+        $strTransactionDate = $transactionDate->toDayDateTimeString();
+
+        $template = new BuyLoadSenderNotification($strAmount, $productName, $recipientMobileNumber, $strTransactionDate,
+            $strBalance, $refNo);
         $this->sendMessage($to, $subject, $template);
     }
 
