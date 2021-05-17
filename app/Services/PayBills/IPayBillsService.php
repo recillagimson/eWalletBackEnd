@@ -16,7 +16,7 @@ interface IPayBillsService
     public function getRequiredFields(string $billerCode);
     public function getOtherCharges(string $billerCode);
     public function verifyAccount(string $billerCode, string $accountNumber, $data);
-    public function createPayment(string $billerCode, array $data);
+    public function createPayment(string $billerCode, array $data, UserAccount $user);
     public function inquirePayment(string $billerCode, string $clientReference);
     public function getWalletBalance();
 }

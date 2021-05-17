@@ -4,6 +4,7 @@
 namespace App\Services\ThirdParty\BayadCenter;
 
 use App\Enums\TpaProviders;
+use App\Models\UserAccount;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Http;
@@ -144,7 +145,7 @@ class BayadCenterService implements IBayadCenterService
     }
 
 
-    public function createPayment(string $billerCode, array $data): Response
+    public function createPayment(string $billerCode, array $data, UserAccount $user)//: Response
     {
         $headers = $this->getAuthorizationHeaders();
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->createPaymentUrl);
@@ -167,7 +168,7 @@ class BayadCenterService implements IBayadCenterService
     public function getWalletBalance(): Response
     {
         $headers = $this->getAuthorizationHeaders();
-        $url = $this->baseUrl . $this->getWalletBalanceUrl;
+    $url = $this->baseUrl . $this->getWalletBalanceUrl;
         
         return $this->apiService->get($url, $headers);
     }

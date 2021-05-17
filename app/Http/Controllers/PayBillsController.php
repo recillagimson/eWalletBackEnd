@@ -69,12 +69,13 @@ class PayBillsController extends Controller
     }
     
 
-    public function createPayment(PayBillsRequest $request): JsonResponse
+    public function createPayment(PayBillsRequest $request)//: JsonResponse
     {
         $billerCode = $request->route('biller_code');
         $data = $request->post();
-        $createPayment = $this->payBillsService->createPayment($billerCode, $data);
-        return $this->responseService->successResponse($createPayment);
+        
+        return $this->payBillsService->createPayment($billerCode, $data,  $request->user());
+      //  return $this->responseService->successResponse($createPayment);
     }
 
 
