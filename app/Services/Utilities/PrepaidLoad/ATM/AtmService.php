@@ -4,20 +4,119 @@
 namespace App\Services\Utilities\PrepaidLoad\ATM;
 
 
-use App\Traits\Errors\WithTransactionErrors;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Http;
+use App\Enums\AtmPrepaidResponseCodes;
+use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Enums\ReferenceNumberTypes;
+use App\Traits\Errors\WithBuyLoadErrors;
+use App\Traits\Errors\WithTransactionErrors;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class AtmService implements IAtmService
 {
-    use WithTransactionErrors;
+    use WithTransactionErrors, WithBuyLoadErrors;
+
     private IReferenceNumberService $referenceNumberService;
 
-    public function __construct(IReferenceNumberService $referenceNumberService)
+    private string $id;
+    private string $uid;
+    private string $password;
+
+    private string $baseUrl;
+    private string $productsUrl;
+    private string $prefixUrl;
+    private string $telcoStatusUrl;
+    private string $balanceUrl;
+    private string $topupUrl;
+    private string $topupInquiryUrl;
+    private IApiService $apiService;
+
+    public function __construct(IApiService $apiService,
+                                IReferenceNumberService $referenceNumberService)
     {
+        $this->id = config('services.load.atm.id');
+        $this->uid = config('services.load.atm.uid');
+        $this->password = config('services.load.atm.password');
+
+        $this->baseUrl = config('services.load.atm.url');
+        $this->productsUrl = config('services.load.atm.products_url');
+        $this->prefixUrl = config('services.load.atm.prefix_url');
+        $this->telcoStatusUrl = config('services.load.atm.telco_status_url');
+        $this->balanceUrl = config('services.load.atm.balance_url');
+        $this->topupUrl = config('services.load.atm.topup_url');
+        $this->topupInquiryUrl = config('services.load.atm.topup_inquiry_url');
+
         $this->referenceNumberService = $referenceNumberService;
+        $this->apiService = $apiService;
+    }
+
+    public function getProvider(string $mobileNumber)
+    {
+        $prefix = Str::substr($mobileNumber, 0, 4);
+        $prefix = Str::replaceFirst('0', '63', $prefix);
+
+        $data = $this->createATMPostBody();
+        $headers = $this->getHeaders($data);
+
+        $url = $this->baseUrl . $this->prefixUrl;
+        $response = $this->apiService->post($url, $data, $headers);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if ($data['responseCode'] !== AtmPrepaidResponseCodes::requestReceived) {
+                $prefixes = collect($data['data']);
+                return $prefixes->firstWhere('prefix', $prefix)['provider'];
+            }
+        }
+
+        $this->prefixNotSupported();
+    }
+
+    public function getProductsByProvider(string $provider): Collection
+    {
+        $data = $this->createATMPostBody();
+        $headers = $this->getHeaders($data);
+
+        $url = $this->baseUrl . $this->productsUrl;
+        $response = $this->apiService->post($url, $data, $headers);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if ($data['responseCode'] !== AtmPrepaidResponseCodes::requestReceived) {
+                $prefixes = collect($data['data']);
+                return $prefixes->where('provider', $provider);
+            }
+        }
+
+        $this->prefixNotSupported();
+    }
+
+    public function topupLoad(string $productCode, string $mobileNumber, string $refNo): Response
+    {
+        $data = [
+            'productCode' => $productCode,
+            'mobileNo' => $mobileNumber,
+            'agentRefNo' => $refNo
+        ];
+        $postData = $this->createATMPostBody($data);
+        $headers = $this->getHeaders($postData);
+
+        $url = $this->baseUrl . $this->topupUrl;
+        return $this->apiService->post($url, $postData, $headers);
+    }
+
+    public function checkStatus(string $refNo): Response
+    {
+        $data = [
+            'agentRefNo' => $refNo
+        ];
+        $postData = $this->createATMPostBody($data);
+        $headers = $this->getHeaders($postData);
+
+        $url = $this->baseUrl . $this->topupInquiryUrl;
+        return $this->apiService->post($url, $postData, $headers);
     }
 
     public function generateSignature(array $data): string
@@ -40,7 +139,7 @@ class AtmService implements IAtmService
         $result = openssl_verify($jsonData, $signature, $publicKeyId, OPENSSL_ALGO_SHA1);
 
         if ($result !== 1)
-            $this->transFailed();
+            $this->transactionFailed();
     }
 
     public function generatePEM(string $publicCertContent)
@@ -54,109 +153,32 @@ class AtmService implements IAtmService
         Storage::disk('local')->put('/key/' . $certificateCApem, $certificateCApemContent);
     }
 
-    public function showNetworkAndPrefix(): array
+    public function convertMobileNumberPrefixToAreaCode(string $mobileNo): string
     {
-        $signature = $this->generateSignature($this->createATMPostBody());
-
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Signature' => $signature
-        ])->post(config('services.load.atm.url').'/prefix-list', 
-        $this->createATMPostBody());
-
-        $result = json_decode($response->body());
-        
-        return $result->data;
-    }
-
-    public function showProductList(): array
-    {
-        $signature = $this->generateSignature($this->createATMPostBody());
-
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'Signature' => $signature
-        ])->post(config('services.load.atm.url').'/product-list', 
-        $this->createATMPostBody());
-
-        $result = json_decode($response->body());
-        
-        return $result->data;
-    }
-
-    public function atmload(array $items): array
-    {
-        
-        $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::BuyLoad);
-        $items["agentRefNo"] = $referenceNumber;
-        $post_data = $this->createATMPostBody($items);
-        $signature = $this->generateSignature($post_data);
-
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'Signature' => $signature
-        ])->post(config('services.load.atm.url').'/topup-request', 
-        $post_data);
-
-        $result = $response->json();
-        
-        return array("result"=>$result, "response"=>$response->body());
-    }
-    
-    public function showNetworkProuductList(array $items): array
-    {
-        $getPrefixList = $this->showNetworkAndPrefix();
-        $currentMobileNumber = $this->getMobileNumberPrefix($items["mobileNo"]);
-
-        $getNetwork = $this->findMobileNumberAndNetwork($getPrefixList, $currentMobileNumber);
-        $showProductList = $this->showProductList();
-        $getProductList = $this->findAtmProducts($showProductList, $getNetwork);
-
-        return $getProductList;
-    }
-
-    private function createATMPostBody(array $items=null):array {
-        $body = [
-            'id' => config('services.load.atm.id'),
-            'uid' => config('services.load.atm.uid'),
-            'pwd' => config('services.load.atm.password'),
-            'data' => $items
-        ];
-
-        return $body;
-    }
-
-    private function getMobileNumberPrefix(string $mobileNo): string {
-        return str_split($mobileNo, 5)[0];
-    }
-
-    public function convertMobileNumberPrefixToAreaCode(string $mobileNo): string {
         $strSplit = str_split($mobileNo);
-        if(intval($strSplit[0]) == 0) {
+        if (intval($strSplit[0]) == 0) {
             $strSplit[0] = '63';
         }
 
-        return join("",$strSplit);
+        return join("", $strSplit);
     }
 
-    private function findMobileNumberAndNetwork(array $prefixLists, string $mobileNo, object $result=null): object {
-        foreach($prefixLists as $list) {
-            if($list->prefix == $mobileNo) {
-                $result = $list;
-            }
-        }
-
-        return $result;
+    private function getHeaders(array $data): array
+    {
+        return [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Signature' => $this->generateSignature($data)
+        ];
     }
 
-    private function findAtmProducts(array $products, object $items, array $result=[]): array {
-        foreach($products as $product) {
-            if($product->provider == $items->provider) {
-                array_push($result, $product);
-            }
-        }
-
-        return $result;
+    private function createATMPostBody(array $data = null): array
+    {
+        return [
+            'id' => $this->id,
+            'uid' => $this->uid,
+            'pwd' => $this->password,
+            'data' => $data
+        ];
     }
 }

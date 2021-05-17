@@ -95,6 +95,19 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
+    public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber,
+                                        Carbon $transactionDate, float $newBalance, string $refNo)
+    {
+        $strDate = $transactionDate->toDayDateTimeString();
+        $strAmount = number_format($amount, 2);
+        $strNewBalance = number_format($newBalance, 2);
+
+        $content = 'You have paid P' . $strAmount . ' of SquidPay to purchase ' . $productName . ' for ' .
+            $recipientMobileNumber . ' on ' . $strDate . '. Your SquidPay balance is P' . $strNewBalance .
+            '. Ref. No. ' . $refNo . '.';
+        $this->sendMessages($to, $content);
+    }
+
     private function sendMessages(string $to, string $content)
     {
         $message = $this->buildMessage($to, $content);
@@ -119,5 +132,6 @@ class SmsService implements ISmsService
             'sms' => 'SMS provider failed to send the message. Please try again.'
         ]);
     }
+
 
 }

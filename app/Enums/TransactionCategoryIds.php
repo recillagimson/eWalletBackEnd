@@ -16,6 +16,8 @@ class TransactionCategoryIds
     const sendMoneyToSquidPayAccount = '1a86b905-929a-11eb-9663-1c1b0d14e211';
     const receiveMoneyToSquidPayAccount = 'b1792f37-929c-11eb-9663-1c1b0d14e211';
 
+    const buyLoad = 'edf4d5d0-9299-11eb-9663-1c1b0d14e211';
+
     const cashinTransactions = [
         self::posAddFunds,
         self::cashinDragonPay,

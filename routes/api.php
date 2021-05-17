@@ -167,11 +167,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         });
 
-        Route::prefix('/atm')->group(function () {
-            Route::get('/network-types', [AtmController::class, 'showPrefixNetworkList']);
-            Route::get('/product-list', [AtmController::class, 'showProductList']);
-            Route::post('/load', [AtmController::class, 'load']);
-            Route::post('/network/products', [AtmController::class, 'showNetworkProductList']);
+        Route::prefix('/buy/load')->group(function () {
+            Route::post('/', [AtmController::class, 'topupLoad']);
+            Route::post('/validate', [AtmController::class, 'validateLoadTopup']);
+            Route::post('/products', [AtmController::class, 'getProductsByProvider']);
+            Route::get('/process/pending', [AtmController::class, 'processPending']);
         });
 
     });
@@ -201,7 +201,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{notification}', [NotificationController::class, 'update']);
         Route::delete('/{notification}', [NotificationController::class, 'delete']);
     });
-    
+
     Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [TierApprovalController::class, 'index']);
         // Route::post('/', [TierApprovalController::class, 'store']);
@@ -209,7 +209,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{tierApproval}', [TierApprovalController::class, 'update']);
         Route::delete('/{tierApproval}', [TierApprovalController::class, 'destroy']);
     });
-    
+
     Route::prefix('/tiers')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [TierController::class, 'index']);
         Route::post('/', [TierController::class, 'store']);
