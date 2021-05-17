@@ -31,5 +31,13 @@ class InReceiveMoney extends Model
         'user_updated',
     ];
 
+    public function sender() {
+        return $this->hasOne(UserAccount::class, 'id', 'sender_id');
+    }
+
+    public function sender_details() {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'sender_id');
+    }
+
 
 }
