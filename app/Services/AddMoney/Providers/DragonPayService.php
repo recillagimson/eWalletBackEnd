@@ -136,7 +136,7 @@ class DragonPayService implements IAddMoneyService
         $userAccountID = $user->id;
         $amount = $urlParams['amount'];
         
-        return $this->tierAndLimitsService->validateTierAndLimits($amount, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay);
+        $this->tierAndLimitsService->validateTierAndLimits($amount, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay);
 
         $token = $this->getToken();
         $txnID =  $this->referenceNumber;

@@ -68,7 +68,7 @@ class TierAndLimitsService implements ITierAndLimitsService
         $this->setUserAccountID($user->id);
         $this->setModule($squiPayModule);
 
-        return $transAmountTotal = $this->getTotalTransAmountFromWhichModule($squiPayModule);
+        $transAmountTotal = $this->getTotalTransAmountFromWhichModule($squiPayModule);
 
         $totalAmount = $amount + $transAmountTotal;
 
