@@ -69,7 +69,8 @@ class UserTransactionHistory extends Model
             }
             // ADD MONEY VIA DRAGONPAY
             else if($this->transaction_category_id === TransactionCategoryIds::cashinDragonPay) {
-                
+                $record =  $model->with(['user_details'])->find($this->transaction_id);
+                return $record;
             }
             return $model->find($this->transaction_id);
         }
