@@ -6,6 +6,7 @@ use App\Enums\DragonPayStatusTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\SuccessMessages;
 use App\Enums\TransactionCategories;
+use App\Enums\TransactionStatuses;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
@@ -107,7 +108,7 @@ class HandlePostBackService implements IHandlePostBackService
             $this->addMoneys->update($addMoneyRow, [
                 'dragonpay_reference' => $dragonpayReference,
                 'dragonpay_channel_reference_number' => $channelRefNo,
-                'status' => DragonPayStatusTypes::Success
+                'status' => TransactionStatuses::success
             ]);
 
             $this->addAmountToUserBalance($addMoneyRow->user_account_id, $addMoneyRow->amount);
@@ -127,7 +128,7 @@ class HandlePostBackService implements IHandlePostBackService
                 'dragonpay_reference' => $dragonpayReference,
                 'dragonpay_channel_reference_number' => isset($channelRefNo) ? $channelRefNo : 'N/A',
                 'transaction_remarks' => $message,
-                'status' => DragonPayStatusTypes::Failure
+                'status' => TransactionStatuses::failed
             ]);
 
             $this->logHistoryService->logUserHistoryUnauthenticated($this->userAccountID, $this->referenceNumber, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, __METHOD__, Carbon::now(), SuccessMessages::addMoneyFailed);
@@ -141,7 +142,7 @@ class HandlePostBackService implements IHandlePostBackService
                 'dragonpay_reference' => $dragonpayReference,
                 'dragonpay_channel_reference_number' => isset($channelRefNo) ? $channelRefNo : 'N/A',
                 'transaction_remarks' => $message,
-                'status' => DragonPayStatusTypes::Pending
+                'status' => TransactionStatuses::pending
             ]);
 
             $this->logHistoryService->logUserHistoryUnauthenticated($this->userAccountID, $this->referenceNumber, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, __METHOD__, Carbon::now(), SuccessMessages::addMoneyPending);

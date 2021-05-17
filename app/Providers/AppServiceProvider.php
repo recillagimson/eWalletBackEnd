@@ -76,6 +76,8 @@ use App\Services\Utilities\Responses\IResponseService;
 use App\Services\Utilities\Responses\ResponseService;
 use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
 use App\Services\Utilities\ServiceFeeService\ServiceFeeService;
+use App\Services\Utilities\TierAndLimits\ITierAndLimitsService;
+use App\Services\Utilities\TierAndLimits\TierAndLimitsService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Verification\VerificationService;
 use Illuminate\Http\Request;
@@ -153,6 +155,9 @@ class AppServiceProvider extends ServiceProvider
         // UBP Send to bank service
         $this->app->bind(ISend2BankDirectService::class, Send2BankDirectService::class);
 
+        // Tier, Service and Limits validation
+        $this->app->bind(ITierAndLimitsService::class, TierAndLimitsService::class);
+        
         //User Account Service
         $this->app->bind(IUserAccountService::class, UserAccountService::class);
 

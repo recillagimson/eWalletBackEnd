@@ -11,6 +11,7 @@ use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
 use App\Services\Encryption\IEncryptionService;
+use App\Services\UserAccount\IUserAccountService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -21,24 +22,29 @@ class AddMoneyController extends Controller
     private IInAddMoneyService $addMoneyService;
     private IResponseService $responseService;
     private IInAddMoneyRepository $addMoneys;
+    private IUserAccountService $userAccountService;
 
     public function __construct(IHandlePostBackService $postBackService,
                                 IEncryptionService $encryptionService,
                                 IInAddMoneyService $addMoneyService,
                                 IResponseService $responseService,
-                                IInAddMoneyRepository $addMoneys) {
+                                IInAddMoneyRepository $addMoneys,
+                                IUserAccountService $userAccountService) {
 
         $this->postBackService = $postBackService;
         $this->encryptionService = $encryptionService;
         $this->addMoneyService = $addMoneyService;
         $this->responseService = $responseService;
         $this->addMoneys = $addMoneys;
+        $this->userAccountService = $userAccountService;
     }
 
     public function addMoney(AddMoneyRequest $request)
     {
         $requestParams = $request->validated();
         $user = $request->user();
+
+        $this->userAccountService->isAUserAccount($user);
 
         $addMoney = $this->addMoneyService->addMoney($user, $requestParams);
 

@@ -2,8 +2,10 @@
 
 namespace App\Repositories\OutSendMoney;
 
+use App\Enums\TransactionStatuses;
 use App\Repositories\Repository;
 use App\Models\OutSendMoney;
+use Illuminate\Support\Carbon;
 
 class OutSendMoneyRepository extends Repository implements IOutSendMoneyRepository
 {
@@ -17,4 +19,12 @@ class OutSendMoneyRepository extends Repository implements IOutSendMoneyReposito
         return $this->model->orderByDesc('reference_number')->pluck('reference_number')->first();
     }
 
+    public function getByUserAccountIDBetweenDates(string $userAccountID, Carbon $startDate, Carbon $endDate)
+    {
+        return $this->model
+            ->where('user_account_id', $userAccountID)
+            ->where('status', '!=', TransactionStatuses::failed)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+    }
 }   

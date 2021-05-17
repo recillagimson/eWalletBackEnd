@@ -66,4 +66,13 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
             ->get();
         return $records;
     }
+
+    public function getByUserAccountIDBetweenDates(string $userId, Carbon $startDate, Carbon $endDate)
+    {
+        return $this->model
+            ->where('user_account_id', $userId)
+            ->where('status', '!=', TransactionStatuses::failed)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+    }
 }

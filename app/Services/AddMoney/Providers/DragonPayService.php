@@ -6,9 +6,12 @@ use App\Enums\DragonPayStatusTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TransactionCategories;
+use App\Enums\TransactionStatuses;
 use App\Models\InAddMoneyFromBank;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
+use App\Repositories\InAddMoney\InAddMoneyRepository;
+use App\Repositories\InReceiveMoney\InReceiveMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\Tier\ITierRepository;
@@ -19,6 +22,8 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
+use App\Services\Utilities\TierAndLimits\ITierAndLimitsService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
@@ -77,6 +82,8 @@ class DragonPayService implements IAddMoneyService
     private ITierRepository $tiers;
     private IUserBalanceInfoRepository $userBalanceInfos;
     private ILogHistoryService $logHistoryService;
+    private InReceiveMoneyRepository $receiveMoneys;
+    private ITierAndLimitsService $tierAndLimitsService;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
@@ -88,7 +95,9 @@ class DragonPayService implements IAddMoneyService
                                 ITierRepository $tiers,
                                 IUserDetailRepository $userDetails,
                                 IUserBalanceInfoRepository $userBalanceInfos,
-                                ILogHistoryService $logHistoryService) {
+                                ILogHistoryService $logHistoryService,
+                                InReceiveMoneyRepository $receiveMoneys,
+                                ITierAndLimitsService $tierAndLimitsService) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -106,6 +115,8 @@ class DragonPayService implements IAddMoneyService
         $this->userDetails = $userDetails;
         $this->userBalanceInfos = $userBalanceInfos;
         $this->logHistoryService = $logHistoryService;
+        $this->receiveMoneys = $receiveMoneys;
+        $this->tierAndLimitsService = $tierAndLimitsService;
     }
 
     /**
@@ -124,15 +135,17 @@ class DragonPayService implements IAddMoneyService
         $email = $this->getEmail($user);
         $userAccountID = $user->id;
         $amount = $urlParams['amount'];
+        
+        return $this->tierAndLimitsService->validateTierAndLimits($amount, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay);
 
         $token = $this->getToken();
         $txnID =  $this->referenceNumber;
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
-        $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
-        $totalAmount = $amount;
-        $body = $this->createBody($totalAmount, $beneficiaryName, $email);
         $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
+        $addMoneyServiceFee = $this->serviceFees->getAmountByTransactionAndUserAccountId($transactionCategoryID->id, $user->tier_id);
+        $totalAmount = $amount + $addMoneyServiceFee->amount;
+        $body = $this->createBody($totalAmount, $beneficiaryName, $email);
 
         $response = Http::withHeaders([
             'Accept' => 'application/json',
@@ -198,7 +211,7 @@ class DragonPayService implements IAddMoneyService
      * Build the DragonPay token to be
      * used as the Auth token
      *
-     * @return string-base64
+     * @return base64
      */
     protected function getToken()
     {
@@ -304,7 +317,7 @@ class DragonPayService implements IAddMoneyService
             'transaction_category_id' => $transactionCategoryID,
             'transaction_remarks' => $transactionRemarks,
             'user_created' => $userAccountID,
-            'status' => 'PENDING',
+            'status' => TransactionStatuses::pending,
         ];
 
         return $rowInserted = $this->addMoneys->create($row);
@@ -322,6 +335,14 @@ class DragonPayService implements IAddMoneyService
      */
     public function validateTiersAndLimits(UserAccount $user, float $amount)
     {
+        $startOfThisMonth = $this->dateToYYYYMMDD(Carbon::now()->startOfMonth());
+        $endOfThisMonth = $this->dateToYYYYMMDD( Carbon::now()->endOfMonth());
+
+        $addMoneyTransactions = $this->addMoneys->getByUserAccountIDBetweenDates($user->id, $startOfThisMonth, $endOfThisMonth);
+        $receiveMoneyTransactions = $this->receiveMoneys->getByUserAccountIDBetweenDates($user->id, $startOfThisMonth, $endOfThisMonth);
+
+        $totalAddMoney = $addMoneyTransactions->sum('amount') + $receiveMoneyTransactions->sum('amount') + $amount;
+
         $tier = $this->tiers->get($user->tier_id);
 
         $addMoneyTransCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
@@ -331,7 +352,7 @@ class DragonPayService implements IAddMoneyService
         if (!is_object($serviceFee) && $serviceFee == 0) $serviceFee = (object) ['id' => 'N/A','amount' => 0];
 
         // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
-        if ($amount > $tier->daily_limit) return $this->tierLimitExceeded();
+        if ($totalAddMoney > $tier->monthly_limit) return $this->tierLimitExceeded($totalAddMoney);
 
         // return $addMoneyServiceFee;
         return $serviceFee;
@@ -810,10 +831,11 @@ class DragonPayService implements IAddMoneyService
     /**
      * Thrown when the request amount exceeded the limit
      */
-    private function tierLimitExceeded()
+    private function tierLimitExceeded($amount)
     {
         throw ValidationException::withMessages([
-            'amount' => 'The requested amount exceeded the limits for this account.'
+            'amount' => 'The requested amount (pending & current) exceeded the limits for this account.',
+            'total_amount' => $amount
         ]);
     }
 

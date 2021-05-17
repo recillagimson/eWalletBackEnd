@@ -6,5 +6,5 @@ use App\Models\InReceiveMoney;
 
 interface IInReceiveMoneyRepository extends IRepository
 {
-
+    public function getByUserAccountIDBetweenDates(string $userAccountID, string $startDate, string $endDate);
 }
