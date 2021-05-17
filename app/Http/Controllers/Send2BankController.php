@@ -115,8 +115,9 @@ class Send2BankController extends Controller
     public function send2BankUBPDirect(Send2BankUBPDirectRequest $request) : JsonResponse {
         $recipient = $request->all();
         $userId = $request->user()->id;
-        $this->send2BankDirectService->fundTransferToUBPDirect($userId, $recipient);
-        return response()->json([], Response::HTTP_OK);
+        $response = $this->send2BankDirectService->fundTransferToUBPDirect($userId, $recipient);
+        // return response()->json($response, Response::HTTP_OK);
+        return $this->responseService->successResponse($response);
     }
 
     /**
