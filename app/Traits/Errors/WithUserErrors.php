@@ -50,4 +50,10 @@ trait WithUserErrors
     {
         $this->validationError('user_token', 'Please supply a valid User Token. It is a common mistake to supply Client Token');
     }
+
+    public function mobileAlreadyTaken()
+    {
+        $this->validationErrorMessage(ErrorCodes::mobileAlreadyTaken,
+            'Oops! Mobile Number is already taken.');
+    }
 }

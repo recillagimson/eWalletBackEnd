@@ -7,10 +7,7 @@ use App\Enums\NetworkTypes;
 use App\Enums\PayBillsConfig;
 use App\Enums\TpaProviders;
 use App\Enums\UsernameTypes;
-use App\Http\Controllers\PayBillsController;
 use App\Http\Controllers\Send2BankController;
-use App\Services\UserAccount\UserAccountService;
-use App\Services\UserAccount\IUserAccountService;
 use App\Services\AddMoney\DragonPay\HandlePostBackService;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
@@ -23,6 +20,8 @@ use App\Services\Auth\Registration\IRegistrationService;
 use App\Services\Auth\Registration\RegistrationService;
 use App\Services\Auth\UserKey\IUserKeyService;
 use App\Services\Auth\UserKey\UserKeyService;
+use App\Services\BuyLoad\BuyLoadService;
+use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\IDashboardService;
 use App\Services\Encryption\EncryptionService;
@@ -50,6 +49,8 @@ use App\Services\Transaction\ITransactionService;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Transaction\TransactionService;
 use App\Services\Transaction\TransactionValidationService;
+use App\Services\UserAccount\IUserAccountService;
+use App\Services\UserAccount\UserAccountService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\UserProfile\UserProfileService;
 use App\Services\Utilities\API\ApiService;
@@ -164,7 +165,8 @@ class AppServiceProvider extends ServiceProvider
         // Tier Approval Service
         $this->app->bind(ITierApprovalService::class, TierApprovalService::class);
 
-
+        // Buy Load Service
+        $this->app->bind(IBuyLoadService::class, BuyLoadService::class);
     }
 
     /**

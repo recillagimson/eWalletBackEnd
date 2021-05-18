@@ -43,6 +43,15 @@ class ErrorCodes
     const userMonthlyLimitExceeded = 405;
     const userTierInvalid = 406;
     const emailAlreadyTaken = 407;
+    const mobileAlreadyTaken = 408;
+
+    //BUY LOAD - 500
+    const buyLoadMobileNumberPrefixNotSupported = 501;
+    const buyLoadInvalidMobileNumber = 502;
+    const buyLoadInvalidProductCode = 503;
+    const buyLoadInsufficientFunds = 504;
+    const buyLoadTelcoUnavailable = 505;
+    const buyLoadProductMismatch = 506;
 
 
 }

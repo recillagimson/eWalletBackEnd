@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\AccountTiers;
+use App\Enums\AtmPrepaidResponseCodes;
 use App\Enums\Currencies;
 use App\Enums\DragonPayStatusTypes;
 use App\Enums\ErrorCodes;
@@ -271,6 +272,7 @@ return [
         'TransactionStatuses' => TransactionStatuses::class,
         'UbpResponseCodes' => UbpResponseCodes::class,
         'UbpResponseStates' => UbpResponseStates::class,
+        'AtmPrepaidResponseCodes' => AtmPrepaidResponseCodes::class,
 
         //Enums - Messages
         'SuccessMessages' => SuccessMessages::class,
