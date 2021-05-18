@@ -2,42 +2,40 @@
 
 namespace App\Http\Controllers\BuyLoad;
 
-use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuyLoad\ATM\GenerateSignatureRequest;
 use App\Http\Requests\BuyLoad\ATM\VerifySignatureRequest;
-use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use App\Services\Utilities\Responses\IResponseService;
-use App\Http\Requests\PrepaidLoad\ATMTopUpRequest;
-use App\Http\Requests\PrepaidLoad\MobileNumberRequest;
+use App\Http\Requests\BuyLoad\GetProductsByProviderRequest;
+use App\Http\Requests\BuyLoad\TopupLoadRequest;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
-use Carbon\Carbon;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
-use App\Enums\TransactionCategories;
+use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
+use App\Services\Utilities\Responses\IResponseService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class AtmController extends Controller
 {
     private IAtmService $atmService;
     private IResponseService $responseService;
     public IOutBuyLoadRepository $outBuyLoadRepository;
-    private ITransactionCategoryRepository $transactionCategoryRepository;
-    private IUserProfileService $userProfileService;
+    private IBuyLoadService $buyLoadService;
 
     public function __construct(IAtmService $atmService,
                                 IResponseService $responseService,
                                 IOutBuyLoadRepository $outBuyLoadRepository,
                                 ITransactionCategoryRepository $transactionCategoryRepository,
-                                IUserProfileService $userProfileService)
+                                IUserProfileService $userProfileService,
+                                IBuyLoadService $buyLoadService)
     {
         $this->atmService = $atmService;
         $this->responseService = $responseService;
         $this->outBuyLoadRepository = $outBuyLoadRepository;
-        $this->transactionCategoryRepository = $transactionCategoryRepository;
-        $this->userProfileService = $userProfileService;
+        $this->buyLoadService = $buyLoadService;
     }
 
     public function generate(GenerateSignatureRequest $request): JsonResponse
@@ -65,66 +63,42 @@ class AtmController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
-    public function showPrefixNetworkList() {
-        $records = $this->atmService->showNetworkAndPrefix();
+    public function getProductsByProvider(GetProductsByProviderRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $mobileNumber = $data['mobile_number'];
+        $responseData = $this->buyLoadService->getProductsByProvider($mobileNumber);
 
-        return $this->responseService->successResponse($records, SuccessMessages::success);
+        return $this->responseService->successResponse($responseData);
     }
 
-    public function showProductList() {
-        $records = $this->atmService->showProductList();
+    public function validateLoadTopup(TopupLoadRequest $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+        $data = $request->validated();
 
-        return $this->responseService->successResponse($records, SuccessMessages::success);
+        $this->buyLoadService->validateLoadTopup($userId, $data['mobile_number'], $data['product_code'],
+            $data['product_name'], $data['amount']);
+
+        return $this->responseService->successResponse([],
+            SuccessMessages::transactionValidationSuccessful);
     }
 
-    public function load(ATMTopUpRequest $atmrequest): JsonResponse {
-        $details = $atmrequest->validated();
-        $details["mobileNo"] = $this->atmService->convertMobileNumberPrefixToAreaCode($details["mobileNo"]);
-        $copyATMDetails = $details;
-        $copyATMDetails = $this->removeFieldsFromInput($copyATMDetails);
-        $buyLoadTransactionCategory = $this->transactionCategoryRepository->getByName(TransactionCategories::BuyLoad);
+    public function topupLoad(TopupLoadRequest $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+        $data = $request->validated();
 
-        $records = $this->atmService->atmload($copyATMDetails);
+        $response = $this->buyLoadService->topupLoad($userId, $data['mobile_number'], $data['product_code'],
+            $data['product_name'], $data['amount']);
 
-        $createOutBuyLoadBody = $this->createOutBuyLoadBody($details, $records, $atmrequest->user(), $buyLoadTransactionCategory);
-        $addUserCreateAndUpdate = $this->userProfileService->addUserInput($createOutBuyLoadBody, $atmrequest->user());
-        
-        $result = ($records["result"]["responseCode"] == 101) ? 
-        $this->outBuyLoadRepository->create($addUserCreateAndUpdate)->toArray() :
-        array($records["result"]);
-
-        return $this->responseService->successResponse($result, SuccessMessages::success);
+        return $this->responseService->successResponse($response);
     }
 
-    public function showNetworkProductList(MobileNumberRequest $atmRequest) {
-        $details = $atmRequest->validated();
-        $details["mobileNo"] = $this->atmService->convertMobileNumberPrefixToAreaCode($details["mobileNo"]);
-        $records = $this->atmService->showNetworkProuductList($details);
-
-        return $this->responseService->successResponse($records, SuccessMessages::success);
-    }
-
-    private function createOutBuyLoadBody(array $details, array $records, object $user, object $buyLoadTransactionCategory):array {
-        $body = [
-            'user_account_id'=> $user->id,
-            'total_amount'=> $details["amount"],
-            'transaction_date' => Carbon::now(),
-            'transaction_category_id'=>$buyLoadTransactionCategory->id,
-            'reference_number'=>$records["result"]["data"]["referenceNo"],
-            'atm_reference_number'=>$records["result"]["data"]["transactionNo"],
-            'recipient_mobile_number'=>$details["mobileNo"],
-            'provider'=>$details["provider"],
-            'product_code'=>$details["productCode"],
-            'transaction_response'=>$records["response"],
-        ];
-
-        return $body;
-    }
-
-    private function removeFieldsFromInput(array $items): array {
-        unset($items["amount"]);
-        unset($items["provider"]);
-
-        return $items;
+    public function processPending(Request $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+        $response = $this->buyLoadService->processPending($userId);
+        return $this->responseService->successResponse($response);
     }
 }

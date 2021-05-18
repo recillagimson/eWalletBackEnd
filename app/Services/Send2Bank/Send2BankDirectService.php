@@ -4,36 +4,32 @@
 namespace App\Services\Send2Bank;
 
 
-use Exception;
-use Carbon\Carbon;
 use App\Enums\OtpTypes;
-use App\Enums\TpaProviders;
-use App\Models\UserAccount;
-use App\Traits\UserHelpers;
-use App\Enums\UsernameTypes;
-use App\Models\OutSend2Bank;
-use App\Enums\UbpResponseCodes;
-use App\Enums\TransactionStatuses;
-use Illuminate\Support\Facades\DB;
 use App\Enums\ReferenceNumberTypes;
-use App\Traits\Errors\WithTpaErrors;
+use App\Enums\TpaProviders;
 use App\Enums\TransactionCategoryIds;
-use App\Traits\Errors\WithAuthErrors;
-use App\Traits\Errors\WithUserErrors;
-use App\Services\Utilities\OTP\IOtpService;
-use App\Services\ThirdParty\UBP\IUBPService;
-use App\Traits\Errors\WithTransactionErrors;
-use App\Traits\Transactions\Send2BankHelpers;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Enums\TransactionStatuses;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\ThirdParty\UBP\IUBPService;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Traits\Errors\WithAuthErrors;
+use App\Traits\Errors\WithTpaErrors;
+use App\Traits\Errors\WithTransactionErrors;
+use App\Traits\Errors\WithUserErrors;
+use App\Traits\Transactions\Send2BankHelpers;
+use App\Traits\UserHelpers;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class Send2BankDirectService implements ISend2BankDirectService
 {
@@ -107,7 +103,7 @@ class Send2BankDirectService implements ISend2BankDirectService
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
             $otherPurpose = $recipient['other_purpose'] ?? '';
-            
+
             // SET DEFAULT FOR NOW
             $recipient['bank_code'] = "UBP";
             $recipient['bank_name'] = "Union Bank";
@@ -117,10 +113,10 @@ class Send2BankDirectService implements ISend2BankDirectService
             $recipient['recipient_name'], $recipient['recipient_account_no'], $recipient['remarks'], $otherPurpose,
             $recipient['amount'], $serviceFeeAmount, $serviceFeeId, $currentDate, $transactionCategoryId, $provider,
             $recipient['send_receipt_to'], $userId);
-            
+
             if (!$send2Bank) $this->transactionFailed();
-            
-            
+
+
             $transferResponse = $this->ubpService->send2BankUBPDirect($refNo, $transactionDate, $recipient['recipient_account_no'], $totalAmount, $recipient['remarks'], "", $recipient['recipient_name']);
 
             $updateReferenceCounter = true;
@@ -152,13 +148,13 @@ class Send2BankDirectService implements ISend2BankDirectService
         $this->transactionValidationService->validateUser($user);
 
         $serviceFee = $this->serviceFees
-            ->getByTierAndTransCategory($user->tier_id, TpaProviders::ubpDirect);
+            ->getByTierAndTransCategory($user->tier_id, TransactionCategoryIds::send2BankUBP);
 
         $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
         $totalAmount = $recipient['amount'] + $serviceFeeAmount;
 
         $this->transactionValidationService
-            ->validate($user, TpaProviders::ubpDirect, $totalAmount);
+            ->validate($user, TransactionCategoryIds::send2BankUBP, $totalAmount);
 
         return [
             'service_fee' => $serviceFeeAmount
@@ -206,7 +202,7 @@ class Send2BankDirectService implements ISend2BankDirectService
     //             // } else {
     //         //     $this->transFailed();
     //         // }
-            
+
     //         $transaction->update([
     //             'status' => $status
     //         ]);

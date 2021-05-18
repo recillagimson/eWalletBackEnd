@@ -44,5 +44,13 @@ class ErrorCodes
     const userTierInvalid = 406;
     const emailAlreadyTaken = 407;
 
+    //BUY LOAD - 500
+    const buyLoadMobileNumberPrefixNotSupported = 501;
+    const buyLoadInvalidMobileNumber = 502;
+    const buyLoadInvalidProductCode = 503;
+    const buyLoadInsufficientFunds = 504;
+    const buyLoadTelcoUnavailable = 505;
+    const buyLoadProductMismatch = 506;
+
 
 }
