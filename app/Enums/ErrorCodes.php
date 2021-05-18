@@ -43,6 +43,7 @@ class ErrorCodes
     const userMonthlyLimitExceeded = 405;
     const userTierInvalid = 406;
     const emailAlreadyTaken = 407;
+    const mobileAlreadyTaken = 408;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;
