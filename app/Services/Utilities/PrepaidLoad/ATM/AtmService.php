@@ -66,9 +66,14 @@ class AtmService implements IAtmService
         if ($response->successful()) {
             $data = $response->json();
             $state = $data['responseCode'];
+
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
-                return $prefixes->firstWhere('prefix', $prefix)['provider'];
+
+                $prefix = $prefixes->firstWhere('prefix', $prefix);
+                if (!$prefix) $this->prefixNotSupported();
+
+                return $prefix['provider'];
             }
         }
 
