@@ -7,6 +7,7 @@ namespace App\Services\Auth\Registration;
 use App\Enums\AccountTiers;
 use App\Enums\Currencies;
 use App\Enums\OtpTypes;
+use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserKeys\PasswordHistory\IPasswordHistoryRepository;
@@ -25,12 +26,14 @@ class RegistrationService implements IRegistrationService
     private IUserBalanceInfoRepository $userBalances;
     private IPasswordHistoryRepository $passwordHistories;
     private IPinCodeHistoryRepository $pinCodeHistories;
+    private IQrTransactionsRepository $qrTransactions;
 
     public function __construct(IAuthService $authService,
                                 IUserAccountRepository $userAccounts,
                                 IUserBalanceInfoRepository $userBalances,
                                 IPasswordHistoryRepository $passwordHistories,
-                                IPinCodeHistoryRepository $pinCodeHistories)
+                                IPinCodeHistoryRepository $pinCodeHistories,
+                                IQrTransactionsRepository $qrTransactions)
     {
         $this->authService = $authService;
 
@@ -38,6 +41,7 @@ class RegistrationService implements IRegistrationService
         $this->userBalances = $userBalances;
         $this->passwordHistories = $passwordHistories;
         $this->pinCodeHistories = $pinCodeHistories;
+        $this->qrTransactions = $qrTransactions;
     }
 
     public function validateAccount(string $usernameField, string $username)
@@ -91,6 +95,7 @@ class RegistrationService implements IRegistrationService
     private function setupAccount(string $userId)
     {
         $this->setupUserBalance($userId);
+        $this->setupQrTransaction($userId);
     }
 
     private function setupUserBalance(string $userId)
@@ -103,5 +108,17 @@ class RegistrationService implements IRegistrationService
         ];
 
         $this->userBalances->create($balance);
+    }
+
+    private function setupQrTransaction(string $userId)
+    {
+        $qrTransactions = [
+            'user_account_id' => $userId,
+            'amount' => 0,
+            'status' => 1,
+            'user_created' => $userId
+        ];
+
+        $this->qrTransactions->create($qrTransactions);
     }
 }
