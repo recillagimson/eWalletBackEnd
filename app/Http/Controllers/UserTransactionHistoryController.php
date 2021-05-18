@@ -27,6 +27,7 @@ class UserTransactionHistoryController extends Controller
 
     public function show(string $id) {
         $record = $this->userTransactionHistory->findTransactionWithRelation($id);
+        dd($record->toArray());
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 }
