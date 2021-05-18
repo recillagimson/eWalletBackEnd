@@ -65,7 +65,8 @@ class AtmService implements IAtmService
 
         if ($response->successful()) {
             $data = $response->json();
-            if ($data['responseCode'] !== AtmPrepaidResponseCodes::requestReceived) {
+            $state = $data['responseCode'];
+            if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
                 return $prefixes->firstWhere('prefix', $prefix)['provider'];
             }
@@ -84,7 +85,8 @@ class AtmService implements IAtmService
 
         if ($response->successful()) {
             $data = $response->json();
-            if ($data['responseCode'] !== AtmPrepaidResponseCodes::requestReceived) {
+            $state = $data['responseCode'];
+            if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
                 return $prefixes->where('provider', $provider);
             }
