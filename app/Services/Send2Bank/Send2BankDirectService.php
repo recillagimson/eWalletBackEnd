@@ -81,7 +81,7 @@ class Send2BankDirectService implements ISend2BankDirectService
         try {
             DB::beginTransaction();
             $transactionCategoryId = TransactionCategoryIds::send2BankUBP;
-            $provider = TpaProviders::ubpDirect;
+            $provider = TpaProviders::ubp;
 
             $user = $this->users->getUser($userId);
             $this->transactionValidationService->validateUser($user);
@@ -113,15 +113,14 @@ class Send2BankDirectService implements ISend2BankDirectService
             $recipient['recipient_name'], $recipient['recipient_account_no'], $recipient['remarks'], $otherPurpose,
             $recipient['amount'], $serviceFeeAmount, $serviceFeeId, $currentDate, $transactionCategoryId, $provider,
             $recipient['send_receipt_to'], $userId);
-
             if (!$send2Bank) $this->transactionFailed();
 
 
             $transferResponse = $this->ubpService->send2BankUBPDirect($refNo, $transactionDate, $recipient['recipient_account_no'], $totalAmount, $recipient['remarks'], "", $recipient['recipient_name']);
 
             $updateReferenceCounter = true;
-            $send2Bank = $this->handleDirectTransferResponse($send2Bank, $transferResponse);
 
+            $send2Bank = $this->handleDirectTransferResponse($send2Bank, $transferResponse);
             $balanceInfo = $user->balanceInfo;
             $balanceInfo->available_balance -= $totalAmount;
             if ($send2Bank->status === TransactionStatuses::pending) $balanceInfo->pending_balance += $totalAmount;
@@ -169,7 +168,7 @@ class Send2BankDirectService implements ISend2BankDirectService
         $failCount = 0;
 
         foreach ($pendingSend2Banks as $send2Bank) {
-            $response = $this->ubpService->checkStatus(TpaProviders::ubpDirect, $send2Bank->reference_number);
+            $response = $this->ubpService->checkStatus(TpaProviders::ubp, $send2Bank->reference_number);
             $send2Bank = $this->handleStatusResponse($send2Bank, $response);
             $balanceInfo = $this->updateUserBalance($user->balanceInfo, $send2Bank->total_amount, $send2Bank->status);
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);

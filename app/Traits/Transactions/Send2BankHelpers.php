@@ -140,7 +140,7 @@ trait Send2BankHelpers
             $data = $response->json();
             $code = $data['code'];
 
-            $provider = TpaProviders::ubpDirect;
+            $provider = TpaProviders::ubp;
             $providerTransactionId = $data['ubpTranId'];
             $providerRemittanceId = $data['uuid'];
 
