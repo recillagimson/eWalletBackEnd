@@ -79,6 +79,8 @@ class BuyLoadService implements IBuyLoadService
 
         $user = $this->users->getUser($userId);
         $this->transactionValidationService->validateUser($user);
+
+        $provider = $this->atmService->getProvider($recipientMobileNumber);
         $this->transactionValidationService->validate($user, $transactionCategoryId, $amount);
     }
 
