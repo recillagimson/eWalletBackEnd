@@ -47,4 +47,9 @@ class NotificationService implements INotificationService
     {
         // TODO: Implement sendSend2BankSenderNotification() method.
     }
+
+    public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber, Carbon $transactionDate, float $newBalance, string $refNo)
+    {
+        // TODO: Implement buyLoadNotification() method.
+    }
 }
