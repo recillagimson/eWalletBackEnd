@@ -59,12 +59,12 @@ class UserTransactionHistory extends Model
             $model = app($className);
             // RECEIVE MONEY FROM SQUIDPAY ACCOUNT
             if($this->transaction_category_id === TransactionCategoryIds::receiveMoneyToSquidPayAccount) {
-                $record =  $model->with(['sender_details'])->find($this->transaction_id);
+                $record =  $model->with(['sender_details', 'sender'])->find($this->transaction_id);
                 return $record;
             } 
             // SEND MONEY FROM SQUIDPAY ACCOUNT
             else if($this->transaction_category_id === TransactionCategoryIds::sendMoneyToSquidPayAccount) {
-                $record =  $model->with(['receiver_details'])->find($this->transaction_id);
+                $record =  $model->with(['receiver_details', 'receiver'])->find($this->transaction_id);
                 return $record;
             }
             // ADD MONEY VIA DRAGONPAY
