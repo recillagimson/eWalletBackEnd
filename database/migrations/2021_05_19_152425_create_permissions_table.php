@@ -28,7 +28,7 @@ class CreatePermissionsTable extends Migration
             $table->string('slug',50);
             $table->string('route_name', 50);
             $table->uuid('permission_group_id')->references('id')
-            ->on('user_accounts')
+            ->on('permission_groups')
             ->onDelete('restrict');
             $table->timestamps();
             $table->softDeletes();

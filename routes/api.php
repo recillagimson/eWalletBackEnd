@@ -62,30 +62,30 @@ if (App::environment('local')) {
     });
 }
 
-Route::prefix('/clients')->middleware(['form-data'])->group(function () {
-    Route::post('/token', [ClientController::class, 'getToken']);
+Route::prefix('/clients')->middleware(['form-data'])->name('client.')->group(function () {
+    Route::post('/token', [ClientController::class, 'getToken'])->name('get.token');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::prefix('/payloads')->group(function () {
-        Route::get('/generate', [PayloadController::class, 'generate']);
-        Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
+    Route::prefix('/payloads')->name('payload.')->group(function () {
+        Route::get('/generate', [PayloadController::class, 'generate'])->name('generate');
+        Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey'])->name('get.response.key');
     });
 
-    Route::prefix('/image')->group(function () {
-        Route::post('/upload/{module}', [ImageUploadController::class, 'uploadImage']);
+    Route::prefix('/image')->name('image')->group(function () {
+        Route::post('/upload/{module}', [ImageUploadController::class, 'uploadImage'])->name('upload');
     });
 
     /**
      * ROUTES FOR AUTHENTICATION ENDPOINTS AS WELL AS
      * OTP VERIFICATIONS
      */
-    Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification']);
-    Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
-    Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar']);
+    Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification'])->name('user.verification');
+    Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification'])->name('user.selfie');
+    Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar'])->name('user.change.avatar');
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/user', [AuthController::class, 'getUser']);
+        Route::get('/user', [AuthController::class, 'getUser'])->name('user.show');
 
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
@@ -101,46 +101,46 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/generate/otp', [AuthController::class, 'generateTransactionOTP']);
         Route::post('/resend/otp', [AuthController::class, 'resendOTP']);
 
-        Route::prefix('/verify')->group(function () {
-            Route::post('/otp', [AuthController::class, 'verifyTransactionOtp']);
-            Route::post('/account', [RegisterController::class, 'verifyAccount']);
-            Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin']);
-            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey']);
+        Route::prefix('/verify')->name('verify.')->group(function () {
+            Route::post('/otp', [AuthController::class, 'verifyTransactionOtp'])->name('otp');
+            Route::post('/account', [RegisterController::class, 'verifyAccount'])->name('account');
+            Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin'])->name('mobile.login');
+            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type');
         });
     });
 
-    Route::prefix('/user')->middleware(['decrypt.request'])->group(function () {
-        Route::post('/email/validate', [UserAccountController::class, 'validateEmail']);
-        Route::post('/email/update', [UserAccountController::class, 'updateEmail']);
+    Route::prefix('/user')->middleware(['decrypt.request'])->name('user.')->group(function () {
+        Route::post('/email/validate', [UserAccountController::class, 'validateEmail'])->name('email.validate');
+        Route::post('/email/update', [UserAccountController::class, 'updateEmail'])->name('email.update');
         
-        Route::post('/mobile/validate', [UserAccountController::class, 'validateMobile']);
-        Route::post('/mobile/update', [UserAccountController::class, 'updateMobile']);
+        Route::post('/mobile/validate', [UserAccountController::class, 'validateMobile'])->name('mobile.validate');
+        Route::post('/mobile/update', [UserAccountController::class, 'updateMobile'])->name('mobile.update');
 
-        Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey']);
-        Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey']);
-        Route::put('/{keyType}', [ChangeKeyController::class, 'changeKey']);
+        Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey'])->name('key.type.validate');
+        Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey'])->name('key.type.verify');
+        Route::put('/{keyType}', [ChangeKeyController::class, 'changeKey'])->name('key.type');
     });
 
-    Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
-        Route::get('/{provider}/purposes', [Send2BankController::class, 'getPurposes']);
-        Route::post('/{provider}/validate', [Send2BankController::class, 'validateFundTransfer']);
+    Route::prefix('/send2bank')->middleware(['decrypt.request'])->name('send.to.bank.')->group(function () {
+        Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks'])->name('provider.banks');
+        Route::get('/{provider}/purposes', [Send2BankController::class, 'getPurposes'])->name('provider.purposes');
+        Route::post('/{provider}/validate', [Send2BankController::class, 'validateFundTransfer'])->name('provider.validate');
 
-        Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions']);
-        Route::get('/process/pending', [Send2BankController::class, 'processPending']);
+        Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions'])->name('ubp.direct');
+        Route::get('/process/pending', [Send2BankController::class, 'processPending'])->name('ubp.process.pending');
 
-        Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect']);
-        Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP']);
-        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
-        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction']);
+        Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect'])->name('direct.ubp');
+        Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP'])->name('validate.ubp');
+        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer'])->name('provider');
+        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction'])->name('provider.transaction.update');
     });
 
-    Route::prefix('/load')->middleware(['decrypt.request'])->group(function () {
-        Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
-        Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
+    Route::prefix('/load')->middleware(['decrypt.request'])->name('load.')->group(function () {
+        Route::post('/{network_type}', [PrepaidLoadController::class, 'load'])->name('load');
+        Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos'])->name('show.promos');
     });
 
-    Route::prefix('/id')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/id')->middleware(['decrypt.request'])->name('id.')->group(function () {
         Route::apiResources([
             '/types' => IdTypeController::class,
         ]);
