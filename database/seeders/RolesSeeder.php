@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin\Role;
+use App\Models\UserAccount;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
@@ -23,7 +24,9 @@ class RolesSeeder extends Seeder
             Role::create([
                 'name' => $role,
                 'description' => $role,
-                'slug' => Str::slug($role, '-')
+                'slug' => Str::slug($role, '-'),
+                'user_created' => UserAccount::all()->first()->id,
+                'user_updated' => UserAccount::all()->first()->id
             ]);
         }
     }

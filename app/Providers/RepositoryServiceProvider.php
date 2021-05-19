@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
 use App\Models\TierApproval;
+use App\Repositories\Admin\Role\IRoleRepository;
+use App\Repositories\Admin\Role\RoleRepository;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
@@ -166,6 +168,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Pay Bills Repositories
         $this->app->bind(IOutPayBillsRepository::class, OutPayBillsRepository::class);
+
+        // Role Repositories
+        $this->app->bind(IRoleRepository::class, RoleRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();

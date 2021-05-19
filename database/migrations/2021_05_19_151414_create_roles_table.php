@@ -18,6 +18,8 @@ class CreateRolesTable extends Migration
             $table->string('name',50);
             $table->text('description');
             $table->string('slug');
+            $table->uuid('user_created');
+            $table->uuid('user_updated');
             $table->timestamps();
             $table->softDeletes();
         });

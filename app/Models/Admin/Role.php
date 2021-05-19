@@ -11,9 +11,11 @@ class Role extends Model
 {
     use HasFactory, SoftDeletes, UsesUuid;
 
-    protected $fillables = [
+    protected $fillable = [
         'name',
         'description',
         'slug',
+        'user_created',
+        'user_updated'
     ];
 }
