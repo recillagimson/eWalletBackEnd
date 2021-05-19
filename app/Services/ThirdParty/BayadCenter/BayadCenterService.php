@@ -108,7 +108,29 @@ class BayadCenterService implements IBayadCenterService
         return $this->apiService->get($url, $headers);
     }
 
-    
+
+    public function getBillerWithDefaultData($request)
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = $this->baseUrl . $this->billersUrl;
+        $billers = $this->apiService->get($url, $headers);
+        $count = 0;
+        $data = array();
+        $datta = array();
+
+        if ($request->count == "true") {
+            $count = count($billers['data']);
+            return "count: " . $count;
+        } else {
+            for ($x = $request->start; $x < $request->end; $x++) {
+                $data[$x] = $billers['data'][$x]['code'];
+                $datta[$x] = $this->getRequiredFields($data[$x]);
+            }
+
+            return $datta;
+        }
+    }
+
     public function getRequiredFields(string $billerCode)
     {
         $headers = $this->getAuthorizationHeaders();
@@ -116,13 +138,7 @@ class BayadCenterService implements IBayadCenterService
         $billers = $this->apiService->get($url, $headers);
 
         $billers = json_decode($billers, true);
-        $requiredFields = array();
-
-        for ($x = 4; $x < count(array_keys($billers['data']['parameters']['verify'])); $x++) {
-            $requiredFields[] = array_keys($billers['data']['parameters']['verify'][$x]);
-        }
-        
-        return $this->dataFormat($requiredFields);
+        if (!isset($billers['data']['parameters']['verify'][4])) return ' name: ' . $billers['data']['name'] . '  code: ' . $billers['data']['code'];
     }
 
 

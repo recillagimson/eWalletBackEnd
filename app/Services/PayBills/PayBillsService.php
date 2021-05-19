@@ -2,27 +2,32 @@
 
 namespace App\Services\PayBills;
 
+use App\Enums\ReferenceNumberTypes;
 use App\Models\UserAccount;
 use App\Models\UserDetail;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithTpaErrors;
+use App\Traits\Transactions\PayBillsHelpers;
 use Illuminate\Http\JsonResponse;
 use Response;
 
 class PayBillsService implements IPayBillsService
 {
-    use WithTpaErrors;
+    use WithTpaErrors, PayBillsHelpers;
 
     private IOutPayBillsRepository $outPayBills;
     private IBayadCenterService $bayadCenterService;
     private IUserDetailRepository $userDetailRepository;
+    private IReferenceNumberService $referenceNumberService;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService){
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
+        $this->referenceNumberService = $referenceNumberService;
     }
 
     public function getBillers(): array
@@ -74,9 +79,10 @@ class PayBillsService implements IPayBillsService
     {
         $response = $this->bayadCenterService->createPayment($billerCode, $data, $user);
         if (!$response->successful()) $this->tpaErrorCatch($response);
-        $response = json_decode($response, true);
-        $userDetail = $this->userDetailRepository->getByUserId($user->id);
-       
+
+        $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::PayBills);
+        $this->outPayBills($user, $billerCode, json_decode($response, true), $refNo);
+
         return (array)json_decode($response);
     }
 
@@ -88,28 +94,6 @@ class PayBillsService implements IPayBillsService
         return (array)json_decode($response->body());
     }
 
-    
-    private function outPayBills(UserDetail $user, string $billerCode, $response)
-    {
-        return $this->outPayBills->create([
-            'user_account_id' => $user->id,
-            'account_number' => '123455667',
-            'reference_number' => $response['data']['transactionId'],
-            'amount' => '1400.45',
-            'service_fee' => '0.00',
-            'total_amount' => '1400.45',
-            'transction_category_id' => 'c5b62dbd-95a0-11eb-8473-1c1b0d14e211',
-            'transaction_remarks' => 'user pay the bills',
-            'email_or_mobile' => 'I do not know',
-            'message' => 'random message',
-            'status' => '1',
-            'billers_code' => $billerCode,
-            'billers_name' => $user->firtst,
-            'bayad_reference_number' => $response['data']['referenceNumber'],
-            'user_created' => $user->id,
-            'user_updated' => ''
-        ]);
-    }
     
     
 }
