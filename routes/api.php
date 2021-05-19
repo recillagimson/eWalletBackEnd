@@ -251,7 +251,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{role}', [RoleController::class, 'show'])->name('show');
         Route::put('/{role}', [RoleController::class, 'update'])->name('update');
         Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
+
     });
+    
+    Route::prefix('/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function() {
+        Route::get('/', [RoleController::class, 'rolePermissions'])->name('list');
+        Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
+    });
+    
 
 });
 
