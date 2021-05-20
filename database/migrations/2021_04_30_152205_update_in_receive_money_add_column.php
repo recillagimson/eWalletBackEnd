@@ -14,7 +14,7 @@ class UpdateInReceiveMoneyAddColumn extends Migration
     public function up()
     {
         Schema::table('in_receive_money', function (Blueprint $table) {
-            $table->string('out_send_money_reference_number', 50)->after('reference_number')->change();
+            $table->string('out_send_money_reference_number', 50)->after('reference_number');
         });
     }
 
