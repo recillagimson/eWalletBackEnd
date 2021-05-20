@@ -19,10 +19,10 @@ class OutSendMoneyRepository extends Repository implements IOutSendMoneyReposito
         return $this->model->orderByDesc('reference_number')->pluck('reference_number')->first();
     }
 
-    public function getByUserAccountIDBetweenDates(string $userAccountID, Carbon $startDate, Carbon $endDate)
+    public function getByReceiversIDBetweenDates(string $receiverID, Carbon $startDate, Carbon $endDate)
     {
         return $this->model
-            ->where('user_account_id', $userAccountID)
+            ->where('receiver_id', $receiverID)
             ->where('status', '!=', TransactionStatuses::failed)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();

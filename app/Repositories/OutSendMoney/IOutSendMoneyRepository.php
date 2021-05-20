@@ -7,6 +7,6 @@ use Illuminate\Support\Carbon;
 interface IOutSendMoneyRepository extends IRepository
 {
     public function getLastRefNo();
-    public function getByUserAccountIDBetweenDates(string $userId, Carbon $startDate, Carbon $endDate);
+    public function getByReceiversIDBetweenDates(string $receiverID, Carbon $startDate, Carbon $endDate);
 }
 

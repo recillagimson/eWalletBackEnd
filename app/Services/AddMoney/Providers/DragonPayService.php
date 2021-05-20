@@ -136,7 +136,7 @@ class DragonPayService implements IAddMoneyService
         $userAccountID = $user->id;
         $amount = $urlParams['amount'];
         
-        $this->tierAndLimitsService->validateTierAndLimits($amount, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay);
+        $this->tierAndLimitsService->validateTierAndLimits($amount, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, $user);
 
         $token = $this->getToken();
         $txnID =  $this->referenceNumber;
@@ -164,7 +164,7 @@ class DragonPayService implements IAddMoneyService
                 $this->formatAmount($amount),
                 $addMoneyServiceFee->amount,
                 $addMoneyServiceFee->id,
-                $totalAmount,
+                $amount,
                 $transactionCategoryID->id,
                 $body['Description']
             );
@@ -323,39 +323,6 @@ class DragonPayService implements IAddMoneyService
         return $rowInserted = $this->addMoneys->create($row);
 
         if (!$rowInserted) return $this->cantWriteToTable();
-    }
-
-    /**
-     * Validate the user accoirding to the user's
-     * tier and amount in the transaction
-     * 
-     * @param UserAccount $userAccountID
-     * @param float $amount
-     * @return exception|float $serviceFee
-     */
-    public function validateTiersAndLimits(UserAccount $user, float $amount)
-    {
-        $startOfThisMonth = $this->dateToYYYYMMDD(Carbon::now()->startOfMonth());
-        $endOfThisMonth = $this->dateToYYYYMMDD( Carbon::now()->endOfMonth());
-
-        $addMoneyTransactions = $this->addMoneys->getByUserAccountIDBetweenDates($user->id, $startOfThisMonth, $endOfThisMonth);
-        $receiveMoneyTransactions = $this->receiveMoneys->getByUserAccountIDBetweenDates($user->id, $startOfThisMonth, $endOfThisMonth);
-
-        $totalAddMoney = $addMoneyTransactions->sum('amount') + $receiveMoneyTransactions->sum('amount') + $amount;
-
-        $tier = $this->tiers->get($user->tier_id);
-
-        $addMoneyTransCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
-
-        $serviceFee = $this->serviceFees->getAmountByTransactionAndUserAccountId($addMoneyTransCategory->id, $user->tier_id);
-
-        if (!is_object($serviceFee) && $serviceFee == 0) $serviceFee = (object) ['id' => 'N/A','amount' => 0];
-
-        // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
-        if ($totalAddMoney > $tier->monthly_limit) return $this->tierLimitExceeded($totalAddMoney);
-
-        // return $addMoneyServiceFee;
-        return $serviceFee;
     }
 
 

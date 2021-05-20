@@ -18,6 +18,7 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
     {
         return $this->model
             ->where('user_account_id', $userId)
+            ->where('status', '!=', TransactionStatuses::failed)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
     }

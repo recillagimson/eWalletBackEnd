@@ -62,10 +62,9 @@ class TierAndLimitsService implements ITierAndLimitsService
      * @param string $squiPayModule
      * @return void
      */
-    public function validateTierAndLimits(float $amount, string $squiPayModule)
+    public function validateTierAndLimits(float $amount, string $squiPayModule, UserAccount $userAccount)
     {
-        $user = request()->user();
-        $this->setUserAccountID($user->id);
+        $this->setUserAccountID($userAccount->id);
         $this->setModule($squiPayModule);
 
         $transAmountTotal = $this->getTotalTransAmountFromWhichModule($squiPayModule);
@@ -112,26 +111,19 @@ class TierAndLimitsService implements ITierAndLimitsService
         $endOfThisMonth = Carbon::now()->endOfMonth();
 
         switch ($squiPayModule) {
-            case SquidPayModuleTypes::ReceiveMoney:
+            case SquidPayModuleTypes::SendMoney:
             case SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay:
                     $addMoneyTotal = $this->addMoneys->getByUserAccountIDBetweenDates($this->userAccountID, $startOfThisMonth, $endOfThisMonth)->sum('amount');
 
-                    $receiveMoneyTotal = $this->receiveMoneys->getByUserAccountIDBetweenDates($this->userAccountID, $startOfThisMonth, $endOfThisMonth)->sum('amount');
+                    $sendMoneyTotal = $this->sendMoneys->getByReceiversIDBetweenDates($this->userAccountID, $startOfThisMonth, $endOfThisMonth)->sum('amount');
 
-                    return $addMoneyTotal + $receiveMoneyTotal;
+                    return $addMoneyTotal + $sendMoneyTotal;
                 break;
 
-            case SquidPayModuleTypes::SendMoney:
-            case SquidPayModuleTypes::SendToBankInstaPay:
-            case SquidPayModuleTypes::SendToBankPesoNet:
-            case SquidPayModuleTypes::SendToBankUnionBank:
-                    $sendToBankTotal = $this->sendToBanks->getByUserAccountIDBetweenDates($this->userAccountID, $startOfThisMonth, $endOfThisMonth)->sum('amount');
-
+            case SquidPayModuleTypes::BuyLoad:
                     $buyLoadTotal = $this->buyLoads->getByUserAccountIDBetweenDates($this->userAccountID, $startOfThisMonth, $endOfThisMonth)->sum('total_amount');
 
-                    $sendMoneyTotal = $this->sendMoneys->getByUserAccountIDBetweenDates($this->userAccountID, $startOfThisMonth, $endOfThisMonth)->sum('amount');
-
-                    return $sendMoneyTotal + $buyLoadTotal + $sendToBankTotal;
+                    return $buyLoadTotal;
                 break;
             
             default:
@@ -189,17 +181,6 @@ class TierAndLimitsService implements ITierAndLimitsService
             'user_updated' => $this->userAccountID
         ]);
 
-        $this->throw500();
-    }
-
-    /**
-     * Throws error 500. Abort
-     *
-     * @throws error500
-     */
-    private function throw500()
-    {
         abort(500, 'Something went wrong :(');
     }
-
 }
