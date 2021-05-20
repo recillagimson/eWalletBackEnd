@@ -57,7 +57,7 @@ class AddMoneyController extends Controller
 
         $postBack = $this->postBackService->insertPostBackData($postBackData);
 
-        return $postBack;
+        //return $postBack;
         // return response() is handled in the service for complication reasons
     }
 
