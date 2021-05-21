@@ -6,5 +6,5 @@ use App\Repositories\IRepository;
 
 interface IOutPayBillsRepository extends IRepository
 {
-   
+    public function getSumOfTransactions($from, $to);
 }
