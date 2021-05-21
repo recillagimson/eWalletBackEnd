@@ -106,7 +106,7 @@ class Send2BankDirectService implements ISend2BankDirectService
 
             // SET DEFAULT FOR NOW
             $recipient['bank_code'] = "UBP";
-            $recipient['bank_name'] = "Union Bank";
+            $recipient['bank_name'] = "Union Bank of the Philippines";
 
 
             $send2Bank = $this->send2banks->createTransaction($userId, $refNo, $recipient['bank_code'], $recipient['bank_name'],
