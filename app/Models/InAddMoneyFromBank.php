@@ -30,4 +30,8 @@ class InAddMoneyFromBank extends Model
         'user_updated',
         'expires_at',
     ];
+
+    public function user_details() {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
+    }
 }

@@ -45,4 +45,10 @@ trait WithUserErrors
         $this->validationErrorMessage(ErrorCodes::emailAlreadyTaken,
             'Oops! Email is already taken.');
     }
+
+    public function mobileAlreadyTaken()
+    {
+        $this->validationErrorMessage(ErrorCodes::mobileAlreadyTaken,
+            'Oops! Mobile Number is already taken.');
+    }
 }

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Send2Bank;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\MobileNumber;
 
-class Send2BankUBPDirectRequest extends FormRequest
+class UpdateMobileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +25,11 @@ class Send2BankUBPDirectRequest extends FormRequest
     public function rules()
     {
         return [
-            "recipient_account_no" => "required",
-            "recipient_name" => "required",
-            "remarks" => "required",
-            "particulars" => "required",
-            "amount" => 'required',
-            'send_receipt_to' => 'required|email'
+            'mobile_number' => [
+                'required',
+                'max:11',
+                new MobileNumber()
+            ]
         ];
     }
 }

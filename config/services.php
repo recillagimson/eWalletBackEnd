@@ -29,6 +29,7 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+
     'load' => [
         'globe' => [
             'url' => env('GLOBE_URL'),
@@ -38,6 +39,12 @@ return [
         ],
         'atm' => [
             'url' => env('ATM_PREPAID_SOLUTIONS_URL'),
+            'products_url' => env('ATM_PREPAID_PRODUCTS_URL'),
+            'prefix_url' => env('ATM_PREPAID_PREFIX_URL'),
+            'telco_status_url' => env('ATM_PREPAID_TELCO_STATUS_URL'),
+            'balance_url' => env('ATM_PREPAID_BALANCE_URL'),
+            'topup_url' => env('ATM_PREPAID_TOPUP_URL'),
+            'topup_inquiry_url' => env('ATM_PREPAID_TOPUP_INQUIRY_URL'),
             'id' => env('ATM_PREPAID_SOLUTIONS_ID'),
             'uid' => env('ATM_PREPAID_SOLUTIONS_UID'),
             'password' => env('ATM_PREPAID_SOLUTIONS_PASSWORD'),
