@@ -116,7 +116,7 @@ class TransactionValidationService implements ITransactionValidationService
                 $totalTransactionCurrentMonth = 0;
 
                 // OUT TRANSACTIONS
-                if($transactionCategory->transaction_type !== 'NEGATIVE') {
+                if($transactionCategory->transaction_type === 'NEGATIVE') {
                     $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to);
                     $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to);
                     $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to);
