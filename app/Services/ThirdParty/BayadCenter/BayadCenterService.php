@@ -66,6 +66,7 @@ class BayadCenterService implements IBayadCenterService
         ];
     }
 
+
     public function getToken(): object
     {
         $data = [
@@ -81,6 +82,7 @@ class BayadCenterService implements IBayadCenterService
         if (!$response->successful()) $this->tpaFailedAuthentication(TpaProviders::bc);
         return (object)$response->json();
     }
+
 
     public function getAuthorizationHeaders(): array
     {
@@ -109,44 +111,10 @@ class BayadCenterService implements IBayadCenterService
     }
 
 
-    public function getBillerWithDefaultData($request)
-    {
-        $headers = $this->getAuthorizationHeaders();
-        $url = $this->baseUrl . $this->billersUrl;
-        $billers = $this->apiService->get($url, $headers);
-        $count = 0;
-        $data = array();
-        $datta = array();
-
-        if ($request->count == "true") {
-            $count = count($billers['data']);
-            return "count: " . $count;
-        } else {
-            for ($x = $request->start; $x < $request->end; $x++) {
-                $data[$x] = $billers['data'][$x]['code'];
-                $datta[$x] = $this->getRequiredFields($data[$x]);
-            }
-
-            return $datta;
-        }
-    }
-
-    public function getRequiredFields(string $billerCode)
-    {
-        $headers = $this->getAuthorizationHeaders();
-        $url = $this->baseUrl . $this->billerInformationUrl . $billerCode;
-        $billers = $this->apiService->get($url, $headers);
-
-        $billers = json_decode($billers, true);
-        if (!isset($billers['data']['parameters']['verify'][4])) return ' name: ' . $billers['data']['name'] . '  code: ' . $billers['data']['code'];
-    }
-
-
-    public function getOtherCharges(string $billerCode): Response
+    private function getOtherCharges(string $billerCode)
     {
         $headers = $this->getAuthorizationHeaders();
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->otherChargesUrl);
-
         return $this->apiService->get($url, $headers);
     }
 
@@ -154,8 +122,13 @@ class BayadCenterService implements IBayadCenterService
     public function verifyAccount(string $billerCode, string $accountNumber,  $data): Response
     {
         $headers = $this->getAuthorizationHeaders();
+        $otherCharges = $this->getOtherCharges($billerCode);
+
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->verifyAccountUrl);
         $url = str_replace(':ACCOUNT-NUMBER', $accountNumber, $url);
+
+        $data += array('paymentMethod' => 'CASH');
+        $data += array('otherCharges' => $otherCharges);
 
         return $this->apiService->post($url, $data, $headers);
     }
@@ -184,11 +157,10 @@ class BayadCenterService implements IBayadCenterService
     public function getWalletBalance(): Response
     {
         $headers = $this->getAuthorizationHeaders();
-    $url = $this->baseUrl . $this->getWalletBalanceUrl;
+        $url = $this->baseUrl . $this->getWalletBalanceUrl;
         
         return $this->apiService->get($url, $headers);
     }
-
 
 
     // Private Methods

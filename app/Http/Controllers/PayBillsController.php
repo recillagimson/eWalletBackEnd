@@ -7,6 +7,7 @@ use App\Services\PayBills\IPayBillsService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
 use Request;
+use Illuminate\Http\Response;
 
 class PayBillsController extends Controller
 {
@@ -18,15 +19,28 @@ class PayBillsController extends Controller
         $this->payBillsService = $payBillsService;
         $this->responseService = $responseService;
     }
-    
-    
+
+
+    /**
+     * Gets biller request
+     *
+     * @param array $billers
+     * @return JsonResponse
+     */
     public function getBillers(): JsonResponse
     {
         $billers = $this->payBillsService->getBillers();
         return $this->responseService->successResponse($billers);
     }
 
-
+    /**
+     * Gets biller's information 
+     *
+     * @param PayBillsRequest $request
+     * @param string $billerCode
+     * @param array $billerInformation
+     * @return JsonResponse
+     */
     public function getBillerInformation(PayBillsRequest $request): JsonResponse
     {
         $billerCode = $request->route('biller_code');
@@ -35,22 +49,13 @@ class PayBillsController extends Controller
     }
 
 
-    public function getRequiredFields(PayBillsRequest $request) : JsonResponse
-    {
-        $billerCode = $request->route('biller_code');
-        $requiredFields = $this->payBillsService->getRequiredFields($billerCode);
-        return $this->responseService->successResponse($requiredFields);
-    }
-
-
-    public function getOtherCharges(PayBillsRequest $request): JsonResponse
-    {
-        $billerCode = $request->route('biller_code');
-        $otherCharges = $this->payBillsService->getOtherCharges($billerCode);
-        return $this->responseService->successResponse($otherCharges);
-    }
-
-
+    /**
+     * Gets the Wallet Balance of SquidPay
+     *
+     * @param PayBillsRequest $request
+     * @param array $getWalletBalance
+     * @return JsonResponse
+     */
     public function getWalletBalance(): JsonResponse
     {
         $getWalletBalance = $this->payBillsService->getWalletBalance();
@@ -58,27 +63,54 @@ class PayBillsController extends Controller
     }
 
 
+    /**
+     * Verify's the account reference number
+     *
+     * @param PayBillsRequest $request
+     * @param string $billerCode
+     * @param string $accountNumber
+     * @param array $data
+     * @param array $verifyAccount
+     * @return JsonResponse
+     */
     public function verifyAccount(PayBillsRequest $request): JsonResponse
     {
         $billerCode = $request->route('biller_code');
         $accountNumber = $request->route('account_number');
         $data = $request->post();
         $verifyAccount = $this->payBillsService->verifyAccount($billerCode, $accountNumber, $data);
-        
         return $this->responseService->successResponse($verifyAccount);
     }
-    
 
+
+    /**
+     * Creates Payment  
+     *
+     * @param PayBillsRequest $request
+     * @param string $billerCode
+     * @param array $data
+     * @param array $createPayment
+     * @return JsonResponse
+     */
     public function createPayment(PayBillsRequest $request)//: JsonResponse
     {
         $billerCode = $request->route('biller_code');
         $data = $request->post();
-        
-        return $this->payBillsService->createPayment($billerCode, $data,  $request->user());
-      //  return $this->responseService->successResponse($createPayment);
+        $createPayment = $this->payBillsService->createPayment($billerCode, $data,  $request->user());
+        if(isset($createPayment['exception'])) return response()->json($createPayment, Response::HTTP_UNPROCESSABLE_ENTITY);
+        return $this->responseService->successResponse($createPayment);
     }
 
 
+    /**
+     * Check the status of payment creation
+     *
+     * @param PayBillsRequest $request
+     * @param string $billerCode
+     * @param string $clientReference
+     * @param array $inquirePayment
+     * @return JsonResponse
+     */
     public function inquirePayment(PayBillsRequest $request): JsonResponse
     {
         $billerCode = $request->route('biller_code');

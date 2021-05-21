@@ -13,8 +13,9 @@ use App\Enums\UsernameTypes;
 use App\Models\OutSend2Bank;
 use App\Models\UserAccount;
 use App\Models\UserBalanceInfo;
-use App\Models\UserUtilities\UserDetail;
-use App\Repositories\Send2Bank\IOutSend2BankRepository;
+use App\Models\UserDetail;
+use App\Repositories\UserBalance\IUserBalanceRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
@@ -26,39 +27,61 @@ use App\Traits\UserHelpers;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
 
+use function GuzzleHttp\json_encode;
+
 trait PayBillsHelpers
 {
     use WithUserErrors, WithTpaErrors;
 
     private IBayadCenterService $bayadCenterService;
-    private IReferenceNumberService $referenceNumberService;
+    private IUserBalanceInfoRepository $userBalanceRepository;
 
-    public function __construct(IBayadCenterService $bayadCenterService, IReferenceNumberService $referenceNumberService) {
+    public function __construct(IBayadCenterService $bayadCenterService, IUserBalanceInfoRepository $userBalanceInfo) {
         $this->bayadCenterService = $bayadCenterService;
-        $this->referenceNumberService = $referenceNumberService;
+        $this->userBalanceInfo = $userBalanceInfo;
     }
 
-    public function outPayBills(UserAccount $user, string $billerCode, $response, $refNo)
+
+
+    private function saveTransaction(UserAccount $user, string $billerCode, array $response)
+    {
+        $this->outPayBills($user, $billerCode, $response);
+    }
+
+
+    private function checkAmount(string $userID, array $response)
+    {
+        $balance = $this->userBalanceInfo->getUserBalance($userID);
+        $response['amount'] = $response['amount'] + PayBillsConfig::ServiceFee;
+        if ($balance >= $response['amount']) return true;
+    }
+
+
+    private function getReference()
+    {
+        return $this->referenceNumberService->generate(ReferenceNumberTypes::PayBills);
+    }
+    
+
+    private function outPayBills(UserAccount $user, string $billerCode, array $response)
     {
         $biller = $this->bayadCenterService->getBillerInformation($billerCode);
-        $userDetail = $this->userDetailRepository->getByUserId($user->id);
-
         $this->outPayBills->create([
             'user_account_id' => $user->id,
             'account_number' => $response['data']['referenceNumber'],
-            'reference_number' => $refNo,
+            'reference_number' => $this->getReference(),
             'amount' => $response['data']['amount'],
             'other_charges' => $response['data']['otherCharges'],
             'service_fee' => PayBillsConfig::ServiceFee,
-            'total_amount' => $response['data']['amount']+ $response['data']['otherCharges'] + PayBillsConfig::ServiceFee,
+            'total_amount' => $response['data']['amount'] + $response['data']['otherCharges'] + PayBillsConfig::ServiceFee,
             'transaction_category_id' => PayBillsConfig::BILLS,
-            'transaction_remarks' => $userDetail->first_name .' pay bills to ' . $biller['data']['name'],
-            'email_or_mobile' => '',
+            'transaction_remarks' => 'Pay bills to ' . $biller['data']['name'],
             'message' => '',
             'status' => $response['data']['status'],
+            'client_reference' =>  $response['data']['clientReference'],
             'billers_code' => $biller['data']['code'],
             'billers_name' => $biller['data']['name'],
-            'bayad_reference_number' => $response['data']['referenceNumber'],
+            'biller_reference_number' => $response['data']['billerReference'],
             'user_created' => $user->id,
             'user_updated' => ''
         ]);

@@ -35,7 +35,7 @@ trait WithTpaErrors
 
     public function tpaErrorCatch(Response $response)
     {
-        $this->validationErrorMessage(ErrorCodes::tpaInvalidProvider,  $response->body());
+        $this->validationErrorMessage(ErrorCodes::tpaErrorOccured,  $response->body());
     }
 
 }

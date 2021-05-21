@@ -29,12 +29,12 @@ class OutPayBills extends Model
         'transaction_date',
         'transaction_category_id',
         'transaction_remarks',
-        'email_or_mobile',
         'message',
         'status',
+        'client_reference',
         'billers_code',
         'billers_name',
-        'bayad_reference_number',
+        'biller_reference_number',
         'user_created',
         'user_updated'
     ];

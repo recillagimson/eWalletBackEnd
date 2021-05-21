@@ -30,6 +30,7 @@ class PayBillsService implements IPayBillsService
         $this->referenceNumberService = $referenceNumberService;
     }
 
+    
     public function getBillers(): array
     {
         $response = $this->bayadCenterService->getBillers();
@@ -45,19 +46,6 @@ class PayBillsService implements IPayBillsService
         return (array)json_decode($response->body());
     }
 
-    public function getRequiredFields(string $billerCode)
-    {
-        return $this->bayadCenterService->getRequiredFields($billerCode);
-    }
-
-
-    public function getOtherCharges(string $billerCode): array
-    {
-        $response = $this->bayadCenterService->getOtherCharges($billerCode);
-        if (!$response->successful()) $this->tpaErrorCatch($response);
-        return (array)json_decode($response->body());
-    }
-
 
     public function getWalletBalance(): array
     {
@@ -67,7 +55,7 @@ class PayBillsService implements IPayBillsService
     }
 
 
-    public function verifyAccount(string $billerCode, string $accountNumber, $data)//: array
+    public function verifyAccount(string $billerCode, string $accountNumber, $data): array
     {
         $response = $this->bayadCenterService->verifyAccount($billerCode, $accountNumber, $data);
         if (!$response->successful()) $this->tpaErrorCatch($response);
@@ -75,14 +63,11 @@ class PayBillsService implements IPayBillsService
     }
 
 
-    public function createPayment(string $billerCode, array $data, UserAccount $user)//: array
+    public function createPayment(string $billerCode, array $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->createPayment($billerCode, $data, $user);
-        if (!$response->successful()) $this->tpaErrorCatch($response);
 
-        $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::PayBills);
-        $this->outPayBills($user, $billerCode, json_decode($response, true), $refNo);
-
+       // $this->saveTransaction($user, $billerCode, json_decode($response, true));
         return (array)json_decode($response);
     }
 
