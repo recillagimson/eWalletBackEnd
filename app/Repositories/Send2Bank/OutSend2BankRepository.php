@@ -33,7 +33,7 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
     public function createTransaction(string $userId, string $refNo, string $bankCode, string $bankName, string $accountName,
                                       string $accountNumber, string $purpose, string $otherPurpose, float $amount,
                                       float $serviceFee, string $serviceFeeId, Carbon $transactionDate,
-                                      string $transactionCategoryId, string $provider, string $sendReceiptTo, string $userCreated)
+                                      string $transactionCategoryId, string $provider, string $sendReceiptTo, string $userCreated, ?string $remarks ="", ?string $particulars = "")
     {
         $data = [
             'user_account_id' => $userId,
@@ -54,6 +54,8 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
             'other_purpose' => $otherPurpose,
             'status' => TransactionStatuses::pending,
             'user_created' => $userCreated,
+            'remarks' => $remarks,
+            'particulars' => $particulars
         ];
 
         return $this->create($data);
