@@ -17,4 +17,11 @@ class OutSendMoneyRepository extends Repository implements IOutSendMoneyReposito
         return $this->model->orderByDesc('reference_number')->pluck('reference_number')->first();
     }
 
+    public function getSumOfTransactions($from, $to) {
+        return $this->model->where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to)
+            ->where('status', '!=', 'FAILED')
+            ->sum('total_amount');
+    }
+
 }   

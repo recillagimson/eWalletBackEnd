@@ -99,7 +99,7 @@ class Send2BankDirectService implements ISend2BankDirectService
 
             $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
             $userFullName = ucwords($user->profile->full_name);
-            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
+            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank) . "Sample" . rand(1,1000);
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
             $otherPurpose = $recipient['other_purpose'] ?? '';
@@ -112,7 +112,7 @@ class Send2BankDirectService implements ISend2BankDirectService
             $send2Bank = $this->send2banks->createTransaction($userId, $refNo, $recipient['bank_code'], $recipient['bank_name'],
             $recipient['recipient_name'], $recipient['recipient_account_no'], $recipient['remarks'], $otherPurpose,
             $recipient['amount'], $serviceFeeAmount, $serviceFeeId, $currentDate, $transactionCategoryId, $provider,
-            $recipient['send_receipt_to'], $userId);
+            $recipient['send_receipt_to'], $userId, $recipient['remarks'], $recipient['particulars']);
             if (!$send2Bank) $this->transactionFailed();
 
 
