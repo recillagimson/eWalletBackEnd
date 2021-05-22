@@ -132,7 +132,7 @@ class Send2BankDirectService implements ISend2BankDirectService
                 $this->transactionHistories->log($userId, $transactionCategoryId, $send2Bank->id, $refNo, $totalAmount, request()->user()->id);
             }
                 
-            // $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
+            $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
 
             return $this->createTransferResponse($send2Bank);
