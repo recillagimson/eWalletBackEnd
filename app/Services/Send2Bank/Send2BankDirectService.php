@@ -99,7 +99,7 @@ class Send2BankDirectService implements ISend2BankDirectService
 
             $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
             $userFullName = ucwords($user->profile->full_name);
-            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank) . "Sample" . rand(1,1000);
+            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
             $otherPurpose = $recipient['other_purpose'] ?? '';
@@ -114,8 +114,8 @@ class Send2BankDirectService implements ISend2BankDirectService
             $recipient['amount'], $serviceFeeAmount, $serviceFeeId, $currentDate, $transactionCategoryId, $provider,
             $recipient['send_receipt_to'], $userId, $recipient['remarks'], $recipient['particulars']);
             if (!$send2Bank) $this->transactionFailed();
-
-
+            
+            
             $transferResponse = $this->ubpService->send2BankUBPDirect($refNo, $transactionDate, $recipient['recipient_account_no'], $totalAmount, $recipient['remarks'], "", $recipient['recipient_name']);
 
             $updateReferenceCounter = true;
@@ -127,6 +127,11 @@ class Send2BankDirectService implements ISend2BankDirectService
             if ($send2Bank->status === TransactionStatuses::failed) $balanceInfo->available_balance += $totalAmount;
             $balanceInfo->save();
 
+            // Create transaction history
+            if($send2Bank->status === TransactionStatuses::success) {
+                $this->transactionHistories->log($userId, $transactionCategoryId, $send2Bank->id, $refNo, $totalAmount, request()->user()->id);
+            }
+                
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
 
@@ -175,6 +180,10 @@ class Send2BankDirectService implements ISend2BankDirectService
 
             if ($send2Bank->status === TransactionStatuses::success) $successCount++;
             if ($send2Bank->status === TransactionStatuses::failed) $failCount++;
+
+            if($send2Bank->status === TransactionStatuses::success) {
+                $this->transactionHistories->log($userId, $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number, $send2Bank->total_amount, request()->user()->id);
+            }
         }
 
         return [
