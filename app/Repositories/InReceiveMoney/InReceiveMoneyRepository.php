@@ -11,4 +11,11 @@ class InReceiveMoneyRepository extends Repository implements IInReceiveMoneyRepo
     {
         parent::__construct($model);
     }
+
+    public function getSumOfTransactions($from, $to) {
+        return $this->model->where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to)
+            ->where('status', '!=', 'FAILED')
+            ->sum('amount');
+    }
 }

@@ -191,6 +191,8 @@ trait Send2BankHelpers
             'transaction_number' => $send2Bank->reference_number,
             'service_fee' => $send2Bank->service_fee,
             'transaction_date' => $send2Bank->transaction_date,
+            'remarks' => $send2Bank->remarks,
+            'particulars' => $send2Bank->particulars
         ];
     }
 }
