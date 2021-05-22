@@ -34,58 +34,104 @@ trait PayBillsHelpers
     use WithUserErrors, WithTpaErrors;
 
     private IBayadCenterService $bayadCenterService;
-    private IUserBalanceInfoRepository $userBalanceRepository;
 
-    public function __construct(IBayadCenterService $bayadCenterService, IUserBalanceInfoRepository $userBalanceInfo) {
+    public function __construct(IBayadCenterService $bayadCenterService)
+    {
         $this->bayadCenterService = $bayadCenterService;
-        $this->userBalanceInfo = $userBalanceInfo;
     }
 
 
+    /**
+     * Validates the transaction 
+     *
+     * @param UserAccount $user
+     * @param string $billerCode
+     * @param array $response
+     * @return mixed
+     */
+    private function validateTransaction(string $billerCode,array $data, UserAccount $user)
+    {
+        $isEnough = $this->checkAmount($user, $data, $billerCode);
+        if (!$isEnough) $this->insuficientBalance();
+    }
 
+    /**
+     * Saves the transaction after successfully validated
+     *
+     * @param UserAccount $user
+     * @param string $billerCode
+     * @param array $response
+     * @return mixed
+     */
     private function saveTransaction(UserAccount $user, string $billerCode, array $response)
     {
         $this->outPayBills($user, $billerCode, $response);
     }
 
-
-    private function checkAmount(string $userID, array $response)
+    private function checkAmount(UserAccount $user, array $data, string $billerCode)
     {
-        $balance = $this->userBalanceInfo->getUserBalance($userID);
-        $response['amount'] = $response['amount'] + PayBillsConfig::ServiceFee;
-        if ($balance >= $response['amount']) return true;
+        $balance = $this->getUserBalance($user);
+        $totalAmount = $data['amount'] + PayBillsConfig::ServiceFee + $this->getOtherCharges($billerCode);
+
+        if ($balance >= $totalAmount) return true;
     }
 
+    private function subtractUserBalance(UserAccount $user)
+    {
+        $balance = $this->getUserBalance($user);
+
+    }
+
+    private function getUserBalance(UserAccount $user)
+    {
+        return $this->userBalanceInfo->getUserBalance($user->id);
+    }
 
     private function getReference()
     {
         return $this->referenceNumberService->generate(ReferenceNumberTypes::PayBills);
     }
     
-
-    private function outPayBills(UserAccount $user, string $billerCode, array $response)
+    private function getOtherCharges(string $billerCode)
     {
-        $biller = $this->bayadCenterService->getBillerInformation($billerCode);
-        $this->outPayBills->create([
-            'user_account_id' => $user->id,
-            'account_number' => $response['data']['referenceNumber'],
-            'reference_number' => $this->getReference(),
-            'amount' => $response['data']['amount'],
-            'other_charges' => $response['data']['otherCharges'],
-            'service_fee' => PayBillsConfig::ServiceFee,
-            'total_amount' => $response['data']['amount'] + $response['data']['otherCharges'] + PayBillsConfig::ServiceFee,
-            'transaction_category_id' => PayBillsConfig::BILLS,
-            'transaction_remarks' => 'Pay bills to ' . $biller['data']['name'],
-            'message' => '',
-            'status' => $response['data']['status'],
-            'client_reference' =>  $response['data']['clientReference'],
-            'billers_code' => $biller['data']['code'],
-            'billers_name' => $biller['data']['name'],
-            'biller_reference_number' => $response['data']['billerReference'],
-            'user_created' => $user->id,
-            'user_updated' => ''
-        ]);
+        $otherCharges = $this->bayadCenterService->getOtherCharges($billerCode);
+        return $otherCharges['data']['otherCharges'];
     }
+
+    private function validationResponse($response, string $billerCode)
+    {
+        $data = array();
+        $data += array('serviceFee' => (string) PayBillsConfig::ServiceFee);
+        $data += array('otherCharges' => $this->getOtherCharges($billerCode));
+        $data += array('validationNumber' => $response['data']['validationNumber']);
+
+        return $data;
+    }
+
+
+    // private function outPayBills(UserAccount $user, string $billerCode, array $response)
+    // {
+    //     $biller = $this->bayadCenterService->getBillerInformation($billerCode);
+    //     $this->outPayBills->create([
+    //         'user_account_id' => $user->id,
+    //         'account_number' => $response['data']['referenceNumber'],
+    //         'reference_number' => $this->getReference(),
+    //         'amount' => $response['data']['amount'],
+    //         'other_charges' => $response['data']['otherCharges'],
+    //         'service_fee' => PayBillsConfig::ServiceFee,
+    //         'total_amount' => $response['data']['amount'] + $response['data']['otherCharges'] + PayBillsConfig::ServiceFee,
+    //         'transaction_category_id' => PayBillsConfig::BILLS,
+    //         'transaction_remarks' => 'Pay bills to ' . $biller['data']['name'],
+    //         'message' => '',
+    //         'status' => $response['data']['status'],
+    //         'client_reference' =>  $response['data']['clientReference'],
+    //         'billers_code' => $biller['data']['code'],
+    //         'billers_name' => $biller['data']['name'],
+    //         'biller_reference_number' => $response['data']['billerReference'],
+    //         'user_created' => $user->id,
+    //         'user_updated' => ''
+    //     ]);
+    // }
 
 
 

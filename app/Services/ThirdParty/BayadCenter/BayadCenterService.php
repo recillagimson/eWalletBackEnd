@@ -67,7 +67,7 @@ class BayadCenterService implements IBayadCenterService
     }
 
 
-    public function getToken(): object
+    private function getToken(): object
     {
         $data = [
             'grant_type' => 'client_credentials',
@@ -84,7 +84,7 @@ class BayadCenterService implements IBayadCenterService
     }
 
 
-    public function getAuthorizationHeaders(): array
+    private function getAuthorizationHeaders(): array
     {
         $token = $this->getToken();
         $headers = $this->defaultHeaders;
@@ -92,6 +92,7 @@ class BayadCenterService implements IBayadCenterService
 
         return $headers;
     }
+
 
 
     public function getBillers() : Response
@@ -111,7 +112,7 @@ class BayadCenterService implements IBayadCenterService
     }
 
 
-    private function getOtherCharges(string $billerCode)
+    public function getOtherCharges(string $billerCode)
     {
         $headers = $this->getAuthorizationHeaders();
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->otherChargesUrl);
@@ -119,7 +120,7 @@ class BayadCenterService implements IBayadCenterService
     }
 
 
-    public function verifyAccount(string $billerCode, string $accountNumber,  $data): Response
+    public function validateAccount(string $billerCode, string $accountNumber,  $data): Response
     {
         $headers = $this->getAuthorizationHeaders();
         $otherCharges = $this->getOtherCharges($billerCode);
@@ -128,9 +129,9 @@ class BayadCenterService implements IBayadCenterService
         $url = str_replace(':ACCOUNT-NUMBER', $accountNumber, $url);
 
         $data += array('paymentMethod' => 'CASH');
-        $data += array('otherCharges' => $otherCharges);
+        $data += array('otherCharges' => $otherCharges['data']['otherCharges']);
 
-        return $this->apiService->post($url, $data, $headers);
+        return $this->apiService->post($url, $data, $headers) ;
     }
 
 

@@ -30,6 +30,7 @@ class PayBillsController extends Controller
     public function getBillers(): JsonResponse
     {
         $billers = $this->payBillsService->getBillers();
+        if (isset($billers['exception'])) return response()->json($billers, Response::HTTP_UNPROCESSABLE_ENTITY);
         return $this->responseService->successResponse($billers);
     }
 
@@ -45,6 +46,7 @@ class PayBillsController extends Controller
     {
         $billerCode = $request->route('biller_code');
         $billerInformation = $this->payBillsService->getBillerInformation($billerCode);
+        if (isset($billerInformation['exception'])) return response()->json($billerInformation, Response::HTTP_UNPROCESSABLE_ENTITY);
         return $this->responseService->successResponse($billerInformation);
     }
 
@@ -59,6 +61,7 @@ class PayBillsController extends Controller
     public function getWalletBalance(): JsonResponse
     {
         $getWalletBalance = $this->payBillsService->getWalletBalance();
+        if (isset($getWalletBalance['exception'])) return response()->json($getWalletBalance, Response::HTTP_UNPROCESSABLE_ENTITY);
         return $this->responseService->successResponse($getWalletBalance);
     }
 
@@ -73,12 +76,15 @@ class PayBillsController extends Controller
      * @param array $verifyAccount
      * @return JsonResponse
      */
-    public function verifyAccount(PayBillsRequest $request): JsonResponse
+    public function validateAccount(PayBillsRequest $request): JsonResponse
     {
+        $data = $request->post();
         $billerCode = $request->route('biller_code');
         $accountNumber = $request->route('account_number');
-        $data = $request->post();
-        $verifyAccount = $this->payBillsService->verifyAccount($billerCode, $accountNumber, $data);
+        $verifyAccount = $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
+
+        if (isset($verifyAccount['exception'])) return response()->json($verifyAccount, Response::HTTP_UNPROCESSABLE_ENTITY);
+
         return $this->responseService->successResponse($verifyAccount);
     }
 
@@ -92,12 +98,12 @@ class PayBillsController extends Controller
      * @param array $createPayment
      * @return JsonResponse
      */
-    public function createPayment(PayBillsRequest $request)//: JsonResponse
+    public function createPayment(PayBillsRequest $request): JsonResponse
     {
         $billerCode = $request->route('biller_code');
         $data = $request->post();
         $createPayment = $this->payBillsService->createPayment($billerCode, $data,  $request->user());
-        if(isset($createPayment['exception'])) return response()->json($createPayment, Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (isset($createPayment['exception'])) return response()->json($createPayment, Response::HTTP_UNPROCESSABLE_ENTITY);
         return $this->responseService->successResponse($createPayment);
     }
 
@@ -116,6 +122,7 @@ class PayBillsController extends Controller
         $billerCode = $request->route('biller_code');
         $clientReference = $request->route('client_reference');
         $inquirePayment = $this->payBillsService->inquirePayment($billerCode, $clientReference);
+        if (isset($inquirePayment['exception'])) return response()->json($inquirePayment, Response::HTTP_UNPROCESSABLE_ENTITY);
         return $this->responseService->successResponse($inquirePayment);
     }
 
