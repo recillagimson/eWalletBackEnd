@@ -64,14 +64,15 @@ class PayBillsService implements IPayBillsService
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $this->validateTransaction($billerCode, $data, $user);
-        return $this->validationResponse($response, $billerCode);
+        return $this->validationResponse($response, $billerCode, $data);
     }
 
 
     public function createPayment(string $billerCode, array $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->createPayment($billerCode, $data, $user);
-        return (array)json_decode($response);
+        $outPayBills = $this->saveTransaction($user, $billerCode, $response);
+        return (array)json_decode($outPayBills);
     }
 
 
