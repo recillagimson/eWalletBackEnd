@@ -40,4 +40,11 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
     {
         return $this->model->where('user_account_id', $userAccountID)->orderBy('created_at', 'asc')->get();
     }
+
+    public function getSumOfTransactions($from, $to) {
+        return $this->model->where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to)
+            ->where('status', '!=', 'FAILED')
+            ->sum('total_amount');
+    }
 }

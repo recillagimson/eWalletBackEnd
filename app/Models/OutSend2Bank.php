@@ -33,6 +33,8 @@ class OutSend2Bank extends Model
         'provider',
         'provider_reference',
         'send_receipt_to',
+        'remarks',
+        'particulars',
         'user_created',
         'user_updated',
     ];

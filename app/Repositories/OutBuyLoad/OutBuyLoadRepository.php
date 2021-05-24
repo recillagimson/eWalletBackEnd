@@ -42,4 +42,11 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
         return $this->create($data);
     }
 
+    public function getSumOfTransactions(string $from, string $to) {
+        return $this->model->where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to)
+            ->where('status', '!=', 'FAILED')
+            ->sum('total_amount');
+    }
+
 }
