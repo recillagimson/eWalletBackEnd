@@ -80,7 +80,7 @@ class BuyLoadService implements IBuyLoadService
         $user = $this->users->getUser($userId);
         $this->transactionValidationService->validateUser($user);
 
-        $provider = $this->atmService->getProvider($recipientMobileNumber);
+        $this->atmService->getProvider($recipientMobileNumber);
         $this->transactionValidationService->validate($user, $transactionCategoryId, $amount);
     }
 
@@ -273,6 +273,8 @@ class BuyLoadService implements IBuyLoadService
     {
         return [
             'recipient_mobile_number' => $buyLoad->recipient_mobile_number,
+            'product_code' => $buyLoad->product_code,
+            'product_name' => $buyLoad->product_name,
             'amount' => $buyLoad->total_amount,
             'transaction_number' => $buyLoad->reference_number,
             'transaction_date' => $buyLoad->transaction_date,

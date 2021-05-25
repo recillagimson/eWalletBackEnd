@@ -278,4 +278,7 @@ return [
         'SuccessMessages' => SuccessMessages::class,
     ],
 
+    'web_app_url' => env('WEB_APP_URL'),
+    'web_app_verification_url' => env('WEB_APP_VERIFICATION_URL'),
+
 ];
