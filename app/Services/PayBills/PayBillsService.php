@@ -67,15 +67,16 @@ class PayBillsService implements IPayBillsService
 
             $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
             $arrayResponse =  (array)json_decode($response);
-
+        
+        } catch (Exception $ex) { 
+            $this->tpaInvalidBiller();
+        }    
+        
             if (isset($arrayResponse['exception'])) return $arrayResponse;
 
             $this->validateTransaction($billerCode, $data, $user);
             return $this->validationResponse($user, $response, $billerCode, $data);
 
-        } catch (Exception $ex) { 
-            $this->tpaInvalidBiller();
-        }
     }
 
 
