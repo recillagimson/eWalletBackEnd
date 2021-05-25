@@ -6,6 +6,7 @@ use App\Enums\ReferenceNumberTypes;
 use App\Models\UserAccount;
 use App\Models\UserDetail;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
@@ -13,6 +14,7 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithPayBillsErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Transactions\PayBillsHelpers;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -26,13 +28,15 @@ class PayBillsService implements IPayBillsService
     private IUserDetailRepository $userDetailRepository;
     private IReferenceNumberService $referenceNumberService;
     private IUserBalanceInfoRepository $userBalanceInfo;
+    private IServiceFeeRepository $serviceFeeRepository;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository){
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
         $this->referenceNumberService = $referenceNumberService;
         $this->userBalanceInfo = $userBalanceInfo;
+        $this->serviceFeeRepository = $serviceFeeRepository;
     }
 
     
@@ -59,14 +63,19 @@ class PayBillsService implements IPayBillsService
 
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
-        $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
-        $arrayResponse =  (array)json_decode($response);
+        try {
 
-        if (isset($arrayResponse['exception'])) return $arrayResponse; 
+            $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
+            $arrayResponse =  (array)json_decode($response);
 
-        $this->validateTransaction($billerCode, $data, $user);
-        return $this->validationResponse($response, $billerCode, $data);
-    
+            if (isset($arrayResponse['exception'])) return $arrayResponse;
+
+            $this->validateTransaction($billerCode, $data, $user);
+            return $this->validationResponse($user, $response, $billerCode, $data);
+
+        } catch (Exception $ex) { 
+            $this->tpaInvalidBiller();
+        }
     }
 
 

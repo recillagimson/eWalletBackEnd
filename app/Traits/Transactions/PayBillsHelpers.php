@@ -6,17 +6,13 @@ namespace App\Traits\Transactions;
 use App\Enums\PayBillsConfig;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\TpaProviders;
+use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Enums\UbpResponseCodes;
 use App\Enums\UbpResponseStates;
 use App\Enums\UsernameTypes;
 use App\Models\OutSend2Bank;
 use App\Models\UserAccount;
-use App\Models\UserBalanceInfo;
-use App\Models\UserDetail;
-use App\Repositories\UserBalance\IUserBalanceRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
@@ -34,6 +30,7 @@ trait PayBillsHelpers
     use WithUserErrors, WithTpaErrors;
 
     private IBayadCenterService $bayadCenterService;
+
 
     public function __construct(IBayadCenterService $bayadCenterService)
     {
@@ -56,6 +53,7 @@ trait PayBillsHelpers
         if (!$isEnough) $this->insuficientBalance();
     }
 
+
     /**
      * Saves the transaction after successfully validated
      * Create Payment Endpoint
@@ -72,10 +70,11 @@ trait PayBillsHelpers
     }
 
 
+
     private function checkAmount(UserAccount $user, array $data, string $billerCode)
     {
         $balance = $this->getUserBalance($user);
-        $totalAmount = $data['amount'] + PayBillsConfig::ServiceFee + $this->getOtherCharges($billerCode);
+        $totalAmount = $data['amount'] + $this->getServiceFee($user) + $this->getOtherCharges($billerCode);
 
         if ($balance >= $totalAmount) return true;
     }
@@ -84,7 +83,7 @@ trait PayBillsHelpers
     private function subtractUserBalance(UserAccount $user, string $billerCode, $response)
     {
         $balance = $this->getUserBalance($user);
-        $totalAmount = $response['data']['amount'] + PayBillsConfig::ServiceFee + $this->getOtherCharges($billerCode);
+        $totalAmount = $response['data']['amount'] + $this->getServiceFee($user) + $this->getOtherCharges($billerCode);
         $balance -= $totalAmount;
 
         $pendingBalance = $this->userBalanceInfo->getUserPendingBalance($user->id);
@@ -106,35 +105,34 @@ trait PayBillsHelpers
     }
     
 
+    private function getServiceFee(UserAccount $user)
+    {
+        $serviceFee = $this->serviceFeeRepository->getByTierAndTransCategory($user->tier_id, TransactionCategoryIds::payBills);
+        $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
+
+        return $serviceFeeAmount;
+    }
+
+
     private function getOtherCharges(string $billerCode)
     {
         $otherCharges = $this->bayadCenterService->getOtherCharges($billerCode);
         return $otherCharges['data']['otherCharges'];
     }
 
-    
-    private function validationResponse($response, string $billerCode, array $amount)
-    {
-        $data = array();
-        $data += array('serviceFee' => (string) PayBillsConfig::ServiceFee);
-        $data += array('otherCharges' => $this->getOtherCharges($billerCode));
-        $data += array('validationNumber' => $response['data']['validationNumber']);
-
-        return $data;
-    }
-
 
     private function outPayBills(UserAccount $user, string $billerCode, $response)
     {
         $biller = $this->bayadCenterService->getBillerInformation($billerCode);
+        $serviceFee = $this->getServiceFee($user);
         return $this->outPayBills->create([
             'user_account_id' => $user->id,
             'account_number' => $response['data']['referenceNumber'],
             'reference_number' => $this->getReference(),
             'amount' => $response['data']['amount'],
             'other_charges' => $response['data']['otherCharges'],
-            'service_fee' => PayBillsConfig::ServiceFee,
-            'total_amount' => $response['data']['amount'] + $response['data']['otherCharges'] + PayBillsConfig::ServiceFee,
+            'service_fee' => $serviceFee,
+            'total_amount' => $response['data']['amount'] + $response['data']['otherCharges'] + $serviceFee,
             'transaction_category_id' => PayBillsConfig::BILLS,
             'transaction_remarks' => 'Pay bills to ' . $biller['data']['name'],
             'message' => '',
@@ -149,6 +147,15 @@ trait PayBillsHelpers
     }
 
 
+    private function validationResponse(UserAccount $user, $response, string $billerCode, array $amount)
+    {
+        $data = array();
+        $data += array('serviceFee' => (string) $this->getServiceFee($user));
+        $data += array('otherCharges' => $this->getOtherCharges($billerCode));
+        $data += array('validationNumber' => $response['data']['validationNumber']);
+
+        return $data;
+    }
 
 
 }

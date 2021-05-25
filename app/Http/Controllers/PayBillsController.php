@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SuccessMessages;
 use App\Http\Requests\PayBills\PayBillsRequest;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\Utilities\Responses\IResponseService;
@@ -85,7 +86,7 @@ class PayBillsController extends Controller
 
         if (isset($verifyAccount['exception'])) return response()->json($verifyAccount, Response::HTTP_UNPROCESSABLE_ENTITY);
 
-        return $this->responseService->successResponse($verifyAccount);
+        return $this->responseService->successResponse($verifyAccount, SuccessMessages::transactionValidationSuccessful);
     }
 
 
