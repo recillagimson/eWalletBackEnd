@@ -275,6 +275,7 @@ class BuyLoadService implements IBuyLoadService
             'recipient_mobile_number' => $buyLoad->recipient_mobile_number,
             'amount' => $buyLoad->total_amount,
             'transaction_number' => $buyLoad->reference_number,
+            'transaction_date' => $buyLoad->transaction_date,
         ];
     }
 }
