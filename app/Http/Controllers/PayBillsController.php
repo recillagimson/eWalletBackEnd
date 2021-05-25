@@ -103,7 +103,9 @@ class PayBillsController extends Controller
         $billerCode = $request->route('biller_code');
         $data = $request->post();
         $createPayment = $this->payBillsService->createPayment($billerCode, $data,  $request->user());
+
         if (isset($createPayment['exception'])) return response()->json($createPayment, Response::HTTP_UNPROCESSABLE_ENTITY);
+        
         return $this->responseService->successResponse($createPayment);
     }
 
