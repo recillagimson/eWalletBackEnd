@@ -27,7 +27,9 @@ class UserAccount extends Authenticatable
         'pin_code',
         'verified',
         'is_admin',
-        'tier_id'
+        'tier_id',
+        'user_created',
+        'user_updated',
     ];
 
     /**
@@ -64,6 +66,11 @@ class UserAccount extends Authenticatable
     public function balanceInfo(): HasOne
     {
         return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
+    }
+
+    public function verificationToken(): HasOne
+    {
+        return $this->hasOne(AdminUserVerifyToken::class);
     }
 
     public function updateLockout(int $maxLoginAttempts)

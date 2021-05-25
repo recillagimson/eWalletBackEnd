@@ -18,7 +18,7 @@ abstract class Repository implements IRepository {
         return $this->model->all();
     }
 
-    public function get($id)
+    public function get($id): ?Model
     {
         return $this->model->find($id);
     }
@@ -28,12 +28,12 @@ abstract class Repository implements IRepository {
         return $this->model->create($data);
     }
 
-    public function update(Model $record, array $data)
+    public function update(Model $record, array $data): bool
     {
         return $record->update($data);
     }
 
-    public function delete(Model $record)
+    public function delete(Model $record): ?bool
     {
         return $record->delete();
     }

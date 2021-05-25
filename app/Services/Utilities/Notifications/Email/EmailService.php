@@ -15,6 +15,7 @@ use App\Mail\Send2Bank\SenderNotification;
 use App\Mail\SendMoney\SendMoneyRecipientNotification;
 use App\Mail\SendMoney\SendMoneySenderNotification;
 use App\Mail\SendMoney\SendMoneyVerification;
+use App\Mail\User\AdminUserVerification;
 use App\Models\OutSend2Bank;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
@@ -109,8 +110,8 @@ class EmailService implements IEmailService
      * Sends an email for sender
      *
      * @param string $to
-     * @param string $amount
-     * @param string $sender
+     * @param array $fillRequest
+     * @param string $receiverName
      */
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName)
     {
@@ -168,6 +169,15 @@ class EmailService implements IEmailService
 
         $template = new BuyLoadSenderNotification($strAmount, $productName, $recipientMobileNumber, $strTransactionDate,
             $strBalance, $refNo);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendAdminUserAccountDetails(string $to, string $firtName, string $email, string $password)
+    {
+        $subject = 'SquidPay - Admin Account Details';
+        $strFirstName = ucwords($firtName);
+
+        $template = new AdminUserVerification($strFirstName, $email, $password);
         $this->sendMessage($to, $subject, $template);
     }
 
