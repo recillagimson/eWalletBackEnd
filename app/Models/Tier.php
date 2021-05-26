@@ -6,6 +6,8 @@ use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\TierService;
+use App\Models\TransactionCategory;
 
 class Tier extends Model
 {
@@ -26,4 +28,17 @@ class Tier extends Model
         "user_created",
         "user_updated",
     ];
+
+    public function TransactionCategory()
+    {
+        return $this->belongsToMany(TransactionCategory::class,'tier_services','tier_id','transaction_category_id')
+        ->withTimestamps()
+        ->withPivot(['is_accessible'])
+        ->wherePivot('is_accessible',1);
+    }
+
+    public function TierRequirement()
+    {
+        return $this->hasMany(TierRequirement::class);
+    }
 }

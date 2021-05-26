@@ -3,26 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tier;
+use App\Models\TierService;
 use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
 use App\Http\Requests\Tier\TierRequest;
 use App\Repositories\Tier\ITierRepository;
+use App\Repositories\Tier\ITierServiceRepository;
+use App\Repositories\Tier\ITierRequirementRepository;
 use App\Services\Utilities\Responses\IResponseService;
 
 class TierController extends Controller
 {
 
     private ITierRepository $iTierRepository;
+    private ITierServiceRepository $tierServiceRepository;
+    private ITierRequirementRepository $tierRequirementRepository;
     private IResponseService $responseService;
 
 
     public function __construct(
                                 ITierRepository $iTierRepository,
+                                ITierServiceRepository $tierServiceRepository,
+                                ITierRequirementRepository $tierRequirementRepository,
                                 IResponseService $responseService
                                 )
     {
         // $this->encryptionService = $encryptionService;
         $this->iTierRepository = $iTierRepository;
+        $this->tierServiceRepository = $tierServiceRepository;
+        $this->tierRequirementRepository = $tierRequirementRepository;
         $this->responseService = $responseService;
     }
 
@@ -90,5 +99,27 @@ class TierController extends Controller
     {
         $deleteRecord = $this->iTierRepository->delete($tier);
         return $this->responseService->noContentResponse($deleteRecord->toArray(), SuccessMessages::recordDeleted);
+    }
+
+    /**
+     * Show all tier upgrade functions
+     */
+
+    public function upgrade(Request $request)
+    {
+        $tierService = $this->tierServiceRepository->getTierDetails();
+        return $this->responseService->successResponse($tierService->toArray(), SuccessMessages::success);
+        //return response($tierService);
+    }
+
+    /**
+     * Show all tier requirements
+     */
+
+    public function requirements(Request $request)
+    {
+        $tierRequirement = $this->tierRequirementRepository->getTierRequirements();
+        return $this->responseService->successResponse($tierRequirement->toArray(), SuccessMessages::success);
+        //return response($tierRequirement);
     }
 }

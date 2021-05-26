@@ -39,6 +39,10 @@ use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\ServiceFee\ServiceFeeRepository;
 use App\Repositories\Tier\ITierRepository;
 use App\Repositories\Tier\TierRepository;
+use App\Repositories\Tier\TierServiceRepository;
+use App\Repositories\Tier\ITierServiceRepository;
+use App\Repositories\Tier\TierRequirementRepository;
+use App\Repositories\Tier\ITierRequirementRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -152,6 +156,12 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Tier Repository
         $this->app->bind(ITierRepository::class, TierRepository::class);
+
+        // TIer Service Repository
+        $this->app->bind(ITierServiceRepository::class, TierServiceRepository::class);
+
+        // Tier Requirement Repository
+        $this->app->bind(ITierRequirementRepository::class, TierRequirementRepository::class);
 
         // Service Fee Repository
         $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);

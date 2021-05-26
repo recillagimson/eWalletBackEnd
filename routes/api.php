@@ -195,6 +195,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{tier}', [TierController::class, 'show']);
         Route::put('/{tier}', [TierController::class, 'update']);
         Route::delete('/{tier}', [TierController::class, 'destroy']);
+        Route::get('/wallet/upgrade', [TierController::class, 'upgrade']);
+        Route::get('/wallet/requirements',[TierController::class, 'requirements']);
     });
 
     Route::prefix('/service/fees')->middleware(['decrypt.request'])->group(function () {
@@ -217,9 +219,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
     });
 
-    Route::prefix('/tiers')->middleware(['decrypt.request'])->group(function(){
-        Route::get('/', [TierServiceController::class, 'index']);
-    });
+    // Route::prefix('/tiers')->middleware(['decrypt.request'])->group(function(){
+    //     Route::get('/', [TierServiceController::class, 'index']);
+    // });
 
 });
 

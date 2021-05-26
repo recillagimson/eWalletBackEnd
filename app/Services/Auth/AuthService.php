@@ -14,8 +14,6 @@ use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use Carbon\Carbon;
 use App\Traits\Errors\WithAuthErrors;
 use App\Traits\UserHelpers;
 use Illuminate\Support\Facades\App;
@@ -31,9 +29,6 @@ class AuthService implements IAuthService
     private int $remainingAgeToNotify;
     private int $maxPasswordAge;
     private int $tokenExpiration;
-
-    private ILogHistoryService $loghistoryService;
-
 
     public IUserAccountRepository $userAccounts;
     public IClientRepository $clients;
@@ -53,8 +48,7 @@ class AuthService implements IAuthService
                                 IEmailService $emailService,
                                 ISmsService $smsService,
                                 INotificationService $notificationService,
-                                IOtpService $otpService,
-                                ILogHistoryService $loghistoryService)
+                                IOtpService $otpService)
     {
         $this->maxLoginAttempts = config('auth.account_lockout_attempt');
         $this->daysToResetAttempts = config('auth.account_lockout_attempt_reset');
@@ -71,7 +65,6 @@ class AuthService implements IAuthService
         $this->notificationService = $notificationService;
         $this->emailService = $emailService;
         $this->smsService = $smsService;
-        $this->loghistoryService = $loghistoryService;
     }
 
     public function login(string $usernameField, array $creds, string $ip): array
@@ -81,17 +74,6 @@ class AuthService implements IAuthService
         $this->validateUser($user);
         $this->tryLogin($user, $creds['password'], $user->password);
         $user->deleteAllTokens();
-
-        //log history
-        $user_account_id = $user->id;
-        $squidpay_module = 'Web Login';
-        $namespace = 'App\Services\Auth';
-        $transaction_date = Carbon::now();
-        $remarks = '';
-        $operation = 'Login via web browser';
-        $reference_number = '';
-        $this->loghistoryService->logUserHistory($user_account_id, $reference_number, $squidpay_module, $namespace, $transaction_date, $remarks, $operation);
-
         return $this->generateLoginToken($user, TokenNames::userWebToken);
     }
 
@@ -102,17 +84,6 @@ class AuthService implements IAuthService
         $this->validateUser($user);
         $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
         $user->deleteAllTokens();
-
-        //log history
-        $user_account_id = $user->id;
-        $squidpay_module = 'Mobile Login';
-        $namespace = 'App\Services\Auth';
-        $transaction_date = Carbon::now();
-        $remarks = '';
-        $operation = 'Login via mobile device';
-        $reference_number = '';
-        $this->loghistoryService->logUserHistory($user_account_id, $reference_number, $squidpay_module, $namespace, $transaction_date, $remarks, $operation);
-
         return $this->generateLoginToken($user, TokenNames::userMobileToken);
     }
 
@@ -123,17 +94,6 @@ class AuthService implements IAuthService
         if(!$client || !Hash::check($clientSecret, $client->client_secret)) {
             $this->invalidCredentials();
         }
-
-        //log history
-        $user_account_id = $user->id;
-        $squidpay_module = 'Client Login';
-        $namespace = 'App\Services\Auth';
-        $transaction_date = Carbon::now();
-        $remarks = '';
-        $operation = 'Login via client';
-        $reference_number = '';
-        $this->loghistoryService->logUserHistory($user_account_id, $reference_number, $squidpay_module, $namespace, $transaction_date, $remarks, $operation);
-
 
         return $client->createToken(TokenNames::clientToken);
     }
