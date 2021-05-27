@@ -40,10 +40,43 @@ class PayBillsService implements IPayBillsService
     }
 
     
-    public function getBillers(): array
+    public function getBillers()//: array
     {
         $response = $this->bayadCenterService->getBillers();
-        return (array)json_decode($response->body());
+        $arrayResponse = (array)json_decode($response->body(), true);
+        $billersCount = count($arrayResponse['data']);
+        $newResponse = array();
+        $active = array('active' => '1');
+        $inActive = array('active' => '0');
+
+        for ($x = 0; $x < $billersCount; $x++) {
+            if( 
+                $arrayResponse['data'][$x]['code'] == 'MECOR' || 
+                $arrayResponse['data'][$x]['code'] == 'MWCOM' || 
+                $arrayResponse['data'][$x]['code'] == 'MWSIN' || 
+                $arrayResponse['data'][$x]['code'] == 'RFID1' || 
+                $arrayResponse['data'][$x]['code'] == 'ETRIP' || 
+                $arrayResponse['data'][$x]['code'] == 'CNVRG' || 
+                $arrayResponse['data'][$x]['code'] == 'PLDT6' || 
+                $arrayResponse['data'][$x]['code'] == 'AEON1' || 
+                $arrayResponse['data'][$x]['code'] == 'BNECO' || 
+                $arrayResponse['data'][$x]['code'] == 'PRULI' || 
+                $arrayResponse['data'][$x]['code'] == 'AECOR' || 
+                $arrayResponse['data'][$x]['code'] == 'LAZAE' || 
+                $arrayResponse['data'][$x]['code'] == 'SMART' || 
+                $arrayResponse['data'][$x]['code'] == 'SSS01' ||
+                $arrayResponse['data'][$x]['code'] == 'SSS02' || 
+                $arrayResponse['data'][$x]['code'] == 'SSS03' ||
+                $arrayResponse['data'][$x]['code'] == 'DFA01' || 
+                $arrayResponse['data'][$x]['code'] == 'POEA1'
+                ){
+                $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
+            } else {
+                $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $inActive);
+            }
+        }
+
+        return $newResponse;
     }
 
 

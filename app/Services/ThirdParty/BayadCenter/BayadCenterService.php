@@ -128,7 +128,7 @@ class BayadCenterService implements IBayadCenterService
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->verifyAccountUrl);
         $url = str_replace(':ACCOUNT-NUMBER', $accountNumber, $url);
 
-        if (!$otherCharges->successful()) return $this->tpaInvalidBiller();    
+        if (!$otherCharges->successful()) return $otherCharges;    
         $data += array('paymentMethod' => 'CASH');
         $data += array('otherCharges' => $otherCharges['data']['otherCharges']);
 

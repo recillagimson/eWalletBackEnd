@@ -28,11 +28,11 @@ class PayBillsController extends Controller
      * @param array $billers
      * @return JsonResponse
      */
-    public function getBillers(): JsonResponse
+    public function getBillers()//: JsonResponse
     {
-        $billers = $this->payBillsService->getBillers();
-        if (isset($billers['exception'])) return response()->json($billers, Response::HTTP_UNPROCESSABLE_ENTITY);
-        return $this->responseService->successResponse($billers);
+        return $this->payBillsService->getBillers();
+        // if (isset($billers['exception'])) return response()->json($billers, Response::HTTP_UNPROCESSABLE_ENTITY);
+        // return $this->responseService->successResponse($billers);
     }
 
     /**
@@ -82,9 +82,10 @@ class PayBillsController extends Controller
         $data = $request->post();
         $billerCode = $request->route('biller_code');
         $accountNumber = $request->route('account_number');
-
         $verifyAccount = $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
+
         if (isset($verifyAccount['exception'])) return response()->json($verifyAccount, Response::HTTP_UNPROCESSABLE_ENTITY);
+
         return $this->responseService->successResponse($verifyAccount, SuccessMessages::transactionValidationSuccessful);
     }
 
