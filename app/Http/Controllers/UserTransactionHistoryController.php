@@ -36,8 +36,6 @@ class UserTransactionHistoryController extends Controller
     }
 
     public function download(DownloadTransactionHistoryRequest $request) {
-        $data = $this->transactionService->generateTransactionHistory(request()->user()->id, $request->from, $request->to);
-        // $record = $this->userTransactionHistory->findTransactionWithRelation($id);
-        // return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+        return $data = $this->transactionService->generateTransactionHistory(request()->user()->id, $request->from, $request->to);
     }
 }

@@ -3,8 +3,8 @@
 
 namespace App\Services\Transaction;
 
-
-use App\Models\UserAccount;
+use PDF;
+use Carbon\Carbon;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
@@ -74,8 +74,16 @@ class TransactionService implements ITransactionService
 
     public function generateTransactionHistory(string $userAccountId, string $dateFrom, string $dateTo) {
         $records = $this->userTransactionHistoryRepository->getTransactionHistoryByIdAndDateRange($userAccountId, $dateFrom, $dateTo);
-        foreach($records as $record) {
-            dd($record->toArray());
-        }
+        $data = [
+            'records' => $records,
+            'from' => $dateFrom,
+            'to' => $dateTo,
+        ]; 
+        $password = str_replace(" ", "", strtolower(request()->user()->profile->last_name)) . Carbon::parse(request()->user()->profile->birth_date)->format('mdY');
+        $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name . "_" . $dateFrom . "_" . $dateTo . '.pdf';
+        \Log::info($password);
+        $pdf = PDF::loadView('reports.transaction_history.transaction_history', $data);
+        $pdf->SetProtection(['copy', 'print'], $password, 'squidP@y');
+        return $pdf->stream($file_name);
     }
 }
