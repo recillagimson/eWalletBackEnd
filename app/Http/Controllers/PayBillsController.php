@@ -82,10 +82,9 @@ class PayBillsController extends Controller
         $data = $request->post();
         $billerCode = $request->route('biller_code');
         $accountNumber = $request->route('account_number');
+
         $verifyAccount = $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
-
         if (isset($verifyAccount['exception'])) return response()->json($verifyAccount, Response::HTTP_UNPROCESSABLE_ENTITY);
-
         return $this->responseService->successResponse($verifyAccount, SuccessMessages::transactionValidationSuccessful);
     }
 

@@ -38,4 +38,10 @@ trait WithTpaErrors
     {
         $this->validationErrorMessage(ErrorCodes::tpaInvalidBiller, 'Invalid Biller.');
     }
+
+    public function tpaInvalidAccountNumber()
+    {
+        $this->validationErrorMessage(ErrorCodes::tpaInvalidAccountNumber, 'Invalid Account Number.');
+    }
+
 }
