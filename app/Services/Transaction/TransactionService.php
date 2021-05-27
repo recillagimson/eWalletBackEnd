@@ -71,4 +71,11 @@ class TransactionService implements ITransactionService
         ]);
         return $record;
     }
+
+    public function generateTransactionHistory(string $userAccountId, string $dateFrom, string $dateTo) {
+        $records = $this->userTransactionHistoryRepository->getTransactionHistoryByIdAndDateRange($userAccountId, $dateFrom, $dateTo);
+        foreach($records as $record) {
+            dd($record->toArray());
+        }
+    }
 }
