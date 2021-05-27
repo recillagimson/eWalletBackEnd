@@ -147,7 +147,7 @@ trait PayBillsHelpers
     }
 
 
-    private function validationResponse(UserAccount $user, $response, string $billerCode, array $amount)
+    private function validationResponse(UserAccount $user, $response, string $billerCode)
     {
         $data = array();
         $data += array('serviceFee' => (string) $this->getServiceFee($user));

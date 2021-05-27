@@ -34,8 +34,4 @@ trait WithTpaErrors
         $this->validationErrorMessage(ErrorCodes::tpaInvalidProvider, 'Invalid Provider.');
     }
 
-    public function tpaInvalidBiller()
-    {
-        $this->validationErrorMessage(ErrorCodes::tpaInvalidBiller, 'Invalid Biller.');
-    }
 }

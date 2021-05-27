@@ -28,11 +28,11 @@ class PayBillsController extends Controller
      * @param array $billers
      * @return JsonResponse
      */
-    public function getBillers(): JsonResponse
+    public function getBillers()//: JsonResponse
     {
-        $billers = $this->payBillsService->getBillers();
-        if (isset($billers['exception'])) return response()->json($billers, Response::HTTP_UNPROCESSABLE_ENTITY);
-        return $this->responseService->successResponse($billers);
+        return $this->payBillsService->getBillers();
+        // if (isset($billers['exception'])) return response()->json($billers, Response::HTTP_UNPROCESSABLE_ENTITY);
+        // return $this->responseService->successResponse($billers);
     }
 
     /**
