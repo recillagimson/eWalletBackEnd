@@ -34,6 +34,11 @@ trait WithUserErrors
             'Oh No! You have exceeded your monthly limit.');
     }
 
+    public function handleCustomErrorMessage($key, $value)
+    {
+        $this->validationErrorMessage($key, $value);
+    }
+
     public function userTierInvalid()
     {
         $this->validationErrorMessage(ErrorCodes::userTierInvalid,

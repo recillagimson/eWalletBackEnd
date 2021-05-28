@@ -6,6 +6,7 @@ use App\Enums\DragonPayStatusTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TransactionCategories;
+use App\Enums\TransactionCategoryIds;
 use App\Models\InAddMoneyFromBank;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
@@ -137,7 +138,7 @@ class DragonPayService implements IAddMoneyService
         $totalAmount = $amount;
 
         // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($userAccountID, $totalAmount, TransactionCategories::AddMoneyWebBankDragonPay);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($userAccountID, $totalAmount, TransactionCategoryIds::cashinDragonPay);
         // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
 
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);

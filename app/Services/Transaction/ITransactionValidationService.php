@@ -26,7 +26,7 @@ interface ITransactionValidationService
      * @param float $totalAmount
      * @return mixed
      */
-    public function checkUserMonthlyTransactionLimit(UserAccount $user, float $totalAmount, string $transactionCategoryId);
+    public function checkUserMonthlyTransactionLimit(UserAccount $user, float $totalAmount, string $transactionCategoryId, array $customMessage = []);
 
     /**
      * Check if transaction exceeds remaining user account
