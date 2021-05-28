@@ -112,7 +112,7 @@ class HandlePostBackService implements IHandlePostBackService
 
             $this->addAmountToUserBalance($addMoneyRow->user_account_id, $addMoneyRow->amount);
 
-            $this->logHistoryService->logUserHistoryUnauthenticated($this->userAccountID, $this->referenceNumber, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, __METHOD__, Carbon::now(), 'Add money postback amount ' . $addMoneyRow->amount);
+            $this->logHistoryService->logUserHistoryUnauthenticated($this->userAccountID, $this->referenceNumber, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, __METHOD__, Carbon::now(), 'Successfully added money from DragonPay with amount of ' . $addMoneyRow->amount);
             $this->transactionService->createUserTransactionEntryUnauthenticated((string) $this->userAccountID, $addMoneyRow->id, $this->referenceNumber, (float) $addMoneyRow->amount,  $addMoneyRow->transaction_category_id);
 
             return $this->responseService->successResponse(

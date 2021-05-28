@@ -545,7 +545,7 @@ class DragonPayService implements IAddMoneyService
             'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
             'namespace' => __METHOD__,
             'transaction_date' => Carbon::now(),
-            'remarks' => 'Requests to generate URL for adding money',
+            'remarks' => 'Requested to generate DragonPay URL to add money.',
             'user_created' => $this->userAccountID,
             'user_updated' => $this->userAccountID
         ]);
