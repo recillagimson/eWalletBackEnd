@@ -2,21 +2,22 @@
 
 namespace App\Services\PayBills;
 
-use App\Enums\ReferenceNumberTypes;
-use App\Models\UserAccount;
-use App\Models\UserDetail;
-use App\Repositories\OutPayBills\IOutPayBillsRepository;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithPayBillsErrors;
-use App\Traits\Errors\WithTpaErrors;
-use App\Traits\Transactions\PayBillsHelpers;
 use Exception;
-use Illuminate\Http\JsonResponse;
+use App\Models\UserDetail;
+use App\Models\UserAccount;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Enums\ReferenceNumberTypes;
+use App\Traits\Errors\WithTpaErrors;
+use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithPayBillsErrors;
+use App\Traits\Transactions\PayBillsHelpers;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class PayBillsService implements IPayBillsService
 {
@@ -99,6 +100,10 @@ class PayBillsService implements IPayBillsService
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse = (array)json_decode($response);
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($user->id, $data['amount'], TransactionCategoryIds::payBills);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
 
         if (isset($arrayResponse['exception'])) return $arrayResponse;
 
