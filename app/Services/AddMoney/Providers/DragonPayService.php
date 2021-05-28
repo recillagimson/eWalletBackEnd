@@ -17,6 +17,7 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Illuminate\Support\Carbon;
@@ -77,6 +78,7 @@ class DragonPayService implements IAddMoneyService
     private ITierRepository $tiers;
     private IUserBalanceInfoRepository $userBalanceInfos;
     private ILogHistoryService $logHistoryService;
+    private ITransactionValidationService $transactionValidationService;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
@@ -88,7 +90,8 @@ class DragonPayService implements IAddMoneyService
                                 ITierRepository $tiers,
                                 IUserDetailRepository $userDetails,
                                 IUserBalanceInfoRepository $userBalanceInfos,
-                                ILogHistoryService $logHistoryService) {
+                                ILogHistoryService $logHistoryService,
+                                ITransactionValidationService $transactionValidationService) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -106,6 +109,7 @@ class DragonPayService implements IAddMoneyService
         $this->userDetails = $userDetails;
         $this->userBalanceInfos = $userBalanceInfos;
         $this->logHistoryService = $logHistoryService;
+        $this->transactionValidationService = $transactionValidationService;
     }
 
     /**
@@ -131,6 +135,11 @@ class DragonPayService implements IAddMoneyService
         $beneficiaryName = $this->getFullname($userAccountID);
         $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
         $totalAmount = $amount;
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($userAccountID, $totalAmount, TransactionCategories::AddMoneyWebBankDragonPay);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
+
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
         $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
 
