@@ -30,7 +30,12 @@ class ResponseService implements IResponseService
 
     public function noContentResponse(string $message = SuccessMessages::recordDeleted): JsonResponse
     {
-        return $this->success($message, Response::HTTP_NO_CONTENT);
+        return $this->success($message, Response::HTTP_NO_CONTENT, []);
+    }
+
+    public function tpaErrorReponse(string $reponse): JsonResponse
+    {
+        return response()->json($reponse, Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function notFound(string $message): JsonResponse

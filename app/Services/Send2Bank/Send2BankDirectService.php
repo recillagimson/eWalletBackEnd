@@ -100,6 +100,7 @@ class Send2BankDirectService implements ISend2BankDirectService
             $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
             $userFullName = ucwords($user->profile->full_name);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
+
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
             $otherPurpose = $recipient['other_purpose'] ?? '';

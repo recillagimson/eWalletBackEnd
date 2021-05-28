@@ -20,7 +20,6 @@ use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithSendMoneyErrors;
 use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
 
 
 class SendMoneyService implements ISendMoneyService
@@ -40,7 +39,7 @@ class SendMoneyService implements ISendMoneyService
     private IEmailService $emailService;
     private ISmsService $smsService;
     private IOtpService $otpService;
-    
+
     public function __construct(
         IOutSendMoneyRepository $outSendMoney,
         IInReceiveMoneyRepository $inReceiveMoney,
@@ -55,7 +54,7 @@ class SendMoneyService implements ISendMoneyService
         IEmailService $emailService,
         ISmsService $smsService,
         IOtpService $otpService
-       
+
     ) {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
@@ -79,11 +78,7 @@ class SendMoneyService implements ISendMoneyService
      * @param string $username
      * @param array $fillRequest
      * @param object $user
-     * @param string $senderID 
-     * @param string $receiverID
-     * @param boolean $isSelf
-     * @param boolean $isEnough
-     * @throws ValidationException
+     * @return array
      */
     public function send(string $username, array $fillRequest, object $user)
     {
@@ -101,10 +96,10 @@ class SendMoneyService implements ISendMoneyService
         if (!$isEnough) $this->insuficientBalance();
         if (!$receiverDetails) $this->recipientDetailsNotFound();
         if (!$senderDetails) $this->senderDetailsNotFound();
-        
+
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
-        
+
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
 
@@ -124,11 +119,7 @@ class SendMoneyService implements ISendMoneyService
      * @param string $username
      * @param array $fillRequest
      * @param object $user
-     * @param string $senderID 
-     * @param string $receiverID
-     * @param boolean $isSelf
-     * @param boolean $isEnough
-     * @throws ValidationException
+     * @return array
      */
     public function sendValidate(string $username, array $fillRequest, object $user)
     {
@@ -151,8 +142,7 @@ class SendMoneyService implements ISendMoneyService
 
     /**
      * Creates a record for qr_transactions
-     *  
-     * @param string $username
+     *
      * @param object $user
      * @param array $fillRequest
      * @return mixed
@@ -174,11 +164,8 @@ class SendMoneyService implements ISendMoneyService
      * Returns user mobile_number or email with amount
      *
      * @param string $id
-     * @param string $qrTransaction
-     * @param string $user
-     *
      * @return array
-     */ 
+     */
     public function scanQr(string $id)
     {
         $qrTransaction = $this->qrTransactions->get($id);
@@ -252,7 +239,7 @@ class SendMoneyService implements ISendMoneyService
     {
         return $this->userDetailRepository->getByUserId($userID);
     }
-    
+
 
     private function isSelf(string $senderID, string $receiverID)
     {
@@ -293,7 +280,7 @@ class SendMoneyService implements ISendMoneyService
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
         $this->notificationService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
     }
-    
+
 
     private function recipientNotification($username, $fillRequest, $senderID, $receiverID)
     {
@@ -352,7 +339,7 @@ class SendMoneyService implements ISendMoneyService
             'reference_number' => $fillRequest['refNo'],
             'squidpay_module' => 'Send Money',
             'namespace' => 'SM',
-            'transaction_date' => date('Y-m-d H:i:s'),
+            'transaction_date' => Carbon::now(),
             'remarks' => $senderID . ' sent money to ' . $receiverID,
             'operation' => 'Add and Update',
             'user_created' => $senderID,

@@ -30,6 +30,7 @@ class ErrorCodes
     const tpaErrorOccured = 202;
     const tpaInvalidProvider = 203;
 
+
     //TRANSACTIONS - 300
     const transactionInvalid = 301;
     const transactionFailed = 302;
