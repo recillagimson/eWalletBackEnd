@@ -40,7 +40,7 @@ class PayBillsService implements IPayBillsService
     }
 
     
-    public function getBillers()//: array
+    public function getBillers(): array
     {
         $response = $this->bayadCenterService->getBillers();
         $arrayResponse = (array)json_decode($response->body(), true);
@@ -49,6 +49,7 @@ class PayBillsService implements IPayBillsService
         $active = array('active' => '1');
         $inActive = array('active' => '0');
 
+        //list of active billing partners
         for ($x = 0; $x < $billersCount; $x++) {
             if( 
                 $arrayResponse['data'][$x]['code'] == 'MECOR' || 
@@ -70,10 +71,10 @@ class PayBillsService implements IPayBillsService
                 $arrayResponse['data'][$x]['code'] == 'DFA01' || 
                 $arrayResponse['data'][$x]['code'] == 'POEA1'
                 ){
-                $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
-            } else {
-                $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $inActive);
-            }
+                    $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
+                } else {
+                    $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $inActive);
+                }
         }
 
         return $newResponse;
