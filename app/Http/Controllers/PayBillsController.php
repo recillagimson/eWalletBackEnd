@@ -31,7 +31,7 @@ class PayBillsController extends Controller
     public function getBillers(): JsonResponse
     {
         $billers = $this->payBillsService->getBillers();
-        if (isset($billers['exception'])) return response()->json($billers, Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (isset($billers['provider_error'])) return $this->responseService->tpaErrorReponse($billers);
         return $this->responseService->successResponse($billers);
     }
 
@@ -47,7 +47,7 @@ class PayBillsController extends Controller
     {
         $billerCode = $request->route('biller_code');
         $billerInformation = $this->payBillsService->getBillerInformation($billerCode);
-        if (isset($billerInformation['exception'])) return response()->json($billerInformation, Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (isset($billerInformation['provider_error'])) return $this->responseService->tpaErrorReponse($billerInformation);
         return $this->responseService->successResponse($billerInformation);
     }
 
@@ -62,7 +62,7 @@ class PayBillsController extends Controller
     public function getWalletBalance(): JsonResponse
     {
         $getWalletBalance = $this->payBillsService->getWalletBalance();
-        if (isset($getWalletBalance['exception'])) return response()->json($getWalletBalance, Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (isset($getWalletBalance['provider_error'])) return $this->responseService->tpaErrorReponse($getWalletBalance);
         return $this->responseService->successResponse($getWalletBalance);
     }
 
@@ -83,9 +83,7 @@ class PayBillsController extends Controller
         $billerCode = $request->route('biller_code');
         $accountNumber = $request->route('account_number');
         $verifyAccount = $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
-
-        if (isset($verifyAccount['exception'])) return response()->json($verifyAccount, Response::HTTP_UNPROCESSABLE_ENTITY);
-
+        if (isset($verifyAccount['provider_error'])) return $this->responseService->tpaErrorReponse($verifyAccount);
         return $this->responseService->successResponse($verifyAccount, SuccessMessages::transactionValidationSuccessful);
     }
 
@@ -104,9 +102,7 @@ class PayBillsController extends Controller
         $billerCode = $request->route('biller_code');
         $data = $request->post();
         $createPayment = $this->payBillsService->createPayment($billerCode, $data,  $request->user());
-
-        if (isset($createPayment['exception'])) return response()->json($createPayment, Response::HTTP_UNPROCESSABLE_ENTITY);
-        
+        if (isset($createPayment['provider_error'])) return $this->responseService->tpaErrorReponse($createPayment);
         return $this->responseService->successResponse($createPayment);
     }
 
@@ -125,7 +121,7 @@ class PayBillsController extends Controller
         $billerCode = $request->route('biller_code');
         $clientReference = $request->route('client_reference');
         $inquirePayment = $this->payBillsService->inquirePayment($billerCode, $clientReference);
-        if (isset($inquirePayment['exception'])) return response()->json($inquirePayment, Response::HTTP_UNPROCESSABLE_ENTITY);
+        if (isset($inquirePayment['provider_error'])) return $this->responseService->tpaErrorReponse($inquirePayment);
         return $this->responseService->successResponse($inquirePayment);
     }
 

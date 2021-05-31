@@ -14,4 +14,6 @@ interface IResponseService
     public function noContentResponse(string $message = SuccessMessages::recordDeleted): JsonResponse;
 
     public function notFound(string $message): JsonResponse;
+
+    public function tpaErrorReponse(array $reponse): JsonResponse;
 }
