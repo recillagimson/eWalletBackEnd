@@ -22,7 +22,7 @@ use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-
+use App\Services\Transaction\ITransactionValidationService;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -41,6 +41,7 @@ class SendMoneyService implements ISendMoneyService
     private IEmailService $emailService;
     private ISmsService $smsService;
     private IOtpService $otpService;
+    private ITransactionValidationService $transactionValidationService;
 
     public function __construct(
         IOutSendMoneyRepository $outSendMoney,
@@ -55,7 +56,8 @@ class SendMoneyService implements ISendMoneyService
         INotificationService $notificationService,
         IEmailService $emailService,
         ISmsService $smsService,
-        IOtpService $otpService
+        IOtpService $otpService,
+        ITransactionValidationService $transactionValidationService
 
     ) {
         $this->outSendMoney = $outSendMoney;
@@ -71,6 +73,7 @@ class SendMoneyService implements ISendMoneyService
         $this->emailService = $emailService;
         $this->smsService = $smsService;
         $this->otpService = $otpService;
+        $this->transactionValidationService = $transactionValidationService;
     }
 
 
