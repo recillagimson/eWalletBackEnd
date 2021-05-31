@@ -2,7 +2,9 @@
 
 namespace App\Services\Utilities\Verification;
 
+use App\Models\UserPhoto;
 use Illuminate\Http\File;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -88,5 +90,11 @@ class VerificationService implements IVerificationService
     // Delete existing file if necessary
     public function deleteFile($path) {
         return Storage::disk('s3')->delete($path);
+    }
+
+    // Get Signed URL
+    public function getSignedUrl(string $userPhotoId) {
+        $userPhoto = $this->userPhotoRepository->get($userPhotoId);
+        return Storage::disk('s3')->temporaryUrl($userPhoto->photo_location, Carbon::now()->addMinutes(5));
     }
 }
