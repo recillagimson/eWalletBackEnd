@@ -108,7 +108,7 @@ class PayBillsService implements IPayBillsService
         $arrayResponse = (array)json_decode($response);
 
         // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($user->id, $data['amount'], TransactionCategoryIds::payBills);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($user, $data['amount'], TransactionCategoryIds::payBills);
         // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
 
         if (isset($arrayResponse['exception'])) return $arrayResponse;

@@ -138,7 +138,8 @@ class DragonPayService implements IAddMoneyService
         $totalAmount = $amount;
 
         // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($userAccountID, $totalAmount, TransactionCategoryIds::cashinDragonPay);
+        $userAccount = $this->userAccounts->get($userAccountID);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($userAccount, $totalAmount, TransactionCategoryIds::cashinDragonPay);
         // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
 
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
