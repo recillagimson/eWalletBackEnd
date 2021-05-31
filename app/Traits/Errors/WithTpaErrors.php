@@ -5,7 +5,6 @@ namespace App\Traits\Errors;
 
 
 use App\Enums\ErrorCodes;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
@@ -32,6 +31,11 @@ trait WithTpaErrors
     public function tpaInvalidProvider()
     {
         $this->validationErrorMessage(ErrorCodes::tpaInvalidProvider, 'Invalid Provider.');
+    }
+
+    public function tpaErrorCatch($providerArrayResponse)
+    {
+        return $this->validationCatchErrorMessage(ErrorCodes::tpaErrorCatch, 'Provider Error.', $providerArrayResponse);
     }
 
 }

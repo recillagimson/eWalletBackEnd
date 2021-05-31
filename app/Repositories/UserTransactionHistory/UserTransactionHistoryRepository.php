@@ -51,4 +51,13 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $record->append('transactable');
     }
 
+    public function getTransactionHistoryByIdAndDateRange(string $userAccountId, string $from, string $to) {
+        return $this->model
+            ->with(['transaction_category'])
+            ->where('user_account_id', $userAccountId)
+            ->where('created_at', '>=', $from)
+            ->where('created_at', '<=', $to)
+            ->get();
+    }
+
 }
