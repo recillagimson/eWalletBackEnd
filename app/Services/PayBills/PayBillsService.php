@@ -16,6 +16,7 @@ use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Traits\Errors\WithPayBillsErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Transactions\PayBillsHelpers;
@@ -32,14 +33,16 @@ class PayBillsService implements IPayBillsService
     private IReferenceNumberService $referenceNumberService;
     private IUserBalanceInfoRepository $userBalanceInfo;
     private IServiceFeeRepository $serviceFeeRepository;
+    private ITransactionValidationService $transactionValidationService;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService){
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
         $this->referenceNumberService = $referenceNumberService;
         $this->userBalanceInfo = $userBalanceInfo;
         $this->serviceFeeRepository = $serviceFeeRepository;
+        $this->transactionValidationService = $transactionValidationService;
     }
 
     
