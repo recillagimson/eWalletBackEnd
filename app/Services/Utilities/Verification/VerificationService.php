@@ -95,6 +95,11 @@ class VerificationService implements IVerificationService
     // Get Signed URL
     public function getSignedUrl(string $userPhotoId) {
         $userPhoto = $this->userPhotoRepository->get($userPhotoId);
+        if(!$userPhoto) {
+            throw ValidationException::withMessages([
+                'user_photo_not_found' => "User Photo not found"
+            ]);
+        }
         return Storage::disk('s3')->temporaryUrl($userPhoto->photo_location, Carbon::now()->addMinutes(5));
     }
 }
