@@ -103,7 +103,7 @@ class TransactionValidationService implements ITransactionValidationService
         if (!$user->balanceInfo) $this->userInsufficientBalance();
     }
 
-    public function checkUserMonthlyTransactionLimit(UserAccount $user, float $totalAmount, string $transactionCategoryId)
+    public function checkUserMonthlyTransactionLimit(UserAccount $user, float $totalAmount, string $transactionCategoryId, array $customMessage = [])
     {
         $tier = $this->tierRepository->get($user->tier_id);
         if ($tier) {
@@ -137,6 +137,11 @@ class TransactionValidationService implements ITransactionValidationService
                 $sumUp = $totalTransactionCurrentMonth + $totalAmount;
 
                 if ($sumUp >= $tier->monthly_limit) return;
+
+                if(isset($customMessage) && count($customMessage) > 0) {
+                    $this->handleCustomErrorMessage($customMessage['key'], $customMessage['value']);
+                }
+
                 $this->userMonthlyLimitExceeded();
             }
 

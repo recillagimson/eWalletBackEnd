@@ -2,14 +2,20 @@
 
 namespace App\Services\PayBills;
 
+use Exception;
+use App\Models\UserDetail;
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Enums\ReferenceNumberTypes;
+use App\Enums\TransactionCategoryIds;
 
 use App\Models\UserAccount;
-use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Traits\Errors\WithPayBillsErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Transactions\PayBillsHelpers;
@@ -99,6 +105,14 @@ class PayBillsService implements IPayBillsService
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
+        $arrayResponse = (array)json_decode($response);
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($user->id, $data['amount'], TransactionCategoryIds::payBills);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+
+        if (isset($arrayResponse['exception'])) return $arrayResponse;
+
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse); 
         $this->validateTransaction($billerCode, $data, $user);

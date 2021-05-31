@@ -2,24 +2,26 @@
 
 namespace App\Services\SendMoney;
 
-use App\Enums\OtpTypes;
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\SendMoneyConfig;
-use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
-use App\Repositories\LogHistory\ILogHistoryRepository;
-use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
-use App\Repositories\QrTransactions\IQrTransactionsRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\Utilities\Notifications\Email\IEmailService;
-use App\Services\Utilities\Notifications\INotificationService;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Services\Utilities\OTP\IOtpService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithSendMoneyErrors;
 use Carbon\Carbon;
+use App\Enums\OtpTypes;
+use App\Enums\SendMoneyConfig;
+use App\Enums\ReferenceNumberTypes;
+use App\Enums\TransactionCategories;
+use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithSendMoneyErrors;
+use App\Services\Utilities\OTP\IOtpService;
+use App\Repositories\LogHistory\ILogHistoryRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
+use App\Repositories\QrTransactions\IQrTransactionsRepository;
+use App\Services\Utilities\Notifications\INotificationService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 
 class SendMoneyService implements ISendMoneyService
@@ -96,6 +98,14 @@ class SendMoneyService implements ISendMoneyService
         if (!$isEnough) $this->insuficientBalance();
         if (!$receiverDetails) $this->recipientDetailsNotFound();
         if (!$senderDetails) $this->senderDetailsNotFound();
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($senderID, $fillRequest['amount'], TransactionCategoryIds::sendMoneyToSquidPayAccount);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($receiverID, $fillRequest['amount'], TransactionCategoryIds::receiveMoneyToSquidPayAccount, [ 'key' => 'receiver_transaction_limit_reached', 'value' => 'Receiver Transaction Limit reached' ]);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
 
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
