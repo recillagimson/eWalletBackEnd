@@ -4,20 +4,22 @@ namespace App\Services\PayBills;
 
 use Exception;
 use App\Models\UserDetail;
-use App\Models\UserAccount;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Enums\ReferenceNumberTypes;
-use App\Traits\Errors\WithTpaErrors;
 use App\Enums\TransactionCategoryIds;
-use App\Traits\Errors\WithPayBillsErrors;
-use App\Traits\Transactions\PayBillsHelpers;
+
+use App\Models\UserAccount;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Traits\Errors\WithPayBillsErrors;
+use App\Traits\Errors\WithTpaErrors;
+use App\Traits\Transactions\PayBillsHelpers;
+use Illuminate\Validation\ValidationException;
 
 class PayBillsService implements IPayBillsService
 {
@@ -85,18 +87,22 @@ class PayBillsService implements IPayBillsService
     public function getBillerInformation(string $billerCode): array
     {
         $response = $this->bayadCenterService->getBillerInformation($billerCode);
-        return (array)json_decode($response->body());
+        $arrayResponse = (array)json_decode($response->body(), true);
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
+        return $arrayResponse;
     }
 
 
     public function getWalletBalance(): array
     {
         $response = $this->bayadCenterService->getWalletBalance();
-        return (array)json_decode($response->body());
+        $arrayResponse = (array)json_decode($response->body(), true);
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse); 
+        return $arrayResponse;
     }
 
 
-    public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user)//: array
+    public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse = (array)json_decode($response);
@@ -107,6 +113,8 @@ class PayBillsService implements IPayBillsService
 
         if (isset($arrayResponse['exception'])) return $arrayResponse;
 
+        $arrayResponse = (array)json_decode($response->body(), true);
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse); 
         $this->validateTransaction($billerCode, $data, $user);
         return $this->validationResponse($user, $response, $billerCode, $data);
 
@@ -116,10 +124,8 @@ class PayBillsService implements IPayBillsService
     public function createPayment(string $billerCode, array $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->createPayment($billerCode, $data, $user);
-        $arrayResponse =  (array)json_decode($response);
-        
-        if (isset($arrayResponse['exception'])) return $arrayResponse; 
-
+        $arrayResponse = (array)json_decode($response->body(), true);
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
         $outPayBills = $this->saveTransaction($user, $billerCode, $response);
         return (array)json_decode($outPayBills);
     }
@@ -128,7 +134,9 @@ class PayBillsService implements IPayBillsService
     public function inquirePayment(string $billerCode, string $clientReference): array
     {
         $response = $this->bayadCenterService->inquirePayment($billerCode, $clientReference);
-        return (array)json_decode($response->body());
+        $arrayResponse = (array)json_decode($response->body(), true);
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
+        return $arrayResponse;
     }
 
     
