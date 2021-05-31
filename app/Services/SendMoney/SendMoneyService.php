@@ -339,7 +339,7 @@ class SendMoneyService implements ISendMoneyService
             'reference_number' => $fillRequest['refNo'],
             'squidpay_module' => 'Send Money',
             'namespace' => 'SM',
-            'transaction_date' => date('Y-m-d H:i:s'),
+            'transaction_date' => Carbon::now(),
             'remarks' => $senderID . ' sent money to ' . $receiverID,
             'operation' => 'Add and Update',
             'user_created' => $senderID,
