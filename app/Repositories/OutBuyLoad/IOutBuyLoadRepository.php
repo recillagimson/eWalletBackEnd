@@ -14,5 +14,5 @@ interface IOutBuyLoadRepository extends IRepository
                                       string $recipientMobileNumber, float $amount, Carbon $transactionDate,
                                       string $transactionCategoryId, string $userCreated): OutBuyLoad;
 
-    public function getSumOfTransactions(string $from, string $to);
+    public function getSumOfTransactions(string $from, string $to, string $userAccountId);
 }
