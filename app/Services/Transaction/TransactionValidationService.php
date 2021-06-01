@@ -136,7 +136,7 @@ class TransactionValidationService implements ITransactionValidationService
 
                 $sumUp = $totalTransactionCurrentMonth + $totalAmount;
 
-                if ($sumUp >= $tier->monthly_limit) return;
+                if ((Double) $sumUp <= (Double) $tier->monthly_limit) return;
 
                 if(isset($customMessage) && count($customMessage) > 0) {
                     $this->handleCustomErrorMessage($customMessage['key'], $customMessage['value']);
