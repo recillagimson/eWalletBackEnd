@@ -152,6 +152,16 @@ class SendMoneyService implements ISendMoneyService
         if (!$receiverDetails) $this->recipientDetailsNotFound();
         if (!$senderDetails) $this->senderDetailsNotFound();
 
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+        $sender_account = $this->userAccounts->get($senderID);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($sender_account, $fillRequest['amount'], TransactionCategoryIds::sendMoneyToSquidPayAccount);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
+        $receiver_account = $this->userAccounts->get($receiverID);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($receiver_account, $fillRequest['amount'], TransactionCategoryIds::receiveMoneyToSquidPayAccount, [ 'key' => ErrorCodes::receiverMonthlyLimitExceeded, 'value' => 'Receiver Transaction Limit reached' ]);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
+
         return $this->sendMoneyReview($receiverID);
     }
 
