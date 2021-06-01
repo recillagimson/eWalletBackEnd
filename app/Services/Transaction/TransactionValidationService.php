@@ -129,7 +129,6 @@ class TransactionValidationService implements ITransactionValidationService
                     $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
                     
                     $totalTransactionCurrentMonth = $addMoneyFromBank + $receiveMoney;
-                    dd($receiveMoney);
                 }
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
