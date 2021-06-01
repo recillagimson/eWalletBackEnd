@@ -117,25 +117,25 @@ class TransactionValidationService implements ITransactionValidationService
 
                 // OUT TRANSACTIONS
                 if($transactionCategory->transaction_type === 'NEGATIVE') {
-                    $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to);
-                    $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to);
-                    $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to);
-                    $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to);
+                    $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
+                    $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
+                    $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
+                    $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
                     $totalTransactionCurrentMonth = $buyLoad + $payBills + $send2Banks + $sendMoney;
                     
                 } else {
-                    $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to);
-                    $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to);
+                    $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
                     
                     $totalTransactionCurrentMonth = $addMoneyFromBank + $receiveMoney;
+                    dd($receiveMoney);
                 }
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
 
                 $sumUp = $totalTransactionCurrentMonth + $totalAmount;
-
                 if ((Double) $sumUp <= (Double) $tier->monthly_limit) return;
 
                 if(isset($customMessage) && count($customMessage) > 0) {
