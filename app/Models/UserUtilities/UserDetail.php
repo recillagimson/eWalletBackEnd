@@ -15,7 +15,7 @@ class UserDetail extends Model
     use UsesUuid, HasFactory, HasS3Links;
 
     protected $appends = [
-        'email', 'mobile_number'
+        'email', 'mobile_number', 'avatar_link'
     ];
     /**
      * The table associated with the model.

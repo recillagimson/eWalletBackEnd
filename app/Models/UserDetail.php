@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class UserDetail extends Model
 {
     use HasFactory, UsesUuid, SoftDeletes;
-
     
     protected $table = 'user_details';
     protected $fillable = [
