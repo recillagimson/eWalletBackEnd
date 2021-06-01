@@ -88,7 +88,7 @@ class UserDetail extends Model
         return $this->user_account ? $this->user_account->mobile_number : "";
     }
 
-    public function getAvatarLinkAttribute() : string {
+    public function getAvatarLinkAttribute() {
         // return Storage::disk('s3')->temporaryUrl($this->avatar_location, Carbon::now()->addHour(1));
         return $this->getTempUrl($this->avatar_location, Carbon::now()->addHour(1)->format('Y-m-d H:i:s'));
     }

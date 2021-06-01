@@ -28,7 +28,7 @@ class UserPhoto extends Model
         'user_updated'
     ];
 
-    public function getAvatarLinkAttribute() : string {
+    public function getAvatarLinkAttribute() {
         return $this->getTempUrl($this->avatar_location, Carbon::now()->addHour()->format('Y-m-d H:i:s'));
     }
 }
