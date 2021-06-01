@@ -3,7 +3,7 @@
 namespace App\Repositories\UserPhoto;
 
 use App\Models\UserPhoto;
-use App\Models\UserDetail;
+use App\Models\UserUtilities\UserDetail;
 use App\Repositories\Repository;
 use Illuminate\Validation\ValidationException;
 
@@ -35,7 +35,7 @@ class UserPhotoRepository extends Repository implements IUserPhotoRepository
                 'avatar_location' => $avatarUrl,
             ]);
         }
-        return $userDetails;
+        return $userDetails->append('avatar_link');
         
         throw ValidationException::withMessages([
             'user_detail_not_found' => 'User Detail not found'
