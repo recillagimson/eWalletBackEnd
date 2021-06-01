@@ -67,7 +67,8 @@ class UserDetail extends Model
         "is_accept_parental_consent",
         "occupation",
         "employer",
-        "contact_no"
+        "contact_no",
+        "avatar_location"
 
     ];
 

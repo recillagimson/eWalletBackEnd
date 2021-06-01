@@ -34,8 +34,8 @@ class UserPhotoRepository extends Repository implements IUserPhotoRepository
             $userDetails->update([
                 'avatar_location' => $avatarUrl,
             ]);
+            return $userDetails->append('avatar_link');
         }
-        return $userDetails->append('avatar_link');
         
         throw ValidationException::withMessages([
             'user_detail_not_found' => 'User Detail not found'
