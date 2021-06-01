@@ -9,6 +9,7 @@ use App\Http\Requests\UserPhoto\SelfieUploadRequest;
 use Illuminate\Http\JsonResponse;
 use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserPhoto\VerificationRequest;
+use App\Models\UserPhoto;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Services\Utilities\Verification\IVerificationService;
 
@@ -41,5 +42,10 @@ class UserPhotoController extends Controller
         // $encryptedResponse = $this->encryptionService->encrypt(array($createRecord));
         // return response()->json($encryptedResponse, Response::HTTP_OK);
         return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::success);
+    }
+
+    public function getImageSignedUrl(string $userPhotoId) {
+        $url = $this->iVerificationService->getSignedUrl($userPhotoId);
+        return $this->responseService->successResponse(['image_url' => $url], SuccessMessages::success);
     }
 }

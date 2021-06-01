@@ -20,6 +20,7 @@ use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\Tier\TierApprovalController;
 use App\Http\Controllers\TierController;
+use App\Http\Controllers\User\AdminUserController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\User\UserAccountController;
 use App\Http\Controllers\UserPhotoController;
@@ -82,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification']);
     Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
+    Route::get('auth/user/photo/{userPhotoId}', [UserPhotoController::class, 'getImageSignedUrl']);
     Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar']);
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
@@ -109,10 +111,24 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function () {
+        Route::prefix('/users')->group(function () {
+            Route::get('/', [AdminUserController::class, 'get']);
+            Route::post('/', [AdminUserController::class, 'create']);
+
+            Route::get('/{id}', [AdminUserController::class, 'getById']);
+            Route::put('/{id}', [AdminUserController::class, 'update']);
+
+            Route::delete('/{id}', [AdminUserController::class, 'delete']);
+            Route::post('/search/byemail', [AdminUserController::class, 'getByEmail']);
+            Route::post('/search/byname', [AdminUserController::class, 'getByName']);
+        });
+    });
+
     Route::prefix('/user')->middleware(['decrypt.request'])->group(function () {
         Route::post('/email/validate', [UserAccountController::class, 'validateEmail']);
         Route::post('/email/update', [UserAccountController::class, 'updateEmail']);
-        
+
         Route::post('/mobile/validate', [UserAccountController::class, 'validateMobile']);
         Route::post('/mobile/update', [UserAccountController::class, 'updateMobile']);
 
@@ -166,6 +182,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
+            Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
 
         });
@@ -189,9 +206,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('pay/bills')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [PayBillsController::class, 'getBillers']);
         Route::get('/get/biller/information/{biller_code}', [PayBillsController::class, 'getBillerInformation']);
-        Route::get('/get/required/fields/{biller_code}', [PayBillsController::class, 'getRequiredFields']);
-        Route::get('/get/other/charges/{biller_code}', [PayBillsController::class, 'getOtherCharges']);
-        Route::post('/verify/account/{biller_code}/{account_number}', [PayBillsController::class, 'verifyAccount']);
+        Route::post('/validate/account/{biller_code}/{account_number}', [PayBillsController::class, 'validateAccount']);
         Route::post('/create/payment/{biller_code}', [PayBillsController::class, 'createPayment']);
         Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
@@ -220,7 +235,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{tier}', [TierController::class, 'update']);
         Route::delete('/{tier}', [TierController::class, 'destroy']);
     });
-
 
     Route::prefix('/service/fees')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [ServiceFeeController::class, 'index']);

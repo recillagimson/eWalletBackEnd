@@ -12,4 +12,10 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
         parent::__construct($model);
     }
 
+    public function getSumOfTransactions($from, $to) {
+        return $this->model->where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to)
+            ->where('status', '!=', 'FAILED')
+            ->sum('total_amount');
+    }
 }

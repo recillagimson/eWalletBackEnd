@@ -4,6 +4,7 @@
 namespace App\Services\ThirdParty\BayadCenter;
 
 use App\Enums\TpaProviders;
+use App\Models\UserAccount;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Http;
@@ -65,7 +66,8 @@ class BayadCenterService implements IBayadCenterService
         ];
     }
 
-    public function getToken(): object
+
+    private function getToken(): object
     {
         $data = [
             'grant_type' => 'client_credentials',
@@ -81,7 +83,8 @@ class BayadCenterService implements IBayadCenterService
         return (object)$response->json();
     }
 
-    public function getAuthorizationHeaders(): array
+
+    private function getAuthorizationHeaders(): array
     {
         $token = $this->getToken();
         $headers = $this->defaultHeaders;
@@ -89,6 +92,7 @@ class BayadCenterService implements IBayadCenterService
 
         return $headers;
     }
+
 
 
     public function getBillers() : Response
@@ -107,44 +111,32 @@ class BayadCenterService implements IBayadCenterService
         return $this->apiService->get($url, $headers);
     }
 
-    
-    public function getRequiredFields(string $billerCode)
-    {
-        $headers = $this->getAuthorizationHeaders();
-        $url = $this->baseUrl . $this->billerInformationUrl . $billerCode;
-        $billers = $this->apiService->get($url, $headers);
 
-        $billers = json_decode($billers, true);
-        $requiredFields = array();
-
-        for ($x = 4; $x < count(array_keys($billers['data']['parameters']['verify'])); $x++) {
-            $requiredFields[] = array_keys($billers['data']['parameters']['verify'][$x]);
-        }
-        
-        return $this->dataFormat($requiredFields);
-    }
-
-
-    public function getOtherCharges(string $billerCode): Response
+    public function getOtherCharges(string $billerCode)
     {
         $headers = $this->getAuthorizationHeaders();
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->otherChargesUrl);
-
         return $this->apiService->get($url, $headers);
     }
 
 
-    public function verifyAccount(string $billerCode, string $accountNumber,  $data): Response
+    public function validateAccount(string $billerCode, string $accountNumber,  $data): Response
     {
         $headers = $this->getAuthorizationHeaders();
+        $otherCharges = $this->getOtherCharges($billerCode);
+
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->verifyAccountUrl);
         $url = str_replace(':ACCOUNT-NUMBER', $accountNumber, $url);
 
-        return $this->apiService->post($url, $data, $headers);
+        if (!$otherCharges->successful()) return $otherCharges;    
+        $data += array('paymentMethod' => 'CASH');
+        $data += array('otherCharges' => $otherCharges['data']['otherCharges']);
+
+        return $this->apiService->post($url, $data, $headers) ;
     }
 
 
-    public function createPayment(string $billerCode, array $data): Response
+    public function createPayment(string $billerCode, array $data, UserAccount $user)//: Response
     {
         $headers = $this->getAuthorizationHeaders();
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->createPaymentUrl);
@@ -171,7 +163,6 @@ class BayadCenterService implements IBayadCenterService
         
         return $this->apiService->get($url, $headers);
     }
-
 
 
     // Private Methods

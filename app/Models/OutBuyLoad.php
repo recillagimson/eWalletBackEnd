@@ -39,4 +39,8 @@ class OutBuyLoad extends Model
         'user_created',
         'user_updated',
     ];
+
+    protected $casts = [
+        'transaction_date' => 'datetime'
+    ];
 }

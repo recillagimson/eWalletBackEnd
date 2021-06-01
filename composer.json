@@ -18,6 +18,10 @@
         "laravel/framework": "^8.12",
         "laravel/sanctum": "^2.9",
         "laravel/tinker": "^2.5",
+
+
+        "league/flysystem-aws-s3-v3": "~1.0",
+        "niklasravnsborg/laravel-pdf": "^4.0",
         "sendgrid/sendgrid": "^7.9"
     },
     "require-dev": {

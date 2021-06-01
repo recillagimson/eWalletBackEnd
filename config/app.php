@@ -200,6 +200,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        niklasravnsborg\LaravelPdf\PdfServiceProvider::class
+
     ],
 
     /*
@@ -276,6 +278,11 @@ return [
 
         //Enums - Messages
         'SuccessMessages' => SuccessMessages::class,
+
+        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class
     ],
+
+    'web_app_url' => env('WEB_APP_URL'),
+    'web_app_verification_url' => env('WEB_APP_VERIFICATION_URL'),
 
 ];
