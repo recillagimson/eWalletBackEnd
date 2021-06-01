@@ -4,6 +4,7 @@ namespace App\Models\UserUtilities;
 
 use App\Traits\UsesUuid;
 use App\Models\UserAccount;
+use App\Traits\HasS3Links;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -11,10 +12,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserDetail extends Model
 {
-    use UsesUuid, HasFactory;
+    use UsesUuid, HasFactory, HasS3Links;
 
     protected $appends = [
-        'email', 'mobile_number'
+        'email', 'mobile_number', 'avatar_link'
     ];
     /**
      * The table associated with the model.
@@ -88,7 +89,8 @@ class UserDetail extends Model
     }
 
     public function getAvatarLinkAttribute() : string {
-        return Storage::disk('s3')->temporaryUrl($this->avatar_location, Carbon::now()->addHour(1));
+        // return Storage::disk('s3')->temporaryUrl($this->avatar_location, Carbon::now()->addHour(1));
+        return $this->getTempUrl($this->avatar_location, Carbon::now()->addHour(1)->format('Y-m-d H:i:s'));
     }
 
 }
