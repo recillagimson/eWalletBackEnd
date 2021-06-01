@@ -108,13 +108,9 @@ class PayBillsService implements IPayBillsService
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
-        $arrayResponse = (array)json_decode($response);
-
         // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
         $this->transactionValidationService->checkUserMonthlyTransactionLimit($user, $data['amount'], TransactionCategoryIds::payBills);
         // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-
-        if (isset($arrayResponse['exception'])) return $arrayResponse;
 
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse); 
