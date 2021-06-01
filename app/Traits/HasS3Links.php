@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 trait HasS3Links
 {
     private function getTempUrl(string $path, string $expiration_date_time) {
-        if($path) {
+        if(Storage::disk('s3')->exists($path)) {
             return Storage::disk('s3')->temporaryUrl($path, $expiration_date_time);
         }
         return null;
