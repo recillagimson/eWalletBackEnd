@@ -3,9 +3,12 @@
 namespace App\Models\UserUtilities;
 
 use App\Traits\UsesUuid;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\UserAccount;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class UserDetail extends Model
 {
     use UsesUuid, HasFactory;
@@ -82,6 +85,10 @@ class UserDetail extends Model
     }
     public function getMobileNumberAttribute() {
         return $this->user_account ? $this->user_account->mobile_number : "";
+    }
+
+    public function getAvatarLinkAttribute() : string {
+        return Storage::disk('s3')->temporaryUrl($this->avatar_location, Carbon::now()->addHour(1));
     }
 
 }
