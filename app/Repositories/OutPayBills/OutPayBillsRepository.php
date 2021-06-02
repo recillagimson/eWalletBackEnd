@@ -23,10 +23,7 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
 
     public function getPending(string $userId)
     {
-        return $this->model->where([
-            'user_account_id' => $userId,
-            'status' => TransactionStatuses::pending
-        ])->get();
+        return $this->model->where([ 'user_account_id' => $userId, 'status' => TransactionStatuses::pending ])->get();
     }
 
 }

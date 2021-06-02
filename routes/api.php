@@ -210,6 +210,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/create/payment/{biller_code}', [PayBillsController::class, 'createPayment']);
         Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
+        Route::get('/process/pending', [PayBillsController::class, 'processPending']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->group(function () {

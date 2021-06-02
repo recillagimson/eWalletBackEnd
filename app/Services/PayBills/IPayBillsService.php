@@ -17,4 +17,5 @@ interface IPayBillsService
     public function createPayment(string $billerCode, array $data, UserAccount $user);
     public function inquirePayment(string $billerCode, string $clientReference);
     public function getWalletBalance();
+    public function processPending(UserAccount $user);
 }
