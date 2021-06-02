@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Traits\UsesUuid;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\HasS3Links;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserPhoto extends Model
 {
-    use HasFactory, SoftDeletes, UsesUuid;
+    use HasFactory, SoftDeletes, UsesUuid, HasS3Links;
 
     protected $table = 'user_id_photos';
 
@@ -25,4 +27,8 @@ class UserPhoto extends Model
         'user_created',
         'user_updated'
     ];
+
+    public function getAvatarLinkAttribute() {
+        return $this->getTempUrl($this->avatar_location, Carbon::now()->addHour()->format('Y-m-d H:i:s'));
+    }
 }

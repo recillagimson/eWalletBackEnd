@@ -69,10 +69,11 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
         return $records;
     }
 
-    public function getSumOfTransactions($from, $to) {
+    public function getSumOfTransactions($from, $to, string $userAccountId) {
         return $this->model->where('transaction_date', '>=', $from)
             ->where('transaction_date', '<=', $to)
             ->where('status', '!=', 'FAILED')
+            ->where('user_account_id', $userAccountId)
             ->sum('total_amount');
     }
 }

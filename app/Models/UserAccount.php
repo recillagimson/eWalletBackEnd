@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use App\Traits\UsesUuid;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Traits\UsesUuid;
+use App\Traits\HasS3Links;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\UserUtilities\UserDetail;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class UserAccount extends Authenticatable
 {
-    use UsesUuid;
+    use UsesUuid, HasS3Links;
     use SoftDeletes, HasApiTokens, HasFactory;
 
     /**

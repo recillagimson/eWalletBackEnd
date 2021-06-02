@@ -6,5 +6,5 @@ use App\Models\InReceiveMoney;
 
 interface IInReceiveMoneyRepository extends IRepository
 {
-    public function getSumOfTransactions($from, $to);
+    public function getSumOfTransactions($from, $to, $userAccountId);
 }

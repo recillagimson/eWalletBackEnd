@@ -2,12 +2,13 @@
 
 namespace App\Services\OutBuyLoad;
 
-use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
-use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
-use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use Carbon\Carbon;
+use App\Enums\TransactionCategoryIds;
+use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
+use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 
 class OutBuyLoadService implements IOutBuyLoadService
 {
@@ -37,6 +38,11 @@ class OutBuyLoadService implements IOutBuyLoadService
 
     public function createRecord(array $details, object $request) {
         $getPromoDetails = $this->prepaidLoads->getByRewardKeyword($details['promo']);
+        
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($request->user(), $getPromoDetails->amount, TransactionCategoryIds::buyLoad);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
+        
         $transactionCategoryName = $this->transactionCategoryRepository->getByName('CXLOAD');
         $inputOutBuyLoad = $this->inputOutBuyLoad($getPromoDetails, $details, $request->user(), $transactionCategoryName);
         $createOutBuyLoad = $this->outBuyLoads->create($inputOutBuyLoad);
