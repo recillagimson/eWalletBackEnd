@@ -71,19 +71,20 @@ class PayBillsService implements IPayBillsService
                 $arrayResponse['data'][$x]['code'] == 'MWSIN' || 
                 $arrayResponse['data'][$x]['code'] == 'RFID1' || 
                 $arrayResponse['data'][$x]['code'] == 'ETRIP' || 
-                $arrayResponse['data'][$x]['code'] == 'CNVRG' || 
-                $arrayResponse['data'][$x]['code'] == 'PLDT6' || 
-                $arrayResponse['data'][$x]['code'] == 'AEON1' || 
-                $arrayResponse['data'][$x]['code'] == 'BNECO' || 
+                //$arrayResponse['data'][$x]['code'] == 'CNVRG' || 
+                //$arrayResponse['data'][$x]['code'] == 'PLDT6' || 
+               // $arrayResponse['data'][$x]['code'] == 'AEON1' || 
+                //$arrayResponse['data'][$x]['code'] == 'BNECO' || 
                 $arrayResponse['data'][$x]['code'] == 'PRULI' || 
-                $arrayResponse['data'][$x]['code'] == 'AECOR' || 
-                $arrayResponse['data'][$x]['code'] == 'LAZAE' || 
+                //$arrayResponse['data'][$x]['code'] == 'AECOR' || 
+               // $arrayResponse['data'][$x]['code'] == 'LAZAE' || 
                 $arrayResponse['data'][$x]['code'] == 'SMART' || 
-                $arrayResponse['data'][$x]['code'] == 'SSS01' ||
-                $arrayResponse['data'][$x]['code'] == 'SSS02' || 
+                //$arrayResponse['data'][$x]['code'] == 'SSS01' ||
+               // $arrayResponse['data'][$x]['code'] == 'SSS02' || 
                 $arrayResponse['data'][$x]['code'] == 'SSS03' ||
-                $arrayResponse['data'][$x]['code'] == 'DFA01' || 
-                $arrayResponse['data'][$x]['code'] == 'POEA1'
+                //$arrayResponse['data'][$x]['code'] == 'DFA01' || 
+                //$arrayResponse['data'][$x]['code'] == 'POEA1'
+
                 ){
                     $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
                 } else {
