@@ -54,6 +54,12 @@ trait PayBillsHelpers
     }
 
 
+    private function checkMonthlyLimit(UserAccount $user, array $data)
+    {
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($user, $data['amount'], TransactionCategoryIds::payBills);
+    }
+
+
     /**
      * Saves the transaction after successfully validated
      * Create Payment Endpoint
