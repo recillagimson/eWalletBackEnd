@@ -2,6 +2,7 @@
 
 namespace App\Repositories\OutPayBills;
 
+use App\Enums\TransactionStatuses;
 use App\Models\OutPayBills;
 use App\Repositories\Repository;
 
@@ -19,4 +20,13 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
             ->where('user_account_id', $userAccountId)
             ->sum('total_amount');
     }
+
+    public function getPending(string $userId)
+    {
+        return $this->model->where([
+            'user_account_id' => $userId,
+            'status' => TransactionStatuses::pending
+        ])->get();
+    }
+
 }

@@ -12,6 +12,7 @@ use App\Enums\TransactionCategoryIds;
 use App\Models\UserAccount;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
@@ -26,7 +27,7 @@ class PayBillsService implements IPayBillsService
 {
     use WithTpaErrors, PayBillsHelpers, WithPayBillsErrors;
 
-
+   
     private IOutPayBillsRepository $outPayBills;
     private IBayadCenterService $bayadCenterService;
     private IUserDetailRepository $userDetailRepository;
@@ -34,8 +35,10 @@ class PayBillsService implements IPayBillsService
     private IUserBalanceInfoRepository $userBalanceInfo;
     private IServiceFeeRepository $serviceFeeRepository;
     private ITransactionValidationService $transactionValidationService;
+    private IUserAccountRepository $userAccountRepository;
+    private IOutPayBillsRepository $outPayBillsRepository;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository){
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
@@ -43,6 +46,8 @@ class PayBillsService implements IPayBillsService
         $this->userBalanceInfo = $userBalanceInfo;
         $this->serviceFeeRepository = $serviceFeeRepository;
         $this->transactionValidationService = $transactionValidationService;
+        $this->userAccountRepository = $userAccountRepository;
+        $this->outPayBillsRepository = $outPayBillsRepository;
     }
 
     
@@ -108,28 +113,16 @@ class PayBillsService implements IPayBillsService
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
-        $arrayResponse = (array)json_decode($response);
-
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($user, $data['amount'], TransactionCategoryIds::payBills);
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-
-        if (isset($arrayResponse['exception'])) return $arrayResponse;
-
         $arrayResponse = (array)json_decode($response->body(), true);
-        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse); 
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
         $this->validateTransaction($billerCode, $data, $user);
+        $this->checkMonthlyLimit($user, $data);
         return $this->validationResponse($user, $response, $billerCode, $data);
-
     }
 
 
     public function createPayment(string $billerCode, array $data, UserAccount $user): array
     {
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($user, $data['amount'], TransactionCategoryIds::payBills);
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-        
         $response = $this->bayadCenterService->createPayment($billerCode, $data, $user);
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
@@ -146,6 +139,41 @@ class PayBillsService implements IPayBillsService
         return $arrayResponse;
     }
 
-    
+
+    // public function processPending(string $userId): array
+    // {
+    //     $user = $this->userAccountRepository->getUser($userId);
+    //     $balanceInfo = $user->balanceInfo;
+    //     $pendingOutPayBills = $this->outPayBillsRepository->getPending($userId);
+    //     $successCount = 0;
+    //     $failCount = 0;
+
+    //     foreach ($pendingOutPayBills as $buyLoad) {
+    //         $response = $this->atmService->checkStatus($buyLoad->reference_number);
+    //         $buyLoad = $this->handleStatusResponse($buyLoad, $response);
+    //         $amount = $buyLoad->total_amount;
+
+    //         if ($buyLoad->status === TransactionStatuses::success) {
+    //             if ($balanceInfo->pending_balance > 0) $balanceInfo->pending_balance -= $amount;
+    //         }
+
+    //         if ($buyLoad->status === TransactionStatuses::failed) {
+    //             $balanceInfo->available_balance += $amount;
+    //             $balanceInfo->pending_balance -= $amount;
+    //         }
+
+    //         $balanceInfo->save();
+    //         $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance);
+
+    //         if ($buyLoad->status === TransactionStatuses::success) $successCount++;
+    //         if ($buyLoad->status === TransactionStatuses::failed) $failCount++;
+    //     }
+
+    //     return [
+    //         'total_pending_count' => $pendingOutPayBills->count(),
+    //         'success_count' => $successCount,
+    //         'failed_count' => $failCount
+    //     ];
+    // }    
     
 }

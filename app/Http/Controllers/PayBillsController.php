@@ -125,4 +125,12 @@ class PayBillsController extends Controller
         return $this->responseService->successResponse($inquirePayment);
     }
 
+
+    public function processPending(Request $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+        $response = $this->buyLoadService->processPending($userId);
+        return $this->responseService->successResponse($response);
+    }
+
 }
