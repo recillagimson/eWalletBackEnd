@@ -3,6 +3,7 @@
 
 namespace App\Traits\Transactions;
 
+use App\Enums\BayadCenterResponseCode;
 use App\Enums\PayBillsConfig;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\TpaProviders;
@@ -11,6 +12,7 @@ use App\Enums\TransactionStatuses;
 use App\Enums\UbpResponseCodes;
 use App\Enums\UbpResponseStates;
 use App\Enums\UsernameTypes;
+use App\Models\OutPayBills;
 use App\Models\OutSend2Bank;
 use App\Models\UserAccount;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
@@ -51,12 +53,7 @@ trait PayBillsHelpers
     {
         $isEnough = $this->checkAmount($user, $data, $billerCode);
         if (!$isEnough) $this->insuficientBalance();
-    }
-
-
-    private function checkMonthlyLimit(UserAccount $user, array $data)
-    {
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($user, $data['amount'], TransactionCategoryIds::payBills);
+        $this->checkMonthlyLimit($user, $data);
     }
 
 
@@ -75,6 +72,11 @@ trait PayBillsHelpers
         return $this->outPayBills($user, $billerCode, $response);
     }
 
+
+    private function checkMonthlyLimit(UserAccount $user, array $data)
+    {
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($user, $data['amount'], TransactionCategoryIds::payBills);
+    }
 
 
     private function checkAmount(UserAccount $user, array $data, string $billerCode)
@@ -163,5 +165,54 @@ trait PayBillsHelpers
         return $data;
     }
 
+    private function handleStatusResponse(OutPayBills $payBill, Response $response)
+    {
+        if (!$response->successful()) {
+            return;
+        } else {
+            $responseData = $response->json();
+            $state = $responseData['data']['status'];
+            $status = '';
+            
+            if ($state === BayadCenterResponseCode::paymentPosted)
+                $status = TransactionStatuses::success;
+
+            if ($state === BayadCenterResponseCode::billerValidationFailed)
+                $status = TransactionStatuses::failed;
+
+            if ($state === BayadCenterResponseCode::billerTimeOut)
+                $status = TransactionStatuses::failed;
+
+            if ($state === BayadCenterResponseCode::pending)
+                $status = TransactionStatuses::pending;
+
+            if ($state === BayadCenterResponseCode::onhold)
+                $status = TransactionStatuses::pending;
+
+            if ($state === BayadCenterResponseCode::queued)
+                $status = TransactionStatuses::pending;
+
+            if ($state === BayadCenterResponseCode::processing)
+                $status = TransactionStatuses::pending;
+                
+                
+            $payBill->status = $status;
+            $payBill->user_updated = $payBill->user_account_id;
+            $payBill->save();
+
+            if ($status === TransactionStatuses::success) {
+                $this->transactionHistories->log(
+                    $payBill->user_account_id,
+                    $payBill->transaction_category_id,
+                    $payBill->id,
+                    $payBill->reference_number,
+                    $payBill->total_amount,
+                    $payBill->user_account_id
+                );
+            }
+        }
+
+        return $payBill;
+    }
 
 }

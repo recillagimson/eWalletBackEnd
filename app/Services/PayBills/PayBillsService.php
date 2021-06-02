@@ -8,13 +8,14 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\TransactionCategoryIds;
-
+use App\Enums\TransactionStatuses;
 use App\Models\UserAccount;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
@@ -37,8 +38,9 @@ class PayBillsService implements IPayBillsService
     private ITransactionValidationService $transactionValidationService;
     private IUserAccountRepository $userAccountRepository;
     private IOutPayBillsRepository $outPayBillsRepository;
+    private IUserTransactionHistoryRepository $transactionHistories;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories){
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
@@ -48,6 +50,7 @@ class PayBillsService implements IPayBillsService
         $this->transactionValidationService = $transactionValidationService;
         $this->userAccountRepository = $userAccountRepository;
         $this->outPayBillsRepository = $outPayBillsRepository;
+        $this->transactionHistories = $transactionHistories;
     }
 
     
@@ -116,7 +119,6 @@ class PayBillsService implements IPayBillsService
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
         $this->validateTransaction($billerCode, $data, $user);
-        $this->checkMonthlyLimit($user, $data);
         return $this->validationResponse($user, $response, $billerCode, $data);
     }
 
@@ -140,40 +142,42 @@ class PayBillsService implements IPayBillsService
     }
 
 
-    // public function processPending(string $userId): array
-    // {
-    //     $user = $this->userAccountRepository->getUser($userId);
-    //     $balanceInfo = $user->balanceInfo;
-    //     $pendingOutPayBills = $this->outPayBillsRepository->getPending($userId);
-    //     $successCount = 0;
-    //     $failCount = 0;
+    public function processPending(UserAccount $user): array
+    {
+        $balanceInfo = $user->balanceInfo;
+        $pendingOutPayBills = $this->outPayBillsRepository->getPending($user->id);
+        $successCount = 0;
+        $failCount = 0;
+        $response = array();
 
-    //     foreach ($pendingOutPayBills as $buyLoad) {
-    //         $response = $this->atmService->checkStatus($buyLoad->reference_number);
-    //         $buyLoad = $this->handleStatusResponse($buyLoad, $response);
-    //         $amount = $buyLoad->total_amount;
+        foreach ($pendingOutPayBills as $payBill) {
+            
+            $response = $this->bayadCenterService->inquirePayment($payBill->billers_code, $payBill->client_reference);
+            $payBill = $this->handleStatusResponse($payBill, $response);
+            $amount = $payBill->total_amount;
 
-    //         if ($buyLoad->status === TransactionStatuses::success) {
-    //             if ($balanceInfo->pending_balance > 0) $balanceInfo->pending_balance -= $amount;
-    //         }
+            if ($payBill->status === TransactionStatuses::success) {
+                if ($balanceInfo->pending_balance > 0) $balanceInfo->pending_balance -= $amount;
+            }
 
-    //         if ($buyLoad->status === TransactionStatuses::failed) {
-    //             $balanceInfo->available_balance += $amount;
-    //             $balanceInfo->pending_balance -= $amount;
-    //         }
+            if ($payBill->status === TransactionStatuses::failed) {
+                $balanceInfo->available_balance += $amount;
+                $balanceInfo->pending_balance -= $amount;
+            }
 
-    //         $balanceInfo->save();
-    //         $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance);
+            $balanceInfo->save();
+          //  $this->sendNotifications($user, $payBill, $balanceInfo->available_balance);
 
-    //         if ($buyLoad->status === TransactionStatuses::success) $successCount++;
-    //         if ($buyLoad->status === TransactionStatuses::failed) $failCount++;
-    //     }
+            if ($payBill->status === TransactionStatuses::success) $successCount++;
+            if ($payBill->status === TransactionStatuses::failed) $failCount++;
+        }
+        
 
-    //     return [
-    //         'total_pending_count' => $pendingOutPayBills->count(),
-    //         'success_count' => $successCount,
-    //         'failed_count' => $failCount
-    //     ];
-    // }    
+        return [
+            'total_pending_count' => $pendingOutPayBills->count(),
+            'success_count' => $successCount,
+            'failed_count' => $failCount
+        ];
+    }    
     
 }
