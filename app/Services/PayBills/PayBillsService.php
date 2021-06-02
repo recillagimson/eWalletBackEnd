@@ -81,7 +81,7 @@ class PayBillsService implements IPayBillsService
                 $arrayResponse['data'][$x]['code'] == 'SMART' || 
                 //$arrayResponse['data'][$x]['code'] == 'SSS01' ||
                // $arrayResponse['data'][$x]['code'] == 'SSS02' || 
-                $arrayResponse['data'][$x]['code'] == 'SSS03' ||
+                $arrayResponse['data'][$x]['code'] == 'SSS03'
                 //$arrayResponse['data'][$x]['code'] == 'DFA01' || 
                 //$arrayResponse['data'][$x]['code'] == 'POEA1'
 
