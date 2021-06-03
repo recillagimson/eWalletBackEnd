@@ -45,7 +45,7 @@ trait WithAuthErrors
     public function accountLockedOut()
     {
         $this->validationErrorMessage(ErrorCodes::accountLockedOut,
-            'Your Account has beenj locked, Please contact Squidpay Support for assistance
+            'Your Account has been locked, Please contact Squidpay Support for assistance
             in unlocking your account.');
     }
 
