@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
+use App\Http\Controllers\KYC\KYCController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PayBillsController;
@@ -85,6 +86,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
     Route::get('auth/user/photo/{userPhotoId}', [UserPhotoController::class, 'getImageSignedUrl']);
     Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar']);
+
+    Route::prefix('ekyc')->group(function() {
+        Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
+    });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser']);
@@ -256,6 +261,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function(){
         Route::get('/', [DashboardController::class, 'index']);
     });
+
+    
 
 });
 
