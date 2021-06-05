@@ -21,6 +21,8 @@ interface INotificationService
 
     public function sendMoneyRecipientNotification(string $to, array $fillRequest, string $senderName);
 
+    public function payBillsNotification(string $to, array $fillRequest, string $biller);
+
     public function sendSend2BankSenderNotification(string $to, string $refNo, string $accountNo, float $amount,
                                                     Carbon $transactionDate, float $serviceFee, float $newBalance,
                                                     string $provider, string $remittanceId);

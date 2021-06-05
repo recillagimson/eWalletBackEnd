@@ -181,6 +181,12 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
+    public function payBillsNotification(string $to, array $fillRequest, string $biller)
+    {
+        $subject = 'SquidPay - Pay Bills Notification';
+        $template = new SendMoneySenderNotification($fillRequest, $biller);
+        $this->sendMessage($to, $subject, $template);
+    }
 
     private function sendMessage(string $to, string $subject, Mailable $template): void
     {

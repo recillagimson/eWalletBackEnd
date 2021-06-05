@@ -69,6 +69,7 @@ trait PayBillsHelpers
     private function saveTransaction(UserAccount $user, string $billerCode, $response)
     {
         $this->subtractUserBalance($user, $billerCode, $response);
+      //  $this->notificationService->payBillsNotification();
         return $this->outPayBills($user, $billerCode, $response);
     }
 
