@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
 use App\Models\TierApproval;
+use App\Models\UserSelfiePhoto;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
@@ -58,7 +59,9 @@ use App\Repositories\UserKeys\PasswordHistory\PasswordHistoryRepository;
 use App\Repositories\UserKeys\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\UserKeys\PinCodeHistory\PinCodeHistoryRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserPhoto\UserPhotoRepository;
+use App\Repositories\UserPhoto\UserSelfiePhotoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 use App\Repositories\UserUtilities\Country\CountryRepository;
@@ -142,6 +145,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // User Photo
         $this->app->bind(IUserPhotoRepository::class, UserPhotoRepository::class);
+        $this->app->bind(IUserSelfiePhotoRepository::class, UserSelfiePhotoRepository::class);
 
         // Log History
         $this->app->bind(ILogHistoryRepository::class, LogHistoryRepository::class);

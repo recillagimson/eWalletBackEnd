@@ -56,7 +56,11 @@ class UpdateProfileSilverRequest  extends FormRequest
             'encoded_source_of_fund'=>Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211'),
             'mother_maidenname'=>'required',
             'employer'=>['required', 'max:50'],
-            'contact_no'=>['required', 'max:11',  new MobileNumber()]
+            'contact_no'=>['required', 'max:11',  new MobileNumber()],
+            'id_photos_ids' => ['required', 'array', 'min:1'],
+            'id_photos_ids.*' => ['required', 'exists:user_id_photos,id'],
+            'id_selfie_ids' => ['required', 'array', 'min:1'],
+            'id_selfie_ids.*' => ['required', 'exists:user_selfie_photos,id'],
         ];
         
         $inputs = request()->input();

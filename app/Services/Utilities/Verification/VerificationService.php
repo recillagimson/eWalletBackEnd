@@ -9,17 +9,20 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class VerificationService implements IVerificationService
 {
     public IUserPhotoRepository $userPhotoRepository;
     public IUserDetailRepository $userDetailRepository;
+    public IUserSelfiePhotoRepository $userSelfiePhotoRepository;
 
-    public function __construct(IUserPhotoRepository $userPhotoRepository, IUserDetailRepository $userDetailRepository)
+    public function __construct(IUserPhotoRepository $userPhotoRepository, IUserDetailRepository $userDetailRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
+        $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
     }
 
     public function createSelfieVerification(array $data) {
@@ -33,7 +36,7 @@ class VerificationService implements IVerificationService
             ]);
         }
         // Delete file using path from current detail
-        $this->deleteFile($userDetails->selfie_loction);
+        // $this->deleteFile($userDetails->selfie_loction);
 
         // For Serfile Processing
         // GET EXT NAME
@@ -42,8 +45,13 @@ class VerificationService implements IVerificationService
         $selfiePhotoName = request()->user()->id . "/" . \Str::random(40) . "." . $selfiePhotoExt;
         // PUT FILE TO STORAGE
         $selfiePhotoPath = $this->saveFile($data['selfie_photo'], $selfiePhotoName, 'selfie_photo');
+        
+        $data['photo_location'] = $selfiePhotoPath;
+        $data['user_account_id'] = request()->user()->id;
+        $data['user_created'] = request()->user()->id;
+        $data['user_updated'] = request()->user()->id;
         // SAVE SELFIE LOCATION ON USER DETAILS
-        $record = $this->userPhotoRepository->updateSelfiePhoto($selfiePhotoPath);
+        $record = $this->userSelfiePhotoRepository->create($data);
 
         return $record;
         // return to controller all created records
@@ -108,5 +116,19 @@ class VerificationService implements IVerificationService
         throw ValidationException::withMessages([
             'photo_url_empty' => 'User Photo location not found'
         ]);
+    }
+
+    // UPDATE TIER APPROVAL IDS OF USER PHOTOS AND SELFIE PHOTOS
+    public function updateTierApprovalIds(array $userIdPhotos, array $userSelfiePhotos, string $tierApprovalStatus) {
+        // USER ID PHOTOS
+        foreach($userIdPhotos as $photo) {
+            $photo_instance = $this->userPhotoRepository->get($photo);
+            $this->userPhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus]);
+        }
+        // USER SELFIE PHOTOS
+        foreach($userSelfiePhotos as $photo) {
+            $photo_instance = $this->userSelfiePhotoRepository->get($photo);
+            $this->userSelfiePhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus]);
+        }
     }
 }
