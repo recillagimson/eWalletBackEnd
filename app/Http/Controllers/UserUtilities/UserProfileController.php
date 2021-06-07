@@ -99,6 +99,18 @@ class UserProfileController extends Controller
         return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
     }
 
+    public function updateSilverValidation(UpdateProfileSilverRequest $request): JsonResponse {
+        // IF REQUESTING FOR TIER UPDATE
+        if(request()->user() && request()->user()->tier && request()->user()->tier->id !== AccountTiers::tier2) {
+            // VALIDATE IF HAS EXISTING REQUEST
+            $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequest();
+            if($findExistingRequest) {
+                return $this->tierUpgradeAlreadyExist();
+            }
+        }
+        return $this->responseService->successResponse(null, SuccessMessages::success);
+    }
+
     /**
      * Display the specified resource.
      *
