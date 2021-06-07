@@ -46,6 +46,7 @@ class ErrorCodes
     const emailAlreadyTaken = 407;
     const mobileAlreadyTaken = 408;
     const receiverMonthlyLimitExceeded = 409;
+    const tierUpgradeExist = 410;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;
