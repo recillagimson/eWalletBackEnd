@@ -3,6 +3,7 @@
 namespace App\Services\KYCService;
 
 use Illuminate\Http\File;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\CurlService\ICurlService;
@@ -40,13 +41,14 @@ class KYCService implements IKYCService
     }
 
     public function initOCR(array $attr) {
-        $url = env('KYC_APP_FACEMATCH_URL');
+        $url = env('KYC_APP_OCR_URL');
         $headers = $this->getAuthorizationHeaders();
+
+        $headers[4] = "transactionId: " . (string)Str::uuid();
 
         $id = new \CURLFILE($attr['id_photo']->getPathname());
 
         $data = array('id' => $id);
-
         return $this->curlService->curlPost($url, $data, $headers);
     }
 
