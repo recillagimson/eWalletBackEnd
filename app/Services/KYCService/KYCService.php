@@ -39,4 +39,15 @@ class KYCService implements IKYCService
         return $this->curlService->curlPost($url, $data, $headers);
     }
 
+    public function initOCR(array $attr) {
+        $url = env('KYC_APP_FACEMATCH_URL');
+        $headers = $this->getAuthorizationHeaders();
+
+        $id = new \CURLFILE($attr['id_photo']->getPathname());
+
+        $data = array('id' => $id);
+
+        return $this->curlService->curlPost($url, $data, $headers);
+    }
+
 }

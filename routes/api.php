@@ -89,6 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('ekyc')->group(function() {
         Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
+        Route::post('ocr', [KYCController::class, 'initOCR'])->name('ocr');
     });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
