@@ -18,6 +18,7 @@ use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
 use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\ServiceFeeController;
+use App\Http\Controllers\Tier\TierApprovalCommentController;
 use App\Http\Controllers\Tier\TierApprovalController;
 use App\Http\Controllers\TierController;
 use App\Http\Controllers\User\AdminUserController;
@@ -221,6 +222,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{notification}', [NotificationController::class, 'show']);
         Route::put('/{notification}', [NotificationController::class, 'update']);
         Route::delete('/{notification}', [NotificationController::class, 'delete']);
+    });
+
+    Route::prefix('/tiers/approval/comment')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/', [TierApprovalCommentController::class, 'list']);
+        Route::post('/', [TierApprovalCommentController::class, 'create']);
     });
 
     Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
