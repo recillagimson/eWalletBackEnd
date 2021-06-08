@@ -25,7 +25,10 @@ class UserPhoto extends Model
         'approval_status',
         'reviewed_by',
         'user_created',
-        'user_updated'
+        'user_updated',
+        'tier_approval_id',
+        'remarks',
+        'reviewed_date',
     ];
 
     public function getAvatarLinkAttribute() {

@@ -179,6 +179,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/profile', [UserProfileController::class, 'show']);
             Route::post('/profile/tobronze', [UserProfileController::class, 'updateBronze']);
             Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
+            Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);

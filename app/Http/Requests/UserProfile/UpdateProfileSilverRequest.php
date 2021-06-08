@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\UserProfile;
 
+use App\Enums\AccountTiers;
+use App\Rules\MobileNumber;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
-use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProfileSilverRequest  extends FormRequest
@@ -56,10 +57,18 @@ class UpdateProfileSilverRequest  extends FormRequest
             'encoded_source_of_fund'=>Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211'),
             'mother_maidenname'=>'required',
             'employer'=>['required', 'max:50'],
-            'contact_no'=>['required', 'max:11',  new MobileNumber()]
+            'contact_no'=>['required', 'max:11',  new MobileNumber()],
         ];
         
         $inputs = request()->input();
+
+        // check if first time to upgrade to silver
+        if(request()->user()->tier->id === AccountTiers::tier1) {
+            $required_fields_default['id_photos_ids'] = ['required', 'array', 'min:1'];
+            $required_fields_default['id_photos_ids.*'] = ['required', 'exists:user_id_photos,id'];
+            $required_fields_default['id_selfie_ids'] = ['required', 'array', 'min:1'];
+            $required_fields_default['id_selfie_ids.*'] = ['required', 'exists:user_selfie_photos,id'];
+        }
         
         if(isset($inputs['birth_date'])) {
             $birthdate = Carbon::parse($inputs['birth_date']);
