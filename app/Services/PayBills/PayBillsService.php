@@ -141,6 +141,10 @@ class PayBillsService implements IPayBillsService
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
         $outPayBills = $this->saveTransaction($user, $billerCode, $response);
+       
+        // For automatic validation of incoming pending status
+        $this->processPending($user);
+       
         return (array)json_decode($outPayBills);
     }
 

@@ -43,6 +43,12 @@ class NotificationService implements INotificationService
         // TODO: Implement sendMoneyRecipientNotification() method.
     }
 
+
+    public function payBillsNotification(string $to, array $fillRequest, string $biller)
+    {
+        // TODO: Implement payBillsNotification() method.
+    }
+
     public function sendSend2BankSenderNotification(string $to, string $refNo, string $accountNo, float $amount, Carbon $transactionDate, float $serviceFee, float $newBalance, string $provider, string $remittanceId)
     {
         // TODO: Implement sendSend2BankSenderNotification() method.
