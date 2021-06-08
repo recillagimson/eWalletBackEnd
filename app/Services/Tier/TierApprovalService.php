@@ -2,27 +2,31 @@
 
 namespace App\Services\Tier;
 
+use App\Enums\AccountTiers;
 use App\Models\TierApproval;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 
 class TierApprovalService implements ITierApprovalService
 {   
     public ITierApprovalRepository $tierApprovalRepository;
     public IUserPhotoRepository $userPhotoRepository;
+    public IUserAccountRepository $userAccountRepository;
     public IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     public INotificationRepository $notificationRepository;
 
-    public function __construct(ITierApprovalRepository $tierApprovalRepository, INotificationRepository $notificationRepository, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository)
+    public function __construct(ITierApprovalRepository $tierApprovalRepository, INotificationRepository $notificationRepository, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository)
     {
         $this->tierApprovalRepository = $tierApprovalRepository;
         $this->notificationRepository = $notificationRepository;
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
+        $this->userAccountRepository = $userAccountRepository;
     }
 
     public function updateOrCreateApprovalRequest(array $attr) {
@@ -33,6 +37,10 @@ class TierApprovalService implements ITierApprovalService
         \DB::beginTransaction();
         try {
             $this->tierApprovalRepository->update($tierApproval, $attr);
+            if($attr['status'] === 'APPROVED`') {
+                $user_account = $this->userAccountRepository->get($tierApproval->user_account_id);
+                $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
+            }
             $this->notificationRepository->create([
                 'user_account_id' => $tierApproval->user_account_id,
                 'title' => ucfirst(strtolower($attr['status'])) . ' Tier Upgrade Request',
