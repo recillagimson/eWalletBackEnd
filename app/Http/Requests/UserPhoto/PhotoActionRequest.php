@@ -24,8 +24,8 @@ class PhotoActionRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_selfie_id' => 'required|exists:user_selfie_photos,id',
-            'approval_status' => 'required'
+            'user_photo_id' => 'required|exists:user_id_photos,id',
+            'approval_status' => 'required',
         ];
     }
 }

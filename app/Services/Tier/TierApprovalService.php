@@ -3,11 +3,12 @@
 namespace App\Services\Tier;
 
 use App\Models\TierApproval;
-use App\Repositories\Notification\INotificationRepository;
+use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
-use Illuminate\Validation\ValidationException;
 
 class TierApprovalService implements ITierApprovalService
 {   
@@ -53,6 +54,8 @@ class TierApprovalService implements ITierApprovalService
 
     public function takePhotoAction(array $attr) {
         $photo = $this->userPhotoRepository->get($attr['user_photo_id']);
+        $attr['reviewed_by'] = request()->user()->id;
+        $attr['reviewed_date'] = Carbon::now()->format('Y-m-d H:i:s');
         $this->userPhotoRepository->update($photo, $attr);
         $photo = $this->userPhotoRepository->get($attr['user_photo_id']);
         return $photo;
@@ -60,6 +63,8 @@ class TierApprovalService implements ITierApprovalService
 
     public function takeSelfieAction(array $attr) {
         $photo = $this->userSelfiePhotoRepository->get($attr['user_selfie_photo_id']);
+        $attr['reviewed_by'] = request()->user()->id;
+        $attr['reviewed_date'] = Carbon::now()->format('Y-m-d H:i:s');
         $this->userSelfiePhotoRepository->update($photo, $attr);
         $photo = $this->userSelfiePhotoRepository->get($attr['user_selfie_photo_id']);
         return $photo;
