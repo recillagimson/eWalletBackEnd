@@ -9,8 +9,11 @@ use Illuminate\Validation\ValidationException;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\Tier\ITierRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
 
 class TierApprovalService implements ITierApprovalService
 {   
@@ -19,14 +22,20 @@ class TierApprovalService implements ITierApprovalService
     public IUserAccountRepository $userAccountRepository;
     public IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     public INotificationRepository $notificationRepository;
+    public IEmailService $emailService;
+    public ITierRepository $tierRepository;
+    public IUserDetailRepository $userDetailRepository;
 
-    public function __construct(ITierApprovalRepository $tierApprovalRepository, INotificationRepository $notificationRepository, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository)
+    public function __construct(ITierApprovalRepository $tierApprovalRepository, INotificationRepository $notificationRepository, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IEmailService $emailService, IUserDetailRepository $userDetailRepository, ITierRepository $tierRepository)
     {
         $this->tierApprovalRepository = $tierApprovalRepository;
         $this->notificationRepository = $notificationRepository;
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
         $this->userAccountRepository = $userAccountRepository;
+        $this->emailService = $emailService;
+        $this->userDetailRepository = $userDetailRepository;
+        $this->tierRepository = $tierRepository;
     }
 
     public function updateOrCreateApprovalRequest(array $attr) {
@@ -49,6 +58,9 @@ class TierApprovalService implements ITierApprovalService
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
             ]);
+            $tier = $this->tierRepository->get(AccountTiers::tier2);
+            $details = $this->userDetailRepository->getByUserId($tierApproval->user_account_id);
+            $this->emailService->sendTierUpgradeUpdate("wilsonsacdalansantacruz@gmail.com", $details, $tier);
             \DB::commit();
             return $tierApproval;
         } catch (\Exception $e) {
