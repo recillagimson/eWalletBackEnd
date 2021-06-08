@@ -3,8 +3,6 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
-use App\Models\TierApproval;
-use App\Models\UserSelfiePhoto;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
@@ -49,6 +47,8 @@ use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccount\UserAccountRepository;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserAccountNumber\UserAccountNumberRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserBalance\UserBalanceRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
@@ -98,6 +98,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Authentication Repositories
         $this->app->singleton(IUserAccountRepository::class, UserAccountRepository::class);
+        $this->app->singleton(IUserAccountNumberRepository::class, UserAccountNumberRepository::class);
         $this->app->bind(IClientRepository::class, ClientRepository::class);
         $this->app->bind(IPasswordHistoryRepository::class, PasswordHistoryRepository::class);
         $this->app->bind(IPinCodeHistoryRepository::class, PinCodeHistoryRepository::class);
