@@ -60,25 +60,3 @@ class UserAccountCollection extends ResourceCollection
         ];
     }
 }
-// [
-//     [
-//         "url" => $this->onFirstPage() ? $this->url(1) : $this->url($this->currentPage()),
-//         "label" => "&laquo; Previous",
-//         "active" => false
-//     ],
-//     [
-//         "url" => "http://localhost:8000/api/user_accounts?page=1",
-//         "label" => "1",
-//         "active" => true
-//     ],
-//     [
-//         "url" => "http://localhost:8000/api/user_accounts?page=2",
-//         "label" => "2",
-//         "active" => false
-//     ],
-//     [
-//         "url" => "http://localhost:8000/api/user_accounts?page=2",
-//         "label" => "Next &raquo;",
-//         "active" => false
-//     ]
-// ]
