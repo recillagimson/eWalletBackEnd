@@ -22,4 +22,12 @@ class TierApproval extends Model
         "approved_date",
         "declined_date",
     ];
+
+    public function id_photos() {
+        return $this->hasMany(UserPhoto::class, 'tier_approval_id', 'id');
+    }
+
+    public function selfie_photos() {
+        return $this->hasMany(UserSelfiePhoto::class, 'tier_approval_id', 'id');
+    }
 }

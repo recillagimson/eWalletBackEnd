@@ -53,8 +53,7 @@ class TierApprovalController extends Controller
      */
     public function show(TierApproval $tierApproval)
     {
-        $record = $this->responseService->successResponse($tierApproval->toArray(), SuccessMessages::success);
-        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($tierApproval->with(['id_photos', 'selfie_photos'])->first()->toArray(), SuccessMessages::success);
     }
 
     /**
