@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
-use App\Traits\UsesUuid;
-use App\Traits\HasS3Links;
-use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserUtilities\UserDetail;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Traits\HasS3Links;
+use App\Traits\UsesUuid;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 class UserAccount extends Authenticatable
 {
@@ -23,6 +23,7 @@ class UserAccount extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'account_number',
         'email',
         'mobile_number',
         'password',
