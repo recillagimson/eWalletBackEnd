@@ -8,6 +8,7 @@ use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
 use App\Repositories\Tier\ITierRepository;
 use App\Services\Tier\ITierApprovalService;
+use App\Http\Requests\Tier\TierUpgradeRequest;
 use App\Http\Requests\Tier\TierApprovalRequest;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Services\Utilities\Responses\IResponseService;
