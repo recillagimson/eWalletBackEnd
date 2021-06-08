@@ -126,7 +126,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/{id}', [AdminUserController::class, 'delete']);
             Route::post('/search/byemail', [AdminUserController::class, 'getByEmail']);
             Route::post('/search/byname', [AdminUserController::class, 'getByName']);
+
         });
+        Route::post('/photo/action', [UserPhotoController::class, 'takePhotoAction']);
+        Route::post('/selfie/action', [UserPhotoController::class, 'takeSelfieAction']);
     });
 
     Route::prefix('/user')->middleware(['decrypt.request'])->group(function () {

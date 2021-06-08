@@ -7,8 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Enums\SuccessMessages;
 use Illuminate\Http\JsonResponse;
+use App\Services\Tier\ITierApprovalService;
 use App\Services\Encryption\IEncryptionService;
 use App\Repositories\Tier\ITierApprovalRepository;
+use App\Http\Requests\UserPhoto\PhotoActionRequest;
+use App\Http\Requests\UserPhoto\SelfieActionRequest;
 use App\Http\Requests\UserPhoto\SelfieUploadRequest;
 use App\Http\Requests\UserPhoto\VerificationRequest;
 use App\Http\Requests\UserPhoto\ManualIDUploadRequest;
@@ -21,15 +24,18 @@ class UserPhotoController extends Controller
     private IVerificationService $iVerificationService;
     private IResponseService $responseService;
     private ITierApprovalRepository $tierApproval;
+    private ITierApprovalService $tierApprovalService;
 
 
     public function __construct(IResponseService $responseService,
                                 IVerificationService $iVerificationService,
-                                ITierApprovalRepository $tierApproval)
+                                ITierApprovalRepository $tierApproval,
+                                ITierApprovalService $tierApprovalService)
     {
         $this->responseService = $responseService;
         $this->iVerificationService = $iVerificationService;
         $this->tierApproval = $tierApproval;
+        $this->tierApprovalService = $tierApprovalService;
     }
 
 
@@ -70,5 +76,15 @@ class UserPhotoController extends Controller
         $attr['user_account_id'] = $user_account_id;
         $createRecord = $this->iVerificationService->createSelfieVerification($attr, $attr['user_account_id']);
         return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::success);
+    }
+
+    public function takePhotoAction(PhotoActionRequest $request) {
+        $record = $this->tierApprovalService->takePhotoAction($request->all());
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+    }
+
+    public function takeSelfieAction(SelfieActionRequest $request) {
+        $record = $this->tierApprovalService->takeSelfieAction($request->all());
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 }
