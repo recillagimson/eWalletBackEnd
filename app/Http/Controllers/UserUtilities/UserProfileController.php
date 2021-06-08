@@ -108,7 +108,9 @@ class UserProfileController extends Controller
                 return $this->tierUpgradeAlreadyExist();
             }
         }
-        return $this->responseService->successResponse(null, SuccessMessages::success);
+        return $this->responseService->successResponse([
+            'id' => request()->user()->id
+        ], SuccessMessages::success);
     }
 
     public function checkPendingTierUpgrate(): JsonResponse {
@@ -120,7 +122,9 @@ class UserProfileController extends Controller
                 return $this->tierUpgradeAlreadyExist();
             }
         }
-        return $this->responseService->successResponse(null, SuccessMessages::success);
+        return $this->responseService->successResponse([
+            'id' => request()->user()->id
+        ], SuccessMessages::success);
     }
 
     /**
