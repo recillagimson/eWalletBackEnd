@@ -78,6 +78,12 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
+    public function payBillsNotification(string $to, array $fillRequest, string $biller)
+    {
+        $content = 'You have paid P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' to ' . $biller . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using our Pay Bills service.';
+        $this->sendMessages($to, $content);
+    }
+
     public function sendSend2BankSenderNotification(string $to, string $refNo, string $accountNo, float $amount,
                                                     Carbon $transactionDate, float $serviceFee, float $newBalance, string $provider, string $remittanceId)
     {

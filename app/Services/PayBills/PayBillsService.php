@@ -19,6 +19,7 @@ use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
+use App\Services\Utilities\Notifications\INotificationService;
 use App\Traits\Errors\WithPayBillsErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Transactions\PayBillsHelpers;
@@ -39,8 +40,9 @@ class PayBillsService implements IPayBillsService
     private IUserAccountRepository $userAccountRepository;
     private IOutPayBillsRepository $outPayBillsRepository;
     private IUserTransactionHistoryRepository $transactionHistories;
+    private INotificationService $notificationService;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService){
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
@@ -51,6 +53,7 @@ class PayBillsService implements IPayBillsService
         $this->userAccountRepository = $userAccountRepository;
         $this->outPayBillsRepository = $outPayBillsRepository;
         $this->transactionHistories = $transactionHistories;
+        $this->notificationService = $notificationService;
     }
 
     
@@ -138,6 +141,10 @@ class PayBillsService implements IPayBillsService
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
         $outPayBills = $this->saveTransaction($user, $billerCode, $response);
+       
+        // For automatic validation of incoming pending status
+        $this->processPending($user);
+       
         return (array)json_decode($outPayBills);
     }
 
