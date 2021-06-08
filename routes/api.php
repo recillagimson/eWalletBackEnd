@@ -86,6 +86,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
     Route::get('auth/user/photo/{userPhotoId}', [UserPhotoController::class, 'getImageSignedUrl']);
     Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar']);
+    // Admin manual ID and selfie upload
+    Route::post('/admin/id/upload', [UserPhotoController::class, 'uploadIdManually']);
+    Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser']);

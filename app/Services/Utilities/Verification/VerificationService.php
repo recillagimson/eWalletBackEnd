@@ -2,6 +2,7 @@
 
 namespace App\Services\Utilities\Verification;
 
+use App\Models\UserAccount;
 use App\Models\UserPhoto;
 use Illuminate\Http\File;
 use Illuminate\Support\Carbon;
@@ -25,10 +26,10 @@ class VerificationService implements IVerificationService
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
     }
 
-    public function createSelfieVerification(array $data) {
+    public function createSelfieVerification(array $data, ?string $userAccountId = null) {
         // Delete existing first
         // Get details first 
-        $userDetails = $this->userDetailRepository->getByUserId(request()->user()->id);
+        $userDetails = $this->userDetailRepository->getByUserId($userAccountId ? $userAccountId : request()->user()->id);
         // If no user Details
         if(!$userDetails) {
             throw ValidationException::withMessages([
@@ -47,7 +48,7 @@ class VerificationService implements IVerificationService
         $selfiePhotoPath = $this->saveFile($data['selfie_photo'], $selfiePhotoName, 'selfie_photo');
         
         $data['photo_location'] = $selfiePhotoPath;
-        $data['user_account_id'] = request()->user()->id;
+        $data['user_account_id'] = $userAccountId ? $userAccountId : request()->user()->id;
         $data['user_created'] = request()->user()->id;
         $data['user_updated'] = request()->user()->id;
         // SAVE SELFIE LOCATION ON USER DETAILS
