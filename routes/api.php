@@ -180,7 +180,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tobronze', [UserProfileController::class, 'updateBronze']);
             Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
-            Route::get('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
+            Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
