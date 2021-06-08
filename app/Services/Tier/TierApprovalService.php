@@ -14,6 +14,8 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 
 class TierApprovalService implements ITierApprovalService
 {   
@@ -25,8 +27,9 @@ class TierApprovalService implements ITierApprovalService
     public IEmailService $emailService;
     public ITierRepository $tierRepository;
     public IUserDetailRepository $userDetailRepository;
+    public ISmsService $smsService;
 
-    public function __construct(ITierApprovalRepository $tierApprovalRepository, INotificationRepository $notificationRepository, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IEmailService $emailService, IUserDetailRepository $userDetailRepository, ITierRepository $tierRepository)
+    public function __construct(ITierApprovalRepository $tierApprovalRepository, INotificationRepository $notificationRepository, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IEmailService $emailService, IUserDetailRepository $userDetailRepository, ITierRepository $tierRepository, ISmsService $smsService)
     {
         $this->tierApprovalRepository = $tierApprovalRepository;
         $this->notificationRepository = $notificationRepository;
@@ -36,6 +39,7 @@ class TierApprovalService implements ITierApprovalService
         $this->emailService = $emailService;
         $this->userDetailRepository = $userDetailRepository;
         $this->tierRepository = $tierRepository;
+        $this->smsService = $smsService;
     }
 
     public function updateOrCreateApprovalRequest(array $attr) {
@@ -46,10 +50,7 @@ class TierApprovalService implements ITierApprovalService
         \DB::beginTransaction();
         try {
             $this->tierApprovalRepository->update($tierApproval, $attr);
-            if($attr['status'] === 'APPROVED`') {
-                $user_account = $this->userAccountRepository->get($tierApproval->user_account_id);
-                $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
-            }
+            $user_account = $this->userAccountRepository->get($tierApproval->user_account_id);
             $this->notificationRepository->create([
                 'user_account_id' => $tierApproval->user_account_id,
                 'title' => ucfirst(strtolower($attr['status'])) . ' Tier Upgrade Request',
@@ -60,7 +61,19 @@ class TierApprovalService implements ITierApprovalService
             ]);
             $tier = $this->tierRepository->get(AccountTiers::tier2);
             $details = $this->userDetailRepository->getByUserId($tierApproval->user_account_id);
-            $this->emailService->sendTierUpgradeUpdate("wilsonsacdalansantacruz@gmail.com", $details, $tier);
+            if($attr['status'] === 'APPROVED') {
+                $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
+                if($user_account->mobile_number) {
+                    // SMS USER FOR NOTIFICATION
+                    $this->smsService->tierUpgradeNotification($user_account->mobile_number, $details, $tier);
+                }
+
+                if($user_account->email) {
+                    // EMAIL USER FOR NOTIFICATION
+                    $this->emailService->tierUpgradeNotification($user_account->email, $details, $tier);
+                }                
+            }
+
             \DB::commit();
             return $tierApproval;
         } catch (\Exception $e) {

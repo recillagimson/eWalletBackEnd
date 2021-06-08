@@ -4,6 +4,8 @@
 namespace App\Services\Utilities\Notifications;
 
 use Carbon\Carbon;
+use App\Models\Tier;
+use App\Models\UserUtilities\UserDetail;
 
 class NotificationService implements INotificationService
 {
@@ -57,5 +59,9 @@ class NotificationService implements INotificationService
     public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber, Carbon $transactionDate, float $newBalance, string $refNo)
     {
         // TODO: Implement buyLoadNotification() method.
+    }
+
+    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier) {
+        // TODO: Implement tierUpgradeNotification() method.
     }
 }

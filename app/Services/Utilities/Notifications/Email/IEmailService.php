@@ -12,5 +12,5 @@ interface IEmailService extends INotificationService
     public function sendSend2BankReceipt(string $to, OutSend2Bank $send2Bank);
 
     public function sendAdminUserAccountDetails(string $to, string $firtName, string $email, string $password);
-    public function sendTierUpgradeUpdate(string $to, UserDetail $userDetail, Tier $tier);
+    // public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier);
 }

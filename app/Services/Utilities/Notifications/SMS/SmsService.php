@@ -6,6 +6,8 @@ namespace App\Services\Utilities\Notifications\SMS;
 
 use App\Enums\OtpTypes;
 use App\Enums\TpaProviders;
+use App\Models\Tier;
+use App\Models\UserUtilities\UserDetail;
 use App\Services\Utilities\API\IApiService;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -139,5 +141,9 @@ class SmsService implements ISmsService
         ]);
     }
 
+    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier) {
+        $content = "Your tier upgrade has been approved. Your tier is now " . $tier->tier_name;
+        $this->sendMessages($to, $content);
+    }
 
 }

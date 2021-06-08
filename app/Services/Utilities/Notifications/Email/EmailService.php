@@ -213,7 +213,7 @@ class EmailService implements IEmailService
     }
 
 
-    public function sendTierUpgradeUpdate(string $to, UserDetail $userDetail, Tier $tier)
+    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier)
     {
         $subject = 'SquidPay - Tier Upgrade Update';
         $template = new TierUpgradeRequestApproved($userDetail, $tier);
