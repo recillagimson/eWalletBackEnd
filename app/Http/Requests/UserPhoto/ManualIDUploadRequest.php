@@ -28,14 +28,13 @@ class ManualIDUploadRequest extends FormRequest
             "tier_approval_id" => 'required|exists:tier_approvals,id',
             "id_photos"    => "required|array|min:2",
             'id_photos.*' => 'required|max:1024|mimes:jpeg,png',
-            "id_type_id" => 'required|exists:id_types,id'
         ];
         
         $inputs = request()->input();
         if(isset($inputs['id_type_id'])) {
             $id_type = IdType::findOrFail($inputs['id_type_id']);
             if($id_type->is_primary == 1) {
-                $required_fields['id_photo_id'] = 'required';
+                $required_fields['id_photo_id'] = 'required|exists:id_types,id';
             }
         }
 
