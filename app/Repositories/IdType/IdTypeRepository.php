@@ -14,6 +14,9 @@ class IdTypeRepository extends Repository implements IIdTypeRepository
     }
 
     public function getIdType($is_primary = 1) {
+        if($is_primary == 2) {
+            return $this->model->get();
+        }
         return $this->model->where('is_primary', $is_primary)->get();
     }
 }
