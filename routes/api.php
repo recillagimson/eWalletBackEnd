@@ -182,6 +182,11 @@ Route::middleware('auth:sanctum')->group(function () {
             'source_of_fund' => SourceOfFundController::class,
         ]);
 
+        Route::prefix('/user_accounts')->group(function (){
+            Route::get('/', [UserAccountController::class, 'index']);
+            Route::get('/{id}', [UserAccountController::class, 'show']);
+        });
+
         Route::prefix('/user')->group(function (){
             Route::get('/profile', [UserProfileController::class, 'show']);
             Route::post('/profile/tobronze', [UserProfileController::class, 'updateBronze']);

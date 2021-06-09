@@ -112,8 +112,27 @@ class UserAccountService implements IUserAccountService
         $user->delete();
     }
 
-    public function updateEmail(string $emailField, string $email, UserAccount $user): array
-    {
+    public function getAllPaginated($perPage = 10) {
+
+        $result = $this->users->getAllUsersPaginated($perPage);
+
+        return $result;
+    }
+
+    public function findById(string $id) {
+
+        $result = $this->users->getUser($id);
+
+        if(!$result) {
+            ValidationException::withMessages([
+                'user_not_found' => 'User Account not found'
+            ]);
+        }
+
+        return $result;
+    }
+    
+    public function updateEmail(string $emailField, string $email, object $user) {
 
         $identifier = OtpTypes::updateEmail . ':' . $user->id;
         $this->otpService->ensureValidated($identifier);
