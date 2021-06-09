@@ -38,6 +38,6 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
             $records = $records->where('status', $attr['status']);
         }
 
-        return $records->get();
+        return $records->paginate();
     }
 }
