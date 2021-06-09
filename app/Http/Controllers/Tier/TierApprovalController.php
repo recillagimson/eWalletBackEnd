@@ -8,6 +8,7 @@ use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
 use App\Repositories\Tier\ITierRepository;
 use App\Services\Tier\ITierApprovalService;
+use App\Http\Requests\Tier\TierUpgradeRequest;
 use App\Http\Requests\Tier\TierApprovalRequest;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Services\Utilities\Responses\IResponseService;
@@ -53,8 +54,7 @@ class TierApprovalController extends Controller
      */
     public function show(TierApproval $tierApproval)
     {
-        $record = $this->responseService->successResponse($tierApproval->toArray(), SuccessMessages::success);
-        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($tierApproval->with(['id_photos', 'selfie_photos'])->first()->toArray(), SuccessMessages::success);
     }
 
     /**

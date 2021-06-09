@@ -15,6 +15,8 @@ class UserPhoto extends Model
 
     protected $table = 'user_id_photos';
 
+    protected $appends = ['avatar_link'];
+
     protected $fillable = [
         'id',
         'id_number',
@@ -32,6 +34,6 @@ class UserPhoto extends Model
     ];
 
     public function getAvatarLinkAttribute() {
-        return $this->getTempUrl($this->avatar_location, Carbon::now()->addHour()->format('Y-m-d H:i:s'));
+        return $this->getTempUrl($this->photo_location, Carbon::now()->addHour()->format('Y-m-d H:i:s'));
     }
 }

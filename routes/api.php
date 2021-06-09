@@ -18,6 +18,7 @@ use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Send2BankController;
 use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\ServiceFeeController;
+use App\Http\Controllers\Tier\TierApprovalCommentController;
 use App\Http\Controllers\Tier\TierApprovalController;
 use App\Http\Controllers\TierController;
 use App\Http\Controllers\User\AdminUserController;
@@ -85,6 +86,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
     Route::get('auth/user/photo/{userPhotoId}', [UserPhotoController::class, 'getImageSignedUrl']);
     Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar']);
+    // Admin manual ID and selfie upload
+    Route::post('/admin/id/upload', [UserPhotoController::class, 'uploadIdManually']);
+    Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser']);
@@ -122,7 +126,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/{id}', [AdminUserController::class, 'delete']);
             Route::post('/search/byemail', [AdminUserController::class, 'getByEmail']);
             Route::post('/search/byname', [AdminUserController::class, 'getByName']);
+
         });
+        Route::post('/photo/action', [UserPhotoController::class, 'takePhotoAction']);
+        Route::post('/selfie/action', [UserPhotoController::class, 'takeSelfieAction']);
     });
 
     Route::prefix('/user')->middleware(['decrypt.request'])->group(function () {
@@ -221,6 +228,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{notification}', [NotificationController::class, 'show']);
         Route::put('/{notification}', [NotificationController::class, 'update']);
         Route::delete('/{notification}', [NotificationController::class, 'delete']);
+    });
+
+    Route::prefix('/tiers/approval/comment')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/', [TierApprovalCommentController::class, 'list']);
+        Route::post('/', [TierApprovalCommentController::class, 'create']);
     });
 
     Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
