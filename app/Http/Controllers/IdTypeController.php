@@ -31,7 +31,7 @@ class IdTypeController extends Controller
      */
     public function index(Request $request): JsonResponse 
     {
-        $is_primary = 1;
+        $is_primary = 2;
         if($request->has('is_primary')) {
             $is_primary = $request->is_primary;
         }

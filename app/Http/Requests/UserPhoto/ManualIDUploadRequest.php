@@ -35,7 +35,7 @@ class ManualIDUploadRequest extends FormRequest
         if(isset($inputs['id_type_id'])) {
             $id_type = IdType::findOrFail($inputs['id_type_id']);
             if($id_type->is_primary == 1) {
-                $required_fields['id_photo_id'] = 'required';
+                $required_fields['id_number'] = 'required';
             }
         }
 
