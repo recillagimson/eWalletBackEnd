@@ -36,4 +36,8 @@ class UserPhoto extends Model
     public function getAvatarLinkAttribute() {
         return $this->getTempUrl($this->photo_location, Carbon::now()->addHour()->format('Y-m-d H:i:s'));
     }
+
+    public function id_type() {
+        return $this->hasOne(IdType::class, 'id', 'id_type_id');
+    }
 }
