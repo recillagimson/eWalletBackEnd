@@ -2,28 +2,35 @@
 
 namespace App\Services\Utilities\Verification;
 
-use App\Models\UserAccount;
 use App\Models\UserPhoto;
 use Illuminate\Http\File;
+use App\Models\UserAccount;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
+use App\Enums\SquidPayModuleTypes;
+use App\Repositories\IdType\IIdTypeRepository;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 
 class VerificationService implements IVerificationService
 {
     public IUserPhotoRepository $userPhotoRepository;
     public IUserDetailRepository $userDetailRepository;
     public IUserSelfiePhotoRepository $userSelfiePhotoRepository;
+    public ILogHistoryService $logHistoryService;
+    public IIdTypeRepository $iIdTypeRepository;
 
-    public function __construct(IUserPhotoRepository $userPhotoRepository, IUserDetailRepository $userDetailRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository)
+    public function __construct(IUserPhotoRepository $userPhotoRepository, IUserDetailRepository $userDetailRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, ILogHistoryService $logHistoryService, IIdTypeRepository $iIdTypeRepository)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
+        $this->logHistoryService = $logHistoryService;
+        $this->iIdTypeRepository = $iIdTypeRepository;
     }
 
     public function createSelfieVerification(array $data, ?string $userAccountId = null) {
@@ -54,6 +61,10 @@ class VerificationService implements IVerificationService
         // SAVE SELFIE LOCATION ON USER DETAILS
         $record = $this->userSelfiePhotoRepository->create($data);
 
+        $audit_remarks = request()->user()->id . "  has uploaded Selfie";
+        $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadSelfiePhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+
+
         return $record;
         // return to controller all created records
     }
@@ -81,7 +92,13 @@ class VerificationService implements IVerificationService
             $record = $this->userPhotoRepository->create($params);
             // Collect created record
             array_push($recordsCreated, $record);
+
+            $idType = $this->iIdTypeRepository->get($data['id_type_id']);
+            $audit_remarks = request()->user()->id . "  has uploaded " . $idType->type . ", " . $idType->description;
+            $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadIdPhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
         }
+
+        
 
         return $recordsCreated;
     }
