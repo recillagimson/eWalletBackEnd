@@ -5,6 +5,7 @@ namespace App\Services\UserAccount;
 use App\Enums\OtpTypes;
 use App\Models\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Traits\Errors\WithAuthErrors;
@@ -22,12 +23,15 @@ class UserAccountService implements IUserAccountService
     public IUserAccountRepository $users;
     private IOtpService $otpService;
     private IEmailService $emailService;
+    private IUserAccountNumberRepository $userAccountNumbers;
 
     public function __construct(IUserAccountRepository $users,
+                                IUserAccountNumberRepository $userAccountNumbers,
                                 IOtpService $otpService,
                                 IEmailService $emailService)
     {
         $this->users = $users;
+        $this->userAccountNumbers = $userAccountNumbers;
         $this->otpService = $otpService;;
         $this->emailService = $emailService;
     }
@@ -54,6 +58,7 @@ class UserAccountService implements IUserAccountService
 
             $tempPassword = Str::random(12);
             $userData = [
+                'account_number' => $this->userAccountNumbers->generateNo(),
                 'email' => $userInfo['email'],
                 'password' => Hash::make($tempPassword),
                 'is_admin' => true,

@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Services\Utilities\ServiceFeeService;
+namespace App\Services\Utilities\ServiceFee;
 
-use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 
 class ServiceFeeService implements IServiceFeeService
 {
     public IServiceFeeRepository $serviceFeeRepository;
 
-    public function __construct(ILogHistoryRepository $serviceFeeRepository)
+    public function __construct(IServiceFeeRepository $serviceFeeRepository)
     {
         $this->serviceFeeRepository = $serviceFeeRepository;
     }

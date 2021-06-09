@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\User\UpdateEmailRequest;
 use App\Http\Requests\User\UpdateMobileRequest;
-use App\Enums\SuccessMessages;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
+use App\Services\UserAccount\IUserAccountService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
 use App\Services\UserAccount\IUserAccountService;
 use App\Http\Resources\UserAccount\UserAccountCollection;
+use Illuminate\Http\JsonResponse;
 
 class UserAccountController extends Controller
 {
-    use UserHelpers; 
+    use UserHelpers;
 
     private IUserAccountService $userAccountService;
     private IResponseService $responseService;
@@ -30,8 +29,6 @@ class UserAccountController extends Controller
     public function index(): JsonResponse 
     {
         $records = $this->userAccountService->getAllPaginated();
-        // dd($records);
-
         $records = new UserAccountCollection($records);
 
         return $this->responseService->successResponse($records->toArray($records) , SuccessMessages::success);

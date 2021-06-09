@@ -4,6 +4,8 @@ namespace App\Services\Utilities\Notifications;
 
 
 use Carbon\Carbon;
+use App\Models\Tier;
+use App\Models\UserUtilities\UserDetail;
 
 interface INotificationService
 {
@@ -29,4 +31,6 @@ interface INotificationService
 
     public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber,
                                         Carbon $transactionDate, float $newBalance, string $refNo);
+
+    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier);
 }

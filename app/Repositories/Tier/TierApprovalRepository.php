@@ -32,12 +32,12 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
     }
 
     public function list(array $attr) {
-        $records = $this->model->with([]);
+        $records = $this->model->with(['user_account', 'user_detail']);
 
         if(isset($attr['status'])) {
             $records = $records->where('status', $attr['status']);
         }
 
-        return $records->get();
+        return $records->paginate();
     }
 }
