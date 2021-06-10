@@ -4,6 +4,7 @@ namespace App\Repositories\Tier;
 
 use App\Models\TierApproval;
 use App\Repositories\Repository;
+use Illuminate\Validation\ValidationException;
 
 class TierApprovalRepository extends Repository implements ITierApprovalRepository
 {
@@ -39,5 +40,22 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
         }
 
         return $records->paginate();
+    }
+
+    public function showTierApproval(TierApproval $tierApproval) {
+        $data = $this->model->with([
+            'id_photos', 
+            'selfie_photos', 
+            'id_photos.id_type',
+            'user_account',
+            'user_detail'
+        ])->find($tierApproval->id);
+
+        if($data) {
+            return $data;
+        }
+        return ValidationException::withMessages([
+            'tier_approval_not_found' => 'Tier Approval Request not found'
+        ]);
     }
 }
