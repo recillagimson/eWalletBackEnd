@@ -9,6 +9,7 @@ use App\Enums\Currencies;
 use App\Enums\OtpTypes;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserKeys\PasswordHistory\IPasswordHistoryRepository;
 use App\Repositories\UserKeys\PinCodeHistory\IPinCodeHistoryRepository;
@@ -23,6 +24,7 @@ class RegistrationService implements IRegistrationService
     private IAuthService $authService;
 
     private IUserAccountRepository $userAccounts;
+    private IUserAccountNumberRepository $userAccountNumbers;
     private IUserBalanceInfoRepository $userBalances;
     private IPasswordHistoryRepository $passwordHistories;
     private IPinCodeHistoryRepository $pinCodeHistories;
@@ -30,6 +32,7 @@ class RegistrationService implements IRegistrationService
 
     public function __construct(IAuthService $authService,
                                 IUserAccountRepository $userAccounts,
+                                IUserAccountNumberRepository $userAccountNumbers,
                                 IUserBalanceInfoRepository $userBalances,
                                 IPasswordHistoryRepository $passwordHistories,
                                 IPinCodeHistoryRepository $pinCodeHistories,
@@ -38,6 +41,7 @@ class RegistrationService implements IRegistrationService
         $this->authService = $authService;
 
         $this->userAccounts = $userAccounts;
+        $this->userAccountNumbers = $userAccountNumbers;
         $this->userBalances = $userBalances;
         $this->passwordHistories = $passwordHistories;
         $this->pinCodeHistories = $pinCodeHistories;
@@ -60,6 +64,7 @@ class RegistrationService implements IRegistrationService
         $newUser['password'] = Hash::make($newUser['password']);
         $newUser['pin_code'] = Hash::make($newUser['pin_code']);
         $newUser['tier_id'] = AccountTiers::tier1;
+        $newUser['account_number'] = $this->userAccountNumbers->generateNo();
 
         $user = $this->userAccounts->create($newUser);
 

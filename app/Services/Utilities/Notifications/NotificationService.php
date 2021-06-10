@@ -4,6 +4,8 @@
 namespace App\Services\Utilities\Notifications;
 
 use Carbon\Carbon;
+use App\Models\Tier;
+use App\Models\UserUtilities\UserDetail;
 
 class NotificationService implements INotificationService
 {
@@ -43,6 +45,12 @@ class NotificationService implements INotificationService
         // TODO: Implement sendMoneyRecipientNotification() method.
     }
 
+
+    public function payBillsNotification(string $to, array $fillRequest, string $biller)
+    {
+        // TODO: Implement payBillsNotification() method.
+    }
+
     public function sendSend2BankSenderNotification(string $to, string $refNo, string $accountNo, float $amount, Carbon $transactionDate, float $serviceFee, float $newBalance, string $provider, string $remittanceId)
     {
         // TODO: Implement sendSend2BankSenderNotification() method.
@@ -51,5 +59,9 @@ class NotificationService implements INotificationService
     public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber, Carbon $transactionDate, float $newBalance, string $refNo)
     {
         // TODO: Implement buyLoadNotification() method.
+    }
+
+    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier) {
+        // TODO: Implement tierUpgradeNotification() method.
     }
 }

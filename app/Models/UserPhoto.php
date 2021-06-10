@@ -2,16 +2,20 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Traits\UsesUuid;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\HasS3Links;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserPhoto extends Model
 {
-    use HasFactory, SoftDeletes, UsesUuid;
+    use HasFactory, SoftDeletes, UsesUuid, HasS3Links;
 
     protected $table = 'user_id_photos';
+
+    protected $appends = ['id_photo_link'];
 
     protected $fillable = [
         'id',
@@ -23,6 +27,17 @@ class UserPhoto extends Model
         'approval_status',
         'reviewed_by',
         'user_created',
-        'user_updated'
+        'user_updated',
+        'tier_approval_id',
+        'remarks',
+        'reviewed_date',
     ];
+
+    public function getIdPhotoLinkAttribute() {
+        return $this->getTempUrl($this->photo_location, Carbon::now()->addHour()->format('Y-m-d H:i:s'));
+    }
+
+    public function id_type() {
+        return $this->hasOne(IdType::class, 'id', 'id_type_id');
+    }
 }

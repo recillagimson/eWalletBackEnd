@@ -29,6 +29,7 @@ class ErrorCodes
     const tpaFailedAuthentication = 201;
     const tpaErrorOccured = 202;
     const tpaInvalidProvider = 203;
+    const tpaErrorCatch = 204;
 
     //TRANSACTIONS - 300
     const transactionInvalid = 301;
@@ -44,6 +45,8 @@ class ErrorCodes
     const userTierInvalid = 406;
     const emailAlreadyTaken = 407;
     const mobileAlreadyTaken = 408;
+    const receiverMonthlyLimitExceeded = 409;
+    const tierUpgradeExist = 410;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;

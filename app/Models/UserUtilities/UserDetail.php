@@ -3,15 +3,19 @@
 namespace App\Models\UserUtilities;
 
 use App\Traits\UsesUuid;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\UserAccount;
+use App\Traits\HasS3Links;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class UserDetail extends Model
 {
-    use UsesUuid, HasFactory;
+    use UsesUuid, HasFactory, HasS3Links;
 
     protected $appends = [
-        'email', 'mobile_number'
+        'email', 'mobile_number', 'avatar_link'
     ];
     /**
      * The table associated with the model.
@@ -63,7 +67,8 @@ class UserDetail extends Model
         "is_accept_parental_consent",
         "occupation",
         "employer",
-        "contact_no"
+        "contact_no",
+        "avatar_location"
 
     ];
 
@@ -82,6 +87,16 @@ class UserDetail extends Model
     }
     public function getMobileNumberAttribute() {
         return $this->user_account ? $this->user_account->mobile_number : "";
+    }
+
+    public function getAvatarLinkAttribute() {
+        // return Storage::disk('s3')->temporaryUrl($this->avatar_location, Carbon::now()->addHour(1));
+        return $this->getTempUrl($this->avatar_location, Carbon::now()->addHour(1)->format('Y-m-d H:i:s'));
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return $this->first_name . ' ' . $this->last_name;
     }
 
 }

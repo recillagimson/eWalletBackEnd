@@ -16,13 +16,8 @@ use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\ServiceFeeController;
-use App\Http\Controllers\BuyLoad\AtmController;
-use App\Http\Controllers\ImageUploadController;
-use App\Http\Controllers\PrepaidLoadController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\NewsAndUpdateController;
-use App\Http\Controllers\Auth\ForgotKeyController;
+use App\Http\Controllers\Tier\TierApprovalCommentController;
+use App\Http\Controllers\User\AdminUserController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\User\UserAccountController;
 use App\Http\Controllers\Tier\TierApprovalController;
@@ -81,9 +76,13 @@ Route::middleware('auth:sanctum')->group(function () {
      * ROUTES FOR AUTHENTICATION ENDPOINTS AS WELL AS
      * OTP VERIFICATIONS
      */
-    Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification'])->name('user.verification');
-    Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification'])->name('user.selfie');
-    Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar'])->name('user.change.avatar');
+    Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification']);
+    Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
+    Route::get('auth/user/photo/{userPhotoId}', [UserPhotoController::class, 'getImageSignedUrl']);
+    Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar']);
+    // Admin manual ID and selfie upload
+    Route::post('/admin/id/upload', [UserPhotoController::class, 'uploadIdManually']);
+    Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser'])->name('user.show');
@@ -110,12 +109,29 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::prefix('/user')->middleware(['decrypt.request'])->name('user.')->group(function () {
-        Route::post('/email/validate', [UserAccountController::class, 'validateEmail'])->name('email.validate');
-        Route::post('/email/update', [UserAccountController::class, 'updateEmail'])->name('email.update');
-        
-        Route::post('/mobile/validate', [UserAccountController::class, 'validateMobile'])->name('mobile.validate');
-        Route::post('/mobile/update', [UserAccountController::class, 'updateMobile'])->name('mobile.update');
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function () {
+        Route::prefix('/users')->group(function () {
+            Route::get('/', [AdminUserController::class, 'get']);
+            Route::post('/', [AdminUserController::class, 'create']);
+
+            Route::get('/{id}', [AdminUserController::class, 'getById']);
+            Route::put('/{id}', [AdminUserController::class, 'update']);
+
+            Route::delete('/{id}', [AdminUserController::class, 'delete']);
+            Route::post('/search/byemail', [AdminUserController::class, 'getByEmail']);
+            Route::post('/search/byname', [AdminUserController::class, 'getByName']);
+
+        });
+        Route::post('/photo/action', [UserPhotoController::class, 'takePhotoAction']);
+        Route::post('/selfie/action', [UserPhotoController::class, 'takeSelfieAction']);
+    });
+
+    Route::prefix('/user')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/email/validate', [UserAccountController::class, 'validateEmail']);
+        Route::post('/email/update', [UserAccountController::class, 'updateEmail']);
+
+        Route::post('/mobile/validate', [UserAccountController::class, 'validateMobile']);
+        Route::post('/mobile/update', [UserAccountController::class, 'updateMobile']);
 
         Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey'])->name('key.type.validate');
         Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey'])->name('key.type.verify');
@@ -160,14 +176,22 @@ Route::middleware('auth:sanctum')->group(function () {
             'source_of_fund' => SourceOfFundController::class,
         ]);
 
-        Route::prefix('/user')->name('user.')->group(function (){
-            Route::get('/profile', [UserProfileController::class, 'show'])->name('show');
-            Route::post('/profile/tobronze', [UserProfileController::class, 'updateBronze'])->name('update.to.bronze');
-            Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver'])->name('update.to.silver');
+        Route::prefix('/user_accounts')->group(function (){
+            Route::get('/', [UserAccountController::class, 'index']);
+            Route::get('/{id}', [UserAccountController::class, 'show']);
+        });
+
+        Route::prefix('/user')->group(function (){
+            Route::get('/profile', [UserProfileController::class, 'show']);
+            Route::post('/profile/tobronze', [UserProfileController::class, 'updateBronze']);
+            Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
+            Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
+            Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
 
             // TRANSACTION LOG HISTORY
-            Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index'])->name('transactions.list');
-            Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show'])->name('transactions.show');
+            Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
+            Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
+            Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
 
         });
 
@@ -187,15 +211,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr'])->name('scan.qr');
     });
 
-    Route::prefix('pay/bills')->middleware(['decrypt.request'])->name('pay.bills.')->group(function () {
-        Route::get('/', [PayBillsController::class, 'getBillers'])->name('get.billers');
-        Route::get('/get/biller/information/{biller_code}', [PayBillsController::class, 'getBillerInformation'])->name('get.biller.information');
-        Route::get('/get/required/fields/{biller_code}', [PayBillsController::class, 'getRequiredFields'])->name('get.required.fields');
-        Route::get('/get/other/charges/{biller_code}', [PayBillsController::class, 'getOtherCharges'])->name('get.other.charges');
-        Route::post('/verify/account/{biller_code}/{account_number}', [PayBillsController::class, 'verifyAccount'])->name('verify.account');
-        Route::post('/create/payment/{biller_code}', [PayBillsController::class, 'createPayment'])->name('create.payment');
-        Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment'])->name('inquire.payment');
-        Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance'])->name('get.wallet.balance');
+    Route::prefix('pay/bills')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/', [PayBillsController::class, 'getBillers']);
+        Route::get('/get/biller/information/{biller_code}', [PayBillsController::class, 'getBillerInformation']);
+        Route::post('/validate/account/{biller_code}/{account_number}', [PayBillsController::class, 'validateAccount']);
+        Route::post('/create/payment/{biller_code}', [PayBillsController::class, 'createPayment']);
+        Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
+        Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
+        Route::get('/bayad/process/pending', [PayBillsController::class, 'processPending']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->name('notifications.')->group(function () {
@@ -206,8 +229,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{notification}', [NotificationController::class, 'delete'])->name('delete');
     });
 
-    Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->name('tiers.approval.')->group(function () {
-        Route::get('/', [TierApprovalController::class, 'index'])->name('list');
+    Route::prefix('/tiers/approval/comment')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/', [TierApprovalCommentController::class, 'list']);
+        Route::post('/', [TierApprovalCommentController::class, 'create']);
+    });
+
+    Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/', [TierApprovalController::class, 'index']);
         // Route::post('/', [TierApprovalController::class, 'store']);
         Route::get('/{tierApproval}', [TierApprovalController::class, 'show'])->name('show');
         Route::put('/{tierApproval}', [TierApprovalController::class, 'update'])->name('update');
@@ -222,13 +250,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{tier}', [TierController::class, 'destroy'])->name('destroy');
     });
 
-
-    Route::prefix('/service/fees')->middleware(['decrypt.request'])->name('service.fees')->group(function () {
-        Route::get('/', [ServiceFeeController::class, 'index'])->name('list');
-        Route::post('/', [ServiceFeeController::class, 'store'])->name('store');
-        Route::get('/{serviceFee}', [ServiceFeeController::class, 'show'])->name('show');
-        Route::put('/{serviceFee}', [ServiceFeeController::class, 'update'])->name('update');
-        Route::delete('/{serviceFee}', [ServiceFeeController::class, 'destroy'])->name('destroy');
+    Route::prefix('/service/fees')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/', [ServiceFeeController::class, 'index']);
+        Route::post('/', [ServiceFeeController::class, 'store']);
+        Route::get('/{serviceFee}', [ServiceFeeController::class, 'show']);
+        Route::put('/{serviceFee}', [ServiceFeeController::class, 'update']);
+        Route::delete('/{serviceFee}', [ServiceFeeController::class, 'destroy']);
     });
 
     Route::prefix('/cashin')->middleware(['decrypt.request'])->name('cashin.')->group(function (){

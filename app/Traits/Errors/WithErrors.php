@@ -3,7 +3,7 @@
 
 namespace App\Traits\Errors;
 
-
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 trait WithErrors
@@ -21,5 +21,15 @@ trait WithErrors
         throw ValidationException::withMessages([
             $field => $errorMessage
         ]);
+    }
+
+    // requested format for FE team
+    private function validationCatchErrorMessage($errorCode, $errorMessage, $providerArrayResponse)
+    {
+        $withMessages =  array('message' => 'The given data was invalid.');
+        $withError  =  array('errors' => array('error_code' => [$errorCode], 'message' => [$errorMessage]));
+        $providerError = array('provider_error' => array($providerArrayResponse));
+
+        return array_merge($withMessages , $withError, $providerError);
     }
 }

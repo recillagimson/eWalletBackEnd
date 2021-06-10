@@ -44,14 +44,18 @@ use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\Send2Bank\OutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\ServiceFee\ServiceFeeRepository;
+use App\Repositories\Tier\ITierApprovalCommentRepository;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\Tier\ITierRepository;
+use App\Repositories\Tier\TierApprovalCommentRepository;
 use App\Repositories\Tier\TierApprovalRepository;
 use App\Repositories\Tier\TierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccount\UserAccountRepository;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserAccountNumber\UserAccountNumberRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserBalance\UserBalanceRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
@@ -62,7 +66,9 @@ use App\Repositories\UserKeys\PasswordHistory\PasswordHistoryRepository;
 use App\Repositories\UserKeys\PinCodeHistory\IPinCodeHistoryRepository;
 use App\Repositories\UserKeys\PinCodeHistory\PinCodeHistoryRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserPhoto\UserPhotoRepository;
+use App\Repositories\UserPhoto\UserSelfiePhotoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 use App\Repositories\UserUtilities\Country\CountryRepository;
@@ -99,6 +105,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Authentication Repositories
         $this->app->singleton(IUserAccountRepository::class, UserAccountRepository::class);
+        $this->app->singleton(IUserAccountNumberRepository::class, UserAccountNumberRepository::class);
         $this->app->bind(IClientRepository::class, ClientRepository::class);
         $this->app->bind(IPasswordHistoryRepository::class, PasswordHistoryRepository::class);
         $this->app->bind(IPinCodeHistoryRepository::class, PinCodeHistoryRepository::class);
@@ -146,6 +153,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // User Photo
         $this->app->bind(IUserPhotoRepository::class, UserPhotoRepository::class);
+        $this->app->bind(IUserSelfiePhotoRepository::class, UserSelfiePhotoRepository::class);
 
         // Log History
         $this->app->bind(ILogHistoryRepository::class, LogHistoryRepository::class);
@@ -162,6 +170,7 @@ class RepositoryServiceProvider extends ServiceProvider
         // Tier Repository
         $this->app->bind(ITierRepository::class, TierRepository::class);
         $this->app->bind(ITierApprovalRepository::class, TierApprovalRepository::class);
+        $this->app->bind(ITierApprovalCommentRepository::class, TierApprovalCommentRepository::class);
 
         // Service Fee Repository
         $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);

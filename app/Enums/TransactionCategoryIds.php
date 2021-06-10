@@ -17,6 +17,7 @@ class TransactionCategoryIds
     const receiveMoneyToSquidPayAccount = 'b1792f37-929c-11eb-9663-1c1b0d14e211';
 
     const buyLoad = 'edf4d5d0-9299-11eb-9663-1c1b0d14e211';
+    const payBills = 'c5b62dbd-95a0-11eb-8473-1c1b0d14e211';
 
     const cashinTransactions = [
         self::posAddFunds,

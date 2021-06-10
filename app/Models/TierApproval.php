@@ -18,5 +18,24 @@ class TierApproval extends Model
         "remarks",
         "user_created",
         "user_updated",
+        "transaction_number",
+        "approved_date",
+        "declined_date",
     ];
+
+    public function id_photos() {
+        return $this->hasMany(UserPhoto::class, 'tier_approval_id', 'id');
+    }
+
+    public function selfie_photos() {
+        return $this->hasMany(UserSelfiePhoto::class, 'tier_approval_id', 'id');
+    }
+
+    public function user_account() {
+        return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
+    }
+
+    public function user_detail() {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
+    }
 }

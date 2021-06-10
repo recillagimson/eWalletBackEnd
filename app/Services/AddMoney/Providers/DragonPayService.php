@@ -6,6 +6,7 @@ use App\Enums\DragonPayStatusTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TransactionCategories;
+use App\Enums\TransactionCategoryIds;
 use App\Models\InAddMoneyFromBank;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
@@ -17,6 +18,7 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Illuminate\Support\Carbon;
@@ -77,6 +79,7 @@ class DragonPayService implements IAddMoneyService
     private ITierRepository $tiers;
     private IUserBalanceInfoRepository $userBalanceInfos;
     private ILogHistoryService $logHistoryService;
+    private ITransactionValidationService $transactionValidationService;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserAccountRepository $userAccounts,
@@ -88,7 +91,8 @@ class DragonPayService implements IAddMoneyService
                                 ITierRepository $tiers,
                                 IUserDetailRepository $userDetails,
                                 IUserBalanceInfoRepository $userBalanceInfos,
-                                ILogHistoryService $logHistoryService) {
+                                ILogHistoryService $logHistoryService,
+                                ITransactionValidationService $transactionValidationService) {
 
         $this->baseURL = config('dragonpay.dp_base_url_v1');
         $this->merchantID = config('dragonpay.dp_merchantID');
@@ -106,6 +110,7 @@ class DragonPayService implements IAddMoneyService
         $this->userDetails = $userDetails;
         $this->userBalanceInfos = $userBalanceInfos;
         $this->logHistoryService = $logHistoryService;
+        $this->transactionValidationService = $transactionValidationService;
     }
 
     /**
@@ -131,6 +136,12 @@ class DragonPayService implements IAddMoneyService
         $beneficiaryName = $this->getFullname($userAccountID);
         $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
         $totalAmount = $amount;
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
+        $userAccount = $this->userAccounts->get($userAccountID);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($userAccount, $totalAmount, TransactionCategoryIds::cashinDragonPay);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY)
+
         $body = $this->createBody($totalAmount, $beneficiaryName, $email);
         $transactionCategoryID = $this->transactionCategories->getByName($this->moduleTransCategory);
 
@@ -545,7 +556,7 @@ class DragonPayService implements IAddMoneyService
             'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
             'namespace' => __METHOD__,
             'transaction_date' => Carbon::now(),
-            'remarks' => 'Requests to generate URL for adding money',
+            'remarks' => 'Requested to generate DragonPay URL to add money.',
             'user_created' => $this->userAccountID,
             'user_updated' => $this->userAccountID
         ]);

@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
-use Illuminate\Http\Request;
-use App\Http\Requests\SendMoney\SendMoneyRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use App\Services\SendMoney\ISendMoneyService;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\SendMoney\GenerateQrRequest;
 use App\Http\Requests\SendMoney\ScanQrRequest;
+use App\Http\Requests\SendMoney\SendMoneyRequest;
+use App\Services\SendMoney\ISendMoneyService;
 use App\Services\Utilities\Responses\IResponseService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class SendMoneyController extends Controller
 {
@@ -25,13 +24,10 @@ class SendMoneyController extends Controller
     }
 
 
-
     /**
      * Send money request
      *
      * @param SendMoneyRequest $request
-     * @param array $fillRequest
-     * @param string $username
      * @return JsonResponse
      */
     public function send(SendMoneyRequest $request): JsonResponse
@@ -44,11 +40,9 @@ class SendMoneyController extends Controller
     }
 
     /**
-     * Validates send money 
+     * Validates send money
      *
      * @param SendMoneyRequest $request
-     * @param array $fillRequest
-     * @param string $username
      * @return JsonResponse
      */
     public function sendValidate(SendMoneyRequest $request): JsonResponse
@@ -64,9 +58,7 @@ class SendMoneyController extends Controller
     /**
      * Generates QR Transaction
      *
-     * @param SendMoneyRequest $request
-     * @param array $fillRequest
-     * @param array $qrTransaction
+     * @param GenerateQrRequest $request
      * @return JsonResponse
      */
     public function generateQr(GenerateQrRequest $request): JsonResponse
@@ -82,8 +74,6 @@ class SendMoneyController extends Controller
      * Scan Qr Transaction
      *
      * @param ScanQrRequest $request
-     * @param array $fillRequest
-     * @param array $qrTransaction
      * @return JsonResponse
      */
     public function scanQr(ScanQrRequest $request): JsonResponse
@@ -96,7 +86,7 @@ class SendMoneyController extends Controller
 
     /**
      * Returns UsernameType
-     * 
+     *
      * @param Request $request
      * @return string
      */

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\UserUtilities\UserDetail;
+use App\Traits\HasS3Links;
 use App\Traits\UsesUuid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class UserAccount extends Authenticatable
 {
-    use UsesUuid;
+    use UsesUuid, HasS3Links;
     use SoftDeletes, HasApiTokens, HasFactory;
 
     /**
@@ -21,13 +23,16 @@ class UserAccount extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'account_number',
         'email',
         'mobile_number',
         'password',
         'pin_code',
         'verified',
         'is_admin',
-        'tier_id'
+        'tier_id',
+        'user_created',
+        'user_updated',
     ];
 
     /**
@@ -64,6 +69,11 @@ class UserAccount extends Authenticatable
     public function balanceInfo(): HasOne
     {
         return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
+    }
+
+    public function verificationToken(): HasOne
+    {
+        return $this->hasOne(AdminUserVerifyToken::class);
     }
 
     public function updateLockout(int $maxLoginAttempts)

@@ -2,26 +2,28 @@
 
 namespace App\Services\SendMoney;
 
-use App\Enums\OtpTypes;
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\SendMoneyConfig;
-use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
-use App\Repositories\LogHistory\ILogHistoryRepository;
-use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
-use App\Repositories\QrTransactions\IQrTransactionsRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\Utilities\Notifications\Email\IEmailService;
-use App\Services\Utilities\Notifications\INotificationService;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Services\Utilities\OTP\IOtpService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithSendMoneyErrors;
+use App\Enums\ErrorCodes;
 use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
-
+use App\Enums\OtpTypes;
+use App\Enums\SendMoneyConfig;
+use App\Enums\ReferenceNumberTypes;
+use App\Enums\TransactionCategories;
+use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithSendMoneyErrors;
+use App\Services\Utilities\OTP\IOtpService;
+use App\Repositories\LogHistory\ILogHistoryRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
+use App\Repositories\QrTransactions\IQrTransactionsRepository;
+use App\Services\Utilities\Notifications\INotificationService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Transaction\ITransactionValidationService;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -40,7 +42,8 @@ class SendMoneyService implements ISendMoneyService
     private IEmailService $emailService;
     private ISmsService $smsService;
     private IOtpService $otpService;
-    
+    private ITransactionValidationService $transactionValidationService;
+
     public function __construct(
         IOutSendMoneyRepository $outSendMoney,
         IInReceiveMoneyRepository $inReceiveMoney,
@@ -54,8 +57,9 @@ class SendMoneyService implements ISendMoneyService
         INotificationService $notificationService,
         IEmailService $emailService,
         ISmsService $smsService,
-        IOtpService $otpService
-       
+        IOtpService $otpService,
+        ITransactionValidationService $transactionValidationService
+
     ) {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
@@ -70,6 +74,7 @@ class SendMoneyService implements ISendMoneyService
         $this->emailService = $emailService;
         $this->smsService = $smsService;
         $this->otpService = $otpService;
+        $this->transactionValidationService = $transactionValidationService;
     }
 
 
@@ -79,11 +84,7 @@ class SendMoneyService implements ISendMoneyService
      * @param string $username
      * @param array $fillRequest
      * @param object $user
-     * @param string $senderID 
-     * @param string $receiverID
-     * @param boolean $isSelf
-     * @param boolean $isEnough
-     * @throws ValidationException
+     * @return array
      */
     public function send(string $username, array $fillRequest, object $user)
     {
@@ -101,10 +102,20 @@ class SendMoneyService implements ISendMoneyService
         if (!$isEnough) $this->insuficientBalance();
         if (!$receiverDetails) $this->recipientDetailsNotFound();
         if (!$senderDetails) $this->senderDetailsNotFound();
-        
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+        $sender_account = $this->userAccounts->get($senderID);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($sender_account, $fillRequest['amount'], TransactionCategoryIds::sendMoneyToSquidPayAccount);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
+        $receiver_account = $this->userAccounts->get($receiverID);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($receiver_account, $fillRequest['amount'], TransactionCategoryIds::receiveMoneyToSquidPayAccount, [ 'key' => ErrorCodes::receiverMonthlyLimitExceeded, 'value' => 'Receiver Transaction Limit reached.' ]);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
+
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
-        
+
         $this->subtractSenderBalance($senderID, $fillRequest);
         $this->addReceiverBalance($receiverID, $fillRequest);
 
@@ -124,11 +135,7 @@ class SendMoneyService implements ISendMoneyService
      * @param string $username
      * @param array $fillRequest
      * @param object $user
-     * @param string $senderID 
-     * @param string $receiverID
-     * @param boolean $isSelf
-     * @param boolean $isEnough
-     * @throws ValidationException
+     * @return array
      */
     public function sendValidate(string $username, array $fillRequest, object $user)
     {
@@ -145,14 +152,23 @@ class SendMoneyService implements ISendMoneyService
         if (!$receiverDetails) $this->recipientDetailsNotFound();
         if (!$senderDetails) $this->senderDetailsNotFound();
 
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+        $sender_account = $this->userAccounts->get($senderID);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($sender_account, $fillRequest['amount'], TransactionCategoryIds::sendMoneyToSquidPayAccount);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
+
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
+        $receiver_account = $this->userAccounts->get($receiverID);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($receiver_account, $fillRequest['amount'], TransactionCategoryIds::receiveMoneyToSquidPayAccount, [ 'key' => ErrorCodes::receiverMonthlyLimitExceeded, 'value' => 'Receiver Transaction Limit reached.' ]);
+        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
+
         return $this->sendMoneyReview($receiverID);
     }
 
 
     /**
      * Creates a record for qr_transactions
-     *  
-     * @param string $username
+     *
      * @param object $user
      * @param array $fillRequest
      * @return mixed
@@ -174,11 +190,8 @@ class SendMoneyService implements ISendMoneyService
      * Returns user mobile_number or email with amount
      *
      * @param string $id
-     * @param string $qrTransaction
-     * @param string $user
-     *
      * @return array
-     */ 
+     */
     public function scanQr(string $id)
     {
         $qrTransaction = $this->qrTransactions->get($id);
@@ -252,7 +265,7 @@ class SendMoneyService implements ISendMoneyService
     {
         return $this->userDetailRepository->getByUserId($userID);
     }
-    
+
 
     private function isSelf(string $senderID, string $receiverID)
     {
@@ -293,7 +306,7 @@ class SendMoneyService implements ISendMoneyService
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
         $this->notificationService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
     }
-    
+
 
     private function recipientNotification($username, $fillRequest, $senderID, $receiverID)
     {
@@ -352,7 +365,7 @@ class SendMoneyService implements ISendMoneyService
             'reference_number' => $fillRequest['refNo'],
             'squidpay_module' => 'Send Money',
             'namespace' => 'SM',
-            'transaction_date' => date('Y-m-d H:i:s'),
+            'transaction_date' => Carbon::now(),
             'remarks' => $senderID . ' sent money to ' . $receiverID,
             'operation' => 'Add and Update',
             'user_created' => $senderID,

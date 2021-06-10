@@ -22,7 +22,7 @@ class UserDetailRepository extends Repository implements IUserDetailRepository
         $record =  $this->model->where('user_account_id', '=', $userAccountID)->first();
 
         if($record) {
-            return $record;
+            return $record->append('avatar_link');
         }
 
         ValidationException::withMessages([
