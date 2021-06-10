@@ -87,7 +87,8 @@ class VerificationService implements IVerificationService
                 'photo_location' => $path,
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
-                'id_number' => $data['id_number']
+                'id_number' => $data['id_number'],
+                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : ""
             ];
             $record = $this->userPhotoRepository->create($params);
             // Collect created record
