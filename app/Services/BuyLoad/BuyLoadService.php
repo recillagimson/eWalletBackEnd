@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BuyLoadService implements IBuyLoadService
 {
@@ -183,6 +184,7 @@ class BuyLoadService implements IBuyLoadService
             } elseif ($state === AtmPrepaidResponseCodes::transactionSuccessful) {
                 $status = TransactionStatuses::success;
             } else {
+                Log::error('Buy Load Transaction Failed', $responseData);
                 $status = TransactionStatuses::failed;
                 $this->handleErrorResponse($state);
             }
