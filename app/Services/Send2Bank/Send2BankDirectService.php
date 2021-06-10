@@ -4,35 +4,35 @@
 namespace App\Services\Send2Bank;
 
 
-use Exception;
-use Carbon\Carbon;
 use App\Enums\OtpTypes;
-use App\Enums\TpaProviders;
-use App\Traits\UserHelpers;
-use App\Models\OutSend2Bank;
-use App\Enums\SquidPayModuleTypes;
-use App\Enums\TransactionStatuses;
-use Illuminate\Support\Facades\DB;
 use App\Enums\ReferenceNumberTypes;
-use App\Traits\Errors\WithTpaErrors;
+use App\Enums\SquidPayModuleTypes;
+use App\Enums\TpaProviders;
 use App\Enums\TransactionCategoryIds;
-use App\Traits\Errors\WithAuthErrors;
-use App\Traits\Errors\WithUserErrors;
-use App\Services\Utilities\OTP\IOtpService;
-use App\Services\ThirdParty\UBP\IUBPService;
-use App\Traits\Errors\WithTransactionErrors;
-use App\Traits\Transactions\Send2BankHelpers;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Enums\TransactionStatuses;
+use App\Models\OutSend2Bank;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\ThirdParty\UBP\IUBPService;
 use App\Services\Transaction\ITransactionValidationService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Traits\Errors\WithAuthErrors;
+use App\Traits\Errors\WithTpaErrors;
+use App\Traits\Errors\WithTransactionErrors;
+use App\Traits\Errors\WithUserErrors;
+use App\Traits\Transactions\Send2BankHelpers;
+use App\Traits\UserHelpers;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class Send2BankDirectService implements ISend2BankDirectService
 {
@@ -77,7 +77,7 @@ class Send2BankDirectService implements ISend2BankDirectService
         $this->smsService = $smsService;
         $this->emailService = $emailService;
 
-        
+
         $this->logHistoryService = $logHistoryService;
     }
 
@@ -106,7 +106,6 @@ class Send2BankDirectService implements ISend2BankDirectService
 
 
             $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
-            $userFullName = ucwords($user->profile->full_name);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
 
             $currentDate = Carbon::now();
@@ -123,8 +122,8 @@ class Send2BankDirectService implements ISend2BankDirectService
             $recipient['amount'], $serviceFeeAmount, $serviceFeeId, $currentDate, $transactionCategoryId, $provider,
             $recipient['send_receipt_to'], $userId, $recipient['remarks'], $recipient['particulars']);
             if (!$send2Bank) $this->transactionFailed();
-            
-            
+
+
             $transferResponse = $this->ubpService->send2BankUBPDirect($refNo, $transactionDate, $recipient['recipient_account_no'], $totalAmount, $recipient['remarks'], "", $recipient['recipient_name']);
 
             $updateReferenceCounter = true;
@@ -138,7 +137,8 @@ class Send2BankDirectService implements ISend2BankDirectService
 
             // Create transaction history
             if($send2Bank->status === TransactionStatuses::success) {
-                $this->transactionHistories->log($userId, $transactionCategoryId, $send2Bank->id, $refNo, $totalAmount, request()->user()->id);
+                $this->transactionHistories->log($userId, $transactionCategoryId, $send2Bank->id, $refNo,
+                    $totalAmount, $send2Bank->transaction_date, request()->user()->id);
             }
 
             // CREATE LOG HISTORY
@@ -196,7 +196,9 @@ class Send2BankDirectService implements ISend2BankDirectService
             if ($send2Bank->status === TransactionStatuses::failed) $failCount++;
 
             if($send2Bank->status === TransactionStatuses::success) {
-                $this->transactionHistories->log($userId, $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number, $send2Bank->total_amount, request()->user()->id);
+                $this->transactionHistories->log($userId, $send2Bank->transaction_category_id, $send2Bank->id,
+                    $send2Bank->reference_number, $send2Bank->total_amount, $send2Bank->transaction_date,
+                    request()->user()->id);
             }
         }
 
