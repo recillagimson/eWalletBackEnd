@@ -280,7 +280,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     // ADMIN
-    Route::prefix('/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
+    Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
         Route::get('/', [RoleController::class, 'index'])->name('list');
         Route::post('/', [RoleController::class, 'store'])->name('store');
         Route::get('/{role}', [RoleController::class, 'show'])->name('show');

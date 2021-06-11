@@ -96,7 +96,7 @@ class RoleController extends Controller
     public function destroy(Role $Role)
     {
         $deleteRecord = $this->iRoleRepository->delete($Role);
-        return $this->responseService->noContentResponse([], SuccessMessages::recordDeleted);
+        return $this->responseService->noContentResponse($deleteRecord, SuccessMessages::recordDeleted);
     }
 
     /**
