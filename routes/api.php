@@ -225,6 +225,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
         Route::get('/bayad/process/pending', [PayBillsController::class, 'processPending']);
+        Route::get('/list/billers', [PayBillsController::class, 'getListOfBillers']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->group(function () {

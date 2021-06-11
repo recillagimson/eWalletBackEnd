@@ -5,6 +5,7 @@ namespace App\Repositories\OutPayBills;
 use App\Enums\TransactionStatuses;
 use App\Models\OutPayBills;
 use App\Repositories\Repository;
+use Illuminate\Database\Eloquent\Builder;
 
 class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
 {
@@ -24,6 +25,14 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
     public function getPending(string $userId)
     {
         return $this->model->where([ 'user_account_id' => $userId, 'status' => TransactionStatuses::pending ])->get();
+    }
+
+    public function getAllBillers() {
+        return $this->getAllBillersBaseQuery()->paginate();
+    }
+
+    private function getAllBillersBaseQuery(): Builder {
+        return $this->model->with(['user_detail', 'user_account']);
     }
 
 }

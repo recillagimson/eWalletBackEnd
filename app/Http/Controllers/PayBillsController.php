@@ -9,16 +9,20 @@ use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
 use Request;
 use Illuminate\Http\Response;
+use App\Repositories\OutPayBills\IOutPayBillsRepository;
 
 class PayBillsController extends Controller
 {
     private IPayBillsService $payBillsService;
     private IResponseService $responseService;
+    private IOutPayBillsRepository $outPayBillsRepository;
 
-    public function __construct(IPayBillsService $payBillsService, IResponseService $responseService)
+    public function __construct(IPayBillsService $payBillsService, IResponseService $responseService,
+                                IOutPayBillsRepository $outPayBillsRepository)
     {
         $this->payBillsService = $payBillsService;
         $this->responseService = $responseService;
+        $this->outPayBillsRepository = $outPayBillsRepository;
     }
 
 
@@ -130,6 +134,17 @@ class PayBillsController extends Controller
     {
         $response = $this->payBillsService->processPending($request->user());
         return $this->responseService->successResponse($response);
+    }
+
+    /**
+     * List of billers
+     *
+     * @return JsonResponse
+     */
+    public function getListOfBillers(): JsonResponse
+    {
+        $response = $this->outPayBillsRepository->getAllBillers();
+        return $this->responseService->successResponse($response->toArray());
     }
 
 }

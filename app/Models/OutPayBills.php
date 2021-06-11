@@ -39,4 +39,11 @@ class OutPayBills extends Model
         'user_updated'
     ];
 
+    public function user_detail() {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
+    }
+
+    public function user_account() {
+        return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
+    }
 }
