@@ -11,6 +11,7 @@ use App\Traits\Errors\WithBuyLoadErrors;
 use App\Traits\Errors\WithTransactionErrors;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -111,6 +112,7 @@ class AtmService implements IAtmService
         $headers = $this->getHeaders($postData);
 
         $url = $this->baseUrl . $this->topupUrl;
+        Log::info('Buy Load Topup', $postData);
         return $this->apiService->post($url, $postData, $headers);
     }
 

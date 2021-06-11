@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
 use App\Enums\SquidPayModuleTypes;
 use App\Repositories\IdType\IIdTypeRepository;
+use App\Repositories\Tier\ITierApprovalCommentRepository;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
@@ -23,14 +24,16 @@ class VerificationService implements IVerificationService
     public IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     public ILogHistoryService $logHistoryService;
     public IIdTypeRepository $iIdTypeRepository;
+    public ITierApprovalCommentRepository $tierApprovalComment;
 
-    public function __construct(IUserPhotoRepository $userPhotoRepository, IUserDetailRepository $userDetailRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, ILogHistoryService $logHistoryService, IIdTypeRepository $iIdTypeRepository)
+    public function __construct(IUserPhotoRepository $userPhotoRepository, IUserDetailRepository $userDetailRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, ILogHistoryService $logHistoryService, IIdTypeRepository $iIdTypeRepository, ITierApprovalCommentRepository $iTierApprovalCommentRepository)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
         $this->logHistoryService = $logHistoryService;
         $this->iIdTypeRepository = $iIdTypeRepository;
+        $this->iTierApprovalCommentRepository = $iTierApprovalCommentRepository;
     }
 
     public function createSelfieVerification(array $data, ?string $userAccountId = null) {
@@ -61,6 +64,15 @@ class VerificationService implements IVerificationService
         // SAVE SELFIE LOCATION ON USER DETAILS
         $record = $this->userSelfiePhotoRepository->create($data);
 
+        if(isset($data['remarks'])) {
+            $this->iTierApprovalCommentRepository->create([
+                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
+                'user_created' => $data['user_created'] = request()->user()->id,
+                'user_updated' => $data['user_updated'] = request()->user()->id
+            ]);
+        }
+
         $audit_remarks = request()->user()->id . "  has uploaded Selfie";
         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadSelfiePhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
 
@@ -88,9 +100,20 @@ class VerificationService implements IVerificationService
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
                 'id_number' => $data['id_number'],
-                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : ""
+                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                'remarks' => isset($data['remarks']) ? $data['remarks'] : ""
             ];
             $record = $this->userPhotoRepository->create($params);
+
+            if(isset($data['remarks'])) {
+                $this->iTierApprovalCommentRepository->create([
+                    'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                    'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
+                    'user_created' => $data['user_created'] = request()->user()->id,
+                    'user_updated' => $data['user_updated'] = request()->user()->id
+                ]);
+            }
+
             // Collect created record
             array_push($recordsCreated, $record);
 

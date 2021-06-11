@@ -4,6 +4,7 @@ namespace App\Repositories\UserTransactionHistory;
 
 use App\Models\UserTransactionHistory;
 use App\Repositories\Repository;
+use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 
 class UserTransactionHistoryRepository extends Repository implements IUserTransactionHistoryRepository
@@ -19,7 +20,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     }
 
     public function log(string $userId, string $transactionCategoryId, string $transactionId, string $refNo,
-                        float $totalAmount, string $userCreated)
+                        float $totalAmount, Carbon $transactionDate, string $userCreated)
     {
         $data = [
             'user_account_id' => $userId,
@@ -27,6 +28,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             'reference_number' => $refNo,
             'total_amount' => $totalAmount,
             'transaction_category_id' => $transactionCategoryId,
+            'transaction_date' => $transactionDate,
             'user_created' => $userCreated
         ];
 
@@ -42,7 +44,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
     public function findTransactionWithRelation(string $id) {
         $record = $this->model->with(['transaction_category'])->find($id);
-        
+
         if(is_null($record)) {
             throw ValidationException::withMessages([
                 'record_not_found' => 'Record not found'
