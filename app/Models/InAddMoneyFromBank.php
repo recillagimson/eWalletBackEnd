@@ -12,6 +12,7 @@ class InAddMoneyFromBank extends Model
     use HasFactory, UsesUuid, SoftDeletes;
 
     protected $table = 'in_add_money_from_bank';
+
     protected $fillable = [
         'user_account_id',
         'online_bank_or_over_the_counter_list_id',
@@ -31,7 +32,12 @@ class InAddMoneyFromBank extends Model
         'expires_at',
     ];
 
-    public function user_details() {
+    protected $casts = [
+        'transaction_date' => 'datetime'
+    ];
+
+    public function user_details()
+    {
         return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
     }
 }
