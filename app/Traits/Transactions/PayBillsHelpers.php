@@ -203,7 +203,8 @@ trait PayBillsHelpers
             $payBill->user_updated = $payBill->user_account_id;
             $payBill->save();
 
-            if ($status === TransactionStatuses::success) {
+            if ($status === TransactionStatuses::success
+            ) {
                 $this->transactionHistories->log(
                     $payBill->user_account_id,
                     $payBill->transaction_category_id,
