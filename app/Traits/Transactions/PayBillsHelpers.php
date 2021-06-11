@@ -22,6 +22,7 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithUserErrors;
 use App\Traits\UserHelpers;
+use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
 
@@ -142,6 +143,7 @@ trait PayBillsHelpers
             'other_charges' => $response['data']['otherCharges'],
             'service_fee' => $serviceFee,
             'total_amount' => $response['data']['amount'] + $response['data']['otherCharges'] + $serviceFee,
+            'transaction_date' => Carbon::now(),
             'transaction_category_id' => PayBillsConfig::BILLS,
             'transaction_remarks' => 'Pay bills to ' . $biller['data']['name'],
             'message' => '',
@@ -208,6 +210,7 @@ trait PayBillsHelpers
                     $payBill->id,
                     $payBill->reference_number,
                     $payBill->total_amount,
+                    $payBill->transaction_date,
                     $payBill->user_account_id
                 );
             }
