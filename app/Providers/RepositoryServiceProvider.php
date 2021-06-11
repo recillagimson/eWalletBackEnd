@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Enums\UserKeyTypes;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
+use App\Repositories\DrcrMemo\DrcrMemoRepository;
+use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
 use App\Repositories\IdType\IdTypeRepository;
@@ -171,6 +173,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Pay Bills Repositories
         $this->app->bind(IOutPayBillsRepository::class, OutPayBillsRepository::class);
+
+        //Drcr Memos Repositories
+        $this->app->bind(IDrcrMemoRepository::class, DrcrMemoRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();

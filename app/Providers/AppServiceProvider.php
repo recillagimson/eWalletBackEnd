@@ -24,6 +24,8 @@ use App\Services\BuyLoad\BuyLoadService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\IDashboardService;
+use App\Services\DrcrMemo\DrcrMemoService;
+use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
@@ -121,6 +123,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
         $this->app->bind(IVerificationService::class, VerificationService::class);
         $this->app->bind(IPayBillsService::class, PayBillsService::class);
+        $this->app->bind(IDrcrMemoService::class, DrcrMemoService::class);
 
         //APP SERVICES - CONTEXTUAL BINDINGS
         $this->bindNotificationService();

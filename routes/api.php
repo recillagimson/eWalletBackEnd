@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BuyLoad\AtmController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DrcrMemoController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
@@ -257,6 +258,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function(){
         Route::get('/', [DashboardController::class, 'index']);
+    });
+
+    Route::prefix('drcr/memos')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/', [DrcrMemoController::class, 'index']);
+        Route::post('/', [DrcrMemoController::class, 'store']);
     });
 
 });
