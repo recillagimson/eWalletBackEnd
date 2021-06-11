@@ -15,6 +15,8 @@ class UserPhoto extends Model
 
     protected $table = 'user_id_photos';
 
+    protected $appends = ['id_photo_link'];
+
     protected $fillable = [
         'id',
         'id_number',
@@ -31,7 +33,11 @@ class UserPhoto extends Model
         'reviewed_date',
     ];
 
-    public function getAvatarLinkAttribute() {
-        return $this->getTempUrl($this->avatar_location, Carbon::now()->addHour()->format('Y-m-d H:i:s'));
+    public function getIdPhotoLinkAttribute() {
+        return $this->getTempUrl($this->photo_location, Carbon::now()->addHour()->format('Y-m-d H:i:s'));
+    }
+
+    public function id_type() {
+        return $this->hasOne(IdType::class, 'id', 'id_type_id');
     }
 }
