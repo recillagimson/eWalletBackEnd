@@ -16,6 +16,6 @@ class UserAccountNumber extends Model
     ];
 
     protected $casts = [
-        'account_date' => 'date',
+        'account_date' => 'datetime',
     ];
 }
