@@ -9,6 +9,8 @@ use App\Http\Requests\User\UpdateMobileRequest;
 use App\Services\UserAccount\IUserAccountService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
+use App\Services\UserAccount\IUserAccountService;
+use App\Http\Resources\UserAccount\UserAccountCollection;
 use Illuminate\Http\JsonResponse;
 
 class UserAccountController extends Controller
@@ -22,6 +24,20 @@ class UserAccountController extends Controller
     {
         $this->userAccountService = $userAccountService;
         $this->responseService = $responseService;
+    }
+
+    public function index(): JsonResponse 
+    {
+        $records = $this->userAccountService->getAllPaginated();
+        $records = new UserAccountCollection($records);
+
+        return $this->responseService->successResponse($records->toArray($records) , SuccessMessages::success);
+    }
+
+    public function show(string $id): JsonResponse
+    {
+        $record = $this->userAccountService->findById($id);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
     public function validateEmail(UpdateEmailRequest $request): JsonResponse

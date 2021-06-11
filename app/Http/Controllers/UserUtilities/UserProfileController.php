@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use App\Enums\SuccessMessages;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\JsonResponse;
+use App\Enums\SquidPayModuleTypes;
 use App\Http\Controllers\Controller;
 use App\Traits\Errors\WithUserErrors;
 use App\Services\Encryption\IEncryptionService;
@@ -20,6 +21,7 @@ use App\Http\Requests\UserProfile\UpdateProfileBronzeRequest;
 use App\Http\Requests\UserProfile\UpdateProfileSilverRequest;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 
 class UserProfileController extends Controller
 {
@@ -32,13 +34,15 @@ class UserProfileController extends Controller
     private IUserDetailRepository $userDetailRepository;
     private ITierApprovalRepository $userApprovalRepository;
     private IVerificationService $verificationService;
+    private ILogHistoryService $logHistoryService;
 
     public function __construct(IEncryptionService $encryptionService, 
                                 IUserProfileService $userProfileService,
                                 IResponseService $responseService,
                                 ITierApprovalRepository $userApprovalRepository,
                                 IUserDetailRepository $userDetailRepository,
-                                IVerificationService $verificationService)
+                                IVerificationService $verificationService,
+                                ILogHistoryService $logHistoryService)
     {
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
@@ -46,6 +50,7 @@ class UserProfileController extends Controller
         $this->userDetailRepository = $userDetailRepository;
         $this->userApprovalRepository = $userApprovalRepository;
         $this->verificationService = $verificationService;
+        $this->logHistoryService = $logHistoryService;
     }
 
     /**
@@ -58,7 +63,10 @@ class UserProfileController extends Controller
     {
         $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $details);
-        
+
+        $audit_remarks = request()->user()->id . "  has updated his/her profile";
+        $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToBronze, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+
         // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
         return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
     }
@@ -91,10 +99,15 @@ class UserProfileController extends Controller
                 'transaction_number' => $generatedTransactionNumber
             ]);
             $this->verificationService->updateTierApprovalIds($request->id_photos_ids, $request->id_selfie_ids, $tierApproval->id);
+
+            $audit_remarks = request()->user()->id . " has requested to upgrade to Silver";
+            $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
         }
         $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $details);
-        
+        $audit_remarks = request()->user()->id . " Profile Information has been successfully updated.";
+        $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+
         // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
         return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
     }

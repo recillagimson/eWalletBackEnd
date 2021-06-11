@@ -28,6 +28,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BuyLoadService implements IBuyLoadService
 {
@@ -183,6 +184,7 @@ class BuyLoadService implements IBuyLoadService
             } elseif ($state === AtmPrepaidResponseCodes::transactionSuccessful) {
                 $status = TransactionStatuses::success;
             } else {
+                Log::error('Buy Load Transaction Failed', $responseData);
                 $status = TransactionStatuses::failed;
                 $this->handleErrorResponse($state);
             }
@@ -196,7 +198,7 @@ class BuyLoadService implements IBuyLoadService
             if ($status === TransactionStatuses::success) {
                 $this->transactionHistories->log($buyLoad->user_account_id,
                     $buyLoad->transaction_category_id, $buyLoad->id, $buyLoad->reference_number,
-                    $buyLoad->total_amount, $buyLoad->user_account_id);
+                    $buyLoad->total_amount, $buyLoad->transaction_date, $buyLoad->user_account_id);
             }
 
             return $buyLoad;
@@ -229,7 +231,7 @@ class BuyLoadService implements IBuyLoadService
             if ($status === TransactionStatuses::success) {
                 $this->transactionHistories->log($buyLoad->user_account_id,
                     $buyLoad->transaction_category_id, $buyLoad->id, $buyLoad->reference_number,
-                    $buyLoad->total_amount, $buyLoad->user_account_id);
+                    $buyLoad->total_amount, $buyLoad->transaction_date, $buyLoad->user_account_id);
             }
         }
 

@@ -41,8 +41,10 @@ use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\Send2Bank\OutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\ServiceFee\ServiceFeeRepository;
+use App\Repositories\Tier\ITierApprovalCommentRepository;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\Tier\ITierRepository;
+use App\Repositories\Tier\TierApprovalCommentRepository;
 use App\Repositories\Tier\TierApprovalRepository;
 use App\Repositories\Tier\TierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
@@ -165,6 +167,7 @@ class RepositoryServiceProvider extends ServiceProvider
         // Tier Repository
         $this->app->bind(ITierRepository::class, TierRepository::class);
         $this->app->bind(ITierApprovalRepository::class, TierApprovalRepository::class);
+        $this->app->bind(ITierApprovalCommentRepository::class, TierApprovalCommentRepository::class);
 
         // Service Fee Repository
         $this->app->bind(IServiceFeeRepository::class, ServiceFeeRepository::class);
