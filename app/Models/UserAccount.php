@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use App\Models\UserUtilities\UserDetail;
-use App\Traits\HasS3Links;
-use App\Traits\UsesUuid;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Traits\UsesUuid;
+use App\Models\Admin\Role;
+use App\Traits\HasS3Links;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\UserUtilities\UserDetail;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class UserAccount extends Authenticatable
 {
@@ -33,6 +34,7 @@ class UserAccount extends Authenticatable
         'tier_id',
         'user_created',
         'user_updated',
+        'role_id'
     ];
 
     /**
@@ -110,5 +112,9 @@ class UserAccount extends Authenticatable
     public function deleteTokensByName(string $tokenName)
     {
         $this->tokens()->where('name', $tokenName)->delete();
+    }
+
+    public function role() {
+        return $this->hasOne(Role::class, 'id', 'role_id');
     }
 }
