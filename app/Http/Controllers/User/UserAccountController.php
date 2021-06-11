@@ -9,7 +9,6 @@ use App\Http\Requests\User\UpdateMobileRequest;
 use App\Services\UserAccount\IUserAccountService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
-use App\Services\UserAccount\IUserAccountService;
 use App\Http\Resources\UserAccount\UserAccountCollection;
 use Illuminate\Http\JsonResponse;
 
