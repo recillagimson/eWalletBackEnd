@@ -87,6 +87,8 @@ use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 use App\Repositories\UserUtilities\SourceOfFund\SourceOfFundRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
+use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
+use App\Repositories\UserUtilities\UserRole\UserRoleRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -185,6 +187,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Permission Repositories
         $this->app->bind(IPermissionRepository::class, PermissionRepository::class);
+        
+        // User Role Repositories
+        $this->app->bind(IUserRoleRepository::class, UserRoleRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();

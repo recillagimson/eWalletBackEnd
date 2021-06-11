@@ -26,11 +26,16 @@ class RBPMiddleware
         if(in_array($current_route, $exceptions)) {
             return $next($request);
         }
+        if(request()->user() && request()->user()->roles && request()->user()->roles) {
 
-        if(request()->user() && request()->user()->role && request()->user()->role->permissions) {
-            $permissions = request()->user()->role->permissions->pluck(['route_name']);
+            $permissions = [];
+            foreach(request()->user()->roles as $role) {
+                $permissions = array_merge($permissions, $role->permissions->pluck(['route_name'])->toArray());
+            }
+
+
             if($permissions) {
-                if(in_array($current_route, $permissions->toArray())) {
+                if(in_array($current_route, $permissions)) {
                     return $next($request);
                 }
             }

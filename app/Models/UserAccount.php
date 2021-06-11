@@ -34,7 +34,6 @@ class UserAccount extends Authenticatable
         'tier_id',
         'user_created',
         'user_updated',
-        'role_id'
     ];
 
     /**
@@ -114,7 +113,7 @@ class UserAccount extends Authenticatable
         $this->tokens()->where('name', $tokenName)->delete();
     }
 
-    public function role() {
-        return $this->hasOne(Role::class, 'id', 'role_id');
+    public function roles() {
+        return $this->hasManyThrough(Role::class, UserRole::class, 'user_account_id', 'id', 'id', 'role_id');
     }
 }

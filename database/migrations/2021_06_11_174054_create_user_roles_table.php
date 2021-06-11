@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddUserAccountRoleIdColumn extends Migration
+class CreateUserRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class AddUserAccountRoleIdColumn extends Migration
      */
     public function up()
     {
-        Schema::table('user_accounts', function (Blueprint $table) {
+        Schema::create('user_account_roles', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('user_account_id')->references('id')->on('user_accounts');
             $table->uuid('role_id')->references('id')->on('roles');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,8 +29,6 @@ class AddUserAccountRoleIdColumn extends Migration
      */
     public function down()
     {
-        Schema::table('user_accounts', function (Blueprint $table) {
-            $table->dropColumn('role_id');
-        });
+        Schema::dropIfExists('user_account_roles');
     }
 }
