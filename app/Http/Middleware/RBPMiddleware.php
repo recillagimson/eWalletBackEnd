@@ -17,7 +17,9 @@ class RBPMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $exceptions = [];
+        $exceptions = [
+            
+        ];
 
         $current_route = \Route::getCurrentRoute()->getActionName();
         
@@ -33,8 +35,8 @@ class RBPMiddleware
                 }
             }
         }
-        throw ValidationException::withMessages([
-            'permission_error' => 'Unauthorized Access'
-        ]);
+        return response()->json([
+            'message' => config('permission.unauthorized_access')
+        ], 403);
     }
 }

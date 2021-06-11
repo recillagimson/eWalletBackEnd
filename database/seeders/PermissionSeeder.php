@@ -48,8 +48,8 @@ class PermissionSeeder extends Seeder
 
             if(isset($controller['1'])) {
                 Permission::create([
-                    'name' => $module . "-" . $controller['1'],
-                    'slug' => Str::slug($module . "-" . $controller['1'], '-'),
+                    'name' => $module . "." . ucfirst($controller['1']),
+                    'slug' => Str::slug($module . "." . ucfirst($controller['1']), '.'),
                     'permission_group_id' => $permission_group->id,
                     'route_name' => $route_raw
                 ]);
