@@ -10,4 +10,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class RolePermission extends Model
 {
     use HasFactory, SoftDeletes, UsesUuid;
+
+    protected $fillable = [
+        'role_id',
+        'permission_id'
+    ];
 }

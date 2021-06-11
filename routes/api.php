@@ -289,7 +289,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     });
     
-    Route::prefix('/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function() {
+    Route::prefix('/admin/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function() {
         Route::get('/', [RoleController::class, 'rolePermissions'])->name('list');
         Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
     });

@@ -39,4 +39,6 @@ class OutPayBills extends Model
         'user_updated'
     ];
 
+    protected $casts = ['transaction_date' => 'datetime'];
+
 }
