@@ -40,7 +40,7 @@ class UserTransactionHistoryController extends Controller
     }
 
     public function countTotalAmountEachUser(DownloadTransactionHistoryRequest $request) {
-        $record = $this->userTransactionHistory->countTransactionHistoryByDateRangeWithAmountLimit($request->from, $request->to);
+        $record = $this->userTransactionHistory->countTransactionHistoryByDateRangeWithAmountLimitWithPaginate($request->from, $request->to);
         return $this->responseService->successResponse($record->toArray());
     }
 }

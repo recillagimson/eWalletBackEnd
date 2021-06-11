@@ -27,8 +27,12 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
         return $this->model->where([ 'user_account_id' => $userId, 'status' => TransactionStatuses::pending ])->get();
     }
 
-    public function getAllBillers() {
+    public function getAllBillersWithPaginate() {
         return $this->getAllBillersBaseQuery()->paginate();
+    }
+
+    public function getAllBillers() {
+        return $this->getAllBillersBaseQuery()->get();
     }
 
     private function getAllBillersBaseQuery(): Builder {

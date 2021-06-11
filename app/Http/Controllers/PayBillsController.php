@@ -143,7 +143,7 @@ class PayBillsController extends Controller
      */
     public function getListOfBillers(): JsonResponse
     {
-        $response = $this->outPayBillsRepository->getAllBillers();
+        $response = $this->outPayBillsRepository->getAllBillersWithPaginate();
         return $this->responseService->successResponse($response->toArray());
     }
 
