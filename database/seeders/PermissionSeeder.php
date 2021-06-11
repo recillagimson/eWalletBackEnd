@@ -17,28 +17,43 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
-        $routes = Route::getRoutes()->getRoutesByName();
+        $routes = Route::getRoutes();
         PermissionGroup::truncate();
         Permission::truncate();
         foreach($routes as $key => $route){
-            // array_push($routes_keys, $key);
-            $terms = explode('.', $key);
-            $name = str_replace('.', ' ', str_replace('_', ' ', $terms['0']));
-            $name = ucfirst($name);
+            // dd($route->getActionMethod());
+            // dd($route->getActionName());
+            // // array_push($routes_keys, $key);
+            // $terms = explode('.', $key);
+            // $name = str_replace('.', ' ', str_replace('_', ' ', $terms['0']));
+            // $name = ucfirst($name);
+
+            $route_raw = $route->getActionName();
+            $data = explode("\\", $route_raw);
+            $controller = explode("@", $data[count($data) - 1]);
+            $module = str_replace('Controller', '', $controller['0']);
+            // dd($controller);s
+
             $permission_group = PermissionGroup::updateOrCreate([
-                'name' => $name . " Management",
-                'description' => $name . " Management",
-                'slug' => Str::slug($name, '-')
+                'name' => $module . " Management",
+                'description' => $module . " Management",
+                'slug' => Str::slug($module, '-')
             ]);
 
-            $permission_key_name = str_replace('.', ' ', $key);
-            $permission_key_name = str_replace('_', ' ', $permission_key_name);
-            Permission::create([
-                'name' => $permission_key_name,
-                'slug' => Str::slug($permission_key_name, '-'),
-                'permission_group_id' => $permission_group->id,
-                'route_name' => $key
-            ]);
+            // $permission_key_name = str_replace('.', ' ', $key);
+            // $permission_key_name = str_replace('_', ' ', $permission_key_name);
+                // if(!isset($controller['1'])){
+                //     dd($controller);
+                // }
+
+            if(isset($controller['1'])) {
+                Permission::create([
+                    'name' => $module . "-" . $controller['1'],
+                    'slug' => Str::slug($module . "-" . $controller['1'], '-'),
+                    'permission_group_id' => $permission_group->id,
+                    'route_name' => $route_raw
+                ]);
+            }
         }
     }
 }

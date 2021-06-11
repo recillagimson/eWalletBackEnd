@@ -24,9 +24,9 @@ class CreatePermissionsTable extends Migration
 
         Schema::create('permissions', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name', 50);
-            $table->string('slug',50);
-            $table->string('route_name', 50);
+            $table->string('name');
+            $table->string('slug');
+            $table->string('route_name');
             $table->uuid('permission_group_id')->references('id')
             ->on('permission_groups')
             ->onDelete('restrict');
