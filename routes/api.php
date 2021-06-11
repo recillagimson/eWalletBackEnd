@@ -198,6 +198,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
+            Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
 
         });
 

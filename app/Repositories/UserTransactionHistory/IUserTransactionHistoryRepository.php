@@ -17,5 +17,7 @@ interface IUserTransactionHistoryRepository extends IRepository
     public function findTransactionWithRelation(string $id);
 
     public function getTransactionHistoryByIdAndDateRange(string $userAccountId, string $from, string $to);
+
+    public function countTransactionHistoryByDateRangeWithAmountLimit(string $from, string $to);
 }
 

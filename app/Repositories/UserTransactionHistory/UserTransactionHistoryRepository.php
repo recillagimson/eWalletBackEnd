@@ -6,6 +6,7 @@ use App\Models\UserTransactionHistory;
 use App\Repositories\Repository;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use DB;
 
 class UserTransactionHistoryRepository extends Repository implements IUserTransactionHistoryRepository
 {
@@ -60,6 +61,18 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             ->where('created_at', '>=', $from)
             ->where('created_at', '<=', $to)
             ->get();
+    }
+
+    public function countTransactionHistoryByDateRangeWithAmountLimit(string $from, string $to, $amount_limit=500000) {
+        return $this->model
+            ->select(DB::raw('SUM(total_amount) as amount, transaction_date, user_account_id, transaction_category_id'))
+            ->whereBetween('transaction_date', [$from, $to])
+            ->groupBy('transaction_date', 'user_account_id')
+            ->having('amount', '>=', $amount_limit)
+            ->paginate();
+            // ->groupBy(function($val) {
+            //     return Carbon::parse($val->transaction_date)->format('Y-m-d');
+            // })      
     }
 
 }

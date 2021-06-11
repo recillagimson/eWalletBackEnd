@@ -38,4 +38,9 @@ class UserTransactionHistoryController extends Controller
     public function download(DownloadTransactionHistoryRequest $request) {
         return $data = $this->transactionService->generateTransactionHistory(request()->user()->id, $request->from, $request->to);
     }
+
+    public function countTotalAmountEachUser(DownloadTransactionHistoryRequest $request) {
+        $record = $this->userTransactionHistory->countTransactionHistoryByDateRangeWithAmountLimit($request->from, $request->to);
+        return $this->responseService->successResponse($record->toArray());
+    }
 }
