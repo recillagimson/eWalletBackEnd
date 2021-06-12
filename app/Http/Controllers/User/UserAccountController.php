@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Traits\UserHelpers;
 use App\Enums\SuccessMessages;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UpdateEmailRequest;
 use App\Http\Requests\User\UpdateMobileRequest;
 use App\Services\UserAccount\IUserAccountService;
+use App\Http\Requests\UserRole\SetUserRoleRequest;
 use App\Services\Utilities\Responses\IResponseService;
-use App\Traits\UserHelpers;
 use App\Http\Resources\UserAccount\UserAccountListCollection;
-use Illuminate\Http\JsonResponse;
 use App\Models\UserAccount;
 use App\Http\Resources\UserAccount\UserAccountCollection;
+use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
 
 class UserAccountController extends Controller
 {
@@ -20,11 +22,13 @@ class UserAccountController extends Controller
 
     private IUserAccountService $userAccountService;
     private IResponseService $responseService;
+    private IUserRoleRepository $userRoleRepository;
 
-    public function __construct(IUserAccountService $userAccountService, IResponseService $responseService)
+    public function __construct(IUserAccountService $userAccountService, IResponseService $responseService, IUserRoleRepository $userRoleRepository)
     {
         $this->userAccountService = $userAccountService;
         $this->responseService = $responseService;
+        $this->userRoleRepository = $userRoleRepository;
     }
 
     public function index(): JsonResponse 
@@ -81,5 +85,10 @@ class UserAccountController extends Controller
         $postback = $this->userAccountService->updateMobile($mobileField, $fillRequest[$mobileField], $request->user());
 
         return $this->responseService->successResponse($postback, SuccessMessages::updateMobileSuccessful);
+    }
+
+    public function setAccountRole(SetUserRoleRequest $request) {
+        $records =  $this->userRoleRepository->setUserRoles($request->all());
+        return $this->responseService->successResponse($records, SuccessMessages::success);
     }
 }

@@ -21,7 +21,7 @@ class HandlePostBackService implements IHandlePostBackService
 {
     /**
      * Transaction name of this class
-     * 
+     *
      * @var string
      */
     protected $moduleTransCategory;
@@ -29,14 +29,14 @@ class HandlePostBackService implements IHandlePostBackService
     /**
      * Current transaction's reference number, the one that
      * SquidPay generated
-     * 
+     *
      * @var string
      */
     protected $referenceNumber;
 
     /**
      * Authenticated user's user account ID
-     * 
+     *
      * @var uuid
      */
     protected $userAccountID;
@@ -49,9 +49,11 @@ class HandlePostBackService implements IHandlePostBackService
     private IResponseService $responseService;
     private ITransactionService $transactionService;
     private ILogHistoryService $logHistoryService;
+    private IUserTransactionHistoryRepository $transactionHistories;
 
     public function __construct(IInAddMoneyRepository $addMoneys,
                                 IUserBalanceInfoRepository $balanceInfos,
+                                IUserTransactionHistoryRepository $transactionHistories,
                                 IUserTransactionHistoryRepository $userTransactions,
                                 ILogHistoryRepository $logHistories,
                                 ITransactionCategoryRepository $transactionCategories,
@@ -69,13 +71,14 @@ class HandlePostBackService implements IHandlePostBackService
         $this->responseService = $responseService;
         $this->transactionService = $transactionService;
         $this->logHistoryService = $logHistoryService;
+        $this->transactionHistories = $transactionHistories;
     }
 
     /**
      * The core method in this service.
      * Inserts the data receive from DragonPay
      * postback
-     * 
+     *
      * @param array $postBackData
      * @return object $responseData
      */
@@ -88,7 +91,7 @@ class HandlePostBackService implements IHandlePostBackService
         $digest = $postBackData['digest'];
 
         $transactionCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
-        
+
         // if Add Money row is missing or the record does not have a 'PENDING' status
         $this->validate($referenceNumber);
 
@@ -112,11 +115,20 @@ class HandlePostBackService implements IHandlePostBackService
 
             $this->addAmountToUserBalance($addMoneyRow->user_account_id, $addMoneyRow->amount);
 
-            $this->logHistoryService->logUserHistoryUnauthenticated($this->userAccountID, $this->referenceNumber, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, __METHOD__, Carbon::now(), 'User has added money amounting to ' . $addMoneyRow->amount . ' via DragonPay');
-            $this->transactionService->createUserTransactionEntryUnauthenticated((string) $this->userAccountID, $addMoneyRow->id, $this->referenceNumber, (float) $addMoneyRow->amount,  $addMoneyRow->transaction_category_id);
+            $this->logHistoryService->logUserHistoryUnauthenticated($this->userAccountID, $this->referenceNumber, SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay, __METHOD__, Carbon::now(), 'Successfully added money from DragonPay with amount of ' . $addMoneyRow->amount);
+            $this->transactionHistories->log(
+                $addMoneyRow->user_account_id,
+                $addMoneyRow->transaction_category_id,
+                $addMoneyRow->id,
+                $addMoneyRow->reference_number,
+                $addMoneyRow->amount,
+                $addMoneyRow->transaction_date,
+                $addMoneyRow->user_account_id
+            );
+
 
             return $this->responseService->successResponse(
-                $amountForResponse, 
+                $amountForResponse,
                 SuccessMessages::addMoneySuccess
             );
         }
@@ -152,7 +164,7 @@ class HandlePostBackService implements IHandlePostBackService
 
     /**
      * Set the reference number
-     * 
+     *
      * @param string $referenceNumber
      * @return void
      */
@@ -163,7 +175,7 @@ class HandlePostBackService implements IHandlePostBackService
 
     /**
      * Set the user account ID
-     * 
+     *
      * @param string $userAccountID
      * @return void
      */
@@ -174,7 +186,7 @@ class HandlePostBackService implements IHandlePostBackService
 
     /**
      * Validates the transaction's status
-     * 
+     *
      * @param string $referenceNumber
      * @return exception
      */
@@ -195,7 +207,7 @@ class HandlePostBackService implements IHandlePostBackService
 
     /**
      * Credit the cashed in amount to the user
-     * 
+     *
      * @param string $userAccountID
      * @param float $amount
      * @return bool
@@ -207,13 +219,13 @@ class HandlePostBackService implements IHandlePostBackService
         if ($userBalanceInfo == null) return $this->userBalanceInfoNotFound();
 
         $balance = $userBalanceInfo->available_balance + $amount;
-        
+
         return $this->balanceInfos->update($userBalanceInfo, ['available_balance' => $balance]);
     }
 
     /**
      * Logs the user's transaction in user transaction table
-     * 
+     *
      * @param string $remarks
      * @return void
      */
@@ -231,9 +243,9 @@ class HandlePostBackService implements IHandlePostBackService
     }
 
     /**
-     * Logs the user's transaction (generate URL) in 
+     * Logs the user's transaction (generate URL) in
      * user transaction history
-     * 
+     *
      * @param uuid $transactionID
      * @param uuid $transCategoryID
      * @return void

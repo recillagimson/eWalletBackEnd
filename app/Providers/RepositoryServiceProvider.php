@@ -3,6 +3,11 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
+use App\Models\TierApproval;
+use App\Repositories\Admin\Permission\IPermissionRepository;
+use App\Repositories\Admin\Permission\PermissionRepository;
+use App\Repositories\Admin\Role\IRoleRepository;
+use App\Repositories\Admin\Role\RoleRepository;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
@@ -84,6 +89,8 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 use App\Repositories\UserUtilities\TempUserDetail\TempUserDetailRepository;
+use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
+use App\Repositories\UserUtilities\UserRole\UserRoleRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -179,6 +186,15 @@ class RepositoryServiceProvider extends ServiceProvider
         
         //Temp User Repositories
         $this->app->bind(ITempUserDetailRepository::class, TempUserDetailRepository::class);
+
+        // Role Repositories
+        $this->app->bind(IRoleRepository::class, RoleRepository::class);
+
+        // Permission Repositories
+        $this->app->bind(IPermissionRepository::class, PermissionRepository::class);
+        
+        // User Role Repositories
+        $this->app->bind(IUserRoleRepository::class, UserRoleRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
