@@ -34,6 +34,7 @@ use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SignupHostController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
@@ -185,6 +186,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/user_accounts')->group(function (){
             Route::get('/', [UserAccountController::class, 'index']);
             Route::get('/{id}', [UserAccountController::class, 'show']);
+            
+            Route::post('/{userAccount}/updateProfile', [UserProfileController::class, 'updateProfile']);
+        });
+
+        Route::prefix('/pending_user_updates')->group(function (){
+            Route::get('/', [TempUserDetailController::class, 'index']);
+            Route::get('/{id}', [TempUserDetailController::class, 'show']);
+            Route::post('/{id}/update-status', [TempUserDetailController::class, 'updateStatus']);
+            
+            Route::post('/{userAccount}/updateProfile', [UserProfileController::class, 'updateProfile']);
         });
 
         Route::prefix('/user')->group(function (){

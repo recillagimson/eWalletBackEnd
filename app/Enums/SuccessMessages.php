@@ -52,4 +52,6 @@ class SuccessMessages
     const updateEmailSuccessful = "Update email successful";
     const validateUpdateMobile = "Update mobile validation successful";
     const updateMobileSuccessful = "Update mobile successful";
+    const updateUserSuccessful = "Update user details successful";
+    const updateUserPending = "Update user details request submitted successfully";
 }

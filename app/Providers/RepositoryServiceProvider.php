@@ -82,6 +82,8 @@ use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 use App\Repositories\UserUtilities\SourceOfFund\SourceOfFundRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
+use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
+use App\Repositories\UserUtilities\TempUserDetail\TempUserDetailRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -174,6 +176,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Pay Bills Repositories
         $this->app->bind(IOutPayBillsRepository::class, OutPayBillsRepository::class);
+        
+        //Temp User Repositories
+        $this->app->bind(ITempUserDetailRepository::class, TempUserDetailRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
