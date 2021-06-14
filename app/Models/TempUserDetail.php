@@ -49,6 +49,10 @@ class TempUserDetail extends Model
         "declined_date",
         "user_created",
         "user_updated",
+        "guardian_name",
+        "guardian_mobile_number",
+        "is_accept_parental_consent",
+        "contact_no",
     ];
 
     protected $dates = [

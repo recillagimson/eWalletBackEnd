@@ -4,6 +4,8 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\MobileNumber;
+use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'last_name' => [
                 'required', 
                 'max:50'
@@ -79,20 +81,26 @@ class UpdateUserRequest extends FormRequest
                 'required',
                 'exists:natures_of_work,id'
             ],
+            'encoded_nature_of_work' => [
+                Rule::requiredIf($this->nature_of_work_id === '0ed96f01-9131-11eb-b44f-1c1b0d14e211')
+            ],
             'source_of_fund_id' => [
                 'required',
                 'exists:source_of_funds,id'
+            ],
+            'encoded_source_of_fund' => [
+                Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211')
             ],
             'employer' => [
                 'required'
             ],
             'mobile_number' => [
-                'required',
+                Rule::requiredIf(!$this->email),
                 'max:11',
                 new MobileNumber()
             ],
             'email' => [
-                'required',
+                Rule::requiredIf(!$this->mobile_number),
                 'email:rfc,dns',
                 'max:50'
             ],
@@ -100,5 +108,20 @@ class UpdateUserRequest extends FormRequest
                 'sometimes'
             ]
         ];
+
+        $inputs = request()->input();
+        
+        if(isset($inputs['birth_date'])) {
+            $birthdate = Carbon::parse($inputs['birth_date']);
+            $age = $birthdate->diffInYears(Carbon::now());
+            if($age < 18) {
+                $rules['guardian_name'] = ['required', 'max:50'];
+                $rules['guardian_mobile_number'] = ['required', 'max:11',  new MobileNumber()];
+                $rules['is_accept_parental_consent'] = ['required','min:0'.'max:1', 'integer'];
+            }
+        }
+
+
+        return $rules;
     }
 }
