@@ -36,6 +36,8 @@ use App\Http\Controllers\UserUtilities\NationalityController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
 use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
+use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
 
 /*
@@ -186,7 +188,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/user_accounts')->group(function (){
             Route::get('/', [UserAccountController::class, 'index']);
             Route::get('/{id}', [UserAccountController::class, 'show']);
+            
+            Route::post('/{userAccount}/updateProfile', [UserProfileController::class, 'updateProfile']);
             Route::post('/roles', [UserAccountController::class, 'setAccountRole']);
+        });
+
+        Route::prefix('/pending_user_updates')->group(function (){
+            Route::get('/', [TempUserDetailController::class, 'index']);
+            Route::get('/{id}', [TempUserDetailController::class, 'show']);
+            Route::post('/{id}/update-status', [TempUserDetailController::class, 'updateStatus']);
         });
 
         Route::prefix('/user')->group(function (){

@@ -26,9 +26,9 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $result;
     }
 
-    public function findById($perPage)
+    public function findById($id)
     {
-        $result = $this->model->with(['profile', 'tier'])->orderBy('created_at', 'DESC')->paginate($perPage);
+        $result = $this->model->with(['profile', 'tier'])->find($id);
         
         return $result;
     }

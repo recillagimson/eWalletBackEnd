@@ -53,6 +53,8 @@ use App\Services\UserAccount\IUserAccountService;
 use App\Services\UserAccount\UserAccountService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\UserProfile\UserProfileService;
+use App\Services\TempUserDetail\ITempUserDetailService;
+use App\Services\TempUserDetail\TempUserDetailService;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
@@ -162,6 +164,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Buy Load Service
         $this->app->bind(IBuyLoadService::class, BuyLoadService::class);
+        
+        // Temp User Detail Service
+        $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
     }
 
     /**

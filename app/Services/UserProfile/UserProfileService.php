@@ -6,6 +6,12 @@ use App\Traits\HasFileUploads;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
+use Carbon\Carbon;
+use App\Repositories\UserUtilities\Nationality\INationalityRepository;
+use App\Repositories\UserUtilities\NatureOfWork\INatureOfWorkRepository;
+use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
+use App\Models\UserAccount;
 
 class UserProfileService implements IUserProfileService
 {
@@ -14,10 +20,19 @@ class UserProfileService implements IUserProfileService
     public IUserDetailRepository $userDetailRepository;
     public IUserPhotoRepository $userPhotoRepository;
 
-    public function __construct(IUserDetailRepository $userDetailRepository, IUserPhotoRepository $userPhotoRepository)
+    public function __construct(IUserDetailRepository $userDetailRepository, 
+                                IUserPhotoRepository $userPhotoRepository,
+                                ITempUserDetailRepository $tempUserDetail,
+                                INationalityRepository $nationality,
+                                INatureOfWorkRepository $natureOfWork,
+                                ISourceOfFundRepository $sourceOfFund)
     {
         $this->userDetailRepository = $userDetailRepository;
         $this->userPhotoRepository = $userPhotoRepository;
+        $this->tempUserDetail = $tempUserDetail;
+        $this->nationality = $nationality;
+        $this->natureOfWork = $natureOfWork;
+        $this->sourceOfFund = $sourceOfFund;
 
     }
 
@@ -73,4 +88,66 @@ class UserProfileService implements IUserProfileService
         // return to controller all created records
     }
 
+    public function updateUserProfile(UserAccount $userAccount, array $request, object $user) 
+    {
+        $request = $this->addTransactionInfo($userAccount, $request, $user);
+        $request = $this->addOtherInfo($request, $user);
+        $request = $this->addUserInput($request, $user);
+
+        $dirty = $this->checkDirty($userAccount, $request);
+
+        if ($dirty) {
+            return [
+                "status" => 1,
+                "data" => $this->tempUserDetail->create($request)
+            ];
+        }
+
+        $this->userDetailRepository->update($userAccount, $request);
+
+        return [
+            "status" => 0,
+            "data" => $userAccount
+        ];
+    }
+
+    public function addTransactionInfo(UserAccount $userAccount, array $request, object $user) 
+    {
+        $request['transaction_number'] = "PU" . Carbon::now()->format('YmdHi') . rand(0,99999);
+        $request['reviewed_by'] = $user->id;
+        $request['reviewed_date'] = Carbon::now();
+        $request['user_account_id'] = $userAccount->id;
+        $request['status'] = 0; //Pending
+
+        return $request;
+    }
+
+    public function addOtherInfo(array $request, object $user) 
+    {
+        $nationality = $this->nationality->get($request['nationality_id']);
+        $nature_of_work = $this->natureOfWork->get($request['nature_of_work_id']);
+        $source_of_fund = $this->sourceOfFund->get($request['source_of_fund_id']);
+
+        $request["encoded_nationality"] = $nationality->description;
+        $request["encoded_nature_of_work"] = $nature_of_work->description;
+        $request["encoded_source_of_fund"] = $source_of_fund->description;
+
+        return $request;
+    }
+
+    public function checkDirty(UserAccount $user, array $request) 
+    {
+        $userAccount = $user->fill($request);
+        $userDetail = $user->profile->fill($request);
+
+        if ($userAccount->isDirty(['email', 'mobile_number'])) {
+            return true;
+        }
+
+        if ($userDetail->isDirty(['birth_date', 'first_name', 'last_name', 'middle_name'])) {
+            return true;
+        }
+
+        return false;
+    }
 }
