@@ -18,9 +18,6 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 use Carbon\Carbon;
-use App\Repositories\UserUtilities\Nationality\INationalityRepository;
-use App\Repositories\UserUtilities\NatureOfWork\INatureOfWorkRepository;
-use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 
 class UserAccountService implements IUserAccountService
 {
@@ -31,27 +28,18 @@ class UserAccountService implements IUserAccountService
     private IEmailService $emailService;
     private IUserAccountNumberRepository $userAccountNumbers;
     private ITempUserDetailRepository $tempUserDetail;
-    private INationalityRepository $nationality;
-    private INatureOfWorkRepository $natureOfWork;
-    private ISourceOfFundRepository $sourceOfFund;
 
     public function __construct(IUserAccountRepository $users,
                                 IUserAccountNumberRepository $userAccountNumbers,
                                 IOtpService $otpService,
                                 IEmailService $emailService,
-                                ITempUserDetailRepository $tempUserDetail,
-                                INationalityRepository $nationality,
-                                INatureOfWorkRepository $natureOfWork,
-                                ISourceOfFundRepository $sourceOfFund)
+                                ITempUserDetailRepository $tempUserDetail)
     {
         $this->users = $users;
         $this->userAccountNumbers = $userAccountNumbers;
         $this->otpService = $otpService;;
         $this->emailService = $emailService;
         $this->tempUserDetail = $tempUserDetail;
-        $this->nationality = $nationality;
-        $this->natureOfWork = $natureOfWork;
-        $this->sourceOfFund = $sourceOfFund;
     }
 
     public function getAdminUsers(): Collection

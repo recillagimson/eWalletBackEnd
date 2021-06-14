@@ -36,7 +36,6 @@ use App\Http\Controllers\UserUtilities\NationalityController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
 use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
-use App\Http\Controllers\UserUtilities\UserProfileController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
 
