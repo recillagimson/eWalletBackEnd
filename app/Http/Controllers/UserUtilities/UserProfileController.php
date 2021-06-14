@@ -22,6 +22,8 @@ use App\Http\Requests\UserProfile\UpdateProfileSilverRequest;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Models\UserAccount;
+use App\Http\Requests\User\UpdateUserRequest;
 
 class UserProfileController extends Controller
 {
@@ -160,6 +162,31 @@ class UserProfileController extends Controller
         $createRecord = $this->userProfileService->changeAvatar($request->validated());
 
         return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::success);
+    }
+
+    public function updateProfile(UserAccount $userAccount, UpdateUserRequest $request)
+    {
+        $fillRequest = $request->all();
+
+        $review = $this->userProfileService->updateUserProfile($userAccount, $fillRequest, $request->user());
+
+        if ($review['status']) {
+            $message = SuccessMessages::updateUserPending;
+        } else {
+            $message = SuccessMessages::updateUserSuccessful;
+        }
+        
+
+        return $this->responseService->successResponse($review['data']->toArray(), $message);
+    }
+
+    public function updateProfileStatusChange(UserAccount $userAccount, Request $request)
+    {
+        $fillRequest = $request->validated();
+
+        $review = $this->userProfileService->updateProfileStatusChange($userAccount, $fillRequest['status'], $request->user());
+
+        return $this->responseService->successResponse($review, SuccessMessages::updateUserPending);
     }
 
 }
