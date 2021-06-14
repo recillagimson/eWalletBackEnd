@@ -36,7 +36,6 @@ use App\Http\Controllers\UserUtilities\NationalityController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
 use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
-use App\Http\Controllers\UserUtilities\UserProfileController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
 
@@ -211,7 +210,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
             Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
-
+            Route::post('/transaction/histories/count/pdf', [UserTransactionHistoryController::class, 'downloadCountTotalAmountEachUserPDF']);
         });
 
         Route::prefix('/buy/load')->name('buy.load.')->group(function () {
@@ -239,6 +238,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
         Route::get('/bayad/process/pending', [PayBillsController::class, 'processPending']);
         Route::get('/list/billers', [PayBillsController::class, 'getListOfBillers']);
+        Route::get('/list/billers/pdf', [PayBillsController::class, 'downloadListOfBillersPDF']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->name('notifications.')->group(function () {

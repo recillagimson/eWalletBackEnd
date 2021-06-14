@@ -10,19 +10,22 @@ use Illuminate\Http\JsonResponse;
 use Request;
 use Illuminate\Http\Response;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Services\Utilities\PDF\IPDFService;
 
 class PayBillsController extends Controller
 {
     private IPayBillsService $payBillsService;
     private IResponseService $responseService;
     private IOutPayBillsRepository $outPayBillsRepository;
+    private IPDFService $pdfService;
 
     public function __construct(IPayBillsService $payBillsService, IResponseService $responseService,
-                                IOutPayBillsRepository $outPayBillsRepository)
+                                IOutPayBillsRepository $outPayBillsRepository, IPDFService $pdfService)
     {
         $this->payBillsService = $payBillsService;
         $this->responseService = $responseService;
         $this->outPayBillsRepository = $outPayBillsRepository;
+        $this->pdfService = $pdfService;
     }
 
 
@@ -145,6 +148,17 @@ class PayBillsController extends Controller
     {
         $response = $this->outPayBillsRepository->getAllBillersWithPaginate();
         return $this->responseService->successResponse($response->toArray());
+    }
+
+    public function downloadListOfBillersPDF()
+    {
+        $getAllBillers = $this->outPayBillsRepository->getAllBillers();
+        $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name;
+        $data = [
+            'datas' => $getAllBillers,
+        ]; 
+
+        return $this->pdfService->generatePDFNoUserPassword($data, $file_name, 'reports.out_pay_bills_history.out_pay_bills_history');
     }
 
 }
