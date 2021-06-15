@@ -70,7 +70,8 @@ class RoleController extends Controller
      */
     public function show(Role $Role)
     {
-        return $this->responseService->successResponse($Role->toArray(), SuccessMessages::success);
+        $record = $this->iRoleRepository->getRoleWithPermissions($Role->id);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
     /**
