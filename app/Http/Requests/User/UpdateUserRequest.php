@@ -54,7 +54,7 @@ class UpdateUserRequest extends FormRequest
             'house_no_street' => [
                 'max:50'
             ],
-            'provice_state' => [
+            'province_state' => [
                 'max:50'
             ],
             'city' => [

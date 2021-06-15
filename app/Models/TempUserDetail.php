@@ -24,7 +24,7 @@ class TempUserDetail extends Model
         "encoded_nationality",
         "birth_date",
         "house_no_street",
-        "provice_state",
+        "province_state",
         "city",
         "postal_code",
         "country_id",
