@@ -24,7 +24,7 @@ class OCRRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_photo' => 'required|max:1024|mimes:jpeg,png',
+            'id_photo' => 'required|max:10000|mimes:jpeg,png',
         ];
     }
 }

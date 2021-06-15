@@ -26,7 +26,7 @@ class FaceMatchRequest extends FormRequest
         return [
             'id_photo' => 'required|max:1024|mimes:jpeg,png',
             'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
-            'user_account_id' => 'required|exists:user_accounts,id'
+            // 'user_account_id' => 'required|exists:user_accounts,id'
         ];
     }
 }
