@@ -13,10 +13,11 @@ use App\Repositories\UserUtilities\Nationality\INationalityRepository;
 use App\Repositories\UserUtilities\NatureOfWork\INatureOfWorkRepository;
 use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 use App\Models\UserAccount;
+use App\Traits\Errors\WithUserErrors;
 
 class UserProfileService implements IUserProfileService
 {
-    use HasFileUploads;
+    use HasFileUploads, WithUserErrors;
     
     public IUserDetailRepository $userDetailRepository;
     public IUserPhotoRepository $userPhotoRepository;
@@ -103,6 +104,7 @@ class UserProfileService implements IUserProfileService
         
         $request = $this->addTransactionInfo($userAccount, $request, $user);
         $request = $this->addUserInput($request, $user);
+        $request = array_filter($request);
 
         $dirty = $this->checkDirty($userAccount, $request);
 
@@ -137,7 +139,25 @@ class UserProfileService implements IUserProfileService
         $userAccount = $user->fill($request);
         $userDetail = $user->profile->fill($request);
 
-        if ($userAccount->isDirty(['email', 'mobile_number'])) {
+        if ($userAccount->isDirty('email')) {
+
+            $user = $this->userAccountRepository->getByUsername('email', $userAccount->email);
+
+            if ($user->id != $userAccount->id) {
+                $this->emailAlreadyTaken();
+            }
+
+            return true;
+        }
+
+        if ($userAccount->isDirty('mobile_number')) {
+
+            $user = $this->userAccountRepository->getByUsername('mobile_number', $userAccount->mobile_number);
+
+            if ($user->id != $userAccount->id) {
+                $this->mobileAlreadyTaken();
+            }
+
             return true;
         }
 

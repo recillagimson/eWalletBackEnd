@@ -97,12 +97,15 @@ class UpdateUserRequest extends FormRequest
             'mobile_number' => [
                 Rule::requiredIf(!$this->email),
                 'max:11',
-                new MobileNumber()
+                new MobileNumber(),
+                'unique:user_accounts,mobile_number,' . $this->id
             ],
             'email' => [
                 Rule::requiredIf(!$this->mobile_number),
                 'email:rfc,dns',
-                'max:50'
+                'max:50',
+                'unique:user_accounts,email,' . $this->id
+
             ],
             'remarks' => [
                 'sometimes'
