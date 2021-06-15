@@ -24,7 +24,7 @@ class TempUserDetail extends Model
         "encoded_nationality",
         "birth_date",
         "house_no_street",
-        "provice_state",
+        "province_state",
         "city",
         "postal_code",
         "country_id",
@@ -49,6 +49,10 @@ class TempUserDetail extends Model
         "declined_date",
         "user_created",
         "user_updated",
+        "guardian_name",
+        "guardian_mobile_number",
+        "is_accept_parental_consent",
+        "contact_no",
     ];
 
     protected $dates = [

@@ -5,6 +5,7 @@ namespace App\Services\UserProfile;
 use App\Traits\HasFileUploads;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 use Carbon\Carbon;
@@ -21,12 +22,14 @@ class UserProfileService implements IUserProfileService
     public IUserPhotoRepository $userPhotoRepository;
 
     public function __construct(IUserDetailRepository $userDetailRepository, 
+                                IUserAccountRepository $userAccountRepository,
                                 IUserPhotoRepository $userPhotoRepository,
                                 ITempUserDetailRepository $tempUserDetail,
                                 INationalityRepository $nationality,
                                 INatureOfWorkRepository $natureOfWork,
                                 ISourceOfFundRepository $sourceOfFund)
     {
+        $this->userAccountRepository = $userAccountRepository;
         $this->userDetailRepository = $userDetailRepository;
         $this->userPhotoRepository = $userPhotoRepository;
         $this->tempUserDetail = $tempUserDetail;
@@ -88,10 +91,17 @@ class UserProfileService implements IUserProfileService
         // return to controller all created records
     }
 
-    public function updateUserProfile(UserAccount $userAccount, array $request, object $user) 
+    public function updateUserProfile($id, array $request, object $user) 
     {
+        $userAccount = $this->userAccountRepository->get($id);
+
+        if(!$userAccount) {
+            throw ValidationException::withMessages([
+                'user_account_not_found' => 'User Account not found'
+            ]);
+        }
+        
         $request = $this->addTransactionInfo($userAccount, $request, $user);
-        $request = $this->addOtherInfo($request, $user);
         $request = $this->addUserInput($request, $user);
 
         $dirty = $this->checkDirty($userAccount, $request);
@@ -118,19 +128,6 @@ class UserProfileService implements IUserProfileService
         $request['reviewed_date'] = Carbon::now();
         $request['user_account_id'] = $userAccount->id;
         $request['status'] = 0; //Pending
-
-        return $request;
-    }
-
-    public function addOtherInfo(array $request, object $user) 
-    {
-        $nationality = $this->nationality->get($request['nationality_id']);
-        $nature_of_work = $this->natureOfWork->get($request['nature_of_work_id']);
-        $source_of_fund = $this->sourceOfFund->get($request['source_of_fund_id']);
-
-        $request["encoded_nationality"] = $nationality->description;
-        $request["encoded_nature_of_work"] = $nature_of_work->description;
-        $request["encoded_source_of_fund"] = $source_of_fund->description;
 
         return $request;
     }
