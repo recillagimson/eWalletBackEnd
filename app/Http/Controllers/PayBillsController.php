@@ -161,4 +161,9 @@ class PayBillsController extends Controller
         return $this->pdfService->generatePDFNoUserPassword($data, $file_name, 'reports.out_pay_bills_history.out_pay_bills_history');
     }
 
+    public function downloadListOfBillersCSV()
+    {
+        return $this->payBillsService->downloadListOfBillersCSV();
+    }
+
 }

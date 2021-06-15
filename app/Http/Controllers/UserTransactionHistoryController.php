@@ -60,4 +60,8 @@ class UserTransactionHistoryController extends Controller
         return $this->pdfService->generatePDFNoUserPassword($data, $file_name, 'reports.user_transaction_history.user_transaction_history');
 
     }
+
+    public function downloadCountTotalAmountEachUserCSV(DownloadTransactionHistoryRequest $request) {
+        return $this->transactionService->downloadCountTotalAmountEachUserCSV($request);
+    }
 }
