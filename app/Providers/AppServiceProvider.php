@@ -55,6 +55,8 @@ use App\Services\UserAccount\IUserAccountService;
 use App\Services\UserAccount\UserAccountService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\UserProfile\UserProfileService;
+use App\Services\TempUserDetail\ITempUserDetailService;
+use App\Services\TempUserDetail\TempUserDetailService;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\CurlService\CurlService;
@@ -79,8 +81,8 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Services\Utilities\Responses\ResponseService;
-use App\Services\Utilities\ServiceFeeService\IServiceFeeService;
-use App\Services\Utilities\ServiceFeeService\ServiceFeeService;
+use App\Services\Utilities\ServiceFee\IServiceFeeService;
+use App\Services\Utilities\ServiceFee\ServiceFeeService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Verification\VerificationService;
 use Illuminate\Http\Request;
@@ -172,6 +174,8 @@ class AppServiceProvider extends ServiceProvider
 
         // CURL SERVICE
         $this->app->bind(ICurlService::class, CurlService::class);
+        // Temp User Detail Service
+        $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
     }
 
     /**

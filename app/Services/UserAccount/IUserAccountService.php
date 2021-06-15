@@ -19,11 +19,16 @@ interface IUserAccountService
 
     public function deleteAdminUser(string $id);
 
-    public function updateEmail(string $emailField, string $email, UserAccount $user);
+    public function getAllPaginated($perPage = 10);
+
+    public function findById(string $id);
+
+    public function updateEmail(string $emailField, string $email, object $user);
 
     public function validateEmail(string $emailField, string $email);
 
     public function updateMobile(string $mobileField, string $mobile, UserAccount $user);
 
     public function validateMobile(string $mobileField, string $mobile);
+
 }
