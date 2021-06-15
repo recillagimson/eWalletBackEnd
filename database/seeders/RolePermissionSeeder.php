@@ -17,7 +17,7 @@ class RolePermissionSeeder extends Seeder
     public function run()
     {
         $roles = [
-            'admin', 'client'
+            'admin', 'client', 'kyc'
         ];
 
         $permissions = Permission::all();

@@ -12,4 +12,8 @@ class RoleRepository extends Repository implements IRoleRepository
         parent::__construct($model);
     }
 
+    public function getRoleWithPermissions(string $id) {
+        return $this->model->with(['permissions'])->where('id', $id)->first();
+    }
+
 }
