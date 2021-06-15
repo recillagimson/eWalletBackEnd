@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
+use App\Http\Requests\Auth\AdminLoginRequest;
 use App\Http\Requests\Auth\ConfirmTransactionRequest;
 use App\Http\Requests\Auth\GenerateTransOtpRequest;
 use App\Http\Requests\Auth\LoginRequest;
@@ -57,6 +58,14 @@ class AuthController extends Controller
         $login = $request->validated();
         $usernameField = $this->getUsernameField($request);
         $loginResponse = $this->authService->mobileLogin($usernameField, $login);
+
+        return $this->responseService->successResponse($loginResponse, SuccessMessages::loginSuccessful);
+    }
+
+    public function adminLogin(AdminLoginRequest $request): JsonResponse
+    {
+        $login = $request->validated();
+        $loginResponse = $this->authService->adminLogin($login['email'], $login['password']);
 
         return $this->responseService->successResponse($loginResponse, SuccessMessages::loginSuccessful);
     }

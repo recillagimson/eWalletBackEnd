@@ -6,6 +6,7 @@ use App\Enums\OtpTypes;
 use App\Models\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Traits\Errors\WithAuthErrors;
@@ -16,8 +17,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
-use Carbon\Carbon;
 
 class UserAccountService implements IUserAccountService
 {
@@ -64,13 +63,13 @@ class UserAccountService implements IUserAccountService
 
             $tempPassword = Str::random(12);
             $userData = [
-                'account_number' => $this->userAccountNumbers->generateNo(),
+                'account_number' => $this->userAccountNumbers->generateNo('A'),
                 'email' => $userInfo['email'],
                 'password' => Hash::make($tempPassword),
                 'is_admin' => true,
                 'user_created' => $userCreated,
                 'is_active' => true,
-                'verified' => false
+                'verified' => true
             ];
 
             $userExists = $this->users->getByUsername('email', $userData['email']);
@@ -137,7 +136,7 @@ class UserAccountService implements IUserAccountService
 
         return $result;
     }
-    
+
     public function updateEmail(string $emailField, string $email, object $user) {
 
         $identifier = OtpTypes::updateEmail . ':' . $user->id;
