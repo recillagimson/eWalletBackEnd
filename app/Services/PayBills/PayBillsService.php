@@ -182,7 +182,7 @@ class PayBillsService implements IPayBillsService
             }
 
             $balanceInfo->save();
-          //  $this->sendNotifications($user, $payBill, $balanceInfo->available_balance);
+          //$this->sendNotifications($user, $payBill, $balanceInfo->available_balance);
 
             if ($payBill->status === TransactionStatuses::success) $successCount++;
             if ($payBill->status === TransactionStatuses::failed) $failCount++;

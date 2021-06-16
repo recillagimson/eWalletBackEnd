@@ -71,6 +71,11 @@ class UserAccount extends Authenticatable
         return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
     }
 
+    public function userDetail(): HasOne
+    {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'id');
+    }
+
     public function verificationToken(): HasOne
     {
         return $this->hasOne(AdminUserVerifyToken::class);

@@ -73,6 +73,11 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->model->where($emailField, '=', $email)->first();
     }
 
+    public function getUserByAccountNumber(string $accountNumber)
+    {
+        return $this->model->where(['account_number' => $accountNumber])->first();
+    }
+
     private function getBaseQuery(): Builder
     {
         return $this->model->with(['profile', 'balanceInfo']);
@@ -88,6 +93,6 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getBaseQuery()->where('is_admin', '=', true);
     }
 
-
+    
 
 }

@@ -2,9 +2,12 @@
 
 namespace App\Repositories\DrcrMemo;
 
+use App\Enums\DrcrStatus;
 use App\Models\DrcrMemos;
+use App\Models\UserAccount;
 use App\Repositories\Repository;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
+use Carbon\Carbon;
 
 class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 {
@@ -13,5 +16,34 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         parent::__construct($model);
     }
 
+    public function getByUserAccountID(UserAccount $user)
+    {
+        return $this->model->where('user_account_id', $user->id)->get();
+    }
+
+    public function getByReferenceNumber(string $referenceNumber)
+    {
+        return $this->model->where('reference_number', $referenceNumber)->first();
+    }
+
+    public function updateDrcr(UserAccount $user, $data)
+    {
+        if($data['status'] == DrcrStatus::Approve){
+            return $this->model->where('reference_number', $data['referenceNumber'])->update([
+                'status' => DrcrStatus::A,
+                'approved_by' => $user->id,
+                'approved_date' => Carbon::now(),
+                'user_updated' => $user->id
+            ]);
+        }
+        if ($data['status'] == DrcrStatus::Decline) {
+            return $this->model->where('reference_number', $data['referenceNumber'])->update([
+                'status' => DrcrStatus::D,
+                'declined_by' => $user->id,
+                'declined_date' => Carbon::now(),
+                'user_updated' => $user->id
+            ]);
+        }
+    }
 
 }

@@ -11,6 +11,7 @@ class DrcrMemos extends Model
 {
     use HasFactory,  UsesUuid, SoftDeletes;
 
+    protected $table = 'drcr_memos';
 
     /**
      * The attributes that are mass assignable.

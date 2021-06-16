@@ -4,7 +4,7 @@ namespace App\Http\Requests\DrcrMemo;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DrcrMemoRequest extends FormRequest
+class ApprovalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,8 @@ class DrcrMemoRequest extends FormRequest
     public function rules()
     {
         return [
-            'accountNumber' => 'required',
-            'typeOfMemo' => 'required',
-            'amount' =>'required | numeric',
-            'category' => 'required',
-            'description' => 'required'
+            'referenceNumber' => 'required',
+            'status' => 'required'
         ];
     }
 }
