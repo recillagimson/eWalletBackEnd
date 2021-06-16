@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use App\Repositories\UserUtilities\Nationality\INationalityRepository;
 use App\Repositories\UserUtilities\NatureOfWork\INatureOfWorkRepository;
 use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
+use App\Repositories\Tier\ITierRepository;
 use App\Models\UserAccount;
 use App\Traits\Errors\WithUserErrors;
 
@@ -19,24 +20,23 @@ class UserProfileService implements IUserProfileService
 {
     use HasFileUploads, WithUserErrors;
     
+    public IUserAccountRepository $userAccountRepository;
     public IUserDetailRepository $userDetailRepository;
     public IUserPhotoRepository $userPhotoRepository;
+    public ITempUserDetailRepository $tempUserDetail;
+    public ITierRepository $tierRepository;
 
     public function __construct(IUserDetailRepository $userDetailRepository, 
                                 IUserAccountRepository $userAccountRepository,
                                 IUserPhotoRepository $userPhotoRepository,
                                 ITempUserDetailRepository $tempUserDetail,
-                                INationalityRepository $nationality,
-                                INatureOfWorkRepository $natureOfWork,
-                                ISourceOfFundRepository $sourceOfFund)
+                                ITierRepository $tierRepository)
     {
         $this->userAccountRepository = $userAccountRepository;
         $this->userDetailRepository = $userDetailRepository;
         $this->userPhotoRepository = $userPhotoRepository;
         $this->tempUserDetail = $tempUserDetail;
-        $this->nationality = $nationality;
-        $this->natureOfWork = $natureOfWork;
-        $this->sourceOfFund = $sourceOfFund;
+        $this->tierRepository = $tierRepository;
 
     }
 
@@ -123,6 +123,38 @@ class UserProfileService implements IUserProfileService
         ];
     }
 
+    public function supervisorUpdateUserProfile($id, array $request, object $user) 
+    {
+        $userAccount = $this->userAccountRepository->get($id);
+        $userDetail = $user->profile;
+
+        if(!$userAccount) {
+            throw ValidationException::withMessages([
+                'user_account_not_found' => 'User Account not found'
+            ]);
+        }
+
+        if(!$userDetail) {
+            throw ValidationException::withMessages([
+                'user_detail_not_found' => 'User Detail not found'
+            ]);
+        }
+
+        if ($request['tier_id']) {
+            $this->validateTier($userAccount, $request['tier_id']);
+        }
+        
+        $request = $this->addUserInput($request, $user, $userAccount);
+
+        $this->userAccountRepository->update($userAccount, $request);
+        $this->userDetailRepository->update($userDetail, $request);
+
+        return [
+            "status" => 0,
+            "data" => $userAccount
+        ];
+    }
+
     public function addTransactionInfo(UserAccount $userAccount, array $request, object $user) 
     {
         $request['transaction_number'] = "PU" . Carbon::now()->format('YmdHi') . rand(0,99999);
@@ -166,5 +198,28 @@ class UserProfileService implements IUserProfileService
         }
 
         return false;
+    }
+
+    public function validateTier(UserAccount $user, $tier_id) 
+    {
+        $tier = $this->tierRepository->get($user->tier_id);
+        $reqTier = $this->tierRepository->get($tier_id);
+
+        if(!$reqTier || !$tier) {
+            throw ValidationException::withMessages([
+                'tier_not_found' => 'Tier not found'
+            ]);
+        }
+
+        $tierNum = intval(str_replace('Tier ', '', $tier->name)) + 1;
+        $reqTierNum = intval(str_replace('Tier ', '', $reqTier->name));
+
+        if ($tierNum != $reqTierNum) {
+            throw ValidationException::withMessages([
+                'tier_update_error' => 'Tier update invalid.'
+            ]);
+        }
+
+        return true;
     }
 }

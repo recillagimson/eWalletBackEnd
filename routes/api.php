@@ -196,6 +196,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/', [UserAccountController::class, 'index']);
             Route::get('/{id}', [UserAccountController::class, 'show']);
 
+            Route::post('/{id}/supervisorUpdateProfile', [UserProfileController::class, 'supervisorUpdateProfile']);
             Route::post('/{id}/updateProfile', [UserProfileController::class, 'updateProfile']);
             Route::post('/roles', [UserAccountController::class, 'setAccountRole']);
         });
