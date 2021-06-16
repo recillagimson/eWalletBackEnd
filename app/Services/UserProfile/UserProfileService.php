@@ -141,9 +141,9 @@ class UserProfileService implements IUserProfileService
 
         if ($userAccount->isDirty('email')) {
 
-            $user = $this->userAccountRepository->getByUsername('email', $userAccount->email);
+            $email = $this->userAccountRepository->getByUsername('email', $userAccount->email);
 
-            if ($user->id != $userAccount->id) {
+            if ($email && $email->id != $userAccount->id) {
                 $this->emailAlreadyTaken();
             }
 
@@ -152,9 +152,9 @@ class UserProfileService implements IUserProfileService
 
         if ($userAccount->isDirty('mobile_number')) {
 
-            $user = $this->userAccountRepository->getByUsername('mobile_number', $userAccount->mobile_number);
+            $mobile = $this->userAccountRepository->getByUsername('mobile_number', $userAccount->mobile_number);
 
-            if ($user->id != $userAccount->id) {
+            if ($mobile && $mobile->id != $userAccount->id) {
                 $this->mobileAlreadyTaken();
             }
 
