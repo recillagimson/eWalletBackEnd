@@ -214,7 +214,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
             Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
-
+            // FARMER
+            Route::post('/farmer/tosilver', [UserProfileController::class, 'updateFarmerToSilver']);
+            
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);

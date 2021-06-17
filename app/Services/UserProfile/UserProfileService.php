@@ -2,19 +2,26 @@
 
 namespace App\Services\UserProfile;
 
+use Carbon\Carbon;
+use App\Enums\AccountTiers;
+use App\Models\UserAccount;
+use App\Enums\SuccessMessages;
 use App\Traits\HasFileUploads;
+use App\Enums\SquidPayModuleTypes;
+use App\Repositories\LogHistory\ILogHistoryRepository;
+use App\Traits\Errors\WithUserErrors;
+use App\Repositories\Tier\ITierRepository;
 use Illuminate\Validation\ValidationException;
+use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Services\Utilities\Verification\IVerificationService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
-use Carbon\Carbon;
 use App\Repositories\UserUtilities\Nationality\INationalityRepository;
 use App\Repositories\UserUtilities\NatureOfWork\INatureOfWorkRepository;
 use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
-use App\Repositories\Tier\ITierRepository;
-use App\Models\UserAccount;
-use App\Traits\Errors\WithUserErrors;
+use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 
 class UserProfileService implements IUserProfileService
 {
@@ -25,18 +32,31 @@ class UserProfileService implements IUserProfileService
     public IUserPhotoRepository $userPhotoRepository;
     public ITempUserDetailRepository $tempUserDetail;
     public ITierRepository $tierRepository;
+    private ITierApprovalRepository $userApprovalRepository;
+    private IVerificationService $verificationService;
+    private ILogHistoryService $logHistoryService;
+    private IUserProfileService $userProfileService;
+
 
     public function __construct(IUserDetailRepository $userDetailRepository, 
                                 IUserAccountRepository $userAccountRepository,
                                 IUserPhotoRepository $userPhotoRepository,
                                 ITempUserDetailRepository $tempUserDetail,
-                                ITierRepository $tierRepository)
+                                ITierRepository $tierRepository,
+                                ITierApprovalRepository $userApprovalRepository,
+                                IVerificationService $verificationService,
+                                ILogHistoryService $logHistoryService,
+                                IUserProfileService $userProfileService)
     {
         $this->userAccountRepository = $userAccountRepository;
         $this->userDetailRepository = $userDetailRepository;
         $this->userPhotoRepository = $userPhotoRepository;
         $this->tempUserDetail = $tempUserDetail;
         $this->tierRepository = $tierRepository;
+        $this->userApprovalRepository = $userApprovalRepository;
+        $this->verificationService = $verificationService;
+        $this->logHistoryService = $logHistoryService;
+        $this->userProfileService = $userProfileService;
 
     }
 
@@ -222,4 +242,44 @@ class UserProfileService implements IUserProfileService
 
         return true;
     }
+
+    // public function upgradeFarmerToSilver(array $attr) {
+    //     try {
+    //         // GET USER ACCOUNT WITH TIER
+    //         $user_account = $this->userAccountRepository->getUser($attr['user_account_id']);
+    //         // IF REQUESTING FOR TIER UPDATE
+    //         if($user_account && $user_account->tier->id !== AccountTiers::tier2) {
+    //             // VALIDATE IF HAS EXISTING REQUEST
+    //             $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequestByUserAccountId($attr['user_account_id']);
+    //             if($findExistingRequest) {
+    //                 return $this->tierUpgradeAlreadyExist();
+    //             }
+
+    //             // CREATE APPROVAL RECORD FOR ADMIN
+    //             // TU-MMDDYYY-RANDON
+    //             $generatedTransactionNumber = "TU" . Carbon::now()->format('YmdHi') . rand(0,99999);
+    //             $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
+    //                 'user_account_id' => request()->user()->id,
+    //                 'request_tier_id' => AccountTiers::tier2,
+    //                 'status' => 'PENDING',
+    //                 'user_created' => request()->user()->id,
+    //                 'user_updated' => request()->user()->id,
+    //                 'transaction_number' => $generatedTransactionNumber
+    //             ]);
+    //             $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id);
+
+    //             $audit_remarks = request()->user()->id . " has requested to upgrade to Silver";
+    //             $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+    //         }
+    //         // $details = $request->validated();
+    //         $addOrUpdate = $this->userProfileService->update($user_account->profile(), $attr);
+    //         $audit_remarks = request()->user()->id . " Profile Information has been successfully updated.";
+    //         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+
+    //         // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
+    //         return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
+    //     } catch(\Exception $e) {
+    //         dd($e->getMessage());
+    //     }
+    // }
 }

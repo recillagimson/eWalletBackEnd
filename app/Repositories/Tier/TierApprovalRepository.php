@@ -19,6 +19,12 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
             ->first();
     }
 
+    public function getPendingApprovalRequestByUserAccountId(string $id) {
+        return $this->model->where('user_account_id', $id)
+            ->where('status', 'PENDING')
+            ->first();
+    }
+
     public function updateOrCreateApprovalRequest(array $attr) {
         $record = $this->model
             ->where('user_account_id', $attr['user_account_id'])
