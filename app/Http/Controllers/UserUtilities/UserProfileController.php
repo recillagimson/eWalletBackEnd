@@ -24,6 +24,7 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Models\UserAccount;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\User\SupervisorUpdateUserRequest;
 
 class UserProfileController extends Controller
 {
@@ -176,6 +177,17 @@ class UserProfileController extends Controller
             $message = SuccessMessages::updateUserSuccessful;
         }
         
+
+        return $this->responseService->successResponse($review['data']->toArray(), $message);
+    }
+
+    public function supervisorUpdateProfile($id, SupervisorUpdateUserRequest $request)
+    {
+        $fillRequest = $request->all();
+
+        $review = $this->userProfileService->supervisorUpdateUserProfile($id, $fillRequest, $request->user());
+
+        $message = SuccessMessages::updateUserSuccessful;
 
         return $this->responseService->successResponse($review['data']->toArray(), $message);
     }

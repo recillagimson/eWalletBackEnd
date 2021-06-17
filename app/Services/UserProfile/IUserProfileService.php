@@ -9,4 +9,5 @@ interface IUserProfileService {
     public function addUserInput(array $details, object $userAccount, object $data=null);
     public function changeAvatar(array $data);
     public function updateUserProfile(UserAccount $userAccount, array $request, object $user);
+    public function supervisorUpdateUserProfile(UserAccount $userAccount, array $request, object $user);
 }
