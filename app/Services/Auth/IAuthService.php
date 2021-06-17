@@ -44,6 +44,15 @@ interface IAuthService
     public function clientLogin(string $clientId, string $clientSecret): NewAccessToken;
 
     /**
+     * Authenticates admin users
+     *
+     * @param string $email
+     * @param string $password
+     * @return array
+     */
+    public function adminLogin(string $email, string $password): array;
+
+    /**
      * Pin authentication for confirmation to
      * proceed in transactions
      *

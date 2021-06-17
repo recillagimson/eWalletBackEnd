@@ -14,5 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'http://mysquidpay.com/spv3plusbe/public/*',
         'https://devsite-fe.squidph.com/*',
+        'http://localhost:3000/*',
+        'https://localhost:3000/*',
     ];
 }

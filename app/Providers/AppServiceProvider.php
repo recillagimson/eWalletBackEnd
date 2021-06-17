@@ -28,6 +28,8 @@ use App\Services\DrcrMemo\DrcrMemoService;
 use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
+use App\Services\KYCService\IKYCService;
+use App\Services\KYCService\KYCService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
@@ -55,8 +57,12 @@ use App\Services\UserAccount\IUserAccountService;
 use App\Services\UserAccount\UserAccountService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\UserProfile\UserProfileService;
+use App\Services\TempUserDetail\ITempUserDetailService;
+use App\Services\TempUserDetail\TempUserDetailService;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\API\IApiService;
+use App\Services\Utilities\CurlService\CurlService;
+use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\LogHistory\LogHistoryService;
 use App\Services\Utilities\Notifications\Email\EmailService;
@@ -165,6 +171,14 @@ class AppServiceProvider extends ServiceProvider
 
         // Buy Load Service
         $this->app->bind(IBuyLoadService::class, BuyLoadService::class);
+        
+        // eKYC Service
+        $this->app->bind(IKYCService::class, KYCService::class);
+
+        // CURL SERVICE
+        $this->app->bind(ICurlService::class, CurlService::class);
+        // Temp User Detail Service
+        $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
     }
 
     /**

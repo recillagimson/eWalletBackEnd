@@ -6,6 +6,7 @@ use App\Enums\OtpTypes;
 use App\Models\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Traits\Errors\WithAuthErrors;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class UserAccountService implements IUserAccountService
 {
@@ -24,16 +26,19 @@ class UserAccountService implements IUserAccountService
     private IOtpService $otpService;
     private IEmailService $emailService;
     private IUserAccountNumberRepository $userAccountNumbers;
+    private ITempUserDetailRepository $tempUserDetail;
 
     public function __construct(IUserAccountRepository $users,
                                 IUserAccountNumberRepository $userAccountNumbers,
                                 IOtpService $otpService,
-                                IEmailService $emailService)
+                                IEmailService $emailService,
+                                ITempUserDetailRepository $tempUserDetail)
     {
         $this->users = $users;
         $this->userAccountNumbers = $userAccountNumbers;
         $this->otpService = $otpService;;
         $this->emailService = $emailService;
+        $this->tempUserDetail = $tempUserDetail;
     }
 
     public function getAdminUsers(): Collection
@@ -58,13 +63,13 @@ class UserAccountService implements IUserAccountService
 
             $tempPassword = Str::random(12);
             $userData = [
-                'account_number' => $this->userAccountNumbers->generateNo(),
+                'account_number' => $this->userAccountNumbers->generateNo('A'),
                 'email' => $userInfo['email'],
                 'password' => Hash::make($tempPassword),
                 'is_admin' => true,
                 'user_created' => $userCreated,
                 'is_active' => true,
-                'verified' => false
+                'verified' => true
             ];
 
             $userExists = $this->users->getByUsername('email', $userData['email']);
@@ -121,17 +126,17 @@ class UserAccountService implements IUserAccountService
 
     public function findById(string $id) {
 
-        $result = $this->users->getUser($id);
+        $result = $this->users->findById($id);
 
         if(!$result) {
-            ValidationException::withMessages([
+            throw ValidationException::withMessages([
                 'user_not_found' => 'User Account not found'
             ]);
         }
 
         return $result;
     }
-    
+
     public function updateEmail(string $emailField, string $email, object $user) {
 
         $identifier = OtpTypes::updateEmail . ':' . $user->id;
@@ -191,7 +196,4 @@ class UserAccountService implements IUserAccountService
             $mobileField => $mobile,
         ];
     }
-
-
-
 }

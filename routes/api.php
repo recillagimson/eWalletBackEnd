@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AddMoneyController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\DrcrMemoController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
+use App\Http\Controllers\KYC\KYCController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PayBillsController;
@@ -34,6 +36,7 @@ use App\Http\Controllers\UserUtilities\NationalityController;
 use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SignupHostController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
+use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
@@ -65,18 +68,18 @@ if (App::environment('local')) {
     });
 }
 
-Route::prefix('/clients')->middleware(['form-data'])->group(function () {
-    Route::post('/token', [ClientController::class, 'getToken']);
+Route::prefix('/clients')->middleware(['form-data'])->name('client.')->group(function () {
+    Route::post('/token', [ClientController::class, 'getToken'])->name('get.token');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::prefix('/payloads')->group(function () {
-        Route::get('/generate', [PayloadController::class, 'generate']);
-        Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey']);
+    Route::prefix('/payloads')->name('payload.')->group(function () {
+        Route::get('/generate', [PayloadController::class, 'generate'])->name('generate');
+        Route::get('/{payload}/key', [PayloadController::class, 'getResponseKey'])->name('get.response.key');
     });
 
-    Route::prefix('/image')->group(function () {
-        Route::post('/upload/{module}', [ImageUploadController::class, 'uploadImage']);
+    Route::prefix('/image')->name('image')->group(function () {
+        Route::post('/upload/{module}', [ImageUploadController::class, 'uploadImage'])->name('upload');
     });
 
     /**
@@ -91,11 +94,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/id/upload', [UserPhotoController::class, 'uploadIdManually']);
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
 
+    Route::prefix('ekyc')->group(function() {
+        Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
+        Route::post('ocr', [KYCController::class, 'initOCR'])->name('ocr');
+    });
+
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/user', [AuthController::class, 'getUser']);
+        Route::get('/user', [AuthController::class, 'getUser'])->name('user.show');
 
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
+        Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+
         Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
         Route::post('/confirmation', [AuthController::class, 'confirmTransactions']);
 
@@ -108,11 +118,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/generate/otp', [AuthController::class, 'generateTransactionOTP']);
         Route::post('/resend/otp', [AuthController::class, 'resendOTP']);
 
-        Route::prefix('/verify')->group(function () {
-            Route::post('/otp', [AuthController::class, 'verifyTransactionOtp']);
-            Route::post('/account', [RegisterController::class, 'verifyAccount']);
-            Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin']);
-            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey']);
+        Route::prefix('/verify')->name('verify.')->group(function () {
+            Route::post('/otp', [AuthController::class, 'verifyTransactionOtp'])->name('otp');
+            Route::post('/account', [RegisterController::class, 'verifyAccount'])->name('account');
+            Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin'])->name('mobile.login');
+            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type');
         });
     });
 
@@ -140,31 +150,31 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/mobile/validate', [UserAccountController::class, 'validateMobile']);
         Route::post('/mobile/update', [UserAccountController::class, 'updateMobile']);
 
-        Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey']);
-        Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey']);
-        Route::put('/{keyType}', [ChangeKeyController::class, 'changeKey']);
+        Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey'])->name('key.type.validate');
+        Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey'])->name('key.type.verify');
+        Route::put('/{keyType}', [ChangeKeyController::class, 'changeKey'])->name('key.type');
     });
 
-    Route::prefix('/send2bank')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks']);
-        Route::get('/{provider}/purposes', [Send2BankController::class, 'getPurposes']);
-        Route::post('/{provider}/validate', [Send2BankController::class, 'validateFundTransfer']);
+    Route::prefix('/send2bank')->middleware(['decrypt.request'])->name('send.to.bank.')->group(function () {
+        Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks'])->name('provider.banks');
+        Route::get('/{provider}/purposes', [Send2BankController::class, 'getPurposes'])->name('provider.purposes');
+        Route::post('/{provider}/validate', [Send2BankController::class, 'validateFundTransfer'])->name('provider.validate');
 
-        Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions']);
-        Route::get('/process/pending', [Send2BankController::class, 'processPending']);
+        Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions'])->name('ubp.direct');
+        Route::get('/process/pending', [Send2BankController::class, 'processPending'])->name('ubp.process.pending');
 
-        Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect']);
-        Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP']);
-        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer']);
-        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction']);
+        Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect'])->name('direct.ubp');
+        Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP'])->name('validate.ubp');
+        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer'])->name('provider');
+        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction'])->name('provider.transaction.update');
     });
 
-    Route::prefix('/load')->middleware(['decrypt.request'])->group(function () {
-        Route::post('/{network_type}', [PrepaidLoadController::class, 'load']);
-        Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos']);
+    Route::prefix('/load')->middleware(['decrypt.request'])->name('load.')->group(function () {
+        Route::post('/{network_type}', [PrepaidLoadController::class, 'load'])->name('load');
+        Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos'])->name('show.promos');
     });
 
-    Route::prefix('/id')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/id')->middleware(['decrypt.request'])->name('id.')->group(function () {
         Route::apiResources([
             '/types' => IdTypeController::class,
         ]);
@@ -186,6 +196,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/user_accounts')->group(function (){
             Route::get('/', [UserAccountController::class, 'index']);
             Route::get('/{id}', [UserAccountController::class, 'show']);
+
+            Route::post('/{id}/updateProfile', [UserProfileController::class, 'updateProfile']);
+            Route::post('/roles', [UserAccountController::class, 'setAccountRole']);
+        });
+
+        Route::prefix('/pending_user_updates')->group(function (){
+            Route::get('/', [TempUserDetailController::class, 'index']);
+            Route::get('/{id}', [TempUserDetailController::class, 'show']);
+            Route::post('/{id}/update-status', [TempUserDetailController::class, 'updateStatus']);
         });
 
         Route::prefix('/user')->group(function (){
@@ -202,20 +221,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
         });
 
-        Route::prefix('/buy/load')->group(function () {
-            Route::post('/', [AtmController::class, 'topupLoad']);
-            Route::post('/validate', [AtmController::class, 'validateLoadTopup']);
-            Route::post('/products', [AtmController::class, 'getProductsByProvider']);
-            Route::get('/process/pending', [AtmController::class, 'processPending']);
+        Route::prefix('/buy/load')->name('buy.load.')->group(function () {
+            Route::post('/', [AtmController::class, 'topupLoad'])->name('top.up.load');
+            Route::post('/validate', [AtmController::class, 'validateLoadTopup'])->name('validate.load.top.up');
+            Route::post('/products', [AtmController::class, 'getProductsByProvider'])->name('get.products.by.provider');
+            Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
         });
 
     });
 
-    Route::prefix('send/money')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('send/money')->middleware(['decrypt.request'])->name('send.money')->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
-        Route::post('/validate', [SendMoneyController::class, 'sendValidate']);
-        Route::post('/generate/qr', [SendMoneyController::class, 'generateQr']);
-        Route::post('/scan/qr', [SendMoneyController::class, 'scanQr']);
+        Route::post('/validate', [SendMoneyController::class, 'sendValidate'])->name('send.validate');
+        Route::post('/generate/qr', [SendMoneyController::class, 'generateQr'])->name('generate.qr');
+        Route::post('/scan/qr', [SendMoneyController::class, 'scanQr'])->name('scan.qr');
     });
 
     Route::prefix('pay/bills')->middleware(['decrypt.request'])->group(function () {
@@ -228,12 +247,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/bayad/process/pending', [PayBillsController::class, 'processPending']);
     });
 
-    Route::prefix('/notifications')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/', [NotificationController::class, 'GetAll']);
-        Route::post('/', [NotificationController::class, 'store']);
-        Route::get('/{notification}', [NotificationController::class, 'show']);
-        Route::put('/{notification}', [NotificationController::class, 'update']);
-        Route::delete('/{notification}', [NotificationController::class, 'delete']);
+    Route::prefix('/notifications')->middleware(['decrypt.request'])->name('notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'GetAll'])->name('list');
+        Route::post('/', [NotificationController::class, 'store'])->name('store');
+        Route::get('/{notification}', [NotificationController::class, 'show'])->name('show');
+        Route::put('/{notification}', [NotificationController::class, 'update'])->name('update');
+        Route::delete('/{notification}', [NotificationController::class, 'delete'])->name('delete');
     });
 
     Route::prefix('/tiers/approval/comment')->middleware(['decrypt.request'])->group(function () {
@@ -241,20 +260,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [TierApprovalCommentController::class, 'create']);
     });
 
-    Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/tiers/approval')->middleware(['decrypt.request', 'rba'])->group(function () {
         Route::get('/', [TierApprovalController::class, 'index']);
         // Route::post('/', [TierApprovalController::class, 'store']);
-        Route::get('/{tierApproval}', [TierApprovalController::class, 'show']);
-        Route::put('/{tierApproval}', [TierApprovalController::class, 'update']);
-        Route::delete('/{tierApproval}', [TierApprovalController::class, 'destroy']);
+        Route::get('/{tierApproval}', [TierApprovalController::class, 'show'])->name('show');
+        Route::put('/{tierApproval}', [TierApprovalController::class, 'update'])->name('update');
+        Route::delete('/{tierApproval}', [TierApprovalController::class, 'destroy'])->name('destroy');
     });
 
-    Route::prefix('/tiers')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/', [TierController::class, 'index']);
-        Route::post('/', [TierController::class, 'store']);
-        Route::get('/{tier}', [TierController::class, 'show']);
-        Route::put('/{tier}', [TierController::class, 'update']);
-        Route::delete('/{tier}', [TierController::class, 'destroy']);
+    Route::prefix('/tiers')->middleware(['decrypt.request'])->name('tiers.')->group(function () {
+        Route::get('/', [TierController::class, 'index'])->name('list');
+        Route::post('/', [TierController::class, 'store'])->name('store');
+        Route::get('/{tier}', [TierController::class, 'show'])->name('show');
+        Route::put('/{tier}', [TierController::class, 'update'])->name('update');
+        Route::delete('/{tier}', [TierController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('/service/fees')->middleware(['decrypt.request'])->group(function () {
@@ -265,15 +284,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{serviceFee}', [ServiceFeeController::class, 'destroy']);
     });
 
-    Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function (){
-        Route::post('/', [AddMoneyController::class, 'addMoney']);
-        Route::post('/cancel', [AddMoneyController::class, 'cancel']);
-        Route::post('/status', [AddMoneyController::class, 'getStatus']);
-        Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans']);
-        Route::post('/update/transactions', [AddMoneyController::class, 'updateUserTrans']);
+    Route::prefix('/cashin')->middleware(['decrypt.request'])->name('cashin.')->group(function (){
+        Route::post('/', [AddMoneyController::class, 'addMoney'])->name('add.money');
+        Route::post('/cancel', [AddMoneyController::class, 'cancel'])->name('cancel');
+        Route::post('/status', [AddMoneyController::class, 'getStatus'])->name('get.status');
+        Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans'])->name('get.latest.pending.transactions');
+        Route::post('/update/transactions', [AddMoneyController::class, 'updateUserTrans'])->name('update.user.transactions');
     });
 
-    Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function(){
+    Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
     });
 
@@ -284,12 +303,31 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/get/user/{account_no}', [DrcrMemoController::class, 'getUser']);
         Route::put('/approval/', [DrcrMemoController::class, 'approval']);
     });
+    
 
 });
 
 
 // DragonPay PostBack
-Route::prefix('/cashin')->group(function (){
+
+
+// ADMIN
+Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
+    Route::get('/', [RoleController::class, 'index'])->name('list');
+    Route::post('/', [RoleController::class, 'store'])->name('store');
+    Route::get('/{role}', [RoleController::class, 'show'])->name('show');
+    Route::put('/{role}', [RoleController::class, 'update'])->name('update');
+    Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
+
+});
+
+Route::prefix('/admin/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function () {
+    Route::get('/', [RoleController::class, 'rolePermissions'])->name('list');
+    Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
+});
+
+
+Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
     Route::get('/postback', [AddMoneyController::class, 'postBack']);
 });
 
