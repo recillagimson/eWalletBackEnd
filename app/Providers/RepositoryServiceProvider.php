@@ -10,6 +10,8 @@ use App\Repositories\Admin\Role\IRoleRepository;
 use App\Repositories\Admin\Role\RoleRepository;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
+use App\Repositories\DrcrMemo\DrcrMemoRepository;
+use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
 use App\Repositories\IdType\IdTypeRepository;
@@ -195,6 +197,9 @@ class RepositoryServiceProvider extends ServiceProvider
         
         // User Role Repositories
         $this->app->bind(IUserRoleRepository::class, UserRoleRepository::class);
+
+        //Drcr Memos Repositories
+        $this->app->bind(IDrcrMemoRepository::class, DrcrMemoRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
