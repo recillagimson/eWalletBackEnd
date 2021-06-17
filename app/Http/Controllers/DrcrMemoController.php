@@ -6,6 +6,7 @@ use App\Enums\SuccessMessages;
 use App\Http\Requests\DrcrMemo\ApprovalRequest;
 use App\Http\Requests\DrcrMemo\DrcrMemoRequest;
 use App\Http\Requests\DrcrMemo\GetUserRequest;
+use App\Http\Requests\DrcrMemo\ShowRequest;
 use App\Http\Requests\PayBills\PayBillsRequest;
 use App\Models\DrcrMemos;
 use App\Models\UserAccount;
@@ -28,25 +29,59 @@ class DrcrMemoController extends Controller
         $this->responseService = $responseService;
     }
 
+
+
+    /**
+     * Get all the list of DRCR Memo 
+     *
+     * @param DrcrMemoRequest $request
+     * @return JsonResponse
+     */
     public function index() : JsonResponse
     {
         $list = $this->drcrMemoService->getList(request()->user());
         return $this->responseService->successResponse($list->toArray(), SuccessMessages::success);
     }
 
-    public function show(DrcrMemos $drcrMemo): JsonResponse
+
+    /**
+     * Show data using DRCR Memo id
+     *
+     * @param DrcrMemoRequest $request
+     * @return JsonResponse
+     */
+    public function show(ShowRequest $request): JsonResponse
     {
-        return $this->responseService->successResponse($drcrMemo->toArray(), SuccessMessages::success);
+        $referenceNumber = $request->route('referenceNumber');
+        $show = $this->drcrMemoService->show($referenceNumber);
+        return $this->responseService->successResponse($show, SuccessMessages::success);
     }
 
 
-    public function getUser(GetUserRequest $request)
+    /**
+     * Get's user by using account number 
+     *
+     * @param DrcrMemoRequest $request
+     * @param object &getUser
+     * @param array $accountNo
+     * @return JsonResponse
+     */
+    public function getUser(GetUserRequest $request): JsonResponse
     {
-        $accountNo = $request->route('account_no');
-        return $this->drcrMemoService->getUser($accountNo);
+        $data = $request->route('accountNumber');
+        $getUser = $this->drcrMemoService->getUser($data);
+        return $this->responseService->successResponse($getUser, SuccessMessages::success);
     }
 
-    
+
+    /**
+     * Store Drcr memo 
+     *
+     * @param DrcrMemoRequest $request
+     * @param object &store
+     * @param array $data
+     * @return JsonResponse
+     */
     public function store(DrcrMemoRequest $request): JsonResponse
     {
         $data = $request->post();
@@ -65,7 +100,7 @@ class DrcrMemoController extends Controller
     {
         $data = $request->validated();
         $approval = $this->drcrMemoService->approval($request->user(), $data);
-        return $this->responseService->successResponse($approval->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($approval, SuccessMessages::success);
     }
 
 }

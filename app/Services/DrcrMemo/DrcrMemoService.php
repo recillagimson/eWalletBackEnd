@@ -37,23 +37,30 @@ class DrcrMemoService implements IDrcrMemoService
   }
 
 
+  public function show(string $referenceNumber)
+  {
+    $show = $this->drcrMemoRepository->getByReferenceNumber($referenceNumber);
+    return [$show];
+  }
+
+
   public function getUser(string $accountNumber)
   {
     $user = $this->userAccountRepository->getUserByAccountNumber($accountNumber);
     $customerName = $user->userDetail->first_name . ' ' . $user->userDetail->last_name;
     $balance = $user->balanceInfo->available_balance;
-    return [$customerName, $balance];
+    return ['customer_name' => $customerName,'balance' => $balance];
   }
 
 
   public function store(UserAccount $user, $data)
   { 
-    $customerID = $this->getUserByAccountNumber($data['accountNumber']);
+    $customer = $this->getUserByAccountNumber($data);
     if ($data['typeOfMemo'] == ReferenceNumberTypes::DR) {
-      $isEnough = $this->checkAmount($data, $customerID);
+      $isEnough = $this->checkAmount($data, $customer->id);
       if (!$isEnough) $this->insuficientBalance();
     }
-    return $this->drcrMemo($user, $data, $customerID);
+    return $this->drcrMemo($user, $data, $customer->id);
   }
 
 
@@ -74,7 +81,8 @@ class DrcrMemoService implements IDrcrMemoService
       }
     }
 
-    return $this->drcrMemoRepository->updateDrcr($user, $data);
+    if($this->drcrMemoRepository->updateDrcr($user, $data)) return ['status' => 'success']; 
+    return ['status' => 'failed'];
   }
 
 
