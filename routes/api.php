@@ -9,6 +9,7 @@ use App\Http\Controllers\BuyLoad\AtmController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DrcrMemoController;
+use App\Http\Controllers\Farmer\FarmerController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
@@ -214,6 +215,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
             Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
+            // FARMER
+            Route::post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
