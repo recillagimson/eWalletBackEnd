@@ -5,27 +5,37 @@ namespace App\Http\Controllers\Farmer;
 use Request;
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Farmer\FarmerIdUploadRequest;
 use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
-use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
+use App\Services\Utilities\Verification\IVerificationService;
 
 class FarmerController extends Controller
 {
     private IResponseService $responseService;
     private IFarmerProfileService $farmerProfileService;
     private IUserAccountRepository $userAccountRepository;
+    private IVerificationService $verificationService;
 
     public function __construct(
         IResponseService $responseService,
         IFarmerProfileService $farmerProfileService,
-        IUserAccountRepository $userAccountRepository
+        IUserAccountRepository $userAccountRepository,
+        IVerificationService $verificationService
     )
     {
         $this->responseService = $responseService;
         $this->farmerProfileService = $farmerProfileService;
         $this->userAccountRepository = $userAccountRepository;
+        $this->verificationService = $verificationService;
+    }
+
+    public function farmerIdUpload(FarmerIdUploadRequest $request) {
+        $record = $this->verificationService->create($request->all());
+        return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
     public function farmerVerification(FarmerVerificationRequest $request) {

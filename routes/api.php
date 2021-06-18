@@ -94,6 +94,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin manual ID and selfie upload
     Route::post('/admin/id/upload', [UserPhotoController::class, 'uploadIdManually']);
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
+    // Merchat Verification of Selfie
+    // Route::post('/farmer/selfie/verification', [FarmerController::class, 'selfieVerification']);
+    Route::post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
 
     Route::prefix('ekyc')->group(function() {
         Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
