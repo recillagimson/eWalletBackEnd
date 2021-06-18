@@ -118,7 +118,7 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
         if (!$user) $this->loginFailed();
-        if (!$user->is_onboarder) $this->loginFailed();
+        if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
 
         $this->validateUser($user);
         $this->tryLogin($user, $password, $user->password);
@@ -129,7 +129,7 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
         if (!$user) $this->loginFailed();
-        if (!$user->is_onboarder) $this->loginFailed();
+        if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
 
         $this->validateUser($user);
         $this->verifyLogin(UsernameTypes::MobileNumber, $mobileNumber, $otp);
@@ -272,6 +272,7 @@ class AuthService implements IAuthService
         if (!$user) $this->loginFailed();
         if ($user->is_admin) $this->loginFailed();
         if ($user->is_onboarder) $this->loginFailed();
+        if ($user->is_merchant) $this->loginFailed();
     }
 
     private function validateUser(UserAccount $user)
