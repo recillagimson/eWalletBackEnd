@@ -61,4 +61,8 @@ trait WithUserErrors
     {
         $this->validationErrorMessage(ErrorCodes::tierUpgradeExist, 'Opps! You are not allowed to perform this transaction, there is a pending tier upgrade request.');
     }
+
+    public function userAccountNotFound() {
+        $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account not found');
+    }
 }

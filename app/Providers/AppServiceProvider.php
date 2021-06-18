@@ -28,6 +28,8 @@ use App\Services\DrcrMemo\DrcrMemoService;
 use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
+use App\Services\FarmerProfile\FarmerProfileService;
+use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\KYCService\IKYCService;
 use App\Services\KYCService\KYCService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
@@ -179,6 +181,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ICurlService::class, CurlService::class);
         // Temp User Detail Service
         $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
+        // FARMER SERVICE
+        $this->app->bind(IFarmerProfileService::class, FarmerProfileService::class);
     }
 
     /**

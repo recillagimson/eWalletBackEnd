@@ -9,6 +9,7 @@ use App\Http\Controllers\BuyLoad\AtmController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DrcrMemoController;
+use App\Http\Controllers\Farmer\FarmerController;
 use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
@@ -93,6 +94,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin manual ID and selfie upload
     Route::post('/admin/id/upload', [UserPhotoController::class, 'uploadIdManually']);
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
+    // Merchat Verification of Selfie
+    // Route::post('/farmer/selfie/verification', [FarmerController::class, 'selfieVerification']);
+    Route::post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
 
     Route::prefix('ekyc')->group(function() {
         Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
@@ -214,6 +218,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
             Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
+            // FARMER
+            Route::post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
+            Route::post('/farmer/verification', [FarmerController::class, 'farmerVerification']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
