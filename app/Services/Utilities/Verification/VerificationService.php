@@ -161,16 +161,16 @@ class VerificationService implements IVerificationService
     }
 
     // UPDATE TIER APPROVAL IDS OF USER PHOTOS AND SELFIE PHOTOS
-    public function updateTierApprovalIds(array $userIdPhotos, array $userSelfiePhotos, string $tierApprovalStatus) {
+    public function updateTierApprovalIds(array $userIdPhotos, array $userSelfiePhotos, string $tierApprovalStatus, bool $is_farmer=false) {
         // USER ID PHOTOS
         foreach($userIdPhotos as $photo) {
             $photo_instance = $this->userPhotoRepository->get($photo);
-            $this->userPhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus]);
+            $this->userPhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus, 'status' => $is_farmer ? 'APPROVED' : "PENDING"]);
         }
         // USER SELFIE PHOTOS
         foreach($userSelfiePhotos as $photo) {
             $photo_instance = $this->userSelfiePhotoRepository->get($photo);
-            $this->userSelfiePhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus]);
+            $this->userSelfiePhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus, 'status' => $is_farmer ? 'APPROVED' : "PENDING"]);
         }
     }
 }
