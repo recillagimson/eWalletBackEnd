@@ -53,6 +53,24 @@ interface IAuthService
     public function adminLogin(string $email, string $password): array;
 
     /**
+     * Authenticates onboarders with otp
+     *
+     * @param string $mobileNumber
+     * @param string $password
+     * @return mixed
+     */
+    public function onBoardersLogin(string $mobileNumber, string $password);
+
+    /**
+     * Verifies the OTP for onboarders login
+     *
+     * @param string $mobileNumber
+     * @param string $otp
+     * @return array
+     */
+    public function onBoardersVerifyLogin(string $mobileNumber, string $otp): array;
+
+    /**
      * Pin authentication for confirmation to
      * proceed in transactions
      *

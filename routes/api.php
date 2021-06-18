@@ -112,6 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
         Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+        Route::post('/onboarders/login', [AuthController::class, 'onBoardersLogin']);
 
         Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
         Route::post('/confirmation', [AuthController::class, 'confirmTransactions']);
@@ -129,6 +130,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/otp', [AuthController::class, 'verifyTransactionOtp'])->name('otp');
             Route::post('/account', [RegisterController::class, 'verifyAccount'])->name('account');
             Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin'])->name('mobile.login');
+            Route::post('/onboarders/login', [AuthController::class, 'verifyOnBoardersLogin'])->name('onboarders.login');
             Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type');
         });
     });
@@ -314,7 +316,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
         Route::put('/approval/', [DrcrMemoController::class, 'approval']);
     });
-    
+
 
 });
 
