@@ -2,19 +2,26 @@
 
 namespace App\Services\KYCService;
 
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use Illuminate\Http\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\CurlService\ICurlService;
+use Carbon\Carbon;
 
 class KYCService implements IKYCService
 {   
     private ICurlService $curlService;
+    private IUserSelfiePhotoRepository $userSelfiePhotoRepository;
+    private IUserAccountRepository $userAccountRepository;
 
-    public function __construct(ICurlService $curlService)
+    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository)
     {
         $this->curlService = $curlService;
+        $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
+        $this->userAccountRepository = $userAccountRepository;
     }
 
     private function getAuthorizationHeaders(): array
@@ -55,6 +62,30 @@ class KYCService implements IKYCService
 
         $data = array('id' => $id);
         return $this->curlService->curlPost($url, $data, $headers);
+    }
+
+    public function initMerchantFaceMatch(array $attr) {
+
+        $user = $this->userAccountRepository->getUserByAccountNumber($attr['account_number']);
+        $selfie = $this->userSelfiePhotoRepository->getSelfieByAccountNumber($user->id);
+
+        $selfie_s3 = Storage::disk('s3')->temporaryUrl($selfie->photo_location, Carbon::now()->addMinutes(10));
+
+        $filename = Str::random(20);
+        $tempImage = tempnam(sys_get_temp_dir(), $filename);
+        copy($selfie_s3, $tempImage);
+
+        $url = env('KYC_APP_FACEMATCH_URL');
+        $headers = $this->getAuthorizationHeaders();
+
+        $selfie_retrieved = new \CURLFILE($tempImage);
+        $selfie = new \CURLFILE($attr['selfie_photo']->getPathname());
+
+        $data = array('id' => $selfie_retrieved, 'selfie' => $selfie);
+        
+        $reponse = $this->curlService->curlPost($url, $data, $headers);
+        unlink($tempImage);
+        return $reponse;
     }
 
 }

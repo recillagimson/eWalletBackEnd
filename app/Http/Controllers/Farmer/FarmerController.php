@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Farmer\FarmerIdUploadRequest;
 use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\Utilities\Responses\IResponseService;
+use App\Http\Requests\Farmer\FarmerSelfieUploadRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
@@ -36,6 +37,11 @@ class FarmerController extends Controller
     public function farmerIdUpload(FarmerIdUploadRequest $request) {
         $record = $this->verificationService->create($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
+    }
+
+    public function farmerSelfieUpload(FarmerSelfieUploadRequest $request) {
+        $record = $this->verificationService->createSelfieVerification($request->all());
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
     public function farmerVerification(FarmerVerificationRequest $request) {

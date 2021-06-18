@@ -65,4 +65,8 @@ trait WithUserErrors
     public function userAccountNotFound() {
         $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account not found');
     }
+
+    public function userSelfieNotFound() {
+        $this->validationErrorMessage(ErrorCodes::userSelfieNotFound, 'Account Selfie not found');
+    }
 }
