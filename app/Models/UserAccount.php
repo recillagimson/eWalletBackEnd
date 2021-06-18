@@ -122,4 +122,8 @@ class UserAccount extends Authenticatable
     public function roles() {
         return $this->hasManyThrough(Role::class, UserRole::class, 'user_account_id', 'id', 'id', 'role_id');
     }
+
+    public function user_balance_info() {
+        return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
+    }
 }

@@ -13,7 +13,7 @@ class FarmerVerificationRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,8 @@ class FarmerVerificationRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'user_account_id' => 'required|exists:user_accounts,id',
+            'rsbsa_number' => 'required'
         ];
     }
 }

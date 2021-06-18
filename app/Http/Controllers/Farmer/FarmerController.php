@@ -19,16 +19,18 @@ class FarmerController extends Controller
 
     public function __construct(
         IResponseService $responseService,
-        IFarmerProfileService $farmerProfileService
+        IFarmerProfileService $farmerProfileService,
+        IUserAccountRepository $userAccountRepository
     )
     {
         $this->responseService = $responseService;
         $this->farmerProfileService = $farmerProfileService;
+        $this->userAccountRepository = $userAccountRepository;
     }
 
     public function farmerVerification(FarmerVerificationRequest $request) {
         $record = $this->userAccountRepository->getUserAccountByIdAndRSBSANo($request->user_account_id, $request->rsbsa_number);
-        return $this->responseService->successResponse($record, SuccessMessages::success);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
     public function updateSilver(FarmerUpgradeToSilverRequest $request)
