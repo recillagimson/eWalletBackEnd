@@ -3,16 +3,22 @@
 namespace App\Services\FarmerProfile;
 
 use App\Enums\AccountTiers;
+use Illuminate\Support\Str;
 use App\Enums\SuccessMessages;
 use App\Traits\HasFileUploads;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\UploadedFile;
 use App\Enums\SquidPayModuleTypes;
 use App\Traits\Errors\WithUserErrors;
+use Illuminate\Support\Facades\Storage;
+use App\Services\KYCService\IKYCService;
 use App\Services\UserAccount\IUserAccountService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Repositories\Tier\ITierApprovalRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Services\Utilities\Verification\IVerificationService;
 
 class FarmerProfileService implements IFarmerProfileService
@@ -25,16 +31,23 @@ class FarmerProfileService implements IFarmerProfileService
     private IUserProfileService $userProfileService;
 
     private IUserAccountRepository $userAccountRepository;
+    private IKYCService $kycService;
+    private IUserPhotoRepository $userPhotoRepository;
+    private IUserSelfiePhotoRepository $userSelfieRepository;
 
 
     public function __construct(
-                                ITierApprovalRepository $userApprovalRepository, IUserAccountRepository $userAccountRepository, IVerificationService $verificationService, ILogHistoryService $logHistoryService, IUserProfileService $userProfileService)
+                                ITierApprovalRepository $userApprovalRepository, IUserAccountRepository $userAccountRepository, IVerificationService $verificationService, ILogHistoryService $logHistoryService, IUserProfileService $userProfileService, IKYCService $kycService, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfieRepository)
     {
         $this->userApprovalRepository = $userApprovalRepository;
         $this->userAccountRepository = $userAccountRepository;
         $this->verificationService = $verificationService;
         $this->logHistoryService = $logHistoryService;
         $this->userProfileService = $userProfileService;
+        $this->userProfileService = $userProfileService;
+        $this->userPhotoRepository = $userPhotoRepository;
+        $this->kycService = $kycService;
+        $this->userSelfieRepository = $userSelfieRepository;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
@@ -47,6 +60,26 @@ class FarmerProfileService implements IFarmerProfileService
                 $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequestByUserAccountId($attr['user_account_id']);
                 if($findExistingRequest) {
                     return $this->tierUpgradeAlreadyExist();
+                }
+
+                // init KYCC Face match
+                $is_kyc_ai_approved = false;
+                $kyc_response = null;
+                foreach($attr['id_photos_ids'] as $idPhoto) {
+                    $userPhoto = $this->userPhotoRepository->get($idPhoto);
+                    
+                    $create_clone_file = Storage::disk('s3')->temporaryUrl($userPhoto->photo_location, Carbon::now()->addMinutes(10));
+                    $temp_image = tempnam(sys_get_temp_dir(), Str::random(10));
+                    copy($create_clone_file, $temp_image);
+
+                    foreach($attr['id_selfie_ids'] as $selfiePhoto) {
+                        $selfie = $this->userSelfieRepository->get($selfiePhoto);
+                        $create_selfie_clone_file = Storage::disk('s3')->temporaryUrl($userPhoto->photo_location, Carbon::now()->addMinutes(10));
+                        $temp_selfie_image = tempnam(sys_get_temp_dir(), Str::random(10));
+                        copy($create_clone_file, $temp_selfie_image);
+
+                        $eKYCResponse = $this->kycService->initFaceMatch(['id_photo' => $temp_image, 'selfie_photo' => $temp_selfie_image], true);
+                    }   
                 }
 
                 // CREATE APPROVAL RECORD FOR ADMIN
