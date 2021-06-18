@@ -49,6 +49,10 @@ class FarmerProfileService implements IFarmerProfileService
                     return $this->tierUpgradeAlreadyExist();
                 }
 
+                // init eKYC AI Verification
+                $is_eky_approved = null;
+                
+
                 // CREATE APPROVAL RECORD FOR ADMIN
                 // TU-MMDDYYY-RANDON
                 $generatedTransactionNumber = "TU" . Carbon::now()->format('YmdHi') . rand(0,99999);
