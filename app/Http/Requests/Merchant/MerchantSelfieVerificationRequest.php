@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Farmer;
+namespace App\Http\Requests\Merchant;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FarmerVerificationRequest extends FormRequest
+class MerchantSelfieVerificationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class FarmerVerificationRequest extends FormRequest
     {
         return [
             'account_number' => 'required|exists:user_accounts,account_number',
-            'rsbsa_number' => 'required'
+            'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
         ];
     }
 }

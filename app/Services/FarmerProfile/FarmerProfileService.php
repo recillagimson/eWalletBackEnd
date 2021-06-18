@@ -68,7 +68,7 @@ class FarmerProfileService implements IFarmerProfileService
                 $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
                     'user_account_id' => $user_account->id,
                     'request_tier_id' => AccountTiers::tier2,
-                    'status' => 'PENDING',
+                    'status' => 'APPROVED',
                     'user_created' => $authUser,
                     'user_updated' => $authUser,
                     'transaction_number' => $generatedTransactionNumber
@@ -80,6 +80,7 @@ class FarmerProfileService implements IFarmerProfileService
             }
             // $details = $request->validated();
             // dd($user_account->profile);
+            $attr['tier_id'] = AccountTiers::tier2;
             $addOrUpdate = $this->userProfileService->update($user_account, $attr);
             $audit_remarks = $authUser . " Profile Information has been successfully updated.";
             $this->logHistoryService->logUserHistory($authUser, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);

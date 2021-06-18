@@ -98,9 +98,9 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getBaseQuery()->where('is_admin', '=', true);
     }
 
-    public function getUserAccountByIdAndRSBSANo(string $userAccountId, string $RSBSANo) {
+    public function getUserAccountByAccountNumberAndRSBSANo(string $accountNumber, string $RSBSANo) {
         $record = $this->model->with(['profile', 'user_balance_info'])
-            ->where('id', $userAccountId)
+            ->where('account_number', $accountNumber)
             ->where('rsbsa_number', $RSBSANo)
             ->first();
         

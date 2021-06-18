@@ -91,7 +91,10 @@ class UserDetail extends Model
 
     public function getAvatarLinkAttribute() {
         // return Storage::disk('s3')->temporaryUrl($this->avatar_location, Carbon::now()->addHour(1));
-        return $this->getTempUrl($this->avatar_location, Carbon::now()->addHour(1)->format('Y-m-d H:i:s'));
+        if(Storage::disk('s3')->exists($this->avatar_location)) {
+            return $this->getTempUrl($this->avatar_location, Carbon::now()->addHour(1)->format('Y-m-d H:i:s'));
+        }
+        return "";
     }
 
     public function getFullNameAttribute(): string

@@ -29,5 +29,5 @@ interface IUserAccountRepository extends IRepository
 
     public function getByEmail(string $emailField, string $email);
 
-    public function getUserAccountByIdAndRSBSANo(string $userAccountId, string $RSBSANo);
+    public function getUserAccountByAccountNumberAndRSBSANo(string $accountNumber, string $RSBSANo);
 }

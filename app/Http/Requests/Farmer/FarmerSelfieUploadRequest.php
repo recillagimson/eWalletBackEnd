@@ -4,7 +4,7 @@ namespace App\Http\Requests\Farmer;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FarmerVerificationRequest extends FormRequest
+class FarmerSelfieUploadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,8 @@ class FarmerVerificationRequest extends FormRequest
     public function rules()
     {
         return [
-            'account_number' => 'required|exists:user_accounts,account_number',
-            'rsbsa_number' => 'required'
+            'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
+            'user_account_id' => 'required|exists:user_accounts,id'
         ];
     }
 }
