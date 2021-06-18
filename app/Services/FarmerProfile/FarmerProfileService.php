@@ -72,14 +72,14 @@ class FarmerProfileService implements IFarmerProfileService
                 'user_updated' => $authUser,
                 'transaction_number' => $generatedTransactionNumber
             ]);
-            $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id);
+            $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id, true);
             $audit_remarks = $user_account->id . " has requested to upgrade to Silver";
             $record = $this->logHistoryService->logUserHistory($user_account->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+            $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
         }
         // $details = $request->validated();
         // dd($user_account->profile);
         $addOrUpdate = $this->userProfileService->update($user_account, $attr);
-        $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
         $audit_remarks = $authUser . " Profile Information has been successfully updated.";
         $this->logHistoryService->logUserHistory($authUser, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
         return $addOrUpdate;
