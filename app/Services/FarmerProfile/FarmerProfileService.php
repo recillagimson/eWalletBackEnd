@@ -61,37 +61,7 @@ class FarmerProfileService implements IFarmerProfileService
                 if($findExistingRequest) {
                     return $this->tierUpgradeAlreadyExist();
                 }
-
-                // init KYCC Face match
-                $is_kyc_ai_approved = false;
-                $kyc_response = null;
-                foreach($attr['id_photos_ids'] as $idPhoto) {
-                    // Get Entry for photo id
-                    $userPhoto = $this->userPhotoRepository->get($idPhoto);
-                    // Generate S3 Temp URL
-                    $create_clone_file = Storage::disk('s3')->temporaryUrl($userPhoto->photo_location, Carbon::now()->addMinutes(10));
-                    // Generate temp name for file from S3
-                    $temp_image = tempnam(sys_get_temp_dir(), Str::random(10));
-                    // Copy file to Tmp directory
-                    copy($create_clone_file, $temp_image);
-                    // REMOVE TEMP FILE
-                    unset($temp_image);
-                    
-                    foreach($attr['id_selfie_ids'] as $selfiePhoto) {
-                        $selfie = $this->userSelfieRepository->get($selfiePhoto);
-                        // Generate S3 Temp Url
-                        $create_selfie_clone_file = Storage::disk('s3')->temporaryUrl($selfie->photo_location, Carbon::now()->addMinutes(10));
-                        // Generate Temp name for file catch from S3
-                        $temp_selfie_image = tempnam(sys_get_temp_dir(), Str::random(10));
-                        // Copy file to Tmp directory
-                        copy($create_selfie_clone_file, $temp_selfie_image);
-                        // Initialize KYC face match
-                        $eKYCResponse = $this->kycService->initFaceMatch(['id_photo' => $temp_image, 'selfie_photo' => $temp_selfie_image], true);
-                        // REMOVE TEMP FILE
-                        unset($temp_selfie_image);
-                    }   
-                }
-
+                
                 // CREATE APPROVAL RECORD FOR ADMIN
                 // TU-MMDDYYY-RANDON
                 $generatedTransactionNumber = "TU" . Carbon::now()->format('YmdHi') . rand(0,99999);
