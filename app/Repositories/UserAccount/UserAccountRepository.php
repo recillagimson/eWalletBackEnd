@@ -19,6 +19,20 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getAdminUserBaseQuery()->get();
     }
 
+    public function getAllUsersPaginated($perPage)
+    {
+        $result = $this->model->with(['profile', 'tier'])->orderBy('created_at', 'DESC')->paginate($perPage);
+        
+        return $result;
+    }
+
+    public function findById($id)
+    {
+        $result = $this->model->with(['profile', 'tier'])->find($id);
+        
+        return $result;
+    }
+
     public function getAdminUser(string $id)
     {
         return $this->getAdminUserBaseQuery()->where('id', '=', $id)->first();
@@ -59,6 +73,11 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->model->where($emailField, '=', $email)->first();
     }
 
+    public function getUserByAccountNumber(string $accountNumber)
+    {
+        return $this->model->where(['account_number' => $accountNumber])->first();
+    }
+
     private function getBaseQuery(): Builder
     {
         return $this->model->with(['profile', 'balanceInfo']);
@@ -74,6 +93,6 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getBaseQuery()->where('is_admin', '=', true);
     }
 
-
+    
 
 }

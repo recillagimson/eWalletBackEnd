@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\SendMoney;
+namespace App\Http\Requests\UserPhoto;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GenerateQrRequest extends FormRequest
+class SelfieActionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,8 @@ class GenerateQrRequest extends FormRequest
     public function rules()
     {
         return [
-            'amount' => 'required|numeric|min:1'
+            'user_selfie_photo_id' => 'required|exists:user_selfie_photos,id',
+            'status' => 'required'
         ];
     }
 }

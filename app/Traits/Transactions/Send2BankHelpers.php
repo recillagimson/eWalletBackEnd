@@ -89,7 +89,8 @@ trait Send2BankHelpers
             if ($status === TransactionStatuses::success) {
                 $this->transactionHistories->log($send2Bank->user_account_id,
                     $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
-                    $send2Bank->total_amount, $send2Bank->user_account_id);
+                    $send2Bank->total_amount, $send2Bank->transaction_date,
+                    $send2Bank->user_account_id);
             }
 
             return $send2Bank;
@@ -124,7 +125,7 @@ trait Send2BankHelpers
             if ($send2Bank->status === TransactionStatuses::success) {
                 $this->transactionHistories->log($send2Bank->user_account_id,
                     $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
-                    $send2Bank->total_amount, $send2Bank->user_account_id);
+                    $send2Bank->total_amount, $send2Bank->transaction_date, $send2Bank->user_account_id);
             }
 
             return $send2Bank;

@@ -56,4 +56,9 @@ trait WithUserErrors
         $this->validationErrorMessage(ErrorCodes::mobileAlreadyTaken,
             'Oops! Mobile Number is already taken.');
     }
+
+    public function tierUpgradeAlreadyExist() 
+    {
+        $this->validationErrorMessage(ErrorCodes::tierUpgradeExist, 'Opps! You are not allowed to perform this transaction, there is a pending tier upgrade request.');
+    }
 }

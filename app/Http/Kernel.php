@@ -7,6 +7,7 @@ use App\Http\Middleware\DecryptRequest;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\EnsureFormData;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Http\Middleware\RBPMiddleware;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
@@ -91,5 +92,6 @@ class Kernel extends HttpKernel
         'verified' => EnsureEmailIsVerified::class,
         'form-data' => EnsureFormData::class,
         'decrypt.request' => DecryptRequest::class,
+        'rba' => RBPMiddleware::class
     ];
 }

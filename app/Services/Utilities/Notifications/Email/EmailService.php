@@ -4,26 +4,29 @@
 namespace App\Services\Utilities\Notifications\Email;
 
 
-use App\Enums\OtpTypes;
-use App\Enums\TpaProviders;
-use App\Mail\Auth\AccountVerification;
-use App\Mail\Auth\PasswordRecoveryEmail;
-use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
-use App\Mail\LoginVerification;
-use App\Mail\Send2Bank\Send2BankReceipt;
-use App\Mail\Send2Bank\SenderNotification;
-use App\Mail\SendMoney\SendMoneyRecipientNotification;
-use App\Mail\SendMoney\SendMoneySenderNotification;
-use App\Mail\SendMoney\SendMoneyVerification;
-use App\Mail\User\AdminUserVerification;
-use App\Models\OutSend2Bank;
+use SendGrid;
 use Carbon\Carbon;
+use App\Models\Tier;
+use App\Enums\OtpTypes;
+use SendGrid\Mail\Mail;
+use App\Enums\TpaProviders;
+use Illuminate\Support\Str;
+use App\Models\OutSend2Bank;
 use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
-use Illuminate\Support\Str;
+use App\Mail\LoginVerification;
+use App\Mail\Auth\AccountVerification;
+use App\Mail\Auth\PasswordRecoveryEmail;
+use App\Mail\Send2Bank\Send2BankReceipt;
+use App\Mail\User\AdminUserVerification;
+use App\Models\UserUtilities\UserDetail;
+use App\Mail\Send2Bank\SenderNotification;
+use App\Mail\SendMoney\SendMoneyVerification;
 use Illuminate\Validation\ValidationException;
-use SendGrid;
-use SendGrid\Mail\Mail;
+use App\Mail\SendMoney\SendMoneySenderNotification;
+use App\Mail\TierApproval\TierUpgradeRequestApproved;
+use App\Mail\SendMoney\SendMoneyRecipientNotification;
+use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
 
 class EmailService implements IEmailService
 {
@@ -181,6 +184,12 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
+    public function payBillsNotification(string $to, array $fillRequest, string $biller)
+    {
+        $subject = 'SquidPay - Pay Bills Notification';
+        $template = new SendMoneySenderNotification($fillRequest, $biller);
+        $this->sendMessage($to, $subject, $template);
+    }
 
     private function sendMessage(string $to, string $subject, Mailable $template): void
     {
@@ -201,6 +210,14 @@ class EmailService implements IEmailService
         throw ValidationException::withMessages([
             'email' => 'Email provider failed to send the message. Please try again.'
         ]);
+    }
+
+
+    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier)
+    {
+        $subject = 'SquidPay - Tier Upgrade Update';
+        $template = new TierUpgradeRequestApproved($userDetail, $tier);
+        $this->sendMessage($to, $subject, $template);
     }
 
 
