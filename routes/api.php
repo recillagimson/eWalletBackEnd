@@ -112,7 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
         Route::post('/admin/login', [AuthController::class, 'adminLogin']);
-        Route::post('/onboarders/login', [AuthController::class, 'onBoardersLogin']);
+        Route::post('/partners/login', [AuthController::class, 'partnersLogin']);
 
         Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
         Route::post('/confirmation', [AuthController::class, 'confirmTransactions']);
@@ -130,7 +130,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/otp', [AuthController::class, 'verifyTransactionOtp'])->name('otp');
             Route::post('/account', [RegisterController::class, 'verifyAccount'])->name('account');
             Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin'])->name('mobile.login');
-            Route::post('/onboarders/login', [AuthController::class, 'verifyOnBoardersLogin'])->name('onboarders.login');
+            Route::post('/partners/login', [AuthController::class, 'verifyPartnersLogin'])->name('partners.login');
             Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type');
         });
     });

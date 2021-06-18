@@ -59,7 +59,7 @@ interface IAuthService
      * @param string $password
      * @return mixed
      */
-    public function onBoardersLogin(string $mobileNumber, string $password);
+    public function partnersLogin(string $mobileNumber, string $password);
 
     /**
      * Verifies the OTP for onboarders login
@@ -68,7 +68,7 @@ interface IAuthService
      * @param string $otp
      * @return array
      */
-    public function onBoardersVerifyLogin(string $mobileNumber, string $otp): array;
+    public function partnersVerifyLogin(string $mobileNumber, string $otp): array;
 
     /**
      * Pin authentication for confirmation to

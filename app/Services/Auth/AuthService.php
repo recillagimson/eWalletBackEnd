@@ -114,7 +114,7 @@ class AuthService implements IAuthService
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
     }
 
-    public function onBoardersLogin(string $mobileNumber, string $password)
+    public function partnersLogin(string $mobileNumber, string $password)
     {
         $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
         if (!$user) $this->loginFailed();
@@ -125,7 +125,7 @@ class AuthService implements IAuthService
         $this->generateMobileLoginOTP(UsernameTypes::MobileNumber, $mobileNumber);
     }
 
-    public function onBoardersVerifyLogin(string $mobileNumber, string $otp): array
+    public function partnersVerifyLogin(string $mobileNumber, string $otp): array
     {
         $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
         if (!$user) $this->loginFailed();
