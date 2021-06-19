@@ -3,6 +3,7 @@
 namespace App\Services\FarmerProfile;
 
 use App\Enums\AccountTiers;
+use App\Enums\eKYC;
 use Illuminate\Support\Str;
 use App\Enums\SuccessMessages;
 use App\Traits\HasFileUploads;
@@ -70,7 +71,9 @@ class FarmerProfileService implements IFarmerProfileService
                 'status' => 'APPROVED',
                 'user_created' => $authUser,
                 'user_updated' => $authUser,
-                'transaction_number' => $generatedTransactionNumber
+                'transaction_number' => $generatedTransactionNumber,
+                'approved_by' => eKYC::eKYC,
+                'remarks' => eKYC::eKYC_remarks
             ]);
             $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id, true);
             $audit_remarks = $user_account->id . " has requested to upgrade to Silver";
