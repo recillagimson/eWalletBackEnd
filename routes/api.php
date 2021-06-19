@@ -96,10 +96,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/id/upload', [UserPhotoController::class, 'uploadIdManually']);
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
     // FARMER
-    Route::post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
-    Route::post('/farmer/selfie/verification', [FarmerController::class, 'farmerSelfieUpload']);
+    Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
+    Route::middleware(['require.user.token'])->post('/farmer/selfie/verification', [FarmerController::class, 'farmerSelfieUpload']);
     // Merchat Verification of Selfie
-    Route::post('/merchant/selfie/verification', [MerchantController::class, 'selfieVerification']);
+    Route::middleware(['require.user.token'])->post('/merchant/selfie/verification', [MerchantController::class, 'selfieVerification']);
 
     Route::prefix('ekyc')->group(function() {
         Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
@@ -224,8 +224,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
             Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
             // FARMER
-            Route::post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
-            Route::post('/farmer/verification', [FarmerController::class, 'farmerVerification']);
+            Route::middleware(['require.user.token'])->post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
+            Route::middleware(['require.user.token'])->post('/farmer/verification', [FarmerController::class, 'farmerVerification']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
