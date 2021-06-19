@@ -70,7 +70,7 @@ class KYCService implements IKYCService
         $selfie = $this->userSelfiePhotoRepository->getSelfieByAccountNumber($user->id);
 
         $selfie_s3 = Storage::disk('s3')->temporaryUrl($selfie->photo_location, Carbon::now()->addMinutes(10));
-
+        // dd($selfie_s3);
         $filename = Str::random(20);
         $tempImage = tempnam(sys_get_temp_dir(), $filename);
         copy($selfie_s3, $tempImage);
