@@ -59,7 +59,7 @@ class insert_natures_of_work extends Seeder
                 ['id' =>"0ed97166-9131-11eb-b44f-1c1b0d14e211",'description' =>"Transportation (Driver, Operator, etc.)",'status' =>"1",'user_created' =>"Migration Team"],
                 ['id' =>"0ed971b7-9131-11eb-b44f-1c1b0d14e211",'description' =>"Virtual Currencies",'status' =>"1",'user_created' =>"Migration Team"],
                 ['id' =>"0ed97204-9131-11eb-b44f-1c1b0d14e211",'description' =>"e-commerce/online business",'status' =>"1",'user_created' =>"Migration Team"],
-                
+                ['id' =>"0ed97205-9131-11eb-b44f-1c1b0d14e211",'description' =>"Agriculture",'status' =>"1",'user_created' =>"Migration Team"],
 
             ]);
     }

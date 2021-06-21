@@ -4,11 +4,16 @@ namespace App\Repositories\UserAccount;
 
 use App\Models\UserAccount;
 use App\Repositories\Repository;
+use App\Traits\Errors\WithErrors;
+use App\Traits\Errors\WithUserErrors;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class UserAccountRepository extends Repository implements IUserAccountRepository
 {
+
+    use WithUserErrors;
+
     public function __construct(UserAccount $model)
     {
         parent::__construct($model);
@@ -93,6 +98,17 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getBaseQuery()->where('is_admin', '=', true);
     }
 
-    
+    public function getUserAccountByAccountNumberAndRSBSANo(string $accountNumber, string $RSBSANo) {
+        $record = $this->model->with(['profile', 'user_balance_info'])
+            ->where('account_number', $accountNumber)
+            ->where('rsbsa_number', $RSBSANo)
+            ->first();
+        
+        if($record) {
+            return $record;
+        }
+
+        return $this->userAccountNotFound();
+    }
 
 }

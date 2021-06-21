@@ -10,6 +10,8 @@ use App\Http\Requests\Auth\GenerateTransOtpRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
 use App\Http\Requests\Auth\MobileLoginValidateRequest;
+use App\Http\Requests\Auth\PartnersLoginRequest;
+use App\Http\Requests\Auth\PartnersVerifyLoginRequest;
 use App\Http\Requests\Auth\ResendOtpRequest;
 use App\Http\Requests\Auth\VerifyLoginRequest;
 use App\Http\Requests\Auth\VerifyTransOtpRequest;
@@ -62,12 +64,32 @@ class AuthController extends Controller
         return $this->responseService->successResponse($loginResponse, SuccessMessages::loginSuccessful);
     }
 
+    /**
+     * Authenticates admin users
+     *
+     * @param AdminLoginRequest $request
+     * @return JsonResponse
+     */
     public function adminLogin(AdminLoginRequest $request): JsonResponse
     {
         $login = $request->validated();
         $loginResponse = $this->authService->adminLogin($login['email'], $login['password']);
 
         return $this->responseService->successResponse($loginResponse, SuccessMessages::loginSuccessful);
+    }
+
+    /**
+     * Authenticates onboarders
+     *
+     * @param PartnersLoginRequest $request
+     * @return JsonResponse
+     */
+    public function partnersLogin(PartnersLoginRequest $request): JsonResponse
+    {
+        $login = $request->validated();
+        $this->authService->partnersLogin($login['mobile_number'], $login['password']);
+
+        return $this->responseService->successResponse(['message' => 'Login successful but requires OTP verification.'], SuccessMessages::loginSuccessful);
     }
 
     /**
@@ -103,6 +125,20 @@ class AuthController extends Controller
         return $this->responseService->successResponse([
             $usernameField => $data[$usernameField]
         ], SuccessMessages::loginVerificationSuccessful);
+    }
+
+    /**
+     * Verify and validate onboarders login otp and generates token
+     *
+     * @param PartnersVerifyLoginRequest $request
+     * @return JsonResponse
+     */
+    public function verifyPartnersLogin(PartnersVerifyLoginRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $verificationResponse = $this->authService->partnersVerifyLogin($data['mobile_number'], $data['code']);
+
+        return $this->responseService->successResponse($verificationResponse, SuccessMessages::loginVerificationSuccessful);
     }
 
     /**

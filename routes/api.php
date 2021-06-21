@@ -14,6 +14,7 @@ use App\Http\Controllers\HelpCenterController;
 use App\Http\Controllers\IdTypeController;
 use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\KYC\KYCController;
+use App\Http\Controllers\Merchant\MerchantController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PayBillsController;
@@ -94,6 +95,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin manual ID and selfie upload
     Route::post('/admin/id/upload', [UserPhotoController::class, 'uploadIdManually']);
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
+    // FARMER
+    Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
+    Route::middleware(['require.user.token'])->post('/farmer/selfie/verification', [FarmerController::class, 'farmerSelfieUpload']);
+    // Merchat Verification of Selfie
+    Route::middleware(['require.user.token'])->post('/merchant/selfie/verification', [MerchantController::class, 'selfieVerification']);
 
     Route::prefix('ekyc')->group(function() {
         Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
@@ -106,6 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
         Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+        Route::post('/partners/login', [AuthController::class, 'partnersLogin']);
 
         Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
         Route::post('/confirmation', [AuthController::class, 'confirmTransactions']);
@@ -123,6 +130,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/otp', [AuthController::class, 'verifyTransactionOtp'])->name('otp');
             Route::post('/account', [RegisterController::class, 'verifyAccount'])->name('account');
             Route::post('/mobile/login', [AuthController::class, 'verifyMobileLogin'])->name('mobile.login');
+            Route::post('/partners/login', [AuthController::class, 'verifyPartnersLogin'])->name('partners.login');
             Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type');
         });
     });
@@ -216,7 +224,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
             Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
             // FARMER
-            Route::post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
+            Route::middleware(['require.user.token'])->post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
+            Route::middleware(['require.user.token'])->post('/farmer/verification', [FarmerController::class, 'farmerVerification']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
@@ -304,10 +313,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [DrcrMemoController::class, 'index']);
         Route::post('/', [DrcrMemoController::class, 'store']);
         Route::get('/show/{referenceNumber}', [DrcrMemoController::class, 'show']);
+        Route::get('/show/pending/status', [DrcrMemoController::class, 'showPending']);
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
-        Route::put('/approval/', [DrcrMemoController::class, 'approval']);
+        Route::put('/approval', [DrcrMemoController::class, 'approval']);
     });
-    
+
 
 });
 

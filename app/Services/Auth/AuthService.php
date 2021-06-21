@@ -71,10 +71,9 @@ class AuthService implements IAuthService
     public function login(string $usernameField, array $creds, string $ip): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        if (!$user) $this->loginFailed();
-        if ($user->is_admin) $this->loginFailed();
-
+        $this->validateInternalUsers($user);
         $this->validateUser($user);
+
         $this->tryLogin($user, $creds['password'], $user->password);
 
         $firstLogin = !$user->last_login;
@@ -87,8 +86,7 @@ class AuthService implements IAuthService
     public function mobileLogin(string $usernameField, array $creds): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        if (!$user) $this->loginFailed();
-        if ($user->is_admin) $this->loginFailed();
+        $this->validateInternalUsers($user);
 
         $this->validateUser($user);
         $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
@@ -108,6 +106,33 @@ class AuthService implements IAuthService
 
         $this->validateUser($user);
         $this->tryLogin($user, $password, $user->password);
+
+        $firstLogin = !$user->last_login;
+        $this->updateLastLogin($user);
+
+        $user->deleteAllTokens();
+        return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
+    }
+
+    public function partnersLogin(string $mobileNumber, string $password)
+    {
+        $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
+        if (!$user) $this->loginFailed();
+        if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
+
+        $this->validateUser($user);
+        $this->tryLogin($user, $password, $user->password);
+        $this->generateMobileLoginOTP(UsernameTypes::MobileNumber, $mobileNumber);
+    }
+
+    public function partnersVerifyLogin(string $mobileNumber, string $otp): array
+    {
+        $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
+        if (!$user) $this->loginFailed();
+        if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
+
+        $this->validateUser($user);
+        $this->verifyLogin(UsernameTypes::MobileNumber, $mobileNumber, $otp);
 
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
@@ -235,11 +260,19 @@ class AuthService implements IAuthService
             ];
         }
 
-        $identifier = $otpType.':'.$userId;
+        $identifier = $otpType . ':' . $userId;
         $otp = $this->otpService->generate($identifier);
         if (!$otp->status) $this->otpInvalid($otp->message);
 
         return $otp;
+    }
+
+    private function validateInternalUsers(?UserAccount $user)
+    {
+        if (!$user) $this->loginFailed();
+        if ($user->is_admin) $this->loginFailed();
+        if ($user->is_onboarder) $this->loginFailed();
+        if ($user->is_merchant) $this->loginFailed();
     }
 
     private function validateUser(UserAccount $user)

@@ -2,20 +2,21 @@
 
 namespace App\Services\Utilities\Verification;
 
+use App\Enums\eKYC;
 use App\Models\UserPhoto;
 use Illuminate\Http\File;
 use App\Models\UserAccount;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
 use App\Enums\SquidPayModuleTypes;
-use App\Repositories\IdType\IIdTypeRepository;
-use App\Repositories\Tier\ITierApprovalCommentRepository;
 use Illuminate\Support\Facades\Storage;
+use App\Repositories\IdType\IIdTypeRepository;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\Tier\ITierApprovalCommentRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
 
 class VerificationService implements IVerificationService
 {
@@ -161,16 +162,26 @@ class VerificationService implements IVerificationService
     }
 
     // UPDATE TIER APPROVAL IDS OF USER PHOTOS AND SELFIE PHOTOS
-    public function updateTierApprovalIds(array $userIdPhotos, array $userSelfiePhotos, string $tierApprovalStatus) {
+    public function updateTierApprovalIds(array $userIdPhotos, array $userSelfiePhotos, string $tierApprovalStatus, bool $is_farmer=false) {
         // USER ID PHOTOS
         foreach($userIdPhotos as $photo) {
             $photo_instance = $this->userPhotoRepository->get($photo);
-            $this->userPhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus]);
+            $this->userPhotoRepository->update($photo_instance, [
+                'tier_approval_id' => $tierApprovalStatus, 
+                'status' => $is_farmer ? 'APPROVED' : "PENDING",
+                'approved_by' => eKYC::eKYC,
+                'remarks' => eKYC::eKYC_remarks
+            ]);
         }
         // USER SELFIE PHOTOS
         foreach($userSelfiePhotos as $photo) {
             $photo_instance = $this->userSelfiePhotoRepository->get($photo);
-            $this->userSelfiePhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus]);
+            $this->userSelfiePhotoRepository->update($photo_instance, [
+                'tier_approval_id' => $tierApprovalStatus, 
+                'status' => $is_farmer ? 'APPROVED' : "PENDING",
+                'approved_by' => eKYC::eKYC,
+                'remarks' => eKYC::eKYC_remarks
+            ]);
         }
     }
 }
