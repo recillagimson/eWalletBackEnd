@@ -33,7 +33,7 @@ class DrcrMemoService implements IDrcrMemoService
 
   public function getList(UserAccount $user)
   {
-    return $this->drcrMemoRepository->getByUserAccountID($user);
+    return $this->drcrMemoRepository->getListByCreatedBy($user);
   }
 
 
@@ -50,6 +50,13 @@ class DrcrMemoService implements IDrcrMemoService
     $customerName = $user->userDetail->first_name . ' ' . $user->userDetail->last_name;
     $balance = $user->balanceInfo->available_balance;
     return ['customer_name' => $customerName,'balance' => $balance];
+  }
+
+
+  public function showPending(UserAccount $user)
+  {
+    $showPending = $this->drcrMemoRepository->getPendingByCreatedBy($user);
+    return $showPending;
   }
 
 
