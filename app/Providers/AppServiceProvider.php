@@ -20,6 +20,8 @@ use App\Services\Auth\Registration\IRegistrationService;
 use App\Services\Auth\Registration\RegistrationService;
 use App\Services\Auth\UserKey\IUserKeyService;
 use App\Services\Auth\UserKey\UserKeyService;
+use App\Services\BPIService\BPIService;
+use App\Services\BPIService\IBPIService;
 use App\Services\BuyLoad\BuyLoadService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\Dashboard\DashboardService;
@@ -183,6 +185,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
         // FARMER SERVICE
         $this->app->bind(IFarmerProfileService::class, FarmerProfileService::class);
+        // BPI SERVICE
+        $this->app->bind(IBPIService::class, BPIService::class);
     }
 
     /**

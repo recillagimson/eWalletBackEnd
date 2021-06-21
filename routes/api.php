@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BPIController;
 use App\Http\Controllers\BuyLoad\AtmController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
@@ -239,6 +240,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/validate', [AtmController::class, 'validateLoadTopup'])->name('validate.load.top.up');
             Route::post('/products', [AtmController::class, 'getProductsByProvider'])->name('get.products.by.provider');
             Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
+        });
+
+        Route::prefix('/bpi')->group(function() {
+            Route::post('/accounts', [BPIController::class, 'getAccounts']);
         });
 
     });
