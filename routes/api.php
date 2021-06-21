@@ -187,6 +187,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResources([
             '/types' => IdTypeController::class,
         ]);
+        Route::get('/farmers', [IdTypeController::class, 'farmersID']);
     });
 
     Route::middleware(['decrypt.request'])->group(function () {
