@@ -41,4 +41,12 @@ class OutPayBills extends Model
 
     protected $casts = ['transaction_date' => 'datetime'];
 
+    public function user_detail() {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
+    }
+
+    public function user_account() {
+        return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
+    }
+
 }

@@ -16,4 +16,5 @@ interface ITransactionService
     public function createUserTransactionEntry(string $userAccountId, string $transactionId, string $referenceNumber, string $transactionCategoryId);
     public function createUserTransactionEntryUnauthenticated(string $userAccountId, string $transactionId, string $referenceNumber, float $total_amount, string $transactionCategoryId);
     public function generateTransactionHistory(string $userAccountId, string $dateFrom, string $dateTo);
+    public function downloadCountTotalAmountEachUserCSV(object $request);
 }

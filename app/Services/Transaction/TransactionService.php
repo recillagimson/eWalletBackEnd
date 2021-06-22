@@ -7,16 +7,20 @@ use PDF;
 use Carbon\Carbon;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\CSV\ICSVService;
 
 class TransactionService implements ITransactionService
 {
     private IUserBalanceRepository $userBalanceRepository;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
+    private ICSVService $csvService;
     
-    public function __construct(IUserBalanceRepository $userBalanceRepository, IUserTransactionHistoryRepository $userTransactionHistoryRepository)
+    public function __construct(IUserBalanceRepository $userBalanceRepository, IUserTransactionHistoryRepository $userTransactionHistoryRepository,
+                                ICSVService $csvService)
     {
         $this->userBalanceRepository = $userBalanceRepository;        
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
+        $this->csvService = $csvService;
     }
     
     // FOR USER BALANCE INFO
@@ -85,5 +89,23 @@ class TransactionService implements ITransactionService
         $pdf = PDF::loadView('reports.transaction_history.transaction_history', $data);
         $pdf->SetProtection(['copy', 'print'], $password, 'squidP@y');
         return $pdf->stream($file_name);
+    }
+
+    public function downloadCountTotalAmountEachUserCSV(object $request) 
+    {
+        $records = $this->userTransactionHistoryRepository->countTransactionHistoryByDateRangeWithAmountLimit($request->from, $request->to);
+        $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name;
+        $columns = array('Customer Account ID', 'Date of Transaction', 'Amount');
+        $datas = [];
+
+        foreach ($records as $record) {
+            array_push($datas, [
+                'Customer Account ID'  => $record->user_account_id,
+                'Date of Transaction'  => Carbon::parse($record->transaction_date)->format('F d, Y G:i A'),
+                'Amount'  => $record->amount,
+            ]);
+        }
+
+        return $this->csvService->generateCSV($datas, $file_name, $columns);
     }
 }
