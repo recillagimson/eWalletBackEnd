@@ -47,7 +47,7 @@ class FarmerUpgradeToSilverRequest extends FormRequest
             'house_no_street'=>['required', 'max:50'],
             'city'=>['required', 'max:50'],
             'province_state'=>['required', 'max:50'],
-            'municipality' => 'required',
+            //'municipality' => 'required',
             'place_of_birth'=>['required', 'max:50'],
             'marital_status_id'=>'required',
             // 'encoded_nationality'=>'required_with:nationality_id',
