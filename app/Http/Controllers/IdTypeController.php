@@ -93,4 +93,9 @@ class IdTypeController extends Controller
         $deleteRecord = $this->idTypeRepository->delete($idType);
         return $this->responseService->noContentResponse($deleteRecord->toArray(), SuccessMessages::recordDeleted);
     }
+
+    public function farmersID() {
+        $records = $this->idTypeRepository->IdTypeForFarmers();
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
+    }
 }

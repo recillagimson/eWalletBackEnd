@@ -92,6 +92,13 @@ use App\Services\Utilities\Verification\VerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use App\Services\Utilities\PDF\IPDFService;
+use App\Services\Utilities\PDF\PDFService;
+use App\Services\Utilities\CSV\ICSVService;
+use App\Services\Utilities\CSV\CSVService;
+use App\Services\MyTask\MyTaskService;
+use App\Services\MyTask\IMyTaskService;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -113,6 +120,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ITransactionService::class, TransactionService::class);
         $this->app->singleton(IEmailService::class, EmailService::class);
         $this->app->singleton(ISmsService::class, SmsService::class);
+        $this->app->singleton(IPDFService::class, PDFService::class);
+        $this->app->singleton(ICSVService::class, CSVService::class);
 
         //3PP APIs
         $this->app->singleton(IUBPService::class, UBPService::class);
@@ -183,6 +192,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
         // FARMER SERVICE
         $this->app->bind(IFarmerProfileService::class, FarmerProfileService::class);
+
+        // My Task
+        $this->app->bind(IMyTaskService::class, MyTaskService::class);
     }
 
     /**

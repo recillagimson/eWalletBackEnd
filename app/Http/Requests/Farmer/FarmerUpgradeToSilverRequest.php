@@ -47,7 +47,7 @@ class FarmerUpgradeToSilverRequest extends FormRequest
             'house_no_street'=>['required', 'max:50'],
             'city'=>['required', 'max:50'],
             'province_state'=>['required', 'max:50'],
-
+            'municipality' => 'required',
             'place_of_birth'=>['required', 'max:50'],
             'marital_status_id'=>'required',
             // 'encoded_nationality'=>'required_with:nationality_id',
@@ -65,7 +65,7 @@ class FarmerUpgradeToSilverRequest extends FormRequest
         $inputs = request()->input();
 
         // check if first time to upgrade to silver
-        if(request()->user()->tier->id === AccountTiers::tier1) {
+        if(request()->user()->tier && request()->user()->tier->id === AccountTiers::tier1) {
             $required_fields_default['id_photos_ids'] = ['required', 'array', 'min:1'];
             $required_fields_default['id_photos_ids.*'] = ['required', 'exists:user_id_photos,id'];
             $required_fields_default['id_selfie_ids'] = ['required', 'array', 'min:1'];

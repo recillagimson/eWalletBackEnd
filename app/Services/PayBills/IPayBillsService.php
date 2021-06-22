@@ -18,4 +18,5 @@ interface IPayBillsService
     public function inquirePayment(string $billerCode, string $clientReference);
     public function getWalletBalance();
     public function processPending(UserAccount $user);
+    public function downloadListOfBillersCSV();
 }

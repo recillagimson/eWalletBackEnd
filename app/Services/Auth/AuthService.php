@@ -267,7 +267,7 @@ class AuthService implements IAuthService
         return $otp;
     }
 
-    private function validateInternalUsers(UserAccount $user)
+    private function validateInternalUsers(?UserAccount $user)
     {
         if (!$user) $this->loginFailed();
         if ($user->is_admin) $this->loginFailed();

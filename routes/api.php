@@ -42,6 +42,7 @@ use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\MyTaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,10 +97,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/id/upload', [UserPhotoController::class, 'uploadIdManually']);
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
     // FARMER
-    Route::post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
-    Route::post('/farmer/selfie/verification', [FarmerController::class, 'farmerSelfieUpload']);
+    Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
+    Route::middleware(['require.user.token'])->post('/farmer/selfie/verification', [FarmerController::class, 'farmerSelfieUpload']);
     // Merchat Verification of Selfie
-    Route::post('/merchant/selfie/verification', [MerchantController::class, 'selfieVerification']);
+    Route::middleware(['require.user.token'])->post('/merchant/selfie/verification', [MerchantController::class, 'selfieVerification']);
 
     Route::prefix('ekyc')->group(function() {
         Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
@@ -187,6 +188,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResources([
             '/types' => IdTypeController::class,
         ]);
+        Route::get('/farmers', [IdTypeController::class, 'farmersID']);
     });
 
     Route::middleware(['decrypt.request'])->group(function () {
@@ -224,14 +226,16 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
             Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
             // FARMER
-            Route::post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
-            Route::post('/farmer/verification', [FarmerController::class, 'farmerVerification']);
+            Route::middleware(['require.user.token'])->post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
+            Route::middleware(['require.user.token'])->post('/farmer/verification', [FarmerController::class, 'farmerVerification']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
-
+            Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
+            Route::post('/transaction/histories/count/pdf', [UserTransactionHistoryController::class, 'downloadCountTotalAmountEachUserPDF']);
+            Route::post('/transaction/histories/count/csv', [UserTransactionHistoryController::class, 'downloadCountTotalAmountEachUserCSV']);
         });
 
         Route::prefix('/buy/load')->name('buy.load.')->group(function () {
@@ -258,6 +262,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
         Route::get('/bayad/process/pending', [PayBillsController::class, 'processPending']);
+        Route::get('/list/billers', [PayBillsController::class, 'getListOfBillers']);
+        Route::get('/list/billers/pdf', [PayBillsController::class, 'downloadListOfBillersPDF']);
+        Route::get('/list/billers/csv', [PayBillsController::class, 'downloadListOfBillersCSV']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->name('notifications.')->group(function () {
@@ -309,12 +316,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
     });
 
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/mytask', [MyTaskController::class, 'index']);
+    });
+
     Route::prefix('drcr/memos')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [DrcrMemoController::class, 'index']);
         Route::post('/', [DrcrMemoController::class, 'store']);
         Route::get('/show/{referenceNumber}', [DrcrMemoController::class, 'show']);
+        Route::get('/show/pending/status', [DrcrMemoController::class, 'showPending']);
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
-        Route::put('/approval/', [DrcrMemoController::class, 'approval']);
+        Route::put('/approval', [DrcrMemoController::class, 'approval']);
     });
 
 

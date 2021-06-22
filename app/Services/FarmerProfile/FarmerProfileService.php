@@ -3,6 +3,7 @@
 namespace App\Services\FarmerProfile;
 
 use App\Enums\AccountTiers;
+use App\Enums\eKYC;
 use Illuminate\Support\Str;
 use App\Enums\SuccessMessages;
 use App\Traits\HasFileUploads;
@@ -54,12 +55,12 @@ class FarmerProfileService implements IFarmerProfileService
         // GET USER ACCOUNT WITH TIER
         $user_account = $this->userAccountRepository->getUser($attr['user_account_id']);
         // IF REQUESTING FOR TIER UPDATE
-        if($user_account && $user_account->tier->id !== AccountTiers::tier2) {
+        // if($user_account && $user_account->tier->id !== AccountTiers::tier2) { //COMMENT FOR TESTING PURPOSES
             // VALIDATE IF HAS EXISTING REQUEST
-            $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequestByUserAccountId($attr['user_account_id']);
-            if($findExistingRequest) {
-                return $this->tierUpgradeAlreadyExist();
-            }
+            // $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequestByUserAccountId($attr['user_account_id']); //COMMENT FOR TESTING PURPOSES
+            // if($findExistingRequest) { //COMMENT FOR TESTING PURPOSES
+                // return $this->tierUpgradeAlreadyExist(); //COMMENT FOR TESTING PURPOSES
+            // } //COMMENT FOR TESTING PURPOSES
             
             // CREATE APPROVAL RECORD FOR ADMIN
             // TU-MMDDYYY-RANDON
@@ -70,13 +71,15 @@ class FarmerProfileService implements IFarmerProfileService
                 'status' => 'APPROVED',
                 'user_created' => $authUser,
                 'user_updated' => $authUser,
-                'transaction_number' => $generatedTransactionNumber
+                'transaction_number' => $generatedTransactionNumber,
+                'approved_by' => eKYC::eKYC,
+                'remarks' => eKYC::eKYC_remarks
             ]);
             $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id, true);
             $audit_remarks = $user_account->id . " has requested to upgrade to Silver";
             $record = $this->logHistoryService->logUserHistory($user_account->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
             $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
-        }
+        // } //COMMENT FOR TESTING PURPOSES
         // $details = $request->validated();
         // dd($user_account->profile);
         $addOrUpdate = $this->userProfileService->update($user_account, $attr);
