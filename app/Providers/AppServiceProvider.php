@@ -96,6 +96,8 @@ use App\Services\Utilities\PDF\IPDFService;
 use App\Services\Utilities\PDF\PDFService;
 use App\Services\Utilities\CSV\ICSVService;
 use App\Services\Utilities\CSV\CSVService;
+use App\Services\MyTask\MyTaskService;
+use App\Services\MyTask\IMyTaskService;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -190,6 +192,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
         // FARMER SERVICE
         $this->app->bind(IFarmerProfileService::class, FarmerProfileService::class);
+
+        // My Task
+        $this->app->bind(IMyTaskService::class, MyTaskService::class);
     }
 
     /**
