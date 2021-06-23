@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class TempUserDetailRepository extends Repository implements ITempUserDetailRepository
 {
@@ -29,4 +30,17 @@ class TempUserDetailRepository extends Repository implements ITempUserDetailRepo
         
         return $result;
     }
+
+    public function getLatestByUserId($id) {
+        $result = $this->model->where('user_account_id', $id)->orderBy('created_at', 'DESC')->first();
+        
+        return $result;
+    }
+
+    public function denyByUserId($id, $user) {
+        $result = $this->model->where('user_account_id', $id)->update(['status' => 'DISAPPROVED', 'declined_by' => $user->id, 'declined_date' => Carbon::now()]);
+        
+        return $result;
+    }
+
 }
