@@ -22,7 +22,7 @@
         "league/flysystem-aws-s3-v3": "~1.0",
         "niklasravnsborg/laravel-pdf": "^4.0",
         "sendgrid/sendgrid": "^7.9",
-        "web-token/jwt-easy": "^2.2"
+        "tmilos/jose-jwt": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.9",

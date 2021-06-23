@@ -2,9 +2,17 @@
 
 namespace App\Services\BPIService;
 
-use Jose\Easy\Load;
-use Firebase\JWT\JWT;
+use Jose\Component\Core\JWK;
+use Jose\Component\Core\AlgorithmManager;
 use App\Services\Utilities\API\IApiService;
+use Jose\Component\Encryption\JWEDecrypter;
+use Jose\Component\Encryption\Compression\Deflate;
+use Jose\Component\Core\Converter\StandardConverter;
+use Jose\Component\Encryption\Serializer\CompactSerializer;
+use Jose\Component\Encryption\Serializer\JWESerializerManager;
+use Jose\Component\Encryption\Algorithm\KeyEncryption\RSAOAEP256;
+use Jose\Component\Encryption\Compression\CompressionMethodManager;
+use Jose\Component\Encryption\Algorithm\ContentEncryption\A128CBCHS256;
 
 class BPIService implements IBPIService
 {
@@ -28,6 +36,9 @@ class BPIService implements IBPIService
     public function getAccounts(string $token) {
         $token = $this->getHeaders($token);
         $response = $this->apiService->get("https://apitest.bpi.com.ph/bpi/api/accounts/transactionalAccounts", $token)->json();
+
+        // dd($response);
+
         $key = "-----BEGIN PUBLIC KEY-----
         MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4e89sZv/VJztgxxrzdrI
         Oic0sEVkcHOuW5Urpgwo+hT8/iG40C269OC8uyC2527bYmVoslMtfbRuoc3q0sOc
@@ -38,22 +49,17 @@ class BPIService implements IBPIService
         5QIDAQAB
         -----END PUBLIC KEY-----";
         
-        // return $decoded = JWT::decode($response['token'], $key, array('HS256'));
+        $factory = new \Tmilos\JoseJwt\Context\DefaultContextFactory();
+        $context = $factory->get();
 
-        $jwt = Load::jwe($response['token']) // We want to load and decrypt the token in the variable $token
-            ->algs(['RSA-OAEP-256', 'RSA-OAEP']) // The key encryption algorithms allowed to be used
-            ->encs(['A256GCM']) // The content encryption algorithms allowed to be used
-            ->exp()
-            ->iat()
-            ->nbf()
-            ->aud('audience1')
-            ->iss('issuer')
-            ->sub('subject')
-            ->jti('0123456789')
-            ->key($key) // Key used to decrypt the token
-            ->run(); // Go!
+        // RSA_OAEP - A128CBC-HS256
+        // $token = \Tmilos\JoseJwt\Jwe::encode($context, $response['token'], $key, \Tmilos\JoseJwt\Jwe\JweAlgorithm::RSA_OAEP, \Tmilos\JoseJwt\Jwe\JweEncryption::A128CBC_HS256, []);
 
-            dd($jwt);
-;
+        $myPrivateKey = openssl_get_privatekey($key, '');
+        // $partyPublicKey = openssl_get_publickey($key, '');
+
+        // decode
+        $payload = \Tmilos\JoseJwt\Jwe::decode($context, $response['token'], $myPrivateKey);
+        dd($payload);
     }
 }
