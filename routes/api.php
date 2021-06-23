@@ -42,6 +42,8 @@ use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\MyTaskController;
+use App\Http\Controllers\AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -187,6 +189,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResources([
             '/types' => IdTypeController::class,
         ]);
+        Route::get('/farmers', [IdTypeController::class, 'farmersID']);
     });
 
     Route::middleware(['decrypt.request'])->group(function () {
@@ -231,7 +234,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
-
+            Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
+            Route::post('/transaction/histories/count/pdf', [UserTransactionHistoryController::class, 'downloadCountTotalAmountEachUserPDF']);
+            Route::post('/transaction/histories/count/csv', [UserTransactionHistoryController::class, 'downloadCountTotalAmountEachUserCSV']);
         });
 
         Route::prefix('/buy/load')->name('buy.load.')->group(function () {
@@ -258,6 +263,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
         Route::get('/bayad/process/pending', [PayBillsController::class, 'processPending']);
+        Route::get('/list/billers', [PayBillsController::class, 'getListOfBillers']);
+        Route::get('/list/billers/pdf', [PayBillsController::class, 'downloadListOfBillersPDF']);
+        Route::get('/list/billers/csv', [PayBillsController::class, 'downloadListOfBillersCSV']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->name('notifications.')->group(function () {
@@ -307,6 +315,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
+    });
+
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+    });
+
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/mytask', [MyTaskController::class, 'index']);
     });
 
     Route::prefix('drcr/memos')->middleware(['decrypt.request'])->group(function () {

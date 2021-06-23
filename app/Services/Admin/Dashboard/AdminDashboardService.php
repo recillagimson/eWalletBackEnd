@@ -1,0 +1,92 @@
+<?php
+
+namespace App\Services\Admin\Dashboard;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\App;
+use Illuminate\Validation\ValidationException;
+
+//Repository
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\InAddMoney\IInAddMoneyRepository;
+use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
+use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
+use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
+use App\Repositories\Send2Bank\IOutSend2BankRepository;
+use App\Repositories\DRCRMemo\IDRCRMemoRepository;
+
+class AdminDashboardService implements IAdminDashboardService
+{
+    public IUserAccountRepository $userDetail;
+    public IInAddMoneyRepository $addMoney;
+    public IInReceiveMoneyRepository $receiveMoney;
+    public IOutBuyLoadRepository $outBuyLoad;
+    public IOutPayBillsRepository $outPayBills;
+    public IOutSendMoneyRepository $outSendMoney;
+    public IOutSend2BankRepository $outSend2Bank;
+    public IDRCRMemoRepository $drMemo;
+
+    public function __construct(IUserAccountRepository $userdetail, 
+    IInAddMoneyRepository $addMoney, 
+    IInReceiveMoneyRepository $receiveMoney, 
+    IOutBuyLoadRepository $outBuyLoad,
+    IOutPayBillsRepository $outPayBills,
+    IOutSendMoneyRepository $outSendMoney,
+    IOutSend2BankRepository $outSend2Bank,
+    IDRCRMemoRepository $drMemo)
+
+    {
+        $this->userDetail = $userdetail;
+        $this->addMoney = $addMoney;
+        $this->receiveMoney = $receiveMoney;
+        $this->outBuyLoad = $outBuyLoad;
+        $this->outPayBills = $outPayBills;
+        $this->outSendMoney = $outSendMoney;
+        $this->outSend2Bank = $outSend2Bank;
+        $this->drMemo = $drMemo;
+    }
+
+    public function dashboard(string $UserID)
+    {
+        //Get user count
+        $UserDetails = $this->userDetail->getUserCount();
+        //Get Total cashin
+        $totalCashin = $this->addMoney->getTotalAddMoney();
+        //Get Total received money
+        $totalReceiveMoney = $this->receiveMoney->getTotalReceiveMoney();
+        //TOTAL SUM (add money + received money)
+        $TotalAmount = $totalCashin + $totalReceiveMoney;
+        //Total BuyLoad
+        $TotalBuyLoad = $this->outBuyLoad->totalBuyload();
+        //Total paybills
+        $TotalPayBills = $this->outPayBills->totalPayBills();
+        //Total Send Money
+        $TotalSendMoney = $this->outSendMoney->totalSendMoney();
+        //Total Send to Bank
+        $TotalSend2Bank = $this->outSend2Bank->totalSend2Bank();
+        //Total Debit Memo
+        $TotalDRMemo = $this->drMemo->totalDRMemo();
+        
+        //Total Disbursement
+        $TotalDisbursement = $TotalBuyLoad + $TotalPayBills + $TotalSendMoney + $TotalSend2Bank + $TotalDRMemo;
+        
+
+        if($UserDetails)
+        {
+            $arr = [
+                'customer_count'    =>  $UserDetails,
+                'total_transaction' =>  '0',
+                'total_cashin'      =>  $TotalAmount,
+                'total_disbursement'    =>  $TotalDisbursement,
+            ];
+
+            return $arr;
+        }
+        else
+        {
+            throw ValidationException::withMessages([
+                'user_details' => "Current user's details can't be found."
+            ]);
+        }
+    }
+}

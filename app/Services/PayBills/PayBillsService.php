@@ -24,6 +24,8 @@ use App\Traits\Errors\WithPayBillsErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Transactions\PayBillsHelpers;
 use Illuminate\Validation\ValidationException;
+use App\Services\Utilities\CSV\ICSVService;
+use Carbon\Carbon;
 
 class PayBillsService implements IPayBillsService
 {
@@ -41,8 +43,10 @@ class PayBillsService implements IPayBillsService
     private IOutPayBillsRepository $outPayBillsRepository;
     private IUserTransactionHistoryRepository $transactionHistories;
     private INotificationService $notificationService;
+    private ICSVService $csvService;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService,
+                                ICSVService $csvService){
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
@@ -54,6 +58,7 @@ class PayBillsService implements IPayBillsService
         $this->outPayBillsRepository = $outPayBillsRepository;
         $this->transactionHistories = $transactionHistories;
         $this->notificationService = $notificationService;
+        $this->csvService = $csvService;
     }
 
     
@@ -195,5 +200,28 @@ class PayBillsService implements IPayBillsService
             'failed_count' => $failCount
         ];
     }    
+
+    public function downloadListOfBillersCSV()
+    {
+        $billers = $this->outPayBillsRepository->getAllBillers();
+        $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name;
+        $columns = array('Customer Account ID', 'Customer Name', 'Reference Number', 'Date of Transaction', 'Biller', 'Amount', 'Status');
+        $datas = [];
+
+        foreach ($billers as $biller) {
+            array_push($datas, [
+                'Customer Account ID'  => $biller->user_account_id,
+                'Customer Name' => ucwords($biller->user_detail->first_name) . ' ' . ucwords($biller->user_detail->last_name),
+                'Reference Number' => $biller->reference_number,
+                'Date of Transaction'  => Carbon::parse($biller->transaction_date)->format('F d, Y G:i A'),
+                'Biller'  => $biller->billers_name,
+                'Amount'  => $biller->total_amount,
+                'Status'  => ($biller->status) ? 'Paid' : 'Not Paid',
+
+            ]);
+        }
+
+        return $this->csvService->generateCSV($datas, $file_name, $columns);
+    }
     
 }
