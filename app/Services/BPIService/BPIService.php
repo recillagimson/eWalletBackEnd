@@ -2,20 +2,13 @@
 
 namespace App\Services\BPIService;
 
-use Jose\Component\Core\JWK;
-use Jose\Component\Core\AlgorithmManager;
+use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\API\IApiService;
-use Jose\Component\Encryption\JWEDecrypter;
-use Jose\Component\Encryption\Compression\Deflate;
-use Jose\Component\Core\Converter\StandardConverter;
-use Jose\Component\Encryption\Serializer\CompactSerializer;
-use Jose\Component\Encryption\Serializer\JWESerializerManager;
-use Jose\Component\Encryption\Algorithm\KeyEncryption\RSAOAEP256;
-use Jose\Component\Encryption\Compression\CompressionMethodManager;
-use Jose\Component\Encryption\Algorithm\ContentEncryption\A128CBCHS256;
+use App\Traits\Errors\WithUserErrors;
 
 class BPIService implements IBPIService
 {
+    use WithUserErrors;
 
     private IApiService $apiService;
 
@@ -34,32 +27,40 @@ class BPIService implements IBPIService
     }
 
     public function getAccounts(string $token) {
+
         $token = $this->getHeaders($token);
         $response = $this->apiService->get("https://apitest.bpi.com.ph/bpi/api/accounts/transactionalAccounts", $token)->json();
 
-        // dd($response);
+        if($response && isset($response['token'])) {
+            $jwt = $this->bpiDecryptionJWE($response['token']);
+            if($jwt) {
+                return $this->bpiDecryptionJWT($jwt);
+            }
+        }
 
-        $key = "-----BEGIN PUBLIC KEY-----
-        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4e89sZv/VJztgxxrzdrI
-        Oic0sEVkcHOuW5Urpgwo+hT8/iG40C269OC8uyC2527bYmVoslMtfbRuoc3q0sOc
-        EZKR8vJWsCFh2VYtOPg2ZfImkotqE0QqaZHoC4KcWYTf7kNvbIyRxTUY4+PkS0lf
-        d+0lEYu5WFvl9ocz8PO+6KnaTzW738z9DR9+L8/2Fl6yfLHvYqGkADCAubn0Zg3L
-        WJNxWVsa0kUEjKBmHVO9b9rXkV2qsere9Dqu4QrOGamgT5aa/FWgUvWwQhcHNEgK
-        bax/kn3iQ6nNavBITw4mHWItMVmzkozq8BsxsxA17GkGUVwqSjzMfM7gGpw3lAZ6
-        5QIDAQAB
-        -----END PUBLIC KEY-----";
-        
+        // THROW ERROR
+        $this->bpiTokenInvalid();
+    }
+
+    private function bpiDecryptionJWE(string $payload) {        
         $factory = new \Tmilos\JoseJwt\Context\DefaultContextFactory();
         $context = $factory->get();
 
-        // RSA_OAEP - A128CBC-HS256
-        // $token = \Tmilos\JoseJwt\Jwe::encode($context, $response['token'], $key, \Tmilos\JoseJwt\Jwe\JweAlgorithm::RSA_OAEP, \Tmilos\JoseJwt\Jwe\JweEncryption::A128CBC_HS256, []);
+        $pri = Storage::disk('local')->get('keys/squid.ph.key');
+        $myPrivateKey = openssl_get_privatekey($pri, '');
 
-        $myPrivateKey = openssl_get_privatekey($key, '');
-        // $partyPublicKey = openssl_get_publickey($key, '');
+        $payload = \Tmilos\JoseJwt\Jwe::decode($context, $payload, $myPrivateKey);
+        return $payload;
+    }
 
-        // decode
-        $payload = \Tmilos\JoseJwt\Jwe::decode($context, $response['token'], $myPrivateKey);
-        dd($payload);
+    private function bpiDecryptionJWT(string $payload) {
+        $factory = new \Tmilos\JoseJwt\Context\DefaultContextFactory();
+        $context = $factory->get();
+
+        $pub = Storage::disk('local')->get('keys/squid.ph.pub');
+        $partyPublicKey = openssl_get_publickey($pub);
+
+        $payload = \Tmilos\JoseJwt\JWT::decode($context, $payload, $partyPublicKey);
+        return $payload;
     }
 }
