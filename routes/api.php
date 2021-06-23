@@ -43,6 +43,7 @@ use App\Http\Controllers\UserUtilities\UserProfileController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MyTaskController;
+use App\Http\Controllers\AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -314,6 +315,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
+    });
+
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/dashboard', [AdminDashboardController::class, 'index']);
     });
 
     Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
