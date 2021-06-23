@@ -98,6 +98,8 @@ use App\Services\Utilities\CSV\ICSVService;
 use App\Services\Utilities\CSV\CSVService;
 use App\Services\MyTask\MyTaskService;
 use App\Services\MyTask\IMyTaskService;
+use App\Services\Admin\Dashboard\AdminDashboardService;
+use App\Services\Admin\Dashboard\IAdminDashboardService;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -151,6 +153,9 @@ class AppServiceProvider extends ServiceProvider
 
         //Dashboard
         $this->app->bind(IDashboardService::class, DashboardService::class);
+
+        //Admin Dashboard
+        $this->app->bind(IAdminDashboardService::class, AdminDashboardService::class);
 
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
