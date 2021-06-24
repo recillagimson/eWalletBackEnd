@@ -5,6 +5,7 @@ namespace App\Repositories\Tier;
 use App\Models\TierApproval;
 use App\Repositories\Repository;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class TierApprovalRepository extends Repository implements ITierApprovalRepository
 {
@@ -63,5 +64,10 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
         return ValidationException::withMessages([
             'tier_approval_not_found' => 'Tier Approval Request not found'
         ]);
+    }
+
+    public function getTierApproval()
+    {
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','pending')->count('status');
     }
 }
