@@ -43,4 +43,8 @@ class TempUserDetailRepository extends Repository implements ITempUserDetailRepo
         return $result;
     }
 
+    public function getTempUserDetails()
+    {
+        return $this->model->where('status','=','pending')->where('created_at','<=',Carbon::now()->subDay())->count('status');
+    }
 }

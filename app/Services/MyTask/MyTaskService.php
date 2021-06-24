@@ -6,19 +6,19 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 
 //Repository
-use App\Repositories\TempUserDetail\ITempUserDetailRepository;
+use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 use App\Repositories\Tier\ITierApprovalRepository;
-use App\Repositories\DRCRMemo\IDRCRMemoRepository;
+use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 
 class MyTaskService implements IMyTaskService
 {
     public ITempUserDetailRepository $tempUserDetails;
     public ITierApprovalRepository $tierApproval;
-    public IDRCRMemoRepository $drcrMemo;
+    public IDrcrMemoRepository $drcrMemo;
 
     public function __construct(ITempUserDetailRepository $tempUserDetails,
     ITierApprovalRepository $tierApproval,
-    IDRCRMemoRepository $drcrMemo)
+    IDrcrMemoRepository $drcrMemo)
 
     {
         $this->tempUserDetails = $tempUserDetails;

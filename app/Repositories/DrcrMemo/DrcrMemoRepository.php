@@ -58,4 +58,14 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         }
     }
 
+    public function getDRCRMemo()
+    {
+        return $this->model->where('status','=','pending')->where('created_date','<=',Carbon::now()->subDay())->count('status');
+    }
+
+    public function getPerUser(string $UserID)
+    {
+        return $this->model->where('created_by','=',$UserID)->where('status','=','pending')->where('created_date','<=',Carbon::now()->subDay())->count('status');
+    }
+
 }
