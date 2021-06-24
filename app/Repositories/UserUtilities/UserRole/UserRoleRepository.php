@@ -33,4 +33,13 @@ class UserRoleRepository extends Repository implements IUserRoleRepository
 
         return $records;
     }
+
+    public function getUserRolesAndPermissionByUserAccountId(string $userAccountId) {
+        $roles =$this->model
+            ->with(['role', 'role.permissions'])
+            ->where('user_account_id', $userAccountId)
+            ->get();
+            
+        return $roles;
+    }
 }
