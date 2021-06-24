@@ -7,16 +7,9 @@ use App\Http\Requests\DrcrMemo\ApprovalRequest;
 use App\Http\Requests\DrcrMemo\DrcrMemoRequest;
 use App\Http\Requests\DrcrMemo\GetUserRequest;
 use App\Http\Requests\DrcrMemo\ShowRequest;
-use App\Http\Requests\PayBills\PayBillsRequest;
-use App\Models\DrcrMemos;
-use App\Models\UserAccount;
-use App\Services\DrcrMemo\DrcrMemoService;
 use App\Services\DrcrMemo\IDrcrMemoService;
-use App\Services\PayBills\IPayBillsService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
-use Request;
-use Illuminate\Http\Response;
 
 class DrcrMemoController extends Controller
 {
@@ -32,7 +25,7 @@ class DrcrMemoController extends Controller
 
 
     /**
-     * Get all the list of DRCR Memo 
+     * Get all the list of DRCR Memo
      *
      * @param DrcrMemoRequest $request
      * @return JsonResponse
@@ -59,7 +52,7 @@ class DrcrMemoController extends Controller
 
 
     /**
-     * Get's user by using account number 
+     * Get's user by using account number
      *
      * @param DrcrMemoRequest $request
      * @param object &getUser
@@ -88,7 +81,7 @@ class DrcrMemoController extends Controller
 
 
     /**
-     * Store Drcr memo 
+     * Store Drcr memo
      *
      * @param DrcrMemoRequest $request
      * @param object &store
@@ -97,13 +90,13 @@ class DrcrMemoController extends Controller
      */
     public function store(DrcrMemoRequest $request): JsonResponse
     {
-        $data = $request->post();
+        $data = $request->validated();
         $store = $this->drcrMemoService->store($request->user(), $data);
         return $this->responseService->successResponse($store->toArray(), SuccessMessages::success);
     }
 
     /**
-     * Approval of Drcr Memo 
+     * Approval of Drcr Memo
      *
      * @param ApprovalRequest $request
      * @param array $data
