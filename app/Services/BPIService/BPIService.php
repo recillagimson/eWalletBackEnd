@@ -2,6 +2,8 @@
 
 namespace App\Services\BPIService;
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 use App\Enums\ReferenceNumberTypes;
 use App\Traits\Errors\WithUserErrors;
 use Illuminate\Support\Facades\Storage;
@@ -50,17 +52,40 @@ class BPIService implements IBPIService
     public function fundTopUp(Array $array, string $token) {
         $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaWebBank);
         $token = $this->getHeaders($token);
-        $array['merchantTransactionReference'] = $refNo;
-        // $response = $this->apiService->post(env('BPI_FUND_TOP_UP_ENDPOINT'), $token, $array)->json();
 
+        $array['merchantTransactionReference'] = $refNo;
+
+        $array['jti'] = Str::uuid()->toString();
+        $array['iss'] = 'PARTNER';
+        $array['sub'] = 'fundTopUp';
+        $array['aud'] = 'BPI';
+        $array['exp'] = Carbon::now()->addMinutes(20)->timestamp;
+        $array['iat'] = Carbon::now()->addMinutes(20)->timestamp;
+
+        dd($array);
+        // "jti": "a726ed2d-186f-4153-bfac-d98d45943084",
+        // "iss": "PARTNER",
+        // "sub": "fundTopUp",
+        // "aud": "BPI",
+        // "exp": 1559178585,
+        // "iat": 1559177385
+        // $response = $this->apiService->post(env('BPI_FUND_TOP_UP_ENDPOINT'), $token, $array)->json();
         $jwt = $this->bpiEncodeJWT($array);
         $jwe = $this->bpiEncodeJWE($jwt);
+
+        // Send API request
+        $response = $this->apiService->post(env('BPI_FUND_TOP_UP_ENDPOINT'), ['token' => $jwe], $token)->json();
+
+
+        dd($response);
     }
 
-    public function bpiEncodeJWT(array $array) {
+    public function bpiEncodeJWT(array $payload) {
         $factory = new \Tmilos\JoseJwt\Context\DefaultContextFactory();
         $context = $factory->get();
-        $token = \Tmilos\JoseJwt\Jwt::encode($context, $array, null, \Tmilos\JoseJwt\Jws\JwsAlgorithm::NONE, []);
+        $pub = Storage::disk('local')->get('keys/squid.ph.key');
+        $token = \Tmilos\JoseJwt\Jwt::encode($context, $payload, $pub, \Tmilos\JoseJwt\Jws\JwsAlgorithm::RS256, []);
+
         return $token;
     }
 
@@ -69,16 +94,10 @@ class BPIService implements IBPIService
         $context = $factory->get();
 
         $pub = Storage::disk('local')->get('keys/squid.ph.pub');
-        // $myPubKey = openssl_get_privatekey($pub, '');
-        $pub = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4e89sZv/VJztgxxrzdrI
-        Oic0sEVkcHOuW5Urpgwo+hT8/iG40C269OC8uyC2527bYmVoslMtfbRuoc3q0sOc
-        EZKR8vJWsCFh2VYtOPg2ZfImkotqE0QqaZHoC4KcWYTf7kNvbIyRxTUY4+PkS0lf
-        d+0lEYu5WFvl9ocz8PO+6KnaTzW738z9DR9+L8/2Fl6yfLHvYqGkADCAubn0Zg3L
-        WJNxWVsa0kUEjKBmHVO9b9rXkV2qsere9Dqu4QrOGamgT5aa/FWgUvWwQhcHNEgK
-        bax/kn3iQ6nNavBITw4mHWItMVmzkozq8BsxsxA17GkGUVwqSjzMfM7gGpw3lAZ6
-        5QIDAQAB";
-        $token = \Tmilos\JoseJwt\Jwe::encode($context, $payload, $pub, \Tmilos\JoseJwt\Jwe\JweAlgorithm::DIR, \Tmilos\JoseJwt\Jwe\JweEncryption::A128CBC_HS256, []);
-        dd($token);
+        $myPubKey = openssl_get_publickey($pub);
+        $token = \Tmilos\JoseJwt\Jwe::encode($context, $payload, $myPubKey, \Tmilos\JoseJwt\Jwe\JweAlgorithm::RSA_OAEP, \Tmilos\JoseJwt\Jwe\JweEncryption::A128CBC_HS256, []);
+
+        return $token;
     }
 
     private function bpiDecryptionJWE(string $payload) {        
