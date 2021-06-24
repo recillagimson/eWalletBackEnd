@@ -18,4 +18,13 @@ class BPIController extends Controller
     public function getAccounts(Request $request) {
         return $this->bpiService->getAccounts($request->token);
     }
+
+    public function fundTopUp(Request $request) {
+        $data = [
+            'accountNumberToken' => $request->token,
+            'amount' => $request->amount,
+            'remarks' => $request->remarks
+        ];
+        return $this->bpiService->fundTopUp($data, $request->token);
+    }
 }
