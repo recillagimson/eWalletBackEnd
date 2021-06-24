@@ -12,5 +12,5 @@ interface ITierApprovalRepository extends IRepository
     public function getPendingApprovalRequest();
     public function getPendingApprovalRequestByUserAccountId(string $id);
     public function showTierApproval(TierApproval $tierApproval);
-    public function getPendingApprovalRequestByUserAccountId(string $id);
+    public function getTierApproval();
 }

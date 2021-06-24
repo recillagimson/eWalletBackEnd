@@ -22,6 +22,7 @@ use App\Repositories\UserUtilities\NatureOfWork\INatureOfWorkRepository;
 use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Enums\TempUserDetailStatuses;
 
 class UserProfileService implements IUserProfileService
 {
@@ -129,6 +130,13 @@ class UserProfileService implements IUserProfileService
         $dirty = $this->checkDirty($userAccount, $request);
 
         if ($dirty) {
+            $latestTemp = $this->tempUserDetail->getLatestByUserId($userAccount->id);
+            if ($latestTemp && $latestTemp->status == TempUserDetailStatuses::pending) {
+                throw ValidationException::withMessages([
+                    'user_detail_update_pending' => 'User Account has pending update request.'
+                ]);
+            }
+
             return [
                 "status" => 1,
                 "data" => $this->tempUserDetail->create($request)
@@ -146,13 +154,14 @@ class UserProfileService implements IUserProfileService
     public function supervisorUpdateUserProfile($id, array $request, object $user) 
     {
         $userAccount = $this->userAccountRepository->get($id);
-        $userDetail = $user->profile;
-
+        
         if(!$userAccount) {
             throw ValidationException::withMessages([
                 'user_account_not_found' => 'User Account not found'
             ]);
         }
+
+        $userDetail = $this->userDetailRepository->getByUserId($userAccount->id);
 
         if(!$userDetail) {
             throw ValidationException::withMessages([
@@ -160,11 +169,13 @@ class UserProfileService implements IUserProfileService
             ]);
         }
 
-        if ($request['tier_id']) {
+        if (isset($request['tier_id']) && $request['tier_id']) {
             $this->validateTier($userAccount, $request['tier_id']);
         }
         
         $request = $this->addUserInput($request, $user, $userAccount);
+
+        $this->tempUserDetail->denyByUserId($userAccount->id, $user);
 
         $this->userAccountRepository->update($userAccount, $request);
         $this->userDetailRepository->update($userDetail, $request);
@@ -181,7 +192,7 @@ class UserProfileService implements IUserProfileService
         $request['reviewed_by'] = $user->id;
         $request['reviewed_date'] = Carbon::now();
         $request['user_account_id'] = $userAccount->id;
-        $request['status'] = 0; //Pending
+        $request['status'] = TempUserDetailStatuses::pending; //Pending
 
         return $request;
     }
