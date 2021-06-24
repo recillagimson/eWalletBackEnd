@@ -6,8 +6,8 @@ namespace App\Enums;
 
 class TempUserDetailStatuses
 {
-    const pending = 0;
-    const approved = 1;
-    const denied = 2;
+    const pending = 'PENDING';
+    const approved = 'APPROVED';
+    const denied = 'DENIED';
 
 }
