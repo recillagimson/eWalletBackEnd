@@ -69,7 +69,7 @@ class DrcrMemoController extends Controller
      * @param ShowRequest $request
      * @return JsonResponse
      */
-    public function showPending(ShowRequest $request)//: JsonResponse
+    public function showPending(ShowRequest $request): JsonResponse
     {
         return $this->drcrMemoService->showPending($request->user());
         //return $this->responseService->successResponse($showPending, SuccessMessages::success);
