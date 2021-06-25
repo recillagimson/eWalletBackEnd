@@ -23,11 +23,9 @@ class DrcrMemoController extends Controller
     }
 
 
-
     /**
      * Get all the list of DRCR Memo
      *
-     * @param DrcrMemoRequest $request
      * @return JsonResponse
      */
     public function index() : JsonResponse
@@ -40,7 +38,7 @@ class DrcrMemoController extends Controller
     /**
      * Show data using DRCR Memo id
      *
-     * @param DrcrMemoRequest $request
+     * @param ShowRequest $request
      * @return JsonResponse
      */
     public function show(ShowRequest $request): JsonResponse
@@ -54,9 +52,7 @@ class DrcrMemoController extends Controller
     /**
      * Get's user by using account number
      *
-     * @param DrcrMemoRequest $request
-     * @param object &getUser
-     * @param array $accountNo
+     * @param GetUserRequest $request
      * @return JsonResponse
      */
     public function getUser(GetUserRequest $request): JsonResponse
@@ -70,7 +66,7 @@ class DrcrMemoController extends Controller
     /**
      * Show all pending status
      *
-     * @param DrcrMemoRequest $request
+     * @param ShowRequest $request
      * @return JsonResponse
      */
     public function showPending(ShowRequest $request)//: JsonResponse
@@ -84,8 +80,6 @@ class DrcrMemoController extends Controller
      * Store Drcr memo
      *
      * @param DrcrMemoRequest $request
-     * @param object &store
-     * @param array $data
      * @return JsonResponse
      */
     public function store(DrcrMemoRequest $request): JsonResponse
@@ -99,7 +93,6 @@ class DrcrMemoController extends Controller
      * Approval of Drcr Memo
      *
      * @param ApprovalRequest $request
-     * @param array $data
      * @return JsonResponse
      */
     public function approval(ApprovalRequest $request): JsonResponse

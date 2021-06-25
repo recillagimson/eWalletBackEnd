@@ -4,16 +4,14 @@ namespace App\Repositories\DrcrMemo;
 
 use App\Enums\DrcrStatus;
 use App\Enums\TransactionStatuses;
-use App\Models\DrcrMemos;
+use App\Models\DrcrMemo;
 use App\Models\UserAccount;
 use App\Repositories\Repository;
-use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use Carbon\Carbon;
-use Composer\DependencyResolver\Transaction;
 
 class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 {
-    public function __construct(DrcrMemos $model)
+    public function __construct(DrcrMemo $model)
     {
         parent::__construct($model);
     }

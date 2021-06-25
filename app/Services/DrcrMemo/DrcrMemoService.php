@@ -13,28 +13,31 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithDrcrMemoErrors;
-use Carbon\Carbon;
 
 class DrcrMemoService implements IDrcrMemoService
 {
-  use WithDrcrMemoErrors;
-  
-  private IDrcrMemoRepository $drcrMemoRepository;
-  private IReferenceNumberService $referenceNumberService;
-  private IUserAccountRepository $userAccountRepository;
-  private IUserBalanceInfoRepository $userBalanceRepository;
+    use WithDrcrMemoErrors;
 
-  public function __construct(IDrcrMemoRepository $drcrMemoRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IUserAccountRepository $userAccountRepository,IUserBalanceInfoRepository $userBalanceRepository) {
-    $this->drcrMemoRepository = $drcrMemoRepository;
-    $this->referenceNumberService = $referenceNumberService;
-    $this->userAccountRepository = $userAccountRepository;
-    $this->userBalanceRepository = $userBalanceRepository;
-  }
+    private IDrcrMemoRepository $drcrMemoRepository;
+    private IReferenceNumberService $referenceNumberService;
+    private IUserAccountRepository $userAccountRepository;
+    private IUserBalanceInfoRepository $userBalanceRepository;
 
-  public function getList(UserAccount $user)
-  {
-    return $this->drcrMemoRepository->getListByCreatedBy($user);
-  }
+    public function __construct(IDrcrMemoRepository $drcrMemoRepository,
+                                IReferenceNumberService $referenceNumberService,
+                                IUserAccountRepository $userAccountRepository,
+                                IUserBalanceInfoRepository $userBalanceRepository)
+    {
+        $this->drcrMemoRepository = $drcrMemoRepository;
+        $this->referenceNumberService = $referenceNumberService;
+        $this->userAccountRepository = $userAccountRepository;
+        $this->userBalanceRepository = $userBalanceRepository;
+    }
+
+    public function getList(UserAccount $user)
+    {
+        return $this->drcrMemoRepository->getListByCreatedBy($user);
+    }
 
 
   public function show(string $referenceNumber)
@@ -61,7 +64,7 @@ class DrcrMemoService implements IDrcrMemoService
 
 
   public function store(UserAccount $user, $data)
-  { 
+  {
     $customer = $this->getUserByAccountNumber($data);
     if ($data['typeOfMemo'] == ReferenceNumberTypes::DR) {
       $isEnough = $this->checkAmount($data, $customer->id);
@@ -75,7 +78,7 @@ class DrcrMemoService implements IDrcrMemoService
   {
     $drcrMemo = $this->drcrMemoRepository->getByReferenceNumber($data['referenceNumber']);
     $data['amount'] = $drcrMemo->amount;
-    
+
     $isEnough = $this->checkAmount($data, $drcrMemo->user_account_id);
     if (!$isEnough) $this->insuficientBalance();
 
@@ -88,7 +91,7 @@ class DrcrMemoService implements IDrcrMemoService
       }
     }
 
-    if($this->drcrMemoRepository->updateDrcr($user, $data)) return ['status' => 'success']; 
+      if ($this->drcrMemoRepository->updateDrcr($user, $data)) return ['status' => 'success'];
     return ['status' => 'failed'];
   }
 
@@ -99,28 +102,28 @@ class DrcrMemoService implements IDrcrMemoService
   private function debitMemo($userID, $amount)
   {
     $balance = $this->userBalanceRepository->getUserBalance($userID);
-    $balance -= $amount;
-    $this->userBalanceRepository->updateUserBalance($userID, $balance);
+      $balance -= $amount;
+      $this->userBalanceRepository->updateUserBalance($userID, $balance);
   }
 
-  private function creditMemo($userID, $amount)
-  {
-    $balance = $this->userBalanceRepository->getUserBalance($userID);
-    $balance += $amount;
-    $this->userBalanceRepository->updateUserBalance($userID, $balance);
-  }
-  
-  private function checkAmount($data, $customerID)
-  {
-    $balance = $this->userBalanceRepository->getUserBalance($customerID);
-    if ($balance >= $data['amount']) return true;
-  }
+    private function creditMemo($userID, $amount)
+    {
+        $balance = $this->userBalanceRepository->getUserBalance($userID);
+        $balance += $amount;
+        $this->userBalanceRepository->updateUserBalance($userID, $balance);
+    }
 
-  private function setTypeOfMemo($data)
-  {
-    if($data['typeOfMemo'] == ReferenceNumberTypes::DR) return ReferenceNumberTypes::DR;
-    return ReferenceNumberTypes::CR; 
-  }
+    private function checkAmount($data, $customerID)
+    {
+        $balance = $this->userBalanceRepository->getUserBalance($customerID);
+        if ($balance >= $data['amount']) return true;
+    }
+
+    private function setTypeOfMemo($data)
+    {
+        if ($data['typeOfMemo'] == ReferenceNumberTypes::DR) return ReferenceNumberTypes::DR;
+        return ReferenceNumberTypes::CR;
+    }
 
   private function setTransactionCategory($data)
   {
@@ -150,10 +153,8 @@ class DrcrMemoService implements IDrcrMemoService
       'category' => $data['category'],
       'description' => $data['description'],
       'status' => TransactionStatuses::pending,
-      'user_created' => $user->id,
-      'created_by' => $user->id,
-      'created_date' => Carbon::now(),
+        'user_created' => $user->id
     ]);
   }
-  
+
 }
