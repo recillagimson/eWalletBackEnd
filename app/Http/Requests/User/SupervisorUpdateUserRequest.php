@@ -28,7 +28,7 @@ class SupervisorUpdateUserRequest extends FormRequest
     {
         $rules = [
             'tier_id' => [
-                'required', 
+                'nullable', 
                 'exists:tiers,id'
             ],
             'last_name' => [

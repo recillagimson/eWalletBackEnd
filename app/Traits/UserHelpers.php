@@ -21,12 +21,12 @@ trait UserHelpers
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
     }
 
-    private function getEmailField(Request $request): string
+    private function getEmailField(Request $request): ?string
     {
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : null;
     }
 
-    private function getMobileField(Request $request): string
+    private function getMobileField(Request $request): ?string
     {
         return $request->has(UsernameTypes::MobileNumber) ? UsernameTypes::MobileNumber : null;
     }

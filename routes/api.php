@@ -43,6 +43,7 @@ use App\Http\Controllers\UserUtilities\UserProfileController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MyTaskController;
+use App\Http\Controllers\AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -318,6 +319,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+    });
+
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
         Route::get('/mytask', [MyTaskController::class, 'index']);
     });
 
@@ -342,6 +347,7 @@ Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->
     Route::get('/', [RoleController::class, 'index'])->name('list');
     Route::post('/', [RoleController::class, 'store'])->name('store');
     Route::get('/{role}', [RoleController::class, 'show'])->name('show');
+    Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show');
     Route::put('/{role}', [RoleController::class, 'update'])->name('update');
     Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
 

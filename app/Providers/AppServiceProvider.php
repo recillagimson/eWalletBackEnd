@@ -100,6 +100,9 @@ use App\Services\MyTask\MyTaskService;
 use App\Services\MyTask\IMyTaskService;
 use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
 use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
+use App\Services\Admin\Dashboard\AdminDashboardService;
+use App\Services\Admin\Dashboard\IAdminDashboardService;
+
 
 class AppServiceProvider extends ServiceProvider
 {

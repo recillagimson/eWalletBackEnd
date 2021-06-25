@@ -32,7 +32,7 @@ class MyTaskController extends Controller
     {
         $UserID = $request->user()->id;
         $MyTask = $this->mytaskService->MyTask($UserID);
-        return $this->responseService->successResponse($MyTask->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($MyTask, SuccessMessages::success);
         //return response($MyTask);
     }
 }
