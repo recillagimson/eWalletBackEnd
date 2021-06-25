@@ -98,7 +98,8 @@ use App\Services\Utilities\CSV\ICSVService;
 use App\Services\Utilities\CSV\CSVService;
 use App\Services\MyTask\MyTaskService;
 use App\Services\MyTask\IMyTaskService;
-
+use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
+use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -152,6 +153,9 @@ class AppServiceProvider extends ServiceProvider
         //Dashboard
         $this->app->bind(IDashboardService::class, DashboardService::class);
 
+        //Foreign Exchange
+        $this->app->bind(IForeignExchangeRateService::class, ForeignExchangeRateService::class);
+
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
         // Push Notification
@@ -182,7 +186,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Buy Load Service
         $this->app->bind(IBuyLoadService::class, BuyLoadService::class);
-        
+
         // eKYC Service
         $this->app->bind(IKYCService::class, KYCService::class);
 

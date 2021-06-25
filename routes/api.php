@@ -314,6 +314,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
+        Route::get('currencies/rates', [DashboardController::class, 'getForeignCurrencyRates']);
     });
 
     Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
