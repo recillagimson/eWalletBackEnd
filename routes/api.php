@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AddMoneyController;
+use App\Http\Controllers\Admin\MyTaskController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
@@ -42,8 +44,6 @@ use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\MyTaskController;
-use App\Http\Controllers\AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -326,8 +326,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('drcr/memos')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/', [DrcrMemoController::class, 'index']);
-        Route::post('/', [DrcrMemoController::class, 'store']);
+        Route::get('', [DrcrMemoController::class, 'index']);
+        Route::post('', [DrcrMemoController::class, 'store']);
         Route::get('/show/{referenceNumber}', [DrcrMemoController::class, 'show']);
         Route::get('/show/pending/status', [DrcrMemoController::class, 'showPending']);
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);

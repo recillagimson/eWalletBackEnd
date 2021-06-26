@@ -42,7 +42,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             return $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::A,
                 'approved_by' => $user->id,
-                'approved_date' => Carbon::now(),
+                'approved_at' => Carbon::now(),
                 'user_updated' => $user->id
             ]);
         }
@@ -50,7 +50,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             return $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::D,
                 'declined_by' => $user->id,
-                'declined_date' => Carbon::now(),
+                'declined_at' => Carbon::now(),
                 'user_updated' => $user->id
             ]);
         }
@@ -58,12 +58,12 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 
     public function getDRCRMemo()
     {
-        return $this->model->where('status','=','pending')->where('created_date','<=',Carbon::now()->subDay())->count('status');
+        return $this->model->where('status', '=', 'pending')->where('created_at', '<=', Carbon::now()->subDay())->count('status');
     }
 
     public function getPerUser(string $UserID)
     {
-        return $this->model->where('created_by','=',$UserID)->where('status','=','pending')->where('created_date','<=',Carbon::now()->subDay())->count('status');
+        return $this->model->where('created_by', '=', $UserID)->where('status', '=', 'pending')->where('created_at', '<=', Carbon::now()->subDay())->count('status');
     }
 
 }
