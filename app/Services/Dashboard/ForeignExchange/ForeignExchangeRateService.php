@@ -48,9 +48,6 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
     // Get foreign exchange rates
     public function getForeignCurrencyRates()
     {
-        $api = CurrencyRatesConfig::api . CurrencyRatesConfig::currencies . '&access_key=';
-        $result = Http::get($api);
-        dd(!$result['status']);
         return $this->model->all();
     }
 }
