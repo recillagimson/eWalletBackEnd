@@ -237,6 +237,7 @@ class AuthService implements IAuthService
         $pinAboutToExpire = $latestPin ? $latestPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
 
         return [
+            'user_id' => $user->id,
             'user_token' => [
                 'access_token' => $token->plainTextToken,
                 'created_at' => $token->accessToken->created_at,

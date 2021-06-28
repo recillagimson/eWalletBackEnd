@@ -16,6 +16,7 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use App\Enums\TempUserDetailStatuses;
 
 class TempUserDetailService implements ITempUserDetailService
 {
@@ -88,7 +89,7 @@ class TempUserDetailService implements ITempUserDetailService
         }
 
 
-        $data['status'] = $status;
+        $data['status'] = $status == 1 ? TempUserDetailStatuses::approved : TempUserDetailStatuses::denied;
         
         $this->tempUserDetail->update($tempUserDetail, $data);
         
