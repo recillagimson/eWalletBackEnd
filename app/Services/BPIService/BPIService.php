@@ -68,13 +68,22 @@ class BPIService implements IBPIService
         // Send API request
         $response = $this->apiService->post(env('BPI_FUND_TOP_UP_ENDPOINT'), ['token' => $jwe], $token);
         
-        $transactionId = $response->getHeaders()['transactionId']['0'];
-        $jwt_response = $this->bpiDecryptionJWE($response['token']);
-        $response_raw = $this->bpiDecryptionJWT($jwt_response);
-        return [
-            'response' => $response_raw,
-            'transactionId' => $transactionId
-        ];
+        if($response && isset($response['token'])) {
+            $jwt = $this->bpiDecryptionJWE($response['token']);
+            if($jwt) {
+                $transactionId = $response->getHeaders()['transactionId']['0'];
+                $jwt_response = $this->bpiDecryptionJWE($response['token']);
+                $response_raw = $this->bpiDecryptionJWT($jwt_response);
+
+                return [
+                    'response' => $response_raw,
+                    'transactionId' => $transactionId
+                ];
+            }
+        }
+
+        // THROW ERROR
+        $this->bpiTokenInvalid();
     }
 
     public function otp(array $params) {
@@ -93,9 +102,16 @@ class BPIService implements IBPIService
         $jwe = $this->bpiEncodeJWE($jwt);
 
         $response = $this->apiService->post($otp_url, ['token' => $jwe], $headers);
-        $jwt_response = $this->bpiDecryptionJWE($response['token']);
-        $response_raw = $this->bpiDecryptionJWT($jwt_response);
-        return $response_raw;
+        if($response && isset($response['token'])) {
+            $jwt = $this->bpiDecryptionJWE($response['token']);
+            if($jwt) {
+                $jwt_response = $this->bpiDecryptionJWE($response['token']);
+                $response_raw = $this->bpiDecryptionJWT($jwt_response);
+                return $response_raw;
+            }
+        }
+        // THROW ERROR
+        $this->bpiTokenInvalid();
     }
 
     public function process(array $params) {
@@ -114,9 +130,18 @@ class BPIService implements IBPIService
         $jwe = $this->bpiEncodeJWE($jwt);
 
         $response = $this->apiService->post($otp_url, ['token' => $jwe], $headers);
-        $jwt_response = $this->bpiDecryptionJWE($response['token']);
-        $response_raw = $this->bpiDecryptionJWT($jwt_response);
-        return $response_raw;
+
+        if($response && isset($response['token'])) {
+            $jwt = $this->bpiDecryptionJWE($response['token']);
+            if($jwt) {
+                $jwt_response = $this->bpiDecryptionJWE($response['token']);
+                $response_raw = $this->bpiDecryptionJWT($jwt_response);
+                return $response_raw;
+            }
+        }
+        // THROW ERROR
+        $this->bpiTokenInvalid();
+
     }
 
     public function bpiEncodeJWT(array $payload) {
