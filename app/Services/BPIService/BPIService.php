@@ -97,7 +97,8 @@ class BPIService implements IBPIService
 
                 return [
                     'response' => $response_raw,
-                    'transactionId' => $transactionId
+                    'transactionId' => $transactionId,
+                    'refId' => $refNo
                 ];
             }
         }
