@@ -32,7 +32,7 @@ class BPIController extends Controller
 
     public function getAccounts(BPIGetAccountRequest $request) {
         $response = $this->bpiService->getAccounts($request->token);
-        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 
     public function fundTopUp(BPIFundTopUpRequest $request) {
