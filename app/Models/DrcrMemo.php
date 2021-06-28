@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DrcrMemos extends Model
+class DrcrMemo extends Model
 {
-    use HasFactory,  UsesUuid, SoftDeletes;
+    use HasFactory, UsesUuid, SoftDeletes;
 
     protected $table = 'drcr_memos';
 
@@ -30,11 +30,10 @@ class DrcrMemos extends Model
         'description',
         'status',
         'created_by',
-        'created_date',
         'approved_by',
-        'approved_date',
         'declined_by',
-        'declined_date',
+        'approved_at',
+        'declinet_at',
         'user_created',
         'user_updated'
     ];

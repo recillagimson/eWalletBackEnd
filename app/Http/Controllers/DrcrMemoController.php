@@ -7,16 +7,9 @@ use App\Http\Requests\DrcrMemo\ApprovalRequest;
 use App\Http\Requests\DrcrMemo\DrcrMemoRequest;
 use App\Http\Requests\DrcrMemo\GetUserRequest;
 use App\Http\Requests\DrcrMemo\ShowRequest;
-use App\Http\Requests\PayBills\PayBillsRequest;
-use App\Models\DrcrMemos;
-use App\Models\UserAccount;
-use App\Services\DrcrMemo\DrcrMemoService;
 use App\Services\DrcrMemo\IDrcrMemoService;
-use App\Services\PayBills\IPayBillsService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
-use Request;
-use Illuminate\Http\Response;
 
 class DrcrMemoController extends Controller
 {
@@ -30,11 +23,9 @@ class DrcrMemoController extends Controller
     }
 
 
-
     /**
-     * Get all the list of DRCR Memo 
+     * Get all the list of DRCR Memo
      *
-     * @param DrcrMemoRequest $request
      * @return JsonResponse
      */
     public function index() : JsonResponse
@@ -47,7 +38,7 @@ class DrcrMemoController extends Controller
     /**
      * Show data using DRCR Memo id
      *
-     * @param DrcrMemoRequest $request
+     * @param ShowRequest $request
      * @return JsonResponse
      */
     public function show(ShowRequest $request): JsonResponse
@@ -59,11 +50,9 @@ class DrcrMemoController extends Controller
 
 
     /**
-     * Get's user by using account number 
+     * Get's user by using account number
      *
-     * @param DrcrMemoRequest $request
-     * @param object &getUser
-     * @param array $accountNo
+     * @param GetUserRequest $request
      * @return JsonResponse
      */
     public function getUser(GetUserRequest $request): JsonResponse
@@ -77,10 +66,10 @@ class DrcrMemoController extends Controller
     /**
      * Show all pending status
      *
-     * @param DrcrMemoRequest $request
+     * @param ShowRequest $request
      * @return JsonResponse
      */
-    public function showPending(ShowRequest $request)//: JsonResponse
+    public function showPending(ShowRequest $request): JsonResponse
     {
         return $this->drcrMemoService->showPending($request->user());
         //return $this->responseService->successResponse($showPending, SuccessMessages::success);
@@ -88,25 +77,22 @@ class DrcrMemoController extends Controller
 
 
     /**
-     * Store Drcr memo 
+     * Store Drcr memo
      *
      * @param DrcrMemoRequest $request
-     * @param object &store
-     * @param array $data
      * @return JsonResponse
      */
     public function store(DrcrMemoRequest $request): JsonResponse
     {
-        $data = $request->post();
+        $data = $request->validated();
         $store = $this->drcrMemoService->store($request->user(), $data);
         return $this->responseService->successResponse($store->toArray(), SuccessMessages::success);
     }
 
     /**
-     * Approval of Drcr Memo 
+     * Approval of Drcr Memo
      *
      * @param ApprovalRequest $request
-     * @param array $data
      * @return JsonResponse
      */
     public function approval(ApprovalRequest $request): JsonResponse

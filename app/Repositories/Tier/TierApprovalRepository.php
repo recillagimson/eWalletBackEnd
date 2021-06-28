@@ -4,6 +4,7 @@ namespace App\Repositories\Tier;
 
 use App\Models\TierApproval;
 use App\Repositories\Repository;
+use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 
 class TierApprovalRepository extends Repository implements ITierApprovalRepository
@@ -21,12 +22,6 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
 
     public function getPendingApprovalRequest() {
         return $this->model->where('user_account_id', request()->user()->id)
-            ->where('status', 'PENDING')
-            ->first();
-    }
-
-    public function getPendingApprovalRequestByUserAccountId(string $id) {
-        return $this->model->where('user_account_id', $id)
             ->where('status', 'PENDING')
             ->first();
     }
@@ -56,8 +51,8 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
 
     public function showTierApproval(TierApproval $tierApproval) {
         $data = $this->model->with([
-            'id_photos', 
-            'selfie_photos', 
+            'id_photos',
+            'selfie_photos',
             'id_photos.id_type',
             'user_account',
             'user_detail'
@@ -69,5 +64,10 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
         return ValidationException::withMessages([
             'tier_approval_not_found' => 'Tier Approval Request not found'
         ]);
+    }
+
+    public function getTierApproval()
+    {
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','pending')->count('status');
     }
 }

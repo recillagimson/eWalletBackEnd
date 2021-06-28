@@ -4,16 +4,14 @@ namespace App\Repositories\DrcrMemo;
 
 use App\Enums\DrcrStatus;
 use App\Enums\TransactionStatuses;
-use App\Models\DrcrMemos;
+use App\Models\DrcrMemo;
 use App\Models\UserAccount;
 use App\Repositories\Repository;
-use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use Carbon\Carbon;
-use Composer\DependencyResolver\Transaction;
 
 class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 {
-    public function __construct(DrcrMemos $model)
+    public function __construct(DrcrMemo $model)
     {
         parent::__construct($model);
     }
@@ -44,7 +42,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             return $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::A,
                 'approved_by' => $user->id,
-                'approved_date' => Carbon::now(),
+                'approved_at' => Carbon::now(),
                 'user_updated' => $user->id
             ]);
         }
@@ -52,10 +50,20 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             return $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::D,
                 'declined_by' => $user->id,
-                'declined_date' => Carbon::now(),
+                'declined_at' => Carbon::now(),
                 'user_updated' => $user->id
             ]);
         }
+    }
+
+    public function getDRCRMemo()
+    {
+        return $this->model->where('status', '=', 'pending')->where('created_at', '<=', Carbon::now()->subDay())->count('status');
+    }
+
+    public function getPerUser(string $UserID)
+    {
+        return $this->model->where('created_by', '=', $UserID)->where('status', '=', 'pending')->where('created_at', '<=', Carbon::now()->subDay())->count('status');
     }
 
 }

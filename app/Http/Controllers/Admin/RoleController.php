@@ -12,6 +12,7 @@ use App\Repositories\Admin\Role\IRoleRepository;
 use App\Http\Requests\Admin\SetRolePermissionRequest;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\Admin\Permission\IPermissionRepository;
+use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
 
 class RoleController extends Controller
 {
@@ -19,18 +20,21 @@ class RoleController extends Controller
     private IRoleRepository $iRoleRepository;
     private IPermissionRepository $iPermissionRepository;
     private IResponseService $responseService;
+    private IUserRoleRepository $userRoleRepository;
 
 
     public function __construct(
                                 IRoleRepository $iRoleRepository,
                                 IPermissionRepository $iPermissionRepository,
-                                IResponseService $responseService
+                                IResponseService $responseService,
+                                IUserRoleRepository $userRoleRepository
                                 )
     {
         // $this->encryptionService = $encryptionService;
         $this->iRoleRepository = $iRoleRepository;
         $this->iPermissionRepository = $iPermissionRepository;
         $this->responseService = $responseService;
+        $this->userRoleRepository = $userRoleRepository;
     }
 
     /**
@@ -116,4 +120,9 @@ class RoleController extends Controller
         $records = $this->iPermissionRepository->setRolePermissions($request->all());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
      }
+
+     public function getUserRolesAndPermissionByUserAccountId(string $userAccountId) {
+        $records =  $this->userRoleRepository->getUserRolesAndPermissionByUserAccountId($userAccountId);
+        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
+    }
 }

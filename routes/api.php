@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AddMoneyController;
+use App\Http\Controllers\Admin\MyTaskController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
@@ -188,6 +190,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResources([
             '/types' => IdTypeController::class,
         ]);
+        Route::get('/farmers', [IdTypeController::class, 'farmersID']);
     });
 
     Route::middleware(['decrypt.request'])->group(function () {
@@ -232,7 +235,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
-
+            Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
+            Route::post('/transaction/histories/count/pdf', [UserTransactionHistoryController::class, 'downloadCountTotalAmountEachUserPDF']);
+            Route::post('/transaction/histories/count/csv', [UserTransactionHistoryController::class, 'downloadCountTotalAmountEachUserCSV']);
         });
 
         Route::prefix('/buy/load')->name('buy.load.')->group(function () {
@@ -264,6 +269,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
         Route::get('/bayad/process/pending', [PayBillsController::class, 'processPending']);
+        Route::get('/list/billers', [PayBillsController::class, 'getListOfBillers']);
+        Route::get('/list/billers/pdf', [PayBillsController::class, 'downloadListOfBillersPDF']);
+        Route::get('/list/billers/csv', [PayBillsController::class, 'downloadListOfBillersCSV']);
     });
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->name('notifications.')->group(function () {
@@ -315,9 +323,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
     });
 
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+    });
+
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
+        Route::get('/mytask', [MyTaskController::class, 'index']);
+    });
+
     Route::prefix('drcr/memos')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/', [DrcrMemoController::class, 'index']);
-        Route::post('/', [DrcrMemoController::class, 'store']);
+        Route::get('', [DrcrMemoController::class, 'index']);
+        Route::post('', [DrcrMemoController::class, 'store']);
         Route::get('/show/{referenceNumber}', [DrcrMemoController::class, 'show']);
         Route::get('/show/pending/status', [DrcrMemoController::class, 'showPending']);
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
@@ -336,6 +352,7 @@ Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->
     Route::get('/', [RoleController::class, 'index'])->name('list');
     Route::post('/', [RoleController::class, 'store'])->name('store');
     Route::get('/{role}', [RoleController::class, 'show'])->name('show');
+    Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show');
     Route::put('/{role}', [RoleController::class, 'update'])->name('update');
     Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
 

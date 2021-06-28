@@ -2,31 +2,25 @@
 
 namespace App\Services\UserProfile;
 
-use Carbon\Carbon;
-use App\Enums\AccountTiers;
+use App\Enums\TempUserDetailStatuses;
 use App\Models\UserAccount;
-use App\Enums\SuccessMessages;
-use App\Traits\HasFileUploads;
-use App\Enums\SquidPayModuleTypes;
-use App\Repositories\LogHistory\ILogHistoryRepository;
-use App\Traits\Errors\WithUserErrors;
-use App\Repositories\Tier\ITierRepository;
-use Illuminate\Validation\ValidationException;
 use App\Repositories\Tier\ITierApprovalRepository;
-use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\Tier\ITierRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Services\Utilities\Verification\IVerificationService;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserUtilities\Nationality\INationalityRepository;
-use App\Repositories\UserUtilities\NatureOfWork\INatureOfWorkRepository;
-use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\Utilities\Verification\IVerificationService;
+use App\Traits\Errors\WithUserErrors;
+use App\Traits\HasFileUploads;
+use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class UserProfileService implements IUserProfileService
 {
     use HasFileUploads, WithUserErrors;
-    
+
     public IUserAccountRepository $userAccountRepository;
     public IUserDetailRepository $userDetailRepository;
     public IUserPhotoRepository $userPhotoRepository;
@@ -35,18 +29,15 @@ class UserProfileService implements IUserProfileService
     private ITierApprovalRepository $userApprovalRepository;
     private IVerificationService $verificationService;
     private ILogHistoryService $logHistoryService;
-    private IUserProfileService $userProfileService;
 
-
-    public function __construct(IUserDetailRepository $userDetailRepository, 
+    public function __construct(IUserDetailRepository $userDetailRepository,
                                 IUserAccountRepository $userAccountRepository,
                                 IUserPhotoRepository $userPhotoRepository,
                                 ITempUserDetailRepository $tempUserDetail,
                                 ITierRepository $tierRepository,
                                 ITierApprovalRepository $userApprovalRepository,
                                 IVerificationService $verificationService,
-                                ILogHistoryService $logHistoryService,
-                                IUserProfileService $userProfileService)
+                                ILogHistoryService $logHistoryService)
     {
         $this->userAccountRepository = $userAccountRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -56,22 +47,21 @@ class UserProfileService implements IUserProfileService
         $this->userApprovalRepository = $userApprovalRepository;
         $this->verificationService = $verificationService;
         $this->logHistoryService = $logHistoryService;
-        $this->userProfileService = $userProfileService;
-
     }
 
-    public function update(object $userAccount, array $details) {
-       $userProfile = $this->userDetailRepository->getByUserId($userAccount->id);
-       $details["user_account_id"]= $userAccount->id;
-       $details["user_account_status"]= $userAccount->status;
-       $data = $this->addUserInput($details, $userAccount, $userProfile);
+    public function update(object $userAccount, array $details)
+    {
+        $userProfile = $this->userDetailRepository->getByUserId($userAccount->id);
+        $details["user_account_id"] = $userAccount->id;
+        $details["user_account_status"] = $userAccount->status;
+        $data = $this->addUserInput($details, $userAccount, $userProfile);
 
-       $response = (!$userProfile) ? 
-       $this->userDetailRepository->create($data)->toArray() : 
-       $this->userDetailRepository->update($userProfile, $data);
+        $response = (!$userProfile) ?
+            $this->userDetailRepository->create($data)->toArray() :
+            $this->userDetailRepository->update($userProfile, $data);
 
-        return (!$userProfile) ? $response : 
-        $this->userDetailRepository->getByUserId($userAccount->id)->toArray();
+        return (!$userProfile) ? $response :
+            $this->userDetailRepository->getByUserId($userAccount->id)->toArray();
     }
 
     public function addUserInput(array $details, object $userAccount, object $data=null) {
@@ -87,7 +77,7 @@ class UserProfileService implements IUserProfileService
 
     public function changeAvatar(array $data) {
         // Delete existing first
-        // Get details first 
+        // Get details first
         $userDetails = $this->userDetailRepository->getByUserId(request()->user()->id);
         // If no user Details
         if(!$userDetails) {
@@ -112,16 +102,16 @@ class UserProfileService implements IUserProfileService
         // return to controller all created records
     }
 
-    public function updateUserProfile($id, array $request, object $user) 
+    public function updateUserProfile($id, array $request, object $user)
     {
         $userAccount = $this->userAccountRepository->get($id);
 
-        if(!$userAccount) {
+        if (!$userAccount) {
             throw ValidationException::withMessages([
                 'user_account_not_found' => 'User Account not found'
             ]);
         }
-        
+
         $request = $this->addTransactionInfo($userAccount, $request, $user);
         $request = $this->addUserInput($request, $user);
         $request = array_filter($request);
@@ -129,6 +119,13 @@ class UserProfileService implements IUserProfileService
         $dirty = $this->checkDirty($userAccount, $request);
 
         if ($dirty) {
+            $latestTemp = $this->tempUserDetail->getLatestByUserId($userAccount->id);
+            if ($latestTemp && $latestTemp->status == TempUserDetailStatuses::pending) {
+                throw ValidationException::withMessages([
+                    'user_detail_update_pending' => 'User Account has pending update request.'
+                ]);
+            }
+
             return [
                 "status" => 1,
                 "data" => $this->tempUserDetail->create($request)
@@ -143,16 +140,17 @@ class UserProfileService implements IUserProfileService
         ];
     }
 
-    public function supervisorUpdateUserProfile($id, array $request, object $user) 
+    public function supervisorUpdateUserProfile($id, array $request, object $user)
     {
         $userAccount = $this->userAccountRepository->get($id);
-        $userDetail = $user->profile;
 
-        if(!$userAccount) {
+        if (!$userAccount) {
             throw ValidationException::withMessages([
                 'user_account_not_found' => 'User Account not found'
             ]);
         }
+
+        $userDetail = $this->userDetailRepository->getByUserId($userAccount->id);
 
         if(!$userDetail) {
             throw ValidationException::withMessages([
@@ -160,11 +158,13 @@ class UserProfileService implements IUserProfileService
             ]);
         }
 
-        if ($request['tier_id']) {
+        if (isset($request['tier_id']) && $request['tier_id']) {
             $this->validateTier($userAccount, $request['tier_id']);
         }
-        
+
         $request = $this->addUserInput($request, $user, $userAccount);
+
+        $this->tempUserDetail->denyByUserId($userAccount->id, $user);
 
         $this->userAccountRepository->update($userAccount, $request);
         $this->userDetailRepository->update($userDetail, $request);
@@ -175,18 +175,18 @@ class UserProfileService implements IUserProfileService
         ];
     }
 
-    public function addTransactionInfo(UserAccount $userAccount, array $request, object $user) 
+    public function addTransactionInfo(UserAccount $userAccount, array $request, object $user)
     {
-        $request['transaction_number'] = "PU" . Carbon::now()->format('YmdHi') . rand(0,99999);
+        $request['transaction_number'] = "PU" . Carbon::now()->format('YmdHi') . rand(0, 99999);
         $request['reviewed_by'] = $user->id;
         $request['reviewed_date'] = Carbon::now();
         $request['user_account_id'] = $userAccount->id;
-        $request['status'] = 0; //Pending
+        $request['status'] = TempUserDetailStatuses::pending; //Pending
 
         return $request;
     }
 
-    public function checkDirty(UserAccount $user, array $request) 
+    public function checkDirty(UserAccount $user, array $request)
     {
         $userAccount = $user->fill($request);
         $userDetail = $user->profile->fill($request);
@@ -220,12 +220,12 @@ class UserProfileService implements IUserProfileService
         return false;
     }
 
-    public function validateTier(UserAccount $user, $tier_id) 
+    public function validateTier(UserAccount $user, $tier_id)
     {
         $tier = $this->tierRepository->get($user->tier_id);
         $reqTier = $this->tierRepository->get($tier_id);
 
-        if(!$reqTier || !$tier) {
+        if (!$reqTier || !$tier) {
             throw ValidationException::withMessages([
                 'tier_not_found' => 'Tier not found'
             ]);
@@ -242,44 +242,4 @@ class UserProfileService implements IUserProfileService
 
         return true;
     }
-
-    // public function upgradeFarmerToSilver(array $attr) {
-    //     try {
-    //         // GET USER ACCOUNT WITH TIER
-    //         $user_account = $this->userAccountRepository->getUser($attr['user_account_id']);
-    //         // IF REQUESTING FOR TIER UPDATE
-    //         if($user_account && $user_account->tier->id !== AccountTiers::tier2) {
-    //             // VALIDATE IF HAS EXISTING REQUEST
-    //             $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequestByUserAccountId($attr['user_account_id']);
-    //             if($findExistingRequest) {
-    //                 return $this->tierUpgradeAlreadyExist();
-    //             }
-
-    //             // CREATE APPROVAL RECORD FOR ADMIN
-    //             // TU-MMDDYYY-RANDON
-    //             $generatedTransactionNumber = "TU" . Carbon::now()->format('YmdHi') . rand(0,99999);
-    //             $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
-    //                 'user_account_id' => request()->user()->id,
-    //                 'request_tier_id' => AccountTiers::tier2,
-    //                 'status' => 'PENDING',
-    //                 'user_created' => request()->user()->id,
-    //                 'user_updated' => request()->user()->id,
-    //                 'transaction_number' => $generatedTransactionNumber
-    //             ]);
-    //             $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id);
-
-    //             $audit_remarks = request()->user()->id . " has requested to upgrade to Silver";
-    //             $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
-    //         }
-    //         // $details = $request->validated();
-    //         $addOrUpdate = $this->userProfileService->update($user_account->profile(), $attr);
-    //         $audit_remarks = request()->user()->id . " Profile Information has been successfully updated.";
-    //         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
-
-    //         // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
-    //         return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
-    //     } catch(\Exception $e) {
-    //         dd($e->getMessage());
-    //     }
-    // }
 }

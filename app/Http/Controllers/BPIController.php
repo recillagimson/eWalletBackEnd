@@ -21,7 +21,7 @@ class BPIController extends Controller
 
     public function fundTopUp(Request $request) {
         $data = [
-            'accountNumberToken' => $request->token,
+            'accountNumberToken' => $request->accountNumberToken,
             'amount' => $request->amount,
             'remarks' => $request->remarks
         ];
