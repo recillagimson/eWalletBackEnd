@@ -7,4 +7,5 @@ interface IBPIService {
     public function fundTopUp(array $array, string $token);
     public function otp(array $params);
     public function process(array $params);
+    public function status(array $params);
 }

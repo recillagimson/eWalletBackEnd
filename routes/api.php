@@ -252,6 +252,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/fundtopup', [BPIController::class, 'fundTopUp']);
             Route::post('/otp', [BPIController::class, 'otp']);
             Route::post('/process', [BPIController::class, 'process']);
+            Route::post('/status', [BPIController::class, 'status']);
         });
 
     });

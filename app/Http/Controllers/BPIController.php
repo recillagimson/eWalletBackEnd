@@ -35,4 +35,8 @@ class BPIController extends Controller
     public function process(Request $request) {
         return $this->bpiService->process($request->all());
     }
+
+    public function status(Request $request) {
+        return $this->bpiService->status($request->all());
+    }
 }

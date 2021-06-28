@@ -114,8 +114,27 @@ class BPIService implements IBPIService
         $this->bpiTokenInvalid();
     }
 
+    public function status(array $params) {
+        
+        $headers = $this->getHeaders($params['token']);
+        $headers['transactionId'] = $params['transactionId'];
+        $status_url = env('BPI_FUND_TOP_UP_STATUS');
+
+        $response = $this->apiService->get($status_url, $headers);
+        if($response && isset($response['token'])) {
+            $jwt = $this->bpiDecryptionJWE($response['token']);
+            if($jwt) {
+                $jwt_response = $this->bpiDecryptionJWE($response['token']);
+                $response_raw = $this->bpiDecryptionJWT($jwt_response);
+                return $response_raw;
+            }
+        }
+        // THROW ERROR
+        $this->bpiTokenInvalid();
+    }
+
     public function process(array $params) {
-        $headers = $token = $this->getHeaders($params['token']);
+        $headers = $this->getHeaders($params['token']);
         $headers['transactionId'] = $params['transactionId'];
         $otp_url = env('BPI_PROCESS_URL');
 
