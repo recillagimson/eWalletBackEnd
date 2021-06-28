@@ -25,7 +25,7 @@ class BPIFundTopUpRequest extends FormRequest
     {
         return [
             'token' => 'required',
-            'amount' => 'required|min:10',
+            'amount' => 'required|min:10|integer',
             'accountNumberToken' => 'required',
             'remarks' => 'required'
         ];

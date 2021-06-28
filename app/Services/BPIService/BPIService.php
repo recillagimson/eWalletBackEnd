@@ -7,6 +7,8 @@ use Illuminate\Support\Str;
 use App\Enums\SendMoneyConfig;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\TransactionCategoryIds;
+use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Traits\Errors\WithUserErrors;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\API\IApiService;
@@ -15,6 +17,7 @@ use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use Mpdf\Tag\Tr;
 
 class BPIService implements IBPIService
 {
@@ -25,14 +28,18 @@ class BPIService implements IBPIService
     private ILogHistoryService $logHistory;
     private IUserTransactionHistoryRepository $transactionHistory;
     private IUserBalanceInfoRepository $userBalanceInfo;
+    private IInAddMoneyBPIRepository $bpiRepository;
+    private IServiceFeeRepository $serviceFee;
 
 
-    public function __construct(IApiService $apiService, IReferenceNumberService $referenceNumberService, ILogHistoryService $logHistory, IUserTransactionHistoryRepository $transactionHistory, IUserBalanceInfoRepository $userBalanceInfo)
+    public function __construct(IApiService $apiService, IReferenceNumberService $referenceNumberService, ILogHistoryService $logHistory, IUserTransactionHistoryRepository $transactionHistory, IUserBalanceInfoRepository $userBalanceInfo, IInAddMoneyBPIRepository $bpiRepository, IServiceFeeRepository $serviceFee)
     {
         $this->apiService = $apiService;
         $this->referenceNumberService = $referenceNumberService;
         $this->transactionHistory = $transactionHistory;
         $this->userBalanceInfo = $userBalanceInfo;
+        $this->bpiRepository = $bpiRepository;
+        $this->serviceFee = $serviceFee;
     }
 
     private function getHeaders(string $token) {
@@ -51,7 +58,7 @@ class BPIService implements IBPIService
             'grant_type' => 'authorization_code',
             'code' => $code
         ];
-        return $this->apiService->postAsForm(env('BPI_AUTH'), $body, ['accept' => 'application/json', 'content-type' => 'application/x-www-form-urlencoded']);
+        return $this->apiService->postAsForm(env('BPI_AUTH'), $body, ['accept' => 'application/json', 'content-type' => 'application/x-www-form-urlencoded'])->json();
     }
 
     public function getAccounts(string $token) {
@@ -155,42 +162,68 @@ class BPIService implements IBPIService
     }
 
     public function process(array $params) {
-        $headers = $this->getHeaders($params['token']);
-        $headers['transactionId'] = $params['transactionId'];
-        $otp_url = env('BPI_PROCESS_URL');
-
-        $values['otp'] = $params['otp'];
-        $values['jti'] = Str::uuid()->toString();
-        $values['iss'] = 'PARTNER';
-        $values['sub'] = 'fundTopUp';
-        $values['aud'] = 'BPI';
-        $values['exp'] = Carbon::now()->addMinutes(30)->timestamp;
-        $values['iat'] = Carbon::now()->timestamp;
-        $jwt = $this->bpiEncodeJWT($values);
-        $jwe = $this->bpiEncodeJWE($jwt);
-
-        $response = $this->apiService->post($otp_url, ['token' => $jwe], $headers);
-
-        if($response && isset($response['token'])) {
-            $jwt = $this->bpiDecryptionJWE($response['token']);
-            if($jwt) {
-                $jwt_response = $this->bpiDecryptionJWE($response['token']);
-                $response_raw = $this->bpiDecryptionJWT($jwt_response);
-
-                $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
-
-                if($response_raw['status'] == 'success') {
+        \DB::beginTransaction();
+        try {
+            $headers = $this->getHeaders($params['token']);
+            $headers['transactionId'] = $params['transactionId'];
+            $otp_url = env('BPI_PROCESS_URL');
+    
+            $values['otp'] = $params['otp'];
+            $values['jti'] = Str::uuid()->toString();
+            $values['iss'] = 'PARTNER';
+            $values['sub'] = 'fundTopUp';
+            $values['aud'] = 'BPI';
+            $values['exp'] = Carbon::now()->addMinutes(30)->timestamp;
+            $values['iat'] = Carbon::now()->timestamp;
+            $jwt = $this->bpiEncodeJWT($values);
+            $jwe = $this->bpiEncodeJWE($jwt);
+    
+            $response = $this->apiService->post($otp_url, ['token' => $jwe], $headers);
+            if($response && isset($response->json()['token'])) {
+                $jwt = $this->bpiDecryptionJWE($response['token']);
+                if($jwt) {
+                    $jwt_response = $this->bpiDecryptionJWE($response['token']);
+                    $response_raw = $this->bpiDecryptionJWT($jwt_response);
+    
+                    $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
+    
                     $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                     $cashInWithServiceFee = $params['amount'] + SendMoneyConfig::ServiceFee;
                     $total = $cashInWithServiceFee + $balance;
-                    $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
+                    if($response_raw['status'] == 'success') {
+                        $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
+                    }
+    
+                    $serviceFee = $this->serviceFee->getByTierAndTransCategory(request()->user()->tier_id, TransactionCategoryIds::cashinBPI);
+                    $this->bpiRepository->create(
+                        [
+                            "user_account_id" => request()->user()->id,
+                            "reference_number" => $params['refId'],
+                            "amount" => $params['amount'],
+                            "service_fee_id" => $serviceFee->id,
+                            "service_fee" => SendMoneyConfig::ServiceFee,
+                            "total_amount" => $total,
+                            "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
+                            "transaction_category_id" => TransactionCategoryIds::cashinBPI,
+                            "transaction_remarks" => $params['remarks'],
+                            "status" => $response_raw['status'],
+                            "bpi_reference" => $params['transactionId'],
+                            "transaction_response" => json_encode($response_raw),
+                            "user_created" => request()->user()->id,
+                            "user_updated" => request()->user()->id,
+                        ]
+                    );
+    
+                    \DB::commit();
+                    return $response_raw;
                 }
-
-                return $response_raw;
             }
+        } catch(\Exception $e) {
+            dd($e->getMessage());
+            \DB::rollback();
+            // THROW ERROR
+            $this->bpiTokenInvalid();
         }
-        // THROW ERROR
-        $this->bpiTokenInvalid();
 
     }
 

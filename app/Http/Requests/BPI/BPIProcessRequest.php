@@ -28,7 +28,8 @@ class BPIProcessRequest extends FormRequest
             'otp' => 'required',
             'transactionId' => 'required',
             'amount' => 'required',
-            'refId' => 'required'
+            'refId' => 'required',
+            'remarks' => 'required'
         ];
     }
 }

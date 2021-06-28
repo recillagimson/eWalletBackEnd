@@ -19,14 +19,15 @@ class BPIController extends Controller
     private IBPIService $bpiService;
     private IResponseService $responseService;
 
-    public function __construct(IBPIService $bpiService) 
+    public function __construct(IBPIService $bpiService, IResponseService $responseService) 
     {
-        $this->bpiService = $bpiService;   
+        $this->bpiService = $bpiService;
+        $this->responseService = $responseService;
     }
 
     public function bpiAuth(BPIAuthRequest $request) {
         $response = $this->bpiService->bpiAuth($request->code);
-        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 
     public function getAccounts(BPIGetAccountRequest $request) {
@@ -41,17 +42,17 @@ class BPIController extends Controller
             'remarks' => $request->remarks
         ];
         $response = $this->bpiService->fundTopUp($data, $request->token);
-        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 
     public function otp(BPIOTPRequest $request) {
         $response = $this->bpiService->otp($request->all());
-        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 
     public function process(BPIProcessRequest $request) {
         $response = $this->bpiService->process($request->all());
-        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 
     public function status(BPIStatusRequest $request) {
