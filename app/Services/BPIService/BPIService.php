@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\API\IApiService;
 use App\Services\BPIService\PackageExtension\Encryption;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
@@ -23,13 +24,15 @@ class BPIService implements IBPIService
     private IReferenceNumberService $referenceNumberService;
     private ILogHistoryService $logHistory;
     private IUserTransactionHistoryRepository $transactionHistory;
+    private IUserBalanceInfoRepository $userBalanceInfo;
 
 
-    public function __construct(IApiService $apiService, IReferenceNumberService $referenceNumberService, ILogHistoryService $logHistory, IUserTransactionHistoryRepository $transactionHistory)
+    public function __construct(IApiService $apiService, IReferenceNumberService $referenceNumberService, ILogHistoryService $logHistory, IUserTransactionHistoryRepository $transactionHistory, IUserBalanceInfoRepository $userBalanceInfo)
     {
         $this->apiService = $apiService;
         $this->referenceNumberService = $referenceNumberService;
         $this->transactionHistory = $transactionHistory;
+        $this->userBalanceInfo = $userBalanceInfo;
     }
 
     private function getHeaders(string $token) {
@@ -173,12 +176,13 @@ class BPIService implements IBPIService
                 $jwt_response = $this->bpiDecryptionJWE($response['token']);
                 $response_raw = $this->bpiDecryptionJWT($jwt_response);
 
-                $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
+                $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
 
                 if($response_raw['status'] == 'success') {
                     $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                     $cashInWithServiceFee = $params['amount'] + SendMoneyConfig::ServiceFee;
-                    $this->userBalanceInfo->updateUserBalance(request()->user_id, $cashInWithServiceFee);
+                    $total = $cashInWithServiceFee + $balance;
+                    $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
                 }
 
                 return $response_raw;

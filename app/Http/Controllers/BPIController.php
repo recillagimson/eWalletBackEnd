@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SuccessMessages;
 use App\Services\BPIService\IBPIService;
+use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\Request;
 
 class BPIController extends Controller
 {
 
     private IBPIService $bpiService;
+    private IResponseService $responseService;
 
     public function __construct(IBPIService $bpiService) 
     {
@@ -16,11 +19,13 @@ class BPIController extends Controller
     }
 
     public function bpiAuth(Request $request) {
-        return $this->bpiService->bpiAuth($request->code);
+        $response = $this->bpiService->bpiAuth($request->code);
+        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
     }
 
     public function getAccounts(Request $request) {
-        return $this->bpiService->getAccounts($request->token);
+        $response = $this->bpiService->getAccounts($request->token);
+        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
     }
 
     public function fundTopUp(Request $request) {
@@ -29,18 +34,22 @@ class BPIController extends Controller
             'amount' => $request->amount,
             'remarks' => $request->remarks
         ];
-        return $this->bpiService->fundTopUp($data, $request->token);
+        $response = $this->bpiService->fundTopUp($data, $request->token);
+        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
     }
 
     public function otp(Request $request) {
-        return $this->bpiService->otp($request->all());
+        $response = $this->bpiService->otp($request->all());
+        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
     }
 
     public function process(Request $request) {
-        return $this->bpiService->process($request->all());
+        $response = $this->bpiService->process($request->all());
+        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
     }
 
     public function status(Request $request) {
-        return $this->bpiService->status($request->all());
+        $response = $this->bpiService->status($request->all());
+        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
     }
 }
