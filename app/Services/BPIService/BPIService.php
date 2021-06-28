@@ -27,8 +27,8 @@ class BPIService implements IBPIService
 
     private function getHeaders(string $token) {
         return [
-            'x-ibm-client-id' => 'fb5cedef-cfec-4910-9910-d40bc4f36752',
-            'x-ibm-client-secret' => 'aC0rI2rN8qV0dX5dL3tG6bI2sY7xD4nO3lW5gF3aH4wT4wW8iO',
+            'x-ibm-client-id' => env('BPI_CLIENT_ID'),
+            'x-ibm-client-secret' => env('BPI_CLIENT_SECRET'),
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer ' . $token
         ];
