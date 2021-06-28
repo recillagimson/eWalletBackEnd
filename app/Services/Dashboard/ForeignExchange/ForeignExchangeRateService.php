@@ -26,7 +26,7 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
         $api = CurrencyRatesConfig::api . CurrencyRatesConfig::currencies . '&access_key=' . CurrencyRatesConfig::accessKey;
         $result = Http::get($api);
 
-        if($result['status']) {
+        if(!$result['status']) {
             throw ValidationException::withMessages([
                 'foreign_exchange_rate_details' => "Foreign exchange rate details can't be found."
             ]);
@@ -48,6 +48,9 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
     // Get foreign exchange rates
     public function getForeignCurrencyRates()
     {
+        $api = CurrencyRatesConfig::api . CurrencyRatesConfig::currencies . '&access_key=';
+        $result = Http::get($api);
+        dd(!$result['status']);
         return $this->model->all();
     }
 }
