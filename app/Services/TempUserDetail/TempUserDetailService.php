@@ -64,6 +64,12 @@ class TempUserDetailService implements ITempUserDetailService
             ]);
         }
 
+        if($tempUserDetail->status == 'DECLINED') {
+            throw ValidationException::withMessages([
+                'temp_user_already_declined' => 'Temp User Detail already declined.'
+            ]);
+        }
+
         $userAccount = $this->userAccount->get($tempUserDetail->user_account_id);
 
         if(!$userAccount) {
