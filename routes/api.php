@@ -250,6 +250,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/bpi')->group(function() {
             Route::post('/accounts', [BPIController::class, 'getAccounts']);
             Route::post('/fundtopup', [BPIController::class, 'fundTopUp']);
+            Route::post('/otp', [BPIController::class, 'otp']);
+            Route::post('/process', [BPIController::class, 'process']);
         });
 
     });

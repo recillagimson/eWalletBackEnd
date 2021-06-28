@@ -27,4 +27,12 @@ class BPIController extends Controller
         ];
         return $this->bpiService->fundTopUp($data, $request->token);
     }
+
+    public function otp(Request $request) {
+        return $this->bpiService->otp($request->all());
+    }
+
+    public function process(Request $request) {
+        return $this->bpiService->process($request->all());
+    }
 }

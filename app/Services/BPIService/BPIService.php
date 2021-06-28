@@ -61,11 +61,8 @@ class BPIService implements IBPIService
         $array['aud'] = 'BPI';
         $array['exp'] = Carbon::now()->addMinutes(30)->timestamp;
         $array['iat'] = Carbon::now()->timestamp;
-        // dd($array);
         $jwt = $this->bpiEncodeJWT($array);
-        // dd($jwt);
         $jwe = $this->bpiEncodeJWE($jwt);
-        // $response_headers = $this->bpiDecryptionJWEHeader($jwe);
         
         // Send API request
         $response = $this->apiService->post(env('BPI_FUND_TOP_UP_ENDPOINT'), ['token' => $jwe], $token);
@@ -77,6 +74,48 @@ class BPIService implements IBPIService
             'response' => $response_raw,
             'transactionId' => $transactionId
         ];
+    }
+
+    public function otp(array $params) {
+        
+        $headers = $token = $this->getHeaders($params['token']);
+        $headers['transactionId'] = $params['transactionId'];
+        $otp_url = env('BPI_FUND_TOP_UP_OTP');
+
+        $params['jti'] = Str::uuid()->toString();
+        $params['iss'] = 'PARTNER';
+        $params['sub'] = 'fundTopUp';
+        $params['aud'] = 'BPI';
+        $params['exp'] = Carbon::now()->addMinutes(30)->timestamp;
+        $params['iat'] = Carbon::now()->timestamp;
+        $jwt = $this->bpiEncodeJWT($params);
+        $jwe = $this->bpiEncodeJWE($jwt);
+
+        $response = $this->apiService->post($otp_url, ['token' => $jwe], $headers);
+        $jwt_response = $this->bpiDecryptionJWE($response['token']);
+        $response_raw = $this->bpiDecryptionJWT($jwt_response);
+        return $response_raw;
+    }
+
+    public function process(array $params) {
+        $headers = $token = $this->getHeaders($params['token']);
+        $headers['transactionId'] = $params['transactionId'];
+        $otp_url = env('BPI_PROCESS_URL');
+
+        $values['otp'] = $params['otp'];
+        $values['jti'] = Str::uuid()->toString();
+        $values['iss'] = 'PARTNER';
+        $values['sub'] = 'fundTopUp';
+        $values['aud'] = 'BPI';
+        $values['exp'] = Carbon::now()->addMinutes(30)->timestamp;
+        $values['iat'] = Carbon::now()->timestamp;
+        $jwt = $this->bpiEncodeJWT($values);
+        $jwe = $this->bpiEncodeJWE($jwt);
+
+        $response = $this->apiService->post($otp_url, ['token' => $jwe], $headers);
+        $jwt_response = $this->bpiDecryptionJWE($response['token']);
+        $response_raw = $this->bpiDecryptionJWT($jwt_response);
+        return $response_raw;
     }
 
     public function bpiEncodeJWT(array $payload) {
