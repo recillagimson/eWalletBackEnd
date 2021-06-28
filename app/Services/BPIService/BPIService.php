@@ -143,22 +143,44 @@ class BPIService implements IBPIService
     }
 
     public function status(array $params) {
-        
-        $headers = $this->getHeaders($params['token']);
-        $headers['transactionId'] = $params['transactionId'];
-        $status_url = env('BPI_FUND_TOP_UP_STATUS');
+        \DB::beginTransaction();
+        try {
+            $headers = $this->getHeaders($params['token']);
+            $status_url = env('BPI_FUND_TOP_UP_STATUS');
 
-        $response = $this->apiService->get($status_url, $headers);
-        if($response && isset($response['token'])) {
-            $jwt = $this->bpiDecryptionJWE($response['token']);
-            if($jwt) {
-                $jwt_response = $this->bpiDecryptionJWE($response['token']);
-                $response_raw = $this->bpiDecryptionJWT($jwt_response);
-                return $response_raw;
+            $processedTransactions = [];
+            foreach($params['transactionIds'] as $transactionId) {
+                $transaction = $this->bpiRepository->get($transactionId);
+                if($transaction && $transaction->status != 'success') {
+                    $headers['transactionId'] = $transaction->bpi_reference;
+                    $response = $this->apiService->get($status_url, $headers);
+                    if($response && isset($response->json()['token'])) {
+                        $jwt = $this->bpiDecryptionJWE($response['token']);
+                        if($jwt) {
+                            $jwt_response = $this->bpiDecryptionJWE($response['token']);
+                            $response_raw = $this->bpiDecryptionJWT($jwt_response);
+                            if($response_raw && $response_raw['status'] == 'success') {
+                                $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
+                                $cashInWithServiceFee = $transaction->total_amount + SendMoneyConfig::ServiceFee;
+                                $total = $cashInWithServiceFee + $balance;
+                                $this->userBalanceInfo->updateUserBalance($transaction->user_account_id, $total);
+                                $this->bpiRepository->update($transaction, ['status' => $response_raw['status']]);
+                                $updated = $this->bpiRepository->get($transaction->id);
+                                array_push($processedTransactions, $updated);
+                            }
+                        }
+                    } else {
+                        // THROW ERROR
+                        $this->bpiTokenInvalid();
+                    }
+                }
             }
+            \DB::commit();
+            return $processedTransactions;
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return [];
         }
-        // THROW ERROR
-        $this->bpiTokenInvalid();
     }
 
     public function process(array $params) {
@@ -219,7 +241,6 @@ class BPIService implements IBPIService
                 }
             }
         } catch(\Exception $e) {
-            dd($e->getMessage());
             \DB::rollback();
             // THROW ERROR
             $this->bpiTokenInvalid();

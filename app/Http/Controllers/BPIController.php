@@ -57,6 +57,6 @@ class BPIController extends Controller
 
     public function status(BPIStatusRequest $request) {
         $response = $this->bpiService->status($request->all());
-        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 }
