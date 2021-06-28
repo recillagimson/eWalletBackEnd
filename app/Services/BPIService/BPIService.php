@@ -8,6 +8,7 @@ use App\Enums\ReferenceNumberTypes;
 use App\Traits\Errors\WithUserErrors;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\API\IApiService;
+use App\Services\BPIService\PackageExtension\Encryption;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 
 class BPIService implements IBPIService
@@ -123,7 +124,7 @@ class BPIService implements IBPIService
         $context = $factory->get();
         $pub = Storage::disk('local')->get('keys/squid.ph.key');
 
-        $token = \Tmilos\JoseJwt\Jwt::encode($context, $payload, $pub, \Tmilos\JoseJwt\Jws\JwsAlgorithm::RS256, [
+        $token = Encryption::encode2($context, $payload, $pub, \Tmilos\JoseJwt\Jws\JwsAlgorithm::RS256, [
             "alg" => "RS256"
         ]);
 
@@ -136,7 +137,7 @@ class BPIService implements IBPIService
 
         $pub = Storage::disk('local')->get('keys/squid.ph.pub');
         $myPubKey = openssl_get_publickey($pub);
-        $token = \Tmilos\JoseJwt\Jwe::encode($context, $payload, $myPubKey, \Tmilos\JoseJwt\Jwe\JweAlgorithm::RSA_OAEP, \Tmilos\JoseJwt\Jwe\JweEncryption::A128CBC_HS256, [
+        $token = Encryption::encodeJWE($context, $payload, $myPubKey, \Tmilos\JoseJwt\Jwe\JweAlgorithm::RSA_OAEP, \Tmilos\JoseJwt\Jwe\JweEncryption::A128CBC_HS256, [
             "alg" => "RSA-OAEP",
             "enc"=> "A128CBC-HS256",
             "cty"=> "JWT"
