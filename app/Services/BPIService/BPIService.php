@@ -34,6 +34,16 @@ class BPIService implements IBPIService
         ];
     }
 
+    public function bpiAuth(string $code) {
+        $body = [
+            'client_id' => env('BPI_CLIENT_ID'),
+            'client_secret' => env('BPI_CLIENT_SECRET'),
+            'grant_type' => 'authorization_code',
+            'code' => $code
+        ];
+        return $this->apiService->postAsForm(env('BPI_AUTH'), $body, ['accept' => 'application/json', 'content-type' => 'application/x-www-form-urlencoded']);
+    }
+
     public function getAccounts(string $token) {
 
         $token = $this->getHeaders($token);

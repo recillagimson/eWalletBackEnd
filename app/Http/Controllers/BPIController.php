@@ -15,6 +15,10 @@ class BPIController extends Controller
         $this->bpiService = $bpiService;   
     }
 
+    public function bpiAuth(Request $request) {
+        return $this->bpiService->bpiAuth($request->code);
+    }
+
     public function getAccounts(Request $request) {
         return $this->bpiService->getAccounts($request->token);
     }
