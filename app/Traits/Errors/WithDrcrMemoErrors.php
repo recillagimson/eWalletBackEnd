@@ -22,4 +22,10 @@ trait WithDrcrMemoErrors
     {
         $this->validationErrorMessage(ErrorCodes::userInsufficientBalance, 'Not Enough balance.');
     }
+
+
+    private function invalidStatus()
+    {
+        $this->validationErrorMessage(ErrorCodes::invalidStatus, 'Invalid status: acceptable status are P => Pending, A => Approve, D => Decline, ALL => All');
+    }
 }
