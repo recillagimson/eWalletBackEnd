@@ -77,4 +77,8 @@ class ServiceFeeRepository extends Repository implements IServiceFeeRepository
         //     'tier_not_found' => 'Tier is not found'
         // ]);
     }
+
+    public function getServiceFeeByTransactionCategoryId(string $transactionCategoryId) {
+        return $this->model->where('transaction_category_id', $transactionCategoryId)->first();
+    }
 }

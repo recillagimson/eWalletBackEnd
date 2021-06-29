@@ -3,14 +3,14 @@
 namespace App\Jobs\Transactions;
 
 use App\Models\UserAccount;
+use App\Services\Transaction\ITransactionService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessUserPending implements ShouldQueue, ShouldBeUnique
+class ProcessUserPending implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -31,8 +31,8 @@ class ProcessUserPending implements ShouldQueue, ShouldBeUnique
      *
      * @return void
      */
-    public function handle()
+    public function handle(ITransactionService $transactionService)
     {
-
+        $transactionService->processUserPending($this->user);
     }
 }
