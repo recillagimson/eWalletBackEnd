@@ -153,12 +153,11 @@ class PayBillsController extends Controller
     public function downloadListOfBillersPDF()
     {
         $getAllBillers = $this->outPayBillsRepository->getAllBillers();
-        $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name;
         $data = [
             'datas' => $getAllBillers,
         ]; 
 
-        return $this->pdfService->generatePDFNoUserPassword($data, $file_name, 'reports.out_pay_bills_history.out_pay_bills_history');
+        return $this->pdfService->generatePDFNoUserPassword($data, 'reports.out_pay_bills_history.out_pay_bills_history');
     }
 
     public function downloadListOfBillersCSV()

@@ -109,19 +109,18 @@ class TransactionService implements ITransactionService
     public function downloadCountTotalAmountEachUserCSV(object $request)
     {
         $records = $this->userTransactionHistoryRepository->countTransactionHistoryByDateRangeWithAmountLimit($request->from, $request->to);
-        $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name;
         $columns = array('Customer Account ID', 'Date of Transaction', 'Amount');
         $datas = [];
 
         foreach ($records as $record) {
             array_push($datas, [
                 'Customer Account ID' => $record->user_account_id,
-                'Date of Transaction' => Carbon::parse($record->transaction_date)->format('F d, Y G:i A'),
+                'Date of Transaction' => Carbon::parse($record->transaction_date)->format('F d, Y g:i A'),
                 'Amount' => $record->amount,
             ]);
         }
 
-        return $this->csvService->generateCSV($datas, $file_name, $columns);
+        return $this->csvService->generateCSV($datas, $columns);
     }
 
 
