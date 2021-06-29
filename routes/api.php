@@ -326,11 +326,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('drcr/memos')->middleware(['decrypt.request'])->group(function () {
-        Route::get('', [DrcrMemoController::class, 'index']);
+        Route::get('/index/{status}', [DrcrMemoController::class, 'index']);
         Route::post('', [DrcrMemoController::class, 'store']);
         Route::get('/show/{referenceNumber}', [DrcrMemoController::class, 'show']);
-        Route::get('/show/pending/status', [DrcrMemoController::class, 'showPending']);
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
+        Route::put('/update/memo', [DrcrMemoController::class, 'updateMemo']);
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
     });
 

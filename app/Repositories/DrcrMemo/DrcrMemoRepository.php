@@ -21,9 +21,17 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         return $this->model->where('user_account_id', $user->id)->get();
     }
 
-    public function getListByCreatedBy(UserAccount $user)
+    public function getListByCreatedBy(UserAccount $user, $data)
     {
-        return $this->model->where('created_by', $user->id)->get();
+        if ($data === 'P') $letterStatus = DrcrStatus::P;
+        if ($data === 'D') $letterStatus = DrcrStatus::D;
+        if ($data === 'A') $letterStatus = DrcrStatus::A;
+        return $this->model->where('created_by', $user->id)->orWhere('user_created', $user->id)->where('status', $letterStatus)->get();
+    }
+
+    public function getList(UserAccount $user)
+    {
+        return $this->model->where('created_by', $user->id)->orWhere('user_created', $user->id)->get();
     }
 
     public function getPendingByCreatedBy(UserAccount $user)
@@ -54,6 +62,22 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
                 'user_updated' => $user->id
             ]);
         }
+    }
+
+    public function updateMemo(UserAccount $user, $data)
+    {
+        $status = $data['status'];
+        if($status === 'P') $letterStatus = DrcrStatus::P;
+        if($status === 'D') $letterStatus = DrcrStatus::D;
+        if($status === 'A') $letterStatus = DrcrStatus::A;
+        return $this->model->where('reference_number', $data['referenceNumber'])->update([
+            'status' => $letterStatus,
+            'type_of_memo' => $data['typeOfMemo'],
+            'amount' => $data['amount'],
+            'category' => $data['category'],
+            'description' => $data['description'],
+            'user_updated' => $user->id
+        ]);
     }
 
     public function getDRCRMemo()
