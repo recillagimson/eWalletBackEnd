@@ -17,9 +17,9 @@ class CSVService implements ICSVService
     }
 
     //Based on https://codingdriver.com/laravel-8-export-csv-example.html
-    public function generateCSV(array $datas, string $filename, array $columns) {
+    public function generateCSV(array $datas, array $columns) {
         $datetimeNow = Carbon::now()->timestamp;
-        $fileName = $filename . "_" . $datetimeNow . '.csv';
+        $fileName = "admin_" . $datetimeNow . '.csv';
 
         $headers = array(
             "Content-type"        => "text/csv",
