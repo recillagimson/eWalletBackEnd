@@ -234,7 +234,7 @@ class UserProfileService implements IUserProfileService
         $tierNum = intval(str_replace('Tier ', '', $tier->name)) + 1;
         $reqTierNum = intval(str_replace('Tier ', '', $reqTier->name));
 
-        if ($tierNum != $reqTierNum) {
+        if ($tier->id != $reqTier->id && $tierNum != $reqTierNum) {
             throw ValidationException::withMessages([
                 'tier_update_error' => 'Tier update invalid.'
             ]);
