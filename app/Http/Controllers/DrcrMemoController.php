@@ -31,7 +31,11 @@ class DrcrMemoController extends Controller
     public function index(ShowRequest $request) : JsonResponse
     {
         $data = $request->route('status');
-        $list = $this->drcrMemoService->getList(request()->user(), $data);
+        $per_page = 15;
+        if($request->has('per_page')) {
+            $per_page = $request->per_page;
+        }
+        $list = $this->drcrMemoService->getList(request()->user(), $data, $per_page);
         return $this->responseService->successResponse($list->toArray(), SuccessMessages::success);
     }
 
