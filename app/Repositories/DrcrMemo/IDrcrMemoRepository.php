@@ -8,6 +8,7 @@ interface IDrcrMemoRepository extends IRepository
 {
     public function getByUserAccountID(UserAccount $user);
     public function getList(UserAccount $user);
+    public function getAllList(UserAccount $user, $data);
     public function getListByCreatedBy(UserAccount $user, $data);
     public function getPendingByCreatedBy(UserAccount $user);
     public function getByReferenceNumber(string $referenceNumber);

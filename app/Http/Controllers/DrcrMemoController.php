@@ -37,6 +37,19 @@ class DrcrMemoController extends Controller
 
 
     /**
+     * Get all the list of DRCR Memo by status
+     * @return JsonResponse
+     */
+    public function showAll(ShowRequest $request): JsonResponse
+    {
+        $data = $request->route('status');
+        $list = $this->drcrMemoService->getAllList(request()->user(), $data);
+        return $this->responseService->successResponse($list->toArray(), SuccessMessages::success);
+    }
+
+
+
+    /**
      * Show data using DRCR Memo id
      *
      * @param ShowRequest $request

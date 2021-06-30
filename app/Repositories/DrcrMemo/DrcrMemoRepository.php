@@ -29,6 +29,14 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         return $this->model->where('created_by', $user->id)->orWhere('user_created', $user->id)->where('status', $letterStatus)->get();
     }
 
+    public function getAllList(UserAccount $user, $data)
+    {
+        if ($data === 'P') $letterStatus = DrcrStatus::P;
+        if ($data === 'D') $letterStatus = DrcrStatus::D;
+        if ($data === 'A') $letterStatus = DrcrStatus::A;
+        return $this->model->where('status', $letterStatus)->get();
+    }
+
     public function getList(UserAccount $user)
     {
         return $this->model->where('created_by', $user->id)->orWhere('user_created', $user->id)->get();
