@@ -58,13 +58,13 @@ class TempUserDetailService implements ITempUserDetailService
     {
         $tempUserDetail = $this->findById($id);
 
-        if($tempUserDetail->status == 'APPROVED') {
+        if($tempUserDetail->status == TempUserDetailStatuses::approved) {
             throw ValidationException::withMessages([
                 'temp_user_already_solved' => 'Temp User Detail already resolved.'
             ]);
         }
 
-        if($tempUserDetail->status == 'DECLINED') {
+        if($tempUserDetail->status == TempUserDetailStatuses::denied) {
             throw ValidationException::withMessages([
                 'temp_user_already_declined' => 'Temp User Detail already declined.'
             ]);

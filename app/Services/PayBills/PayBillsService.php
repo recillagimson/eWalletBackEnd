@@ -207,7 +207,6 @@ class PayBillsService implements IPayBillsService
     public function downloadListOfBillersCSV()
     {
         $billers = $this->outPayBillsRepository->getAllBillers();
-        $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name;
         $columns = array('Customer Account ID', 'Customer Name', 'Reference Number', 'Date of Transaction', 'Biller', 'Amount', 'Status');
         $datas = [];
 
@@ -216,7 +215,7 @@ class PayBillsService implements IPayBillsService
                 'Customer Account ID'  => $biller->user_account_id,
                 'Customer Name' => ucwords($biller->user_detail->first_name) . ' ' . ucwords($biller->user_detail->last_name),
                 'Reference Number' => $biller->reference_number,
-                'Date of Transaction'  => Carbon::parse($biller->transaction_date)->format('F d, Y G:i A'),
+                'Date of Transaction'  => Carbon::parse($biller->transaction_date)->format('F d, Y g:i A'),
                 'Biller'  => $biller->billers_name,
                 'Amount'  => $biller->total_amount,
                 'Status'  => ($biller->status) ? 'Paid' : 'Not Paid',
@@ -224,7 +223,7 @@ class PayBillsService implements IPayBillsService
             ]);
         }
 
-        return $this->csvService->generateCSV($datas, $file_name, $columns);
+        return $this->csvService->generateCSV($datas, $columns);
     }
     
 }

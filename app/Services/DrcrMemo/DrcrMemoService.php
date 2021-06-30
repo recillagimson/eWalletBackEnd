@@ -34,11 +34,11 @@ class DrcrMemoService implements IDrcrMemoService
         $this->userBalanceRepository = $userBalanceRepository;
     }
 
-    public function getList(UserAccount $user, $data)
+    public function getList(UserAccount $user, $data, $per_page = 15)
     {
-        if ($data === 'ALL') return $this->drcrMemoRepository->getList($user);
-        if($data !== DrcrStatus::Approve && $data !== DrcrStatus::Decline && $data !== DrcrStatus::Pending) return $this->invalidStatus();
-        return $this->drcrMemoRepository->getListByCreatedBy($user, $data);
+        if ($data === 'ALL') return $this->drcrMemoRepository->getList($user, $per_page);
+        if ($data !== DrcrStatus::Approve && $data !== DrcrStatus::Decline && $data !== DrcrStatus::Pending) return $this->invalidStatus();
+        return $this->drcrMemoRepository->getListByCreatedBy($user, $data, $per_page);
     }
 
 
