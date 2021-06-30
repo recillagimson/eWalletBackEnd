@@ -50,14 +50,13 @@ class UserTransactionHistoryController extends Controller
 
     public function downloadCountTotalAmountEachUserPDF(DownloadTransactionHistoryRequest $request) {
         $record = $this->userTransactionHistory->countTransactionHistoryByDateRangeWithAmountLimit($request->from, $request->to);
-        $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name;
         $data = [
             'datas' => $record,
             'from'=> $request->from,
             'to'=> $request->to
         ]; 
 
-        return $this->pdfService->generatePDFNoUserPassword($data, $file_name, 'reports.user_transaction_history.user_transaction_history');
+        return $this->pdfService->generatePDFNoUserPassword($data, 'reports.user_transaction_history.user_transaction_history');
 
     }
 

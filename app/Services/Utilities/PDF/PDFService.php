@@ -18,9 +18,9 @@ class PDFService implements IPDFService
         $this->outPayBillsRepository = $outPayBillsRepository;
     }
 
-    public function generatePDFNoUserPassword(array $data, string $filename, string $loadView) {
+    public function generatePDFNoUserPassword(array $data, string $loadView) {
         $datetimeNow = Carbon::now()->timestamp;
-        $file_name = $filename . "_" . $datetimeNow . '.pdf';
+        $file_name = "admin_" . $datetimeNow . '.pdf';
 
         $pdf = PDF::loadView($loadView, $data);
         $pdf->SetProtection(['copy', 'print'], '', 'squidP@y');

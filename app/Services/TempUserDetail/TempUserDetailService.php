@@ -16,6 +16,7 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use App\Enums\TempUserDetailStatuses;
 
 class TempUserDetailService implements ITempUserDetailService
 {
@@ -57,9 +58,15 @@ class TempUserDetailService implements ITempUserDetailService
     {
         $tempUserDetail = $this->findById($id);
 
-        if($tempUserDetail->status) {
+        if($tempUserDetail->status == TempUserDetailStatuses::approved) {
             throw ValidationException::withMessages([
                 'temp_user_already_solved' => 'Temp User Detail already resolved.'
+            ]);
+        }
+
+        if($tempUserDetail->status == TempUserDetailStatuses::denied) {
+            throw ValidationException::withMessages([
+                'temp_user_already_declined' => 'Temp User Detail already declined.'
             ]);
         }
 
@@ -88,7 +95,7 @@ class TempUserDetailService implements ITempUserDetailService
         }
 
 
-        $data['status'] = $status;
+        $data['status'] = $status == 1 ? TempUserDetailStatuses::approved : TempUserDetailStatuses::denied;
         
         $this->tempUserDetail->update($tempUserDetail, $data);
         

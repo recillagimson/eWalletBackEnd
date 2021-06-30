@@ -1,12 +1,7 @@
 <?php
 
 namespace App\Services\Admin\Dashboard;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\App;
-use Illuminate\Validation\ValidationException;
-
-//Repository
-use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
@@ -14,6 +9,10 @@ use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use Illuminate\Validation\ValidationException;
+
+//Repository
 
 class AdminDashboardService implements IAdminDashboardService
 {
@@ -34,6 +33,14 @@ class AdminDashboardService implements IAdminDashboardService
     IOutSendMoneyRepository $outSendMoney,
     IOutSend2BankRepository $outSend2Bank,
     IDrcrMemoRepository $drMemo)
+    public function __construct(IUserAccountRepository $userdetail,
+                                IInAddMoneyRepository $addMoney,
+                                IInReceiveMoneyRepository $receiveMoney,
+                                IOutBuyLoadRepository $outBuyLoad,
+                                IOutPayBillsRepository $outPayBills,
+                                IOutSendMoneyRepository $outSendMoney,
+                                IOutSend2BankRepository $outSend2Bank,
+                                IDrcrMemoRepository $drMemo)
 
     {
         $this->userDetail = $userdetail;
@@ -46,7 +53,7 @@ class AdminDashboardService implements IAdminDashboardService
         $this->drMemo = $drMemo;
     }
 
-    public function dashboard(string $UserID)
+    public function dashboard(string $UserID): array
     {
         //Get user count
         $UserDetails = $this->userDetail->getUserCount();
@@ -76,10 +83,10 @@ class AdminDashboardService implements IAdminDashboardService
         $TotalSend2Bank = $this->outSend2Bank->totalSend2Bank();
         //Total Debit Memo
         $TotalDRMemo = $this->drMemo->totalDRMemo();
-        
+
         //Total Disbursement
         $TotalDisbursement = $TotalBuyLoad + $TotalPayBills + $TotalSendMoney + $TotalSend2Bank + $TotalDRMemo;
-        
+
 
         if($UserDetails)
         {

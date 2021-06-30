@@ -2,6 +2,7 @@
 
 namespace App\Repositories\UserAccount;
 
+use App\Models\UserAccount;
 use App\Repositories\IRepository;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -22,6 +23,8 @@ interface IUserAccountRepository extends IRepository
     public function getUser(string $id);
 
     public function getUserByAccountNumber(string $accountNumber);
+
+    public function getAccountNumber(string $userID);
 
     public function getByUsername(string $usernameField, string $username);
 
