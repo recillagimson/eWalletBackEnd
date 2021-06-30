@@ -21,17 +21,17 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         return $this->model->where('user_account_id', $user->id)->get();
     }
 
-    public function getListByCreatedBy(UserAccount $user, $data)
+    public function getListByCreatedBy(UserAccount $user, $data, $per_page = 15)
     {
         if ($data === 'P') $letterStatus = DrcrStatus::P;
         if ($data === 'D') $letterStatus = DrcrStatus::D;
         if ($data === 'A') $letterStatus = DrcrStatus::A;
-        return $this->model->where('created_by', $user->id)->orWhere('user_created', $user->id)->where('status', $letterStatus)->get();
+        return $this->model->where('created_by', $user->id)->orWhere('user_created', $user->id)->where('status', $letterStatus)->paginate($per_page);
     }
 
-    public function getList(UserAccount $user)
+    public function getList(UserAccount $user, $per_page = 15)
     {
-        return $this->model->where('created_by', $user->id)->orWhere('user_created', $user->id)->get();
+        return $this->model->where('created_by', $user->id)->orWhere('user_created', $user->id)->paginate($per_page);
     }
 
     public function getPendingByCreatedBy(UserAccount $user)
