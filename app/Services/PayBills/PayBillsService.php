@@ -10,7 +10,7 @@ use App\Enums\ReferenceNumberTypes;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Models\UserAccount;
-use App\Repositories\LogHistory\ILogHistoryRepository;
+//use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -61,7 +61,7 @@ class PayBillsService implements IPayBillsService
         $this->transactionHistories = $transactionHistories;
         $this->notificationService = $notificationService;
         $this->csvService = $csvService;
-        $this->logHistory = $logHistory;
+       // $this->logHistory = $logHistory;
     }
 
     
