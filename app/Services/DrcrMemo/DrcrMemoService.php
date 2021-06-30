@@ -37,14 +37,23 @@ class DrcrMemoService implements IDrcrMemoService
     public function getList(UserAccount $user, $data, $per_page = 15)
     {
         if ($data === 'ALL') return $this->drcrMemoRepository->getList($user, $per_page);
-        if($data !== DrcrStatus::Approve && $data !== DrcrStatus::Decline && $data !== DrcrStatus::Pending) return $this->invalidStatus();
+        if ($data !== DrcrStatus::Approve && $data !== DrcrStatus::Decline && $data !== DrcrStatus::Pending) return $this->invalidStatus();
         return $this->drcrMemoRepository->getListByCreatedBy($user, $data, $per_page);
+    }
+
+
+    public function getAllList(UserAccount $user, $data)
+    {
+        if ($data === 'ALL') return $this->drcrMemoRepository->getAll();
+        if ($data !== DrcrStatus::Approve && $data !== DrcrStatus::Decline && $data !== DrcrStatus::Pending) return $this->invalidStatus();
+        return $this->drcrMemoRepository->getAllList($user, $data);
     }
 
 
     public function show(string $referenceNumber): array
     {
         $show = $this->drcrMemoRepository->getByReferenceNumber($referenceNumber);
+        if (!$show) return $this->referenceNumberNotFound();
         return [$show];
     }
 
@@ -52,6 +61,8 @@ class DrcrMemoService implements IDrcrMemoService
     public function getUser(string $accountNumber): array
     {
         $user = $this->userAccountRepository->getUserByAccountNumber($accountNumber);
+        if(!$user) return $this->userAccountNotFound();
+
         $customerName = $user->userDetail->first_name . ' ' . $user->userDetail->last_name;
         $balance = $user->balanceInfo->available_balance;
         return ['customer_name' => $customerName, 'balance' => $balance];
@@ -60,6 +71,11 @@ class DrcrMemoService implements IDrcrMemoService
     public function store(UserAccount $user, $data)
     {
         $customer = $this->getUserByAccountNumber($data);
+        $typeOfMemo = $data['typeOfMemo'];
+
+        if(!$customer) return $this->userAccountNotFound();
+        if($typeOfMemo !== ReferenceNumberTypes::CR && $typeOfMemo !== ReferenceNumberTypes::DR) return $this->invalidTypeOfMemo();
+
         if ($data['typeOfMemo'] == ReferenceNumberTypes::DR) {
             $isEnough = $this->checkAmount($data, $customer->id);
             if (!$isEnough) $this->insuficientBalance();
@@ -124,6 +140,7 @@ class DrcrMemoService implements IDrcrMemoService
     {
         $balance = $this->userBalanceRepository->getUserBalance($customerID);
         if ($balance >= $data['amount']) return true;
+        return false;
     }
 
     private function setTypeOfMemo(string $typeOfMemo): string
