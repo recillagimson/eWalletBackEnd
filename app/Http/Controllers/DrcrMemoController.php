@@ -46,8 +46,12 @@ class DrcrMemoController extends Controller
      */
     public function showAll(ShowRequest $request): JsonResponse
     {
+        $per_page = 15;
+        if($request->has('per_page')) {
+            $per_page = $request->per_page;
+        }
         $data = $request->route('status');
-        $list = $this->drcrMemoService->getAllList(request()->user(), $data);
+        $list = $this->drcrMemoService->getAllList(request()->user(), $data, $per_page);
         return $this->responseService->successResponse($list->toArray(), SuccessMessages::success);
     }
 

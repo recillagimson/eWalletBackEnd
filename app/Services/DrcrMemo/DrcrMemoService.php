@@ -42,11 +42,11 @@ class DrcrMemoService implements IDrcrMemoService
     }
 
 
-    public function getAllList(UserAccount $user, $data)
+    public function getAllList(UserAccount $user, $data, $per_page = 15)
     {
-        if ($data === 'ALL') return $this->drcrMemoRepository->getAll();
+        if ($data === 'ALL') return $this->drcrMemoRepository->getAllPaginate($per_page);
         if ($data !== DrcrStatus::Approve && $data !== DrcrStatus::Decline && $data !== DrcrStatus::Pending) return $this->invalidStatus();
-        return $this->drcrMemoRepository->getAllList($user, $data);
+        return $this->drcrMemoRepository->getAllList($user, $data, $per_page);
     }
 
 
