@@ -45,7 +45,7 @@ class PayBillsService implements IPayBillsService
     private IUserTransactionHistoryRepository $transactionHistories;
     private INotificationService $notificationService;
     private ICSVService $csvService;
-    private ILogHistoryRepository $logHistory;
+    //private ILogHistoryRepository $logHistory;
 
     public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService,
                                 ICSVService $csvService){
