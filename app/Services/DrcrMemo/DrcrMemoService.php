@@ -34,9 +34,11 @@ class DrcrMemoService implements IDrcrMemoService
         $this->userBalanceRepository = $userBalanceRepository;
     }
 
-    public function getList(UserAccount $user)
+    public function getList(UserAccount $user, $data)
     {
-        return $this->drcrMemoRepository->getListByCreatedBy($user);
+        if ($data === 'ALL') return $this->drcrMemoRepository->getList($user);
+        if($data !== DrcrStatus::Approve && $data !== DrcrStatus::Decline && $data !== DrcrStatus::Pending) return $this->invalidStatus();
+        return $this->drcrMemoRepository->getListByCreatedBy($user, $data);
     }
 
 
@@ -55,13 +57,6 @@ class DrcrMemoService implements IDrcrMemoService
         return ['customer_name' => $customerName, 'balance' => $balance];
     }
 
-
-    public function showPending(UserAccount $user)
-    {
-        return $this->drcrMemoRepository->getPendingByCreatedBy($user);
-    }
-
-
     public function store(UserAccount $user, $data)
     {
         $customer = $this->getUserByAccountNumber($data);
@@ -70,6 +65,20 @@ class DrcrMemoService implements IDrcrMemoService
             if (!$isEnough) $this->insuficientBalance();
         }
         return $this->drcrMemo($user, $data, $customer->id);
+    }
+
+
+    public function updateMemo(UserAccount $user, $data)
+    {
+        $memo = $this->drcrMemoRepository->getByReferenceNumber($data['referenceNumber']);
+        $customer = $this->userAccountRepository->get($memo->user_account_id);
+        if ($data['typeOfMemo'] == ReferenceNumberTypes::DR) {
+            $isEnough = $this->checkAmount($data, $customer->id);
+            if (!$isEnough) $this->insuficientBalance();
+        }
+        $updateMemo = $this->drcrMemoRepository->updateMemo($user, $data);
+        if($updateMemo) return ['status' => 'success'];
+        return ['status' => 'failed'];
     }
 
 
@@ -154,7 +163,8 @@ class DrcrMemoService implements IDrcrMemoService
             'category' => $data['category'],
             'description' => $data['description'],
             'status' => TransactionStatuses::pending,
-            'user_created' => $user->id
+            'created_by' => $user->id,
+            'user_created' => $user->id,
         ];
 
         return $this->drcrMemoRepository->create($newMemo);

@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BPIController;
 use App\Http\Controllers\BuyLoad\AtmController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
@@ -246,6 +247,15 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
         });
 
+        Route::prefix('/bpi')->group(function() {
+            Route::post('/auth', [BPIController::class, 'bpiAuth']);
+            Route::post('/accounts', [BPIController::class, 'getAccounts']);
+            Route::post('/fundtopup', [BPIController::class, 'fundTopUp']);
+            Route::post('/otp', [BPIController::class, 'otp']);
+            Route::post('/process', [BPIController::class, 'process']);
+            Route::post('/status', [BPIController::class, 'status']);
+        });
+
     });
 
     Route::prefix('send/money')->middleware(['decrypt.request'])->name('send.money')->group(function () {
@@ -326,11 +336,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('drcr/memos')->middleware(['decrypt.request'])->group(function () {
-        Route::get('', [DrcrMemoController::class, 'index']);
+        Route::get('/index/{status}', [DrcrMemoController::class, 'index']);
         Route::post('', [DrcrMemoController::class, 'store']);
         Route::get('/show/{referenceNumber}', [DrcrMemoController::class, 'show']);
-        Route::get('/show/pending/status', [DrcrMemoController::class, 'showPending']);
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
+        Route::put('/update/memo', [DrcrMemoController::class, 'updateMemo']);
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
     });
 
