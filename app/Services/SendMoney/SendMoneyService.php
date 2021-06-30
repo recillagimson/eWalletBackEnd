@@ -392,7 +392,7 @@ class SendMoneyService implements ISendMoneyService
         $acctNumber = $this->userAccounts->getAccountNumber($userID);
         $this->loghistoryrepository->create([
             'user_account_id' => $userID,
-            'reference_number' => $fillRequest['refNo'],
+            'reference_number' => $fillRequest && isset($fillRequest['refNo']) ? $fillRequest['refNo'] : "N/A",
             'squidpay_module' => 'Send Money',
             'namespace' => 'SM',
             'transaction_date' => Carbon::now(),
