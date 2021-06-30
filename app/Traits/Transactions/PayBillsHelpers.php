@@ -215,19 +215,19 @@ trait PayBillsHelpers
                     $payBill->user_account_id
                 );
 
-              //  $acctNumber = $this->userAccountRepository->getAccountNumber($payBill->user_account_id);
+                $acctNumber = $this->userAccountRepository->getAccountNumber($payBill->user_account_id);
 
-                //$this->logHistory->create([
-                   // 'user_account_id' => $payBill->user_account_id,
-                   // 'reference_number' =>  $payBill->reference_number,
-                    //'squidpay_module' => 'Pay Bills',
-                    //'namespace' => 'PB',
-                    //'transaction_date' => Carbon::now(),
-                    //'remarks' => $acctNumber . ' has paid '. $payBill->total_amount .' to ' . $payBill->billers_name,
-                    //'operation' => 'Add and Update',
-                   // 'user_created' => $payBill->user_account_id,
-                    //'user_updated' => ''
-                //]);
+                $this->logHistory->create([
+                    'user_account_id' => $payBill->user_account_id,
+                    'reference_number' =>  $payBill->reference_number,
+                    'squidpay_module' => 'Pay Bills',
+                    'namespace' => 'PB',
+                    'transaction_date' => Carbon::now(),
+                    'remarks' => $acctNumber . ' has paid '. $payBill->total_amount .' to ' . $payBill->billers_name,
+                    'operation' => 'Add and Update',
+                    'user_created' => $payBill->user_account_id,
+                    'user_updated' => ''
+                ]);
 
             }
         }
