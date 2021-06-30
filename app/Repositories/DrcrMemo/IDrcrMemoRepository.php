@@ -11,4 +11,5 @@ interface IDrcrMemoRepository extends IRepository
     public function getPendingByCreatedBy(UserAccount $user);
     public function getByReferenceNumber(string $referenceNumber);
     public function updateDrcr(UserAccount $user, $data);
+    public function totalDRMemo();
 }

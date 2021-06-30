@@ -13,7 +13,7 @@ use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
-use App\Repositories\DRCRMemo\IDRCRMemoRepository;
+use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 
 class AdminDashboardService implements IAdminDashboardService
 {
@@ -24,7 +24,7 @@ class AdminDashboardService implements IAdminDashboardService
     public IOutPayBillsRepository $outPayBills;
     public IOutSendMoneyRepository $outSendMoney;
     public IOutSend2BankRepository $outSend2Bank;
-    public IDRCRMemoRepository $drMemo;
+    public IDrcrMemoRepository $drMemo;
 
     public function __construct(IUserAccountRepository $userdetail, 
     IInAddMoneyRepository $addMoney, 
@@ -33,7 +33,7 @@ class AdminDashboardService implements IAdminDashboardService
     IOutPayBillsRepository $outPayBills,
     IOutSendMoneyRepository $outSendMoney,
     IOutSend2BankRepository $outSend2Bank,
-    IDRCRMemoRepository $drMemo)
+    IDrcrMemoRepository $drMemo)
 
     {
         $this->userDetail = $userdetail;
@@ -60,8 +60,18 @@ class AdminDashboardService implements IAdminDashboardService
         $TotalBuyLoad = $this->outBuyLoad->totalBuyload();
         //Total paybills
         $TotalPayBills = $this->outPayBills->totalPayBills();
+        //amount (paybills)
+        $PayBillsAmount = $this->outPayBills->totalamountPayBills();
+        //other charges (paybills)
+        $PayBillsOtherCharges = $this->outPayBills->totalotherchargesPayBills();
+        //service fee (paybills)
+        $PayBillsServiceFee = $this->outPayBills->totalservicefeePayBills();
         //Total Send Money
         $TotalSendMoney = $this->outSendMoney->totalSendMoney();
+        //amount (send money)
+        $SendMoneyAmount = $this->outSendMoney->totalamountSendMoney();
+        //service fee (send money)
+        $SendMoneyServiceFee = $this->outSendMoney->totalservicefeeSendMoney();
         //Total Send to Bank
         $TotalSend2Bank = $this->outSend2Bank->totalSend2Bank();
         //Total Debit Memo
@@ -74,9 +84,14 @@ class AdminDashboardService implements IAdminDashboardService
         if($UserDetails)
         {
             $arr = [
+                'paybills_amount'   =>  $PayBillsAmount,
+                'paybills_other_charges'    =>  $PayBillsOtherCharges,
+                'paybills_service_fee'  =>  $PayBillsServiceFee,
                 'customer_count'    =>  $UserDetails,
                 'total_transaction' =>  '0',
                 'total_cashin'      =>  $TotalAmount,
+                'sendmoney_amount'  =>  $SendMoneyAmount,
+                'sendmoney_service_fee' =>  $SendMoneyServiceFee,
                 'total_disbursement'    =>  $TotalDisbursement,
             ];
 

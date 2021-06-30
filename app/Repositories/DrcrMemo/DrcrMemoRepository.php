@@ -58,4 +58,9 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         }
     }
 
+    public function totalDRMemo()
+    {
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('type_of_memo','=','DR')->where('status','=','SUCCESS')->sum('amount');
+    }
+
 }
