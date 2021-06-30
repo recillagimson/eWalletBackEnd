@@ -7,6 +7,7 @@ use App\Repositories\IRepository;
 interface IDrcrMemoRepository extends IRepository
 {
     public function getByUserAccountID(UserAccount $user);
+    public function getAllList(UserAccount $user, $data);
     public function getList(UserAccount $user, $per_page = 15);
     public function getListByCreatedBy(UserAccount $user, $data, $per_page = 15);
     public function getPendingByCreatedBy(UserAccount $user);

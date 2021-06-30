@@ -337,6 +337,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('drcr/memos')->middleware(['decrypt.request'])->group(function () {
         Route::get('/index/{status}', [DrcrMemoController::class, 'index']);
+        Route::get('/show/all/{status}', [DrcrMemoController::class, 'showAll']);
         Route::post('', [DrcrMemoController::class, 'store']);
         Route::get('/show/{referenceNumber}', [DrcrMemoController::class, 'show']);
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
