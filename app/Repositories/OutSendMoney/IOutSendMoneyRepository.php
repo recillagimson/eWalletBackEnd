@@ -7,5 +7,8 @@ interface IOutSendMoneyRepository extends IRepository
 {
     public function getLastRefNo();
     public function getSumOfTransactions($from, $to, string $userAccountId);
+    public function totalSendMoney();
+    public function totalamountSendMoney();
+    public function totalservicefeeSendMoney();
 }
 
