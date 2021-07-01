@@ -53,6 +53,7 @@ class ErrorCodes
     const userAccountNotFound = 414;
     const referenceNumberNotFound = 415;
     const invalidTypeOfMemo = 416;
+    const isEmpty = 417;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;

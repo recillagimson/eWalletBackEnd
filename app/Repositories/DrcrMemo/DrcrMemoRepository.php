@@ -62,6 +62,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         if($data['status'] == DrcrStatus::Approve){
             return $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::A,
+                'remarks' => 'Approved Dr/Cr Memo',
                 'approved_by' => $user->id,
                 'approved_at' => Carbon::now(),
                 'user_updated' => $user->id
@@ -70,6 +71,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         if ($data['status'] == DrcrStatus::Decline) {
             return $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::D,
+                'remarks' => $data['remarks'],
                 'declined_by' => $user->id,
                 'declined_at' => Carbon::now(),
                 'user_updated' => $user->id
