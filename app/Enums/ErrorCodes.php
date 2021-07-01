@@ -48,6 +48,11 @@ class ErrorCodes
     const receiverMonthlyLimitExceeded = 409;
     const tierUpgradeExist = 410;
     const userSelfieNotFound = 411;
+    const bpiTokenInvalidOrExpired = 412;
+    const invalidStatus = 413;
+    const userAccountNotFound = 414;
+    const referenceNumberNotFound = 415;
+    const invalidTypeOfMemo = 416;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;

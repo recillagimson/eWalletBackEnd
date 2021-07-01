@@ -4,5 +4,5 @@ namespace App\Services\Utilities\PDF;
 
 interface IPDFService
 {
-    public function generatePDFNoUserPassword(array $data, string $filename, string $loadView);
+    public function generatePDFNoUserPassword(array $data, string $loadView);
 }

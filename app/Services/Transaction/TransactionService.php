@@ -3,42 +3,61 @@
 
 namespace App\Services\Transaction;
 
-use PDF;
-use Carbon\Carbon;
+use App\Models\UserAccount;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\BuyLoad\IBuyLoadService;
+use App\Services\PayBills\IPayBillsService;
+use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
 use App\Services\Utilities\CSV\ICSVService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use PDF;
 
 class TransactionService implements ITransactionService
 {
     private IUserBalanceRepository $userBalanceRepository;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private ICSVService $csvService;
-    
-    public function __construct(IUserBalanceRepository $userBalanceRepository, IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-                                ICSVService $csvService)
+    private IPayBillsService $paybillsService;
+    private ISend2BankPesonetService $s2bService;
+    private IBuyLoadService $buyLoadService;
+
+    public function __construct(IUserBalanceRepository $userBalanceRepository,
+                                IUserTransactionHistoryRepository $userTransactionHistoryRepository,
+                                ICSVService $csvService,
+                                IPayBillsService $paybillsService,
+                                ISend2BankPesonetService $s2bService,
+                                IBuyLoadService $buyLoadService)
     {
-        $this->userBalanceRepository = $userBalanceRepository;        
+        $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->csvService = $csvService;
+        $this->paybillsService = $paybillsService;
+        $this->s2bService = $s2bService;
+        $this->buyLoadService = $buyLoadService;
     }
-    
-    // FOR USER BALANCE INFO
-    // public function addAvailableBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance) {
-    //     $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
-    // }
-    // public function subtractAvailableBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance) {
-    //     $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
-    // }
-    // public function addPendingBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance) {
-    //     $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
-    // }
-    // public function subtractPendingBalance(string $user_account_id, string $current_id, float $available_balance, float $pending_balance) {
-    //     $this->addUserBalanceInfo($user_account_id, $current_id, $available_balance, $pending_balance);
-    // }
 
-    public function addUserBalanceInfo(string $userAccountId, string $currencyId, float $availableBalance, float $pendingBalance) {
-        $record =  $this->userBalanceRepository->create([
+    public function processUserPending(UserAccount $user)
+    {
+        Log::info('Processing Pending Transactions:', $user->toArray());
+
+        //TODO: PAY BILLS
+        $paybillsResponse = $this->paybillsService->processPending($user);
+        Log::info('Pay Bills Process Pending Result:', $paybillsResponse);
+
+        //TODO: SEND2BANK PESONET / INSTAPAY
+        $s2bResponse = $this->s2bService->processPending($user->id);
+        Log::info('Send 2 Bank Process Pending Result:', $s2bResponse);
+
+        //TODO: BUY LOAD
+        $buyLoadResponse = $this->buyLoadService->processPending($user->id);
+        Log::info('Buy Load Process Pending Result:', $buyLoadResponse);
+    }
+
+    public function addUserBalanceInfo(string $userAccountId, string $currencyId, float $availableBalance, float $pendingBalance)
+    {
+        return $this->userBalanceRepository->create([
             'user_account_id' => $userAccountId,
             'currency_id' => $currencyId,
             'available_balance' => $availableBalance,
@@ -46,13 +65,11 @@ class TransactionService implements ITransactionService
             'user_created' => request()->user()->id,
             'user_updated' => request()->user()->id,
         ]);
-
-        return $record;
     }
 
     // USER TRANSACTION HISTORY
     public function createUserTransactionEntry(string $userAccountId, string $transactionId, string $referenceNumber, string $transactionCategoryId) {
-        $record = $this->userTransactionHistoryRepository->create([
+        return $this->userTransactionHistoryRepository->create([
             'user_account_id' => $userAccountId,
             'transaction_id' => $transactionId,
             'reference_number' => $referenceNumber,
@@ -60,11 +77,10 @@ class TransactionService implements ITransactionService
             'user_created' => request()->user()->id,
             'user_updated' => request()->user()->id,
         ]);
-        return $record;
     }
 
     public function createUserTransactionEntryUnauthenticated(string $userAccountId, string $transactionId, string $referenceNumber, float $total_amount, string $transactionCategoryId) {
-        $record = $this->userTransactionHistoryRepository->create([
+        return $this->userTransactionHistoryRepository->create([
             'user_account_id' => $userAccountId,
             'transaction_id' => $transactionId,
             'reference_number' => $referenceNumber,
@@ -73,7 +89,6 @@ class TransactionService implements ITransactionService
             'user_created' => $userAccountId,
             'user_updated' => $userAccountId,
         ]);
-        return $record;
     }
 
     public function generateTransactionHistory(string $userAccountId, string $dateFrom, string $dateTo) {
@@ -82,7 +97,7 @@ class TransactionService implements ITransactionService
             'records' => $records,
             'from' => $dateFrom,
             'to' => $dateTo,
-        ]; 
+        ];
         $password = str_replace(" ", "", strtolower(request()->user()->profile->last_name)) . Carbon::parse(request()->user()->profile->birth_date)->format('mdY');
         $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name . "_" . $dateFrom . "_" . $dateTo . '.pdf';
         \Log::info($password);
@@ -91,21 +106,22 @@ class TransactionService implements ITransactionService
         return $pdf->stream($file_name);
     }
 
-    public function downloadCountTotalAmountEachUserCSV(object $request) 
+    public function downloadCountTotalAmountEachUserCSV(object $request)
     {
         $records = $this->userTransactionHistoryRepository->countTransactionHistoryByDateRangeWithAmountLimit($request->from, $request->to);
-        $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name;
         $columns = array('Customer Account ID', 'Date of Transaction', 'Amount');
         $datas = [];
 
         foreach ($records as $record) {
             array_push($datas, [
-                'Customer Account ID'  => $record->user_account_id,
-                'Date of Transaction'  => Carbon::parse($record->transaction_date)->format('F d, Y G:i A'),
-                'Amount'  => $record->amount,
+                'Customer Account ID' => $record->user_account_id,
+                'Date of Transaction' => Carbon::parse($record->transaction_date)->format('F d, Y g:i A'),
+                'Amount' => $record->amount,
             ]);
         }
 
-        return $this->csvService->generateCSV($datas, $file_name, $columns);
+        return $this->csvService->generateCSV($datas, $columns);
     }
+
+
 }

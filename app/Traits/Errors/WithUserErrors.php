@@ -69,4 +69,8 @@ trait WithUserErrors
     public function userSelfieNotFound() {
         $this->validationErrorMessage(ErrorCodes::userSelfieNotFound, 'Account Selfie not found');
     }
+
+    public function bpiTokenInvalid() {
+        $this->validationErrorMessage(ErrorCodes::bpiTokenInvalidOrExpired, 'Please Login to BPI');
+    }
 }
