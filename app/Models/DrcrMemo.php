@@ -27,6 +27,7 @@ class DrcrMemo extends Model
         'currency_id',
         'category',
         'description',
+        'remarks',
         'status',
         'created_by',
         'approved_by',

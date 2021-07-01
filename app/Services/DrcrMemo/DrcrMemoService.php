@@ -101,12 +101,18 @@ class DrcrMemoService implements IDrcrMemoService
     public function approval(UserAccount $user, $data): array
     {
         $drcrMemo = $this->drcrMemoRepository->getByReferenceNumber($data['referenceNumber']);
+        if (!$drcrMemo) return $this->referenceNumberNotFound();
+
         $data['amount'] = $drcrMemo->amount;
-
+        $status = $data['status'];
+        $remarks = $data['remarks'];
         $isEnough = $this->checkAmount($data, $drcrMemo->user_account_id);
+        
+        if ($status !== DrcrStatus::Approve && $status !== DrcrStatus::Decline && $status !== DrcrStatus::Pending) return $this->invalidStatus1();   
         if (!$isEnough) $this->insuficientBalance();
+        if(empty($remarks) && $status == DrcrStatus::Decline) return $this->isEmpty();
 
-        if ($data['status'] == DrcrStatus::Approve) {
+        if ($status == DrcrStatus::Approve) {
             if ($drcrMemo->type_of_memo == ReferenceNumberTypes::DR) {
                 $this->debitMemo($drcrMemo->user_account_id, $drcrMemo->amount);
             }
@@ -114,6 +120,7 @@ class DrcrMemoService implements IDrcrMemoService
                 $this->creditMemo($drcrMemo->user_account_id, $drcrMemo->amount);
             }
         }
+
 
         if ($this->drcrMemoRepository->updateDrcr($user, $data)) return ['status' => 'success'];
         return ['status' => 'failed'];

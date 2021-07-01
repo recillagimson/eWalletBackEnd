@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateInReceiveMoneyTable extends Migration
+class UpdateAddColumnDrcrMemoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class UpdateInReceiveMoneyTable extends Migration
      */
     public function up()
     {
-        Schema::table('in_receive_money', function (Blueprint $table) {
-     
-            $table->string('message', 50)->after('amount');
-            $table->string('status', 20)->change();
+        Schema::table('drcr_memos', function (Blueprint $table) {
+            $table->string('remarks', 100)->after('description');
         });
     }
 
@@ -27,8 +25,8 @@ class UpdateInReceiveMoneyTable extends Migration
      */
     public function down()
     {
-        Schema::table('in_receive_money', function (Blueprint $table) {
-            $table->boolean('status')->change();
+        Schema::table('drcr_memos', function (Blueprint $table) {
+           
         });
     }
 }
