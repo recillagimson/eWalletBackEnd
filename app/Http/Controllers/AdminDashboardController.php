@@ -26,7 +26,7 @@ class AdminDashboardController extends Controller
      *
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $UserID = $request->user()->id;
         $Dashboard = $this->admindashboardService->dashboard($UserID);

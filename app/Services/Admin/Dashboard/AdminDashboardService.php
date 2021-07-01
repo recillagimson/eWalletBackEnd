@@ -8,7 +8,6 @@ use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
-use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use Illuminate\Validation\ValidationException;
 
@@ -33,14 +32,6 @@ class AdminDashboardService implements IAdminDashboardService
     IOutSendMoneyRepository $outSendMoney,
     IOutSend2BankRepository $outSend2Bank,
     IDrcrMemoRepository $drMemo)
-    public function __construct(IUserAccountRepository $userdetail,
-                                IInAddMoneyRepository $addMoney,
-                                IInReceiveMoneyRepository $receiveMoney,
-                                IOutBuyLoadRepository $outBuyLoad,
-                                IOutPayBillsRepository $outPayBills,
-                                IOutSendMoneyRepository $outSendMoney,
-                                IOutSend2BankRepository $outSend2Bank,
-                                IDrcrMemoRepository $drMemo)
 
     {
         $this->userDetail = $userdetail;
