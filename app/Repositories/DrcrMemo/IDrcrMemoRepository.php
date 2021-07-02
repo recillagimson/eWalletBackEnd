@@ -15,6 +15,7 @@ interface IDrcrMemoRepository extends IRepository
     public function getByReferenceNumber(string $referenceNumber);
     public function updateDrcr(UserAccount $user, $data);
     public function totalDRMemo();
+    public function totalCRMemo();
     public function updateMemo(UserAccount $user, $data);
     public function getDRCRMemo();
     public function getPerUser(string $UserID);
