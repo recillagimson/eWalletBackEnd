@@ -80,6 +80,10 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         return $this->getByReferenceNumber($data['referenceNumber'])->toArray();
     }
 
+    public function totalDRMemo()
+    {
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('type_of_memo','=','DR')->where('status','=','SUCCESS')->sum('amount');
+    }
     public function updateMemo(UserAccount $user, $data)
     {
         $status = $data['status'];
