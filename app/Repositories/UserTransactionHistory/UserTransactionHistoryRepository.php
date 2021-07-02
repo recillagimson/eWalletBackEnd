@@ -72,7 +72,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $this->countTransactionHistoryByDateRangeWithAmountLimitBaseQuery($from, $to)->get();
     }
 
-    private function countTransactionHistoryByDateRangeWithAmountLimitBaseQuery(string $from, string $to, $amount_limit=50000): Builder {
+    private function countTransactionHistoryByDateRangeWithAmountLimitBaseQuery(string $from, string $to, $amount_limit=500000): Builder {
         // return $this->model
         //     ->select(DB::raw('SUM(total_amount) as amount, transaction_date, user_account_id, transaction_category_id'))
         //     ->whereBetween('transaction_date', [$from, $to])
