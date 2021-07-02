@@ -113,11 +113,12 @@ class DrcrMemoService implements IDrcrMemoService
         $isEnough = $this->checkAmount($data, $drcrMemo->user_account_id);
         
         if ($status !== DrcrStatus::Approve && $status !== DrcrStatus::Decline && $status !== DrcrStatus::Pending) return $this->invalidStatus1();   
-        if (!$isEnough) return $this->insuficientBalance();
         if(empty($remarks) && $status == DrcrStatus::Decline) return $this->isEmpty();
+        if ($this->userTransHistory->isExisting($drcrMemo->id)) return $this->isExisting();
 
         if ($status == DrcrStatus::Approve) {
             if ($drcrMemo->type_of_memo == ReferenceNumberTypes::DR) {
+                if (!$isEnough) return $this->insuficientBalance();
                 $this->debitMemo($drcrMemo->user_account_id, $drcrMemo->amount);
             }
             if ($drcrMemo->type_of_memo == ReferenceNumberTypes::CR) {
@@ -128,7 +129,7 @@ class DrcrMemoService implements IDrcrMemoService
        $drcr = $this->drcrMemoRepository->updateDrcr($user, $data);
        $drcr1 = (object) $this->drcrMemoRepository->updateDrcr($user, $data);
 
-       $this->userTransHistory->log($drcr1->user_account_id, $drcr1->transaction_category_id, '', $drcr1->reference_number, $drcr1->amount, Carbon::parse($drcr1->updated_at), $drcr1->user_created);
+       $this->userTransHistory->log($drcr1->user_account_id, $drcr1->transaction_category_id, $drcr1->id, $drcr1->reference_number, $drcr1->amount, Carbon::parse($drcr1->updated_at), $drcr1->user_created);
 
        return $drcr;
     }
