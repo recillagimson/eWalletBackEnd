@@ -52,7 +52,7 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
 
     public function totalBuyload()
     {
-        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
     }
 
 }
