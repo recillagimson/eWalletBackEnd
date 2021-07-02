@@ -42,22 +42,22 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
 
     public function totalPayBills()
     {
-        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
     }
 
     public function totalamountPayBills()
     {
-        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('amount');
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('amount');
     }
 
     public function totalotherchargesPayBills()
     {
-        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('other_charges');
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('other_charges');
     }
 
     public function totalservicefeePayBills()
     {
-        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('service_fee');
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('service_fee');
     }
 
 }

@@ -25,6 +25,8 @@ class AdminDashboardResource extends JsonResource
             'sendmoney_amount'      =>  $this->sendmoney_amount,
             'sendmoney_service_fee' =>  $this->sendmoney_service_fee,
             'total_disbursement'    =>  $this->total_disbursement,
+            'total_collection'      =>  $this->total_collection,
+            'total_available_funds' =>  $this->total_available_funds,
         ];
     }
 }
