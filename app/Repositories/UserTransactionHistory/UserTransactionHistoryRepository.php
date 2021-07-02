@@ -90,4 +90,10 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $records;
     }
 
+    public function isExisting(string $id)
+    {
+       if($this->model->where('transaction_id', $id)->first()) return true;
+       return false;
+    }
+
 }

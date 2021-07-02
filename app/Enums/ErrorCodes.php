@@ -54,6 +54,7 @@ class ErrorCodes
     const referenceNumberNotFound = 415;
     const invalidTypeOfMemo = 416;
     const isEmpty = 417;
+    const isExisting = 418;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;
