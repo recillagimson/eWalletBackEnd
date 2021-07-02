@@ -38,6 +38,10 @@ trait WithDrcrMemoErrors
         $this->validationErrorMessage(ErrorCodes::isEmpty, 'Add remarks if status is Decline');
     }
 
+    private function isExisting()
+    {
+        $this->validationErrorMessage(ErrorCodes::isExisting, 'Already gone approval, cannot proceed again');
+    }
 
     private function userAccountNotFound()
     {
