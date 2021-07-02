@@ -60,7 +60,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
     public function updateDrcr(UserAccount $user, $data)
     {
         if($data['status'] == DrcrStatus::Approve){
-            return $this->model->where('reference_number', $data['referenceNumber'])->update([
+            $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::A,
                 'remarks' => 'Approved Dr/Cr Memo',
                 'approved_by' => $user->id,
@@ -69,7 +69,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             ]);
         }
         if ($data['status'] == DrcrStatus::Decline) {
-            return $this->model->where('reference_number', $data['referenceNumber'])->update([
+            $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::D,
                 'remarks' => $data['remarks'],
                 'declined_by' => $user->id,
@@ -77,6 +77,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
                 'user_updated' => $user->id
             ]);
         }
+        return $this->getByReferenceNumber($data['referenceNumber'])->toArray();
     }
 
     public function totalDRMemo()
@@ -89,7 +90,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         if($status === 'P') $letterStatus = DrcrStatus::P;
         if($status === 'D') $letterStatus = DrcrStatus::D;
         if($status === 'A') $letterStatus = DrcrStatus::A;
-        return $this->model->where('reference_number', $data['referenceNumber'])->update([
+        $this->model->where('reference_number', $data['referenceNumber'])->update([
             'status' => $letterStatus,
             'type_of_memo' => $data['typeOfMemo'],
             'amount' => $data['amount'],
@@ -97,6 +98,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             'description' => $data['description'],
             'user_updated' => $user->id
         ]);
+        return $this->getByReferenceNumber($data['referenceNumber'])->toArray();
     }
 
     public function getDRCRMemo()
@@ -106,7 +108,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 
     public function getPerUser(string $UserID)
     {
-        return $this->model->where('created_by', '=', $UserID)->where('status', '=', 'pending')->where('created_at', '<=', Carbon::now()->subDay())->count('status');
+        return $this->model->where('user_created', '=', $UserID)->where('status', '=', 'pending')->where('created_at', '<=', Carbon::now()->subDay())->count('status');
     }
 
 }

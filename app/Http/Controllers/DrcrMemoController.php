@@ -119,11 +119,11 @@ class DrcrMemoController extends Controller
      * @param ApprovalRequest $request
      * @return JsonResponse
      */
-    public function approval(ApprovalRequest $request)//: JsonResponse
+    public function approval(ApprovalRequest $request): JsonResponse
     {
         $data = $request->validated();
-        return $this->drcrMemoService->approval($request->user(), $data);
-        //return $this->responseService->successResponse($approval, SuccessMessages::success);
+        $approval = $this->drcrMemoService->approval($request->user(), $data);
+        return $this->responseService->successResponse($approval, SuccessMessages::success);
     }
 
 
