@@ -5,6 +5,7 @@ namespace App\Repositories\InAddMoney;
 use App\Enums\DragonPayStatusTypes;
 use App\Models\InAddMoneyFromBank;
 use App\Repositories\Repository;
+use Carbon\Carbon;
 
 class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
 {
@@ -47,5 +48,10 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
             ->where('status', '!=', 'FAILED')
             ->where('user_account_id', $userAccountID)
             ->sum('total_amount');
+    }
+
+    public function getTotalAddMoney()
+    {
+        return $this->model->where('status','=','SUCCESS')->where('created_at','<=',Carbon::now()->subDay())->sum('amount');
     }
 }

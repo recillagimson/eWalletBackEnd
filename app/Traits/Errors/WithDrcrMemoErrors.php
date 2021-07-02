@@ -23,10 +23,19 @@ trait WithDrcrMemoErrors
         $this->validationErrorMessage(ErrorCodes::userInsufficientBalance, 'Not Enough balance.');
     }
 
-
     private function invalidStatus()
     {
         $this->validationErrorMessage(ErrorCodes::invalidStatus, 'Invalid status: acceptable status are P => Pending, A => Approve, D => Decline, ALL => All');
+    }
+
+    private function invalidStatus1()
+    {
+        $this->validationErrorMessage(ErrorCodes::invalidStatus, 'Invalid status: acceptable status are P => Pending, A => Approve, D => Decline');
+    }
+
+    private function isEmpty()
+    {
+        $this->validationErrorMessage(ErrorCodes::isEmpty, 'Add remarks if status is Decline');
     }
 
 
@@ -42,7 +51,7 @@ trait WithDrcrMemoErrors
 
     private function invalidTypeOfMemo()
     {
-        $this->validationErrorMessage(ErrorCodes::referenceNumberNotFound, 'Invalid Type Of Memo');
+        $this->validationErrorMessage(ErrorCodes::invalidTypeOfMemo, 'Invalid Type Of Memo');
     }
 
 
