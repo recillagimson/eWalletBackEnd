@@ -26,10 +26,10 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     {
         $data = [
             'user_account_id' => $userId,
+            'transaction_category_id' => $transactionCategoryId,
             'transaction_id' => $transactionId,
             'reference_number' => $refNo,
             'total_amount' => $totalAmount,
-            'transaction_category_id' => $transactionCategoryId,
             'transaction_date' => $transactionDate,
             'user_created' => $userCreated
         ];
