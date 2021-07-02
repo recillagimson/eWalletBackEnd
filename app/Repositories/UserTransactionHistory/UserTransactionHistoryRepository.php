@@ -72,15 +72,22 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $this->countTransactionHistoryByDateRangeWithAmountLimitBaseQuery($from, $to)->get();
     }
 
-    private function countTransactionHistoryByDateRangeWithAmountLimitBaseQuery(string $from, string $to, $amount_limit=500000): Builder {
-        return $this->model
-            ->select(DB::raw('SUM(total_amount) as amount, transaction_date, user_account_id, transaction_category_id'))
-            ->whereBetween('transaction_date', [$from, $to])
-            ->groupBy('transaction_date', 'user_account_id')
-            ->having('amount', '>=', $amount_limit);
+    private function countTransactionHistoryByDateRangeWithAmountLimitBaseQuery(string $from, string $to, $amount_limit=1): Builder {
+        // return $this->model
+        //     ->select(DB::raw('SUM(total_amount) as amount, transaction_date, user_account_id, transaction_category_id'))
+        //     ->whereBetween('transaction_date', [$from, $to])
+        //     ->groupBy('transaction_date', 'user_account_id')
+        //     ->having('amount', '>=', $amount_limit);
             // ->groupBy(function($val) {
             //     return Carbon::parse($val->transaction_date)->format('Y-m-d');
             // })      
+
+        $records = $this->model
+        ->with(['user_account'])
+        ->whereBetween('created_at', [$from, $to])
+        ->where('total_amount', '>=', $amount_limit);
+
+        return $records;
     }
 
     public function isExisting(string $id)

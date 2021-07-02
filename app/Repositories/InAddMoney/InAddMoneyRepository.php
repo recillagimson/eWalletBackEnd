@@ -52,6 +52,6 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
 
     public function getTotalAddMoney()
     {
-        return $this->model->where('status','=','SUCCESS')->where('created_at','<=',Carbon::now()->subDay())->sum('amount');
+        return $this->model->where('status','=','SUCCESS')->where('transaction_date','<=',Carbon::now()->subDay())->sum('amount');
     }
 }

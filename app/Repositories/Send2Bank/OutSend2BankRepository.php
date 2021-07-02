@@ -79,6 +79,6 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
 
     public function totalSend2Bank()
     {
-        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
     }
 }

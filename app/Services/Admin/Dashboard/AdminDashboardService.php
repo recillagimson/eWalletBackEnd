@@ -74,9 +74,15 @@ class AdminDashboardService implements IAdminDashboardService
         $TotalSend2Bank = $this->outSend2Bank->totalSend2Bank();
         //Total Debit Memo
         $TotalDRMemo = $this->drMemo->totalDRMemo();
+        //Total CR Memo
+        $TotalCRMemo = $this->drMemo->totalCRMemo();
 
         //Total Disbursement
         $TotalDisbursement = $TotalBuyLoad + $TotalPayBills + $TotalSendMoney + $TotalSend2Bank + $TotalDRMemo;
+        //Total Collection
+        $TotalCollection = $totalCashin + $TotalCRMemo;
+        //Total Available Balance
+        $TotalAvailableBalance = $TotalCollection - $TotalDisbursement;
 
 
         if($UserDetails)
@@ -91,6 +97,8 @@ class AdminDashboardService implements IAdminDashboardService
                 'sendmoney_amount'  =>  $SendMoneyAmount,
                 'sendmoney_service_fee' =>  $SendMoneyServiceFee,
                 'total_disbursement'    =>  $TotalDisbursement,
+                'total_collection'  =>  $TotalCollection,
+                'total_available_funds' => $TotalAvailableBalance,
             ];
 
             return $arr;
