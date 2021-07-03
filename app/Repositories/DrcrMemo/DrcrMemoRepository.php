@@ -35,7 +35,9 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
     }
 
     public function getAllPaginate($per_page = 15) {
-        return $this->model->paginate($per_page);
+        return $this->model
+        ->with(['user_account', 'user_details', 'user_balance_info'])
+        ->paginate($per_page);
     }
 
     public function getAllList(UserAccount $user, $data, $per_page = 15)
@@ -43,7 +45,9 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         if ($data === 'P') $letterStatus = DrcrStatus::P;
         if ($data === 'D') $letterStatus = DrcrStatus::D;
         if ($data === 'A') $letterStatus = DrcrStatus::A;
-        return $this->model->where('status', $letterStatus)->paginate($per_page);
+        return $this->model
+            ->with(['user_account', 'user_details', 'user_balance_info'])
+            ->where('status', $letterStatus)->paginate($per_page);
     }
 
    
