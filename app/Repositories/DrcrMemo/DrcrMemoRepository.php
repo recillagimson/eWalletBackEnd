@@ -102,9 +102,9 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
     public function updateMemo(UserAccount $user, $data)
     {
         $status = $data['status'];
-        if($status === 'P') $letterStatus = DrcrStatus::P;
-        if($status === 'D') $letterStatus = DrcrStatus::D;
-        if($status === 'A') $letterStatus = DrcrStatus::A;
+        if ($status === 'P') $letterStatus = DrcrStatus::P;
+        if ($status === 'D') $letterStatus = DrcrStatus::D;
+        if ($status === 'A') $letterStatus = DrcrStatus::A;
         $this->model->where('reference_number', $data['referenceNumber'])->update([
             'status' => $letterStatus,
             'type_of_memo' => $data['typeOfMemo'],
@@ -115,6 +115,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         ]);
         return $this->getByReferenceNumber($data['referenceNumber'])->toArray();
     }
+    
 
     public function getDRCRMemo()
     {
