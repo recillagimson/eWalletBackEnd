@@ -352,7 +352,7 @@ class SendMoneyService implements ISendMoneyService
             'transaction_date' => date('Y-m-d H:i:s'),
             'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
             'transaction_remarks' => '',
-            'status' => true,
+            'status' => 'SUCCESS',
             'user_created' => $senderID,
             'user_updated' => ''
         ]);
