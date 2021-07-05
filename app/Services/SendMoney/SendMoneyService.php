@@ -346,7 +346,7 @@ class SendMoneyService implements ISendMoneyService
             'user_account_id' => $receiverID,
             'sender_id' => $senderID,
             'reference_number' => $fillRequest['refNoRM'],
-            'reference_number' => $fillRequest && isset($fillRequest['refNo']) ? $fillRequest['refNo'] : "N/A",
+            'out_send_money_reference_number' => $fillRequest['refNo'],
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
             'transaction_date' => date('Y-m-d H:i:s'),
@@ -392,7 +392,7 @@ class SendMoneyService implements ISendMoneyService
         $acctNumber = $this->userAccounts->getAccountNumber($userID);
         $this->loghistoryrepository->create([
             'user_account_id' => $userID,
-            'reference_number' => $fillRequest['refNo'],
+            'reference_number' => $fillRequest && isset($fillRequest['refNo']) ? $fillRequest['refNo'] : "N/A",
             'squidpay_module' => 'Send Money',
             'namespace' => 'SM',
             'transaction_date' => Carbon::now(),
