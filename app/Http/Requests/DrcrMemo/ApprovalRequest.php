@@ -25,7 +25,8 @@ class ApprovalRequest extends FormRequest
     {
         return [
             'referenceNumber' => 'required',
-            'status' => 'required'
+            'status' => 'required',
+            'remarks' => 'nullable'
         ];
     }
 }

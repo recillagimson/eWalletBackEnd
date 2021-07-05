@@ -4,6 +4,7 @@ namespace App\Repositories\OutSendMoney;
 
 use App\Repositories\Repository;
 use App\Models\OutSendMoney;
+use Carbon\Carbon;
 
 class OutSendMoneyRepository extends Repository implements IOutSendMoneyRepository
 {
@@ -23,6 +24,21 @@ class OutSendMoneyRepository extends Repository implements IOutSendMoneyReposito
             ->where('status', '!=', 'FAILED')
             ->where('user_account_id', $userAccountId)
             ->sum('total_amount');
+    }
+
+    public function totalSendMoney()
+    {
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=',1)->sum('total_amount');
+    }
+
+    public function totalamountSendMoney()
+    {
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=',1)->sum('amount');
+    }
+
+    public function totalservicefeeSendMoney()
+    {
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=',1)->sum('service_fee');
     }
 
 }   
