@@ -112,14 +112,6 @@ class UserProfileService implements IUserProfileService
             ]);
         }
 
-        $userDetail = $this->userDetailRepository->getByUserId($userAccount->id);
-
-        if(!$userDetail) {
-            throw ValidationException::withMessages([
-                'user_detail_not_found' => 'User Detail not found'
-            ]);
-        }
-
         $request = $this->addTransactionInfo($userAccount, $request, $user);
         $request = $this->addUserInput($request, $user);
         $request = array_filter($request);
@@ -140,7 +132,7 @@ class UserProfileService implements IUserProfileService
             ];
         }
 
-        $this->userDetailRepository->update($userDetail, $request);
+        $this->userDetailRepository->update($userAccount, $request);
 
         return [
             "status" => 0,

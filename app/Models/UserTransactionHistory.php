@@ -37,38 +37,24 @@ class UserTransactionHistory extends Model
         return $this->hasOne(TransactionCategory::class, 'id', 'transaction_category_id');
     }
 
-    public function user_account() {
-        return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
-    }
-
-    // public function user_account_number() {
-    //     return $this->hasOne(UserAccountNumber::class, 'user_account_id', 'user_account_id');
-    // }
-
 
     // Attributes
     public function getSignedTotalAmountAttribute()
     {
-        if($this && $this->transaction_category) {
-            $signedTransaction = $this->transaction_category->transaction_type;
-            if ($signedTransaction === "POSITIVE") {
-                return "+" . number_format((float)$this->total_amount, 2, '.', '');
-            }
-            return "-" . number_format((float)$this->total_amount, 2, '.', '');
+        $signedTransaction = $this->transaction_category->transaction_type;
+        if ($signedTransaction === "POSITIVE") {
+            return "+" . number_format((float)$this->total_amount, 2, '.', '');
         }
-        return $this->amount;
+        return "-" . number_format((float)$this->total_amount, 2, '.', '');
     }
 
     public function getTransactionTypeAttribute()
     {
-        if($this && $this->transaction_category) {
-            $signedTransaction = $this->transaction_category->transaction_type;
-            if ($signedTransaction === "POSITIVE") {
-                return "RECEIVED";
-            }
-            return "SENT";
+        $signedTransaction = $this->transaction_category->transaction_type;
+        if ($signedTransaction === "POSITIVE") {
+            return "RECEIVED";
         }
-        return "";
+        return "SENT";
     }
 
     public function getTransactableAttribute() {
