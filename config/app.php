@@ -200,8 +200,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        niklasravnsborg\LaravelPdf\PdfServiceProvider::class
-
+        niklasravnsborg\LaravelPdf\PdfServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -279,7 +279,8 @@ return [
         //Enums - Messages
         'SuccessMessages' => SuccessMessages::class,
 
-        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class
+        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
     'web_app_url' => env('WEB_APP_URL'),

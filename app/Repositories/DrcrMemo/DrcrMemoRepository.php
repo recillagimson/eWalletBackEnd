@@ -5,6 +5,7 @@ namespace App\Repositories\DrcrMemo;
 use App\Enums\DrcrStatus;
 use App\Enums\TransactionStatuses;
 use App\Models\DrcrMemo;
+use App\Models\DRCRProcedure;
 use App\Models\UserAccount;
 use App\Repositories\Repository;
 use Carbon\Carbon;
@@ -103,4 +104,9 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         return $this->model->where('created_by', '=', $UserID)->where('status', '=', 'pending')->where('created_at', '<=', Carbon::now()->subDay())->count('status');
     }
 
+    public function reportData(string $from, string $to) {
+        return DRCRProcedure::where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to)
+            ->get();
+    }
 }

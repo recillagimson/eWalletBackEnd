@@ -187,4 +187,8 @@ class DrcrMemoService implements IDrcrMemoService
         return $this->drcrMemoRepository->create($newMemo);
     }
 
+    public function report(array $params) {
+        $data = $this->drcrMemoRepository->reportData($params['from'], $params['to']);
+        
+    }
 }

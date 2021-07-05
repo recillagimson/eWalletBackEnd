@@ -343,6 +343,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
         Route::put('/update/memo', [DrcrMemoController::class, 'updateMemo']);
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
+        
+        Route::post('/report', [DrcrMemoController::class, 'report']);
     });
 
 

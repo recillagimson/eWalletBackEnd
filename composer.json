@@ -20,6 +20,7 @@
         "laravel/sanctum": "^2.9",
         "laravel/tinker": "^2.5",
         "league/flysystem-aws-s3-v3": "~1.0",
+        "maatwebsite/excel": "^3.1",
         "niklasravnsborg/laravel-pdf": "^4.0",
         "sendgrid/sendgrid": "^7.9",
         "tmilos/jose-jwt": "^2.0"
