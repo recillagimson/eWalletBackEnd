@@ -26,10 +26,10 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     {
         $data = [
             'user_account_id' => $userId,
-            'transaction_category_id' => $transactionCategoryId,
             'transaction_id' => $transactionId,
             'reference_number' => $refNo,
             'total_amount' => $totalAmount,
+            'transaction_category_id' => $transactionCategoryId,
             'transaction_date' => $transactionDate,
             'user_created' => $userCreated
         ];
@@ -73,27 +73,14 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     }
 
     private function countTransactionHistoryByDateRangeWithAmountLimitBaseQuery(string $from, string $to, $amount_limit=500000): Builder {
-        // return $this->model
-        //     ->select(DB::raw('SUM(total_amount) as amount, transaction_date, user_account_id, transaction_category_id'))
-        //     ->whereBetween('transaction_date', [$from, $to])
-        //     ->groupBy('transaction_date', 'user_account_id')
-        //     ->having('amount', '>=', $amount_limit);
+        return $this->model
+            ->select(DB::raw('SUM(total_amount) as amount, transaction_date, user_account_id, transaction_category_id'))
+            ->whereBetween('transaction_date', [$from, $to])
+            ->groupBy('transaction_date', 'user_account_id')
+            ->having('amount', '>=', $amount_limit);
             // ->groupBy(function($val) {
             //     return Carbon::parse($val->transaction_date)->format('Y-m-d');
             // })      
-
-        $records = $this->model
-        ->with(['user_account'])
-        ->whereBetween('created_at', [$from, $to])
-        ->where('total_amount', '>=', $amount_limit);
-
-        return $records;
-    }
-
-    public function isExisting(string $id)
-    {
-       if($this->model->where('transaction_id', $id)->first()) return true;
-       return false;
     }
 
 }

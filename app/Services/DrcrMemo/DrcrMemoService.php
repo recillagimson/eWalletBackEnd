@@ -9,12 +9,10 @@ use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Models\UserAccount;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithDrcrMemoErrors;
-use Carbon\Carbon;
 
 class DrcrMemoService implements IDrcrMemoService
 {
@@ -24,19 +22,16 @@ class DrcrMemoService implements IDrcrMemoService
     private IReferenceNumberService $referenceNumberService;
     private IUserAccountRepository $userAccountRepository;
     private IUserBalanceInfoRepository $userBalanceRepository;
-    private IUserTransactionHistoryRepository $userTransHistory;
 
     public function __construct(IDrcrMemoRepository $drcrMemoRepository,
                                 IReferenceNumberService $referenceNumberService,
                                 IUserAccountRepository $userAccountRepository,
-                                IUserBalanceInfoRepository $userBalanceRepository,
-        IUserTransactionHistoryRepository $userTransHistory)
+                                IUserBalanceInfoRepository $userBalanceRepository)
     {
         $this->drcrMemoRepository = $drcrMemoRepository;
         $this->referenceNumberService = $referenceNumberService;
         $this->userAccountRepository = $userAccountRepository;
         $this->userBalanceRepository = $userBalanceRepository;
-        $this->userTransHistory = $userTransHistory;
     }
 
     public function getList(UserAccount $user, $data, $per_page = 15)
@@ -97,41 +92,31 @@ class DrcrMemoService implements IDrcrMemoService
             $isEnough = $this->checkAmount($data, $customer->id);
             if (!$isEnough) $this->insuficientBalance();
         }
-        return $this->drcrMemoRepository->updateMemo($user, $data);
-
+        $updateMemo = $this->drcrMemoRepository->updateMemo($user, $data);
+        if($updateMemo) return ['status' => 'success'];
+        return ['status' => 'failed'];
     }
 
 
     public function approval(UserAccount $user, $data): array
     {
         $drcrMemo = $this->drcrMemoRepository->getByReferenceNumber($data['referenceNumber']);
-        if (!$drcrMemo) return $this->referenceNumberNotFound();
-
         $data['amount'] = $drcrMemo->amount;
-        $status = $data['status'];
-        $remarks = $data['remarks'];
-        $isEnough = $this->checkAmount($data, $drcrMemo->user_account_id);
-        
-        if ($status !== DrcrStatus::Approve && $status !== DrcrStatus::Decline && $status !== DrcrStatus::Pending) return $this->invalidStatus1();   
-        if(empty($remarks) && $status == DrcrStatus::Decline) return $this->isEmpty();
-        if ($this->userTransHistory->isExisting($drcrMemo->id)) return $this->isExisting();
 
-        if ($status == DrcrStatus::Approve) {
+        $isEnough = $this->checkAmount($data, $drcrMemo->user_account_id);
+        if (!$isEnough) $this->insuficientBalance();
+
+        if ($data['status'] == DrcrStatus::Approve) {
             if ($drcrMemo->type_of_memo == ReferenceNumberTypes::DR) {
-                if (!$isEnough) return $this->insuficientBalance();
                 $this->debitMemo($drcrMemo->user_account_id, $drcrMemo->amount);
             }
             if ($drcrMemo->type_of_memo == ReferenceNumberTypes::CR) {
                 $this->creditMemo($drcrMemo->user_account_id, $drcrMemo->amount);
             }
         }
-     
-       $drcr = $this->drcrMemoRepository->updateDrcr($user, $data);
-       $drcr1 = (object) $this->drcrMemoRepository->updateDrcr($user, $data);
 
-       $this->userTransHistory->log($drcr1->user_account_id, $drcr1->transaction_category_id, $drcr1->id, $drcr1->reference_number, $drcr1->amount, Carbon::parse($drcr1->updated_at), $drcr1->user_created);
-
-       return $drcr;
+        if ($this->drcrMemoRepository->updateDrcr($user, $data)) return ['status' => 'success'];
+        return ['status' => 'failed'];
     }
 
 

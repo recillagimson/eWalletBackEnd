@@ -12,5 +12,4 @@ interface IInAddMoneyRepository extends IRepository
     public function getByMultipleReferenceNumber(array $referenceNumbers);
     public function getByUserAccountID(string $userAccountID);
     public function getSumOfTransactions($from, $to, $userAccountID);
-    public function getTotalAddMoney();
 }
