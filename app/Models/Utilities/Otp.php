@@ -29,7 +29,7 @@ class Otp extends Model
         $generatedTime = $this->generated_at->addMinutes($this->validity);
         $currentTime = Carbon::now();
 
-        if ($currentTime->greaterThanOrEqualTo($generatedTime)) {
+        if ($currentTime->lessThanOrEqualTo($generatedTime)) {
             return false;
         }
         $this->expired = true;
