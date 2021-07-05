@@ -28,17 +28,17 @@ class OutSendMoneyRepository extends Repository implements IOutSendMoneyReposito
 
     public function totalSendMoney()
     {
-        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=',1)->sum('total_amount');
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','successful')->sum('total_amount');
     }
 
     public function totalamountSendMoney()
     {
-        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=',1)->sum('amount');
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','successful')->sum('amount');
     }
 
     public function totalservicefeeSendMoney()
     {
-        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=',1)->sum('service_fee');
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','successful')->sum('service_fee');
     }
 
 }   
