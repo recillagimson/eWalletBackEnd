@@ -9,6 +9,8 @@ use App\Enums\NetworkTypes;
 use App\Enums\OtpTypes;
 use App\Enums\PayloadTypes;
 use App\Enums\ReferenceNumberTypes;
+use App\Enums\SecBankInstapayReturnCodes;
+use App\Enums\SecBankPesonetStatus;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\SuccessMessages;
 use App\Enums\TokenNames;
@@ -275,6 +277,8 @@ return [
         'UbpResponseCodes' => UbpResponseCodes::class,
         'UbpResponseStates' => UbpResponseStates::class,
         'AtmPrepaidResponseCodes' => AtmPrepaidResponseCodes::class,
+        'SecBankInstapayReturnCodes' => SecBankInstapayReturnCodes::class,
+        'SecBankPesonetStatus' => SecBankPesonetStatus::class,
 
         //Enums - Messages
         'SuccessMessages' => SuccessMessages::class,

@@ -4,6 +4,8 @@
 namespace App\Traits\Transactions;
 
 
+use App\Enums\SecBankInstapayReturnCodes;
+use App\Enums\SecBankPesonetStatus;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionStatuses;
 use App\Enums\UbpResponseCodes;
@@ -16,11 +18,13 @@ use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\XML\XmlService;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithUserErrors;
 use App\Traits\UserHelpers;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
+use Log;
 
 trait Send2BankHelpers
 {
@@ -33,9 +37,9 @@ trait Send2BankHelpers
 
     private function getSend2BankProviderCaption(string $provider): string
     {
-        if ($provider === TpaProviders::ubpPesonet) return 'UBP: Pesonet';
-        if ($provider === TpaProviders::ubpInstapay) return 'UBP: Instapay';
-        if ($provider === TpaProviders::ubp) return 'UBP';
+        //if ($provider === TpaProviders::ubpPesonet) return 'UBP: Pesonet';
+        //if ($provider === TpaProviders::ubpInstapay) return 'UBP: Instapay';
+        if ($provider === TpaProviders::secBankInstapay) return 'SecBank: Instapay';
 
         $this->tpaInvalidProvider();
     }
@@ -60,6 +64,7 @@ trait Send2BankHelpers
     {
         if (!$response->successful()) {
             $errors = $response->json();
+            Log::error('Send2Bank UBP Error: ', $errors);
             $this->transactionFailed();
         } else {
             $data = $response->json();
@@ -132,10 +137,29 @@ trait Send2BankHelpers
         }
     }
 
+    private function handleSecBankTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
+    {
+        if ($send2Bank->provider === TpaProviders::secBankInstapay) {
+            return $this->handleInstapayTransferResponse($send2Bank, $response);
+        }
+
+        if ($send2Bank->provider === TpaProviders::secBankPesonet) {
+            return $this->handlePesonetTransferResponse($send2Bank, $response);
+        }
+    }
+
+    private function handleSecBankStatusResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
+    {
+        if ($send2Bank->provider === TpaProviders::secBankInstapay) {
+            return $this->handleInstapayCheckStatusResponse($send2Bank, $response);
+        }
+    }
+
     private function handleDirectTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
     {
         if (!$response->successful()) {
             $errors = $response->json();
+            Log::error('Send2Bank UBP Error: ', $errors);
             $this->transactionFailed();
         } else {
             $data = $response->json();
@@ -163,6 +187,7 @@ trait Send2BankHelpers
             return $send2Bank;
         }
     }
+
     private function sendNotifications(UserAccount $user, OutSend2Bank $send2Bank, float $availableBalance)
     {
         $usernameField = $this->getUsernameFieldByAvailability($user);
@@ -195,5 +220,90 @@ trait Send2BankHelpers
             'remarks' => $send2Bank->remarks,
             'particulars' => $send2Bank->particulars
         ];
+    }
+
+    private function handleInstapayTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
+    {
+        if ($response->successful()) {
+            $error = $response->body();
+            Log::error('Instapay Error response', ['response' => $error]);
+            $this->transactionFailed();
+        } else {
+            $xmlService = new XmlService();
+            $xmlBody = $xmlService->toArray($response->body());
+            $xmlResponse = $xmlBody['payBankResponse'];
+            $xmlReturn = $xmlResponse['ns1payBankReturn"'];
+
+            $strData = Str::of($xmlReturn)->explode('|');
+            $data = [
+                'returnCode' => $strData[0],
+                'returnValue' => $strData[1],
+                'returnLocalRefId' => $strData[2],
+                'traceNo' => $strData[3],
+                'returnDupRespCode' => $strData[4],
+                'returnDupRespCodeMsg' => $strData[5],
+                'returnDupLocalRefID' => $strData[6]
+            ];
+
+            if ($data['returnCode'] === SecBankInstapayReturnCodes::success) {
+                $send2Bank->status = TransactionStatuses::success;
+                $send2Bank->provider_transaction_id = $data['returnLocalRefId'];
+                $send2Bank->provider_remittance_id = $data['returnLocalRefId'];
+                $send2Bank->user_updated = $send2Bank->user_account_id;
+                $send2Bank->transaction_response = json_encode($data);
+                $send2Bank->save();
+
+                $this->transactionHistories->log($send2Bank->user_account_id,
+                    $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
+                    $send2Bank->total_amount, $send2Bank->transaction_date,
+                    $send2Bank->user_account_id);
+
+            }
+
+            return $send2Bank;
+        }
+    }
+
+    private function handleInstapayCheckStatusResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
+    {
+        if ($response->successful()) {
+            //TODO: PROCEDURE TO UPDATE INSTAPAYS PENDING TRANSACTIONS
+        }
+
+        return $send2Bank;
+    }
+
+    private function handlePesonetTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
+    {
+        if ($response->successful()) {
+            $error = $response->body();
+            Log::error('Instapay Error response', ['response' => $error]);
+            $this->transactionFailed();
+        } else {
+            $data = $response->json();
+            if (!$data) $this->transactionFailed();
+
+            if ($data['status'] === SecBankPesonetStatus::success) {
+                $send2Bank->status = TransactionStatuses::success;
+                $send2Bank->provider_transaction_id = $data['localRefId'];
+                $send2Bank->provider_remittance_id = $data['localRefId'];
+                $send2Bank->transaction_response = json_encode($data);
+
+                $this->transactionHistories->log($send2Bank->user_account_id,
+                    $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
+                    $send2Bank->total_amount, $send2Bank->transaction_date,
+                    $send2Bank->user_account_id);
+            } else if ($data['status'] === SecBankPesonetStatus::pending) {
+                $send2Bank->status = TransactionStatuses::pending;
+            } else {
+                $this->transactionFailed();
+            }
+
+            $send2Bank->user_updated = $send2Bank->user_account_id;
+            $send2Bank->transaction_response = json_encode($data);
+            $send2Bank->save();
+
+            return $send2Bank;
+        }
     }
 }

@@ -7,6 +7,8 @@ namespace App\Services\BuyLoad;
 use App\Enums\AtmPrepaidResponseCodes;
 use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
+use App\Enums\SquidPayModuleTypes;
+use App\Enums\TransactionCategories;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Enums\UsernameTypes;
@@ -16,6 +18,7 @@ use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Transaction\ITransactionValidationService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
@@ -36,13 +39,15 @@ class BuyLoadService implements IBuyLoadService
     use UserHelpers;
 
     private IAtmService $atmService;
+    private IEmailService $emailService;
+    private ISmsService $smsService;
     private ITransactionValidationService $transactionValidationService;
     private IOtpService $otpService;
     private IReferenceNumberService $referenceNumberService;
+    private ILogHistoryService $logHistoryService;
+
     private IOutBuyLoadRepository $buyLoads;
     private IUserTransactionHistoryRepository $transactionHistories;
-    private IEmailService $emailService;
-    private ISmsService $smsService;
     private IUserAccountRepository $users;
 
     public function __construct(IAtmService $atmService,
@@ -53,7 +58,8 @@ class BuyLoadService implements IBuyLoadService
                                 ISmsService $smsService,
                                 IUserAccountRepository $users,
                                 IOutBuyLoadRepository $buyLoads,
-                                IUserTransactionHistoryRepository $transactionHistories)
+                                IUserTransactionHistoryRepository $transactionHistories,
+                                ILogHistoryService $logHistoryService)
     {
         $this->atmService = $atmService;
         $this->transactionValidationService = $transactionValidationService;
@@ -65,6 +71,7 @@ class BuyLoadService implements IBuyLoadService
         $this->users = $users;
         $this->buyLoads = $buyLoads;
         $this->transactionHistories = $transactionHistories;
+        $this->logHistoryService = $logHistoryService;
     }
 
     public function getProductsByProvider(string $mobileNumber): array
@@ -121,6 +128,7 @@ class BuyLoadService implements IBuyLoadService
             $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance);
             DB::commit();
 
+            $this->logHistory($userId, $refNo, $currentDate, $productCode, $recipientMobileNumber);
             return $this->createLoadTopupResponse($buyLoad);
         } catch (Exception $e) {
             DB::rollBack();
@@ -173,6 +181,7 @@ class BuyLoadService implements IBuyLoadService
     {
         if (!$response->successful()) {
             $errors = $response->json();
+            Log::error('BuyLoad UBP Error', $errors);
             $this->transactionFailed();
         } else {
             $responseData = $response->json();
@@ -213,7 +222,6 @@ class BuyLoadService implements IBuyLoadService
         } else {
             $responseData = $response->json();
             $state = $responseData['responseCode'];
-            $data = $responseData['data'];
 
             if ($state === AtmPrepaidResponseCodes::transactionQueued) return $buyLoad;
 
@@ -281,5 +289,16 @@ class BuyLoadService implements IBuyLoadService
             'transaction_number' => $buyLoad->reference_number,
             'transaction_date' => $buyLoad->transaction_date,
         ];
+    }
+
+    private function logHistory(string $userId, string $refNo, Carbon $logDate, string $productCode, string $mobileNumber)
+    {
+        $spModule = SquidPayModuleTypes::BuyLoad;
+        $operation = TransactionCategories::BuyLoad;
+
+        $remarks = "Loaded $productCode to mobile number: $mobileNumber.";
+
+        $this->logHistories->logUserHistory($userId, $refNo, $spModule,
+            null, $logDate, $remarks, $operation);
     }
 }

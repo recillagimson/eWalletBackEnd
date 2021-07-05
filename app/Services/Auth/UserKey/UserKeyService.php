@@ -154,7 +154,9 @@ class UserKeyService implements IUserKeyService
     private function checkKey(string $userId, string $key)
     {
         $latestKey = $this->keyLogs->getLatest($userId);
-        if (!$latestKey->isAtMinimumAge($this->minPasswordAge)) $this->passwordNotAged($this->minPasswordAge);
+        if ($latestKey) {
+            if (!$latestKey->isAtMinimumAge($this->minPasswordAge)) $this->passwordNotAged($this->minPasswordAge);
+        }
 
         if ($key) {
             $keyLogs = $this->keyLogs->getPrevious($this->passwordRepeatCount, $userId);
