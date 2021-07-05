@@ -29,6 +29,7 @@ class UpdateInReceiveMoneyTable extends Migration
     {
         Schema::table('in_receive_money', function (Blueprint $table) {
             $table->boolean('status')->change();
+           
         });
     }
 }

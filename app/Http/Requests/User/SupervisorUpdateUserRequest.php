@@ -101,14 +101,12 @@ class SupervisorUpdateUserRequest extends FormRequest
             'mobile_number' => [
                 Rule::requiredIf(!$this->email),
                 'max:11',
-                new MobileNumber(),
-                'unique:user_accounts,mobile_number,' . $this->id
+                new MobileNumber()
             ],
             'email' => [
                 Rule::requiredIf(!$this->mobile_number),
                 'email:rfc,dns',
-                'unique:user_accounts,email,' . $this->id,
-                'max:50',
+                'max:50'
             ],
             'remarks' => [
                 'sometimes'

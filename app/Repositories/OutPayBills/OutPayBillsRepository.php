@@ -6,7 +6,6 @@ use App\Enums\TransactionStatuses;
 use App\Models\OutPayBills;
 use App\Repositories\Repository;
 use Illuminate\Database\Eloquent\Builder;
-use Carbon\Carbon;
 
 class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
 {
@@ -38,26 +37,6 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
 
     private function getAllBillersBaseQuery(): Builder {
         return $this->model->with(['user_detail', 'user_account']);
-    }
-
-    public function totalPayBills()
-    {
-        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
-    }
-
-    public function totalamountPayBills()
-    {
-        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('amount');
-    }
-
-    public function totalotherchargesPayBills()
-    {
-        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('other_charges');
-    }
-
-    public function totalservicefeePayBills()
-    {
-        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('service_fee');
     }
 
 }

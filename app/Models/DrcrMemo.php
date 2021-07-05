@@ -27,7 +27,6 @@ class DrcrMemo extends Model
         'currency_id',
         'category',
         'description',
-        'remarks',
         'status',
         'created_by',
         'approved_by',
@@ -37,17 +36,5 @@ class DrcrMemo extends Model
         'user_created',
         'user_updated'
     ];
-
-    public function user_account() {
-        return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
-    }
-
-    public function user_details() {
-        return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
-    }
-
-    public function user_balance_info() {
-        return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'user_account_id');
-    }
 
 }
