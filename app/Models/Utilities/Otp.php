@@ -27,8 +27,9 @@ class Otp extends Model
         }
 
         $generatedTime = $this->generated_at->addMinutes($this->validity);
+        $currentTime = Carbon::now();
 
-        if (strtotime($generatedTime) >= strtotime(Carbon::now()->toDateTimeString())) {
+        if ($currentTime->greaterThanOrEqualTo($generatedTime)) {
             return false;
         }
         $this->expired = true;
