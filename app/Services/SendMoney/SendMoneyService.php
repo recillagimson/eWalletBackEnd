@@ -346,7 +346,7 @@ class SendMoneyService implements ISendMoneyService
             'user_account_id' => $receiverID,
             'sender_id' => $senderID,
             'reference_number' => $fillRequest['refNoRM'],
-            'out_send_money_reference_number' => $fillRequest['refNo'],
+            'reference_number' => $fillRequest && isset($fillRequest['refNo']) ? $fillRequest['refNo'] : "N/A",
             'amount' => $fillRequest['amount'],
             'message' => $fillRequest['message'],
             'transaction_date' => date('Y-m-d H:i:s'),
