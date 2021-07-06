@@ -61,4 +61,16 @@ trait WithUserErrors
     {
         $this->validationErrorMessage(ErrorCodes::tierUpgradeExist, 'Opps! You are not allowed to perform this transaction, there is a pending tier upgrade request.');
     }
+
+    public function userAccountNotFound() {
+        $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account not found');
+    }
+
+    public function userSelfieNotFound() {
+        $this->validationErrorMessage(ErrorCodes::userSelfieNotFound, 'Account Selfie not found');
+    }
+
+    public function bpiTokenInvalid() {
+        $this->validationErrorMessage(ErrorCodes::bpiTokenInvalidOrExpired, 'Please Login to BPI');
+    }
 }

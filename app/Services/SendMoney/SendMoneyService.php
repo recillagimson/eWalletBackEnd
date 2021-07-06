@@ -175,6 +175,7 @@ class SendMoneyService implements ISendMoneyService
      */
     public function generateQR(object $user, array $fillRequest)
     {
+        $this->generateQRLogHistories($user->id, $fillRequest);
         return $this->qrTransactions->create([
             'user_account_id' => $user->id,
             'amount' => $fillRequest['amount'],
@@ -329,7 +330,7 @@ class SendMoneyService implements ISendMoneyService
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             // 'purpose_of_transfer_id' => '',
             'message' => $fillRequest['message'],
-            'status' => true,
+           'status' => 'SUCCESS',
             'transaction_date' => date('Y-m-d H:i:s'),
             'transaction_category_id' => SendMoneyConfig::CXSEND,
             'transaction_remarks' => '',
@@ -351,7 +352,7 @@ class SendMoneyService implements ISendMoneyService
             'transaction_date' => date('Y-m-d H:i:s'),
             'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
             'transaction_remarks' => '',
-            'status' => true,
+            'status' => 'SUCCESS',
             'user_created' => $senderID,
             'user_updated' => ''
         ]);
@@ -360,15 +361,44 @@ class SendMoneyService implements ISendMoneyService
 
     private function logHistories($senderID, $receiverID, $fillRequest)
     {
+        $senderAccountNumber = $this->userAccounts->getAccountNumber($senderID);
+        $receiverAccountNumber = $this->userAccounts->getAccountNumber($receiverID);
         $this->loghistoryrepository->create([
             'user_account_id' => $senderID,
             'reference_number' => $fillRequest['refNo'],
             'squidpay_module' => 'Send Money',
             'namespace' => 'SM',
             'transaction_date' => Carbon::now(),
-            'remarks' => $senderID . ' sent money to ' . $receiverID,
+            'remarks' => $senderAccountNumber . ' has sent money via Squidpay to ' . $receiverAccountNumber,
             'operation' => 'Add and Update',
             'user_created' => $senderID,
+            'user_updated' => ''
+        ]);
+        $this->loghistoryrepository->create([
+            'user_account_id' => $senderID,
+            'reference_number' => $fillRequest['refNo'],
+            'squidpay_module' => 'Receive Money',
+            'namespace' => 'RM',
+            'transaction_date' => Carbon::now(),
+            'remarks' => $receiverAccountNumber . ' has received money via Squidpay from ' . $senderAccountNumber,
+            'operation' => 'Add and Update',
+            'user_created' => $senderID,
+            'user_updated' => ''
+        ]);
+    }
+
+    private function generateQRLogHistories($userID , $fillRequest)
+    {
+        $acctNumber = $this->userAccounts->getAccountNumber($userID);
+        $this->loghistoryrepository->create([
+            'user_account_id' => $userID,
+            'reference_number' => $fillRequest && isset($fillRequest['refNo']) ? $fillRequest['refNo'] : "N/A",
+            'squidpay_module' => 'Send Money',
+            'namespace' => 'SM',
+            'transaction_date' => Carbon::now(),
+            'remarks' => $acctNumber . ' has generated QR code for ' . $fillRequest['amount'],
+            'operation' => 'Add and Update',
+            'user_created' => $userID,
             'user_updated' => ''
         ]);
     }

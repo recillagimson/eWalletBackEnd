@@ -44,6 +44,33 @@ interface IAuthService
     public function clientLogin(string $clientId, string $clientSecret): NewAccessToken;
 
     /**
+     * Authenticates admin users
+     *
+     * @param string $email
+     * @param string $password
+     * @return array
+     */
+    public function adminLogin(string $email, string $password): array;
+
+    /**
+     * Authenticates onboarders with otp
+     *
+     * @param string $mobileNumber
+     * @param string $password
+     * @return mixed
+     */
+    public function partnersLogin(string $mobileNumber, string $password);
+
+    /**
+     * Verifies the OTP for onboarders login
+     *
+     * @param string $mobileNumber
+     * @param string $otp
+     * @return array
+     */
+    public function partnersVerifyLogin(string $mobileNumber, string $otp): array;
+
+    /**
      * Pin authentication for confirmation to
      * proceed in transactions
      *

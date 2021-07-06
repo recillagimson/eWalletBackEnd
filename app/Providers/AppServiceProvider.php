@@ -20,12 +20,20 @@ use App\Services\Auth\Registration\IRegistrationService;
 use App\Services\Auth\Registration\RegistrationService;
 use App\Services\Auth\UserKey\IUserKeyService;
 use App\Services\Auth\UserKey\UserKeyService;
+use App\Services\BPIService\BPIService;
+use App\Services\BPIService\IBPIService;
 use App\Services\BuyLoad\BuyLoadService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\IDashboardService;
+use App\Services\DrcrMemo\DrcrMemoService;
+use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
+use App\Services\FarmerProfile\FarmerProfileService;
+use App\Services\FarmerProfile\IFarmerProfileService;
+use App\Services\KYCService\IKYCService;
+use App\Services\KYCService\KYCService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
@@ -53,8 +61,12 @@ use App\Services\UserAccount\IUserAccountService;
 use App\Services\UserAccount\UserAccountService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\UserProfile\UserProfileService;
+use App\Services\TempUserDetail\ITempUserDetailService;
+use App\Services\TempUserDetail\TempUserDetailService;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\API\IApiService;
+use App\Services\Utilities\CurlService\CurlService;
+use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\LogHistory\LogHistoryService;
 use App\Services\Utilities\Notifications\Email\EmailService;
@@ -82,6 +94,15 @@ use App\Services\Utilities\Verification\VerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use App\Services\Utilities\PDF\IPDFService;
+use App\Services\Utilities\PDF\PDFService;
+use App\Services\Utilities\CSV\ICSVService;
+use App\Services\Utilities\CSV\CSVService;
+use App\Services\MyTask\MyTaskService;
+use App\Services\MyTask\IMyTaskService;
+use App\Services\Admin\Dashboard\AdminDashboardService;
+use App\Services\Admin\Dashboard\IAdminDashboardService;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -103,6 +124,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ITransactionService::class, TransactionService::class);
         $this->app->singleton(IEmailService::class, EmailService::class);
         $this->app->singleton(ISmsService::class, SmsService::class);
+        $this->app->singleton(IPDFService::class, PDFService::class);
+        $this->app->singleton(ICSVService::class, CSVService::class);
 
         //3PP APIs
         $this->app->singleton(IUBPService::class, UBPService::class);
@@ -121,6 +144,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ISendMoneyService::class, SendMoneyService::class);
         $this->app->bind(IVerificationService::class, VerificationService::class);
         $this->app->bind(IPayBillsService::class, PayBillsService::class);
+        $this->app->bind(IDrcrMemoService::class, DrcrMemoService::class);
 
         //APP SERVICES - CONTEXTUAL BINDINGS
         $this->bindNotificationService();
@@ -131,6 +155,9 @@ class AppServiceProvider extends ServiceProvider
 
         //Dashboard
         $this->app->bind(IDashboardService::class, DashboardService::class);
+
+        //Admin Dashboard
+        $this->app->bind(IAdminDashboardService::class, AdminDashboardService::class);
 
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
@@ -162,6 +189,21 @@ class AppServiceProvider extends ServiceProvider
 
         // Buy Load Service
         $this->app->bind(IBuyLoadService::class, BuyLoadService::class);
+        
+        // eKYC Service
+        $this->app->bind(IKYCService::class, KYCService::class);
+
+        // CURL SERVICE
+        $this->app->bind(ICurlService::class, CurlService::class);
+        // Temp User Detail Service
+        $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
+        // FARMER SERVICE
+        $this->app->bind(IFarmerProfileService::class, FarmerProfileService::class);
+        // BPI SERVICE
+        $this->app->bind(IBPIService::class, BPIService::class);
+
+        // My Task
+        $this->app->bind(IMyTaskService::class, MyTaskService::class);
     }
 
     /**

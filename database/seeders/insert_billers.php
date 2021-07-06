@@ -181,7 +181,7 @@ class insert_billers extends Seeder
                 ['id' =>"38cf7204-91b8-11eb-8d33-1c1b0d14e211",'code' =>"BC_STBOA",'name' =>"STERLING BANK OF ASIA",'institution' =>"OTHERS",'fee' =>"14",'status' =>"1",'user_created' =>"Migration Team"],
                 ['id' =>"38cf726e-91b8-11eb-8d33-1c1b0d14e211",'code' =>"BC_MECOP1",'name' =>"P100 MERALCO KLoad",'institution' =>"ELECTRICITY",'fee' =>"10",'status' =>"1",'user_created' =>"Migration Team"],
                 ['id' =>"38cf72d2-91b8-11eb-8d33-1c1b0d14e211",'code' =>"BC_APECS",'name' =>"APEC SCHOOL",'institution' =>"OTHERS",'fee' =>"0",'status' =>"1",'user_created' =>"Migration Team"],
-                ['id' =>"38cf7336-91b8-11eb-8d33-1c1b0d14e211",'code' =>"BC_DRGPY",'name' =>"DRAGONPAY",'institution' =>"OTHERS",'fee' =>"0",'status' =>"1",'user_created' =>"Migration Team"],
+                ['id' =>"38cf7336-91b8-11eb-8d33-1c1b0d14e211",'code' =>"BC_DRGPY",'name' =>"DRAGONPAY1",'institution' =>"OTHERS",'fee' =>"0",'status' =>"1",'user_created' =>"Migration Team"],
                 ['id' =>"38cf739a-91b8-11eb-8d33-1c1b0d14e211",'code' =>"BC_MCWD1",'name' =>"METRO CEBU WATER",'institution' =>"UTILITIES",'fee' =>"5",'status' =>"1",'user_created' =>"Migration Team"],
                 ['id' =>"38cf73fe-91b8-11eb-8d33-1c1b0d14e211",'code' =>"BC_HDMF3",'name' =>"PAG-IBIG FUND (OFW)",'institution' =>"GOVERNMENT",'fee' =>"0",'status' =>"1",'user_created' =>"Migration Team"],
                 ['id' =>"38cf7464-91b8-11eb-8d33-1c1b0d14e211",'code' =>"BC_STICO",'name' =>"STI COLLEGE",'institution' =>"OTHERS",'fee' =>"12",'status' =>"1",'user_created' =>"Migration Team"],

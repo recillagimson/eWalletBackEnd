@@ -24,7 +24,7 @@ class CreateDrcrMemosTable extends Migration
             $table->decimal('amount', 19, 6);
             $table->string('currency_id', 36);
             $table->foreign('currency_id')->references('id')->on('currencies');
-            $table->decimal('category', 15)->nullable();
+            $table->string('category', 15)->nullable();
             $table->string('description', 100)->nullable();
             $table->string('status', 20);
             $table->uuid('created_by')->nullable();

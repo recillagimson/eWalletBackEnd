@@ -28,13 +28,13 @@ class UpdateAdminUserRequest extends FormRequest
             'last_name' => 'required|max:50',
             'first_name' => 'required|max:50',
             'middle_name' => 'max:50',
-            'birth_date' => 'required|date',
-            'marital_status_id' => 'required',
-            'house_no_street' => 'required',
-            'city' => 'required',
-            'province_state' => 'required',
-            'municipality' => 'required',
-            'country_id' => 'required',
+            'birth_date' => 'date',
+            'marital_status_id' => 'nullable',
+            'house_no_street' => 'nullable',
+            'city' => 'nullable',
+            'province_state' => 'nullable',
+            'municipality' => 'nullable',
+            'country_id' => 'nullable',
         ];
     }
 }

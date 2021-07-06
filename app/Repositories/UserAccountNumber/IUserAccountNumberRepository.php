@@ -8,5 +8,5 @@ use App\Repositories\IRepository;
 
 interface IUserAccountNumberRepository extends IRepository
 {
-    public function generateNo();
+    public function generateNo(string $prefix = ''): string;
 }

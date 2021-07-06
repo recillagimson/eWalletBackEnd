@@ -12,12 +12,16 @@ class TransactionCategoryIds
 
     const posAddFunds = '0ec436e0-9131-11eb-b44f-1c1b0d14e211';
     const cashinDragonPay = '0ec43457-9131-11eb-b44f-1c1b0d14e211';
+    const cashinBPI = 'edf5d5d0-9299-11eb-9663-1c1b0d14e211';
 
     const sendMoneyToSquidPayAccount = '1a86b905-929a-11eb-9663-1c1b0d14e211';
     const receiveMoneyToSquidPayAccount = 'b1792f37-929c-11eb-9663-1c1b0d14e211';
 
     const buyLoad = 'edf4d5d0-9299-11eb-9663-1c1b0d14e211';
     const payBills = 'c5b62dbd-95a0-11eb-8473-1c1b0d14e211';
+
+    const drMemo = '0ec434b6-9131-11eb-b44f-1c1b0d14e211';
+    const crMemo = '0ec43514-9131-11eb-b44f-1c1b0d14e211';
 
     const cashinTransactions = [
         self::posAddFunds,

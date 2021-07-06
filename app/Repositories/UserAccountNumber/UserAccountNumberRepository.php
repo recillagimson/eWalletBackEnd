@@ -16,7 +16,7 @@ class UserAccountNumberRepository extends Repository implements IUserAccountNumb
         parent::__construct($model);
     }
 
-    public function generateNo(): string
+    public function generateNo(string $prefix = ''): string
     {
         $currentDate = Carbon::now()->toDateString();
         $accountCounter = $this->model->where('account_date', '=', $currentDate)
@@ -34,6 +34,6 @@ class UserAccountNumberRepository extends Repository implements IUserAccountNumb
 
         $strAccountDate = $accountCounter->account_date->format('Ymd');
         $strNo = Str::padLeft($accountCounter->counter, 6, '0');
-        return $strAccountDate . $strNo;
+        return $prefix . $strAccountDate . $strNo;
     }
 }

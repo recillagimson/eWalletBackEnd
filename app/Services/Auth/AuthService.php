@@ -5,6 +5,7 @@ namespace App\Services\Auth;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Enums\UsernameTypes;
+use App\Jobs\Transactions\ProcessUserPending;
 use App\Models\UserAccount;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -16,6 +17,7 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Traits\Errors\WithAuthErrors;
 use App\Traits\UserHelpers;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\NewAccessToken;
@@ -70,28 +72,85 @@ class AuthService implements IAuthService
     public function login(string $usernameField, array $creds, string $ip): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        if (!$user) $this->loginFailed();
+        $this->validateInternalUsers($user);
         $this->validateUser($user);
+
         $this->tryLogin($user, $creds['password'], $user->password);
+
+        $firstLogin = !$user->last_login;
+        $this->updateLastLogin($user);
+
+        ProcessUserPending::dispatch($user);
+
         $user->deleteAllTokens();
-        return $this->generateLoginToken($user, TokenNames::userWebToken);
+        return $this->generateLoginToken($user, TokenNames::userWebToken, $firstLogin);
     }
 
     public function mobileLogin(string $usernameField, array $creds): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        if (!$user) $this->loginFailed();
+        $this->validateInternalUsers($user);
+
         $this->validateUser($user);
         $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
+
+        $firstLogin = !$user->last_login;
+        $this->updateLastLogin($user);
+
+        ProcessUserPending::dispatch($user);
+
         $user->deleteAllTokens();
-        return $this->generateLoginToken($user, TokenNames::userMobileToken);
+        return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
+    }
+
+    public function adminLogin(string $email, string $password): array
+    {
+        $user = $this->userAccounts->getByUsername(UsernameTypes::Email, $email);
+        if (!$user) $this->loginFailed();
+        if (!$user->is_admin) $this->loginFailed();
+
+        $this->validateUser($user);
+        $this->tryLogin($user, $password, $user->password);
+
+        $firstLogin = !$user->last_login;
+        $this->updateLastLogin($user);
+
+        $user->deleteAllTokens();
+        return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
+    }
+
+    public function partnersLogin(string $mobileNumber, string $password)
+    {
+        $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
+        if (!$user) $this->loginFailed();
+        if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
+
+        $this->validateUser($user);
+        $this->tryLogin($user, $password, $user->password);
+        $this->generateMobileLoginOTP(UsernameTypes::MobileNumber, $mobileNumber);
+    }
+
+    public function partnersVerifyLogin(string $mobileNumber, string $otp): array
+    {
+        $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
+        if (!$user) $this->loginFailed();
+        if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
+
+        $this->validateUser($user);
+        $this->verifyLogin(UsernameTypes::MobileNumber, $mobileNumber, $otp);
+
+        $firstLogin = !$user->last_login;
+        $this->updateLastLogin($user);
+
+        $user->deleteAllTokens();
+        return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
     }
 
     public function clientLogin(string $clientId, string $clientSecret): NewAccessToken
     {
         $client = $this->clients->getClient($clientId);
 
-        if(!$client || !Hash::check($clientSecret, $client->client_secret)) {
+        if (!$client || !Hash::check($clientSecret, $client->client_secret)) {
             $this->invalidCredentials();
         }
 
@@ -174,7 +233,7 @@ class AuthService implements IAuthService
     |--------------------------------------------------------------------------
     */
 
-    private function generateLoginToken(UserAccount $user, string $tokenType): array
+    private function generateLoginToken(UserAccount $user, string $tokenType, bool $firstLogin): array
     {
         $token = $user->createToken($tokenType);
         $latestPassword = $this->passwordHistories->getLatest($user->id);
@@ -183,6 +242,7 @@ class AuthService implements IAuthService
         $pinAboutToExpire = $latestPin ? $latestPin->isAboutToExpire($this->remainingAgeToNotify, $this->maxPasswordAge) : false;
 
         return [
+            'user_id' => $user->id,
             'user_token' => [
                 'access_token' => $token->plainTextToken,
                 'created_at' => $token->accessToken->created_at,
@@ -191,7 +251,8 @@ class AuthService implements IAuthService
             'notify_password_expiration' => $passwordAboutToExpire,
             'password_age' => $latestPassword ? $latestPassword->password_age : 0,
             'notify_pin_expiration' => $pinAboutToExpire,
-            'pin_age' => $latestPin ? $latestPin->pin_age : 0
+            'pin_age' => $latestPin ? $latestPin->pin_age : 0,
+            'first_login' => $firstLogin,
         ];
     }
 
@@ -205,11 +266,19 @@ class AuthService implements IAuthService
             ];
         }
 
-        $identifier = $otpType.':'.$userId;
+        $identifier = $otpType . ':' . $userId;
         $otp = $this->otpService->generate($identifier);
         if (!$otp->status) $this->otpInvalid($otp->message);
 
         return $otp;
+    }
+
+    private function validateInternalUsers(?UserAccount $user)
+    {
+        if (!$user) $this->loginFailed();
+        if ($user->is_admin) $this->loginFailed();
+        if ($user->is_onboarder) $this->loginFailed();
+        if ($user->is_merchant) $this->loginFailed();
     }
 
     private function validateUser(UserAccount $user)
@@ -229,6 +298,12 @@ class AuthService implements IAuthService
         }
 
         $user->resetLoginAttempts($this->daysToResetAttempts, true);
+    }
+
+    private function updateLastLogin(UserAccount $user)
+    {
+        $user->last_login = Carbon::now();
+        $user->save();
     }
 
 

@@ -3,14 +3,23 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
+use App\Models\TierApproval;
+use App\Repositories\Admin\Permission\IPermissionRepository;
+use App\Repositories\Admin\Permission\PermissionRepository;
+use App\Repositories\Admin\Role\IRoleRepository;
+use App\Repositories\Admin\Role\RoleRepository;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
+use App\Repositories\DrcrMemo\DrcrMemoRepository;
+use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
 use App\Repositories\HelpCenter\IHelpCenterRepository;
 use App\Repositories\IdType\IdTypeRepository;
 use App\Repositories\IdType\IIdTypeRepository;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\InAddMoney\InAddMoneyRepository;
+use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
+use App\Repositories\InAddMoneyBPI\InAddMoneyBPIRepository;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\InReceiveMoney\InReceiveMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
@@ -82,6 +91,10 @@ use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 use App\Repositories\UserUtilities\SourceOfFund\SourceOfFundRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
+use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
+use App\Repositories\UserUtilities\TempUserDetail\TempUserDetailRepository;
+use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
+use App\Repositories\UserUtilities\UserRole\UserRoleRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -174,6 +187,24 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Pay Bills Repositories
         $this->app->bind(IOutPayBillsRepository::class, OutPayBillsRepository::class);
+        
+        //Temp User Repositories
+        $this->app->bind(ITempUserDetailRepository::class, TempUserDetailRepository::class);
+
+        // Role Repositories
+        $this->app->bind(IRoleRepository::class, RoleRepository::class);
+
+        // Permission Repositories
+        $this->app->bind(IPermissionRepository::class, PermissionRepository::class);
+        
+        // User Role Repositories
+        $this->app->bind(IUserRoleRepository::class, UserRoleRepository::class);
+
+        //Drcr Memos Repositories
+        $this->app->bind(IDrcrMemoRepository::class, DrcrMemoRepository::class);
+        
+        //In Add Money BPI Repositories
+        $this->app->bind(IInAddMoneyBPIRepository::class, InAddMoneyBPIRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();

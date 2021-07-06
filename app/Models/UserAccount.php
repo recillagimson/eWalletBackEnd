@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Admin\Role;
 use App\Models\UserUtilities\UserDetail;
 use App\Traits\HasS3Links;
 use App\Traits\UsesUuid;
@@ -54,6 +55,7 @@ class UserAccount extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'last_failed_attempt' => 'datetime',
+        'last_login' => 'datetime',
     ];
 
     public function tier(): HasOne
@@ -69,6 +71,11 @@ class UserAccount extends Authenticatable
     public function balanceInfo(): HasOne
     {
         return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
+    }
+
+    public function userDetail(): HasOne
+    {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'id');
     }
 
     public function verificationToken(): HasOne
@@ -110,5 +117,13 @@ class UserAccount extends Authenticatable
     public function deleteTokensByName(string $tokenName)
     {
         $this->tokens()->where('name', $tokenName)->delete();
+    }
+
+    public function roles() {
+        return $this->hasManyThrough(Role::class, UserRole::class, 'user_account_id', 'id', 'id', 'role_id');
+    }
+
+    public function user_balance_info() {
+        return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
     }
 }

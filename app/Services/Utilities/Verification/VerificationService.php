@@ -2,19 +2,18 @@
 
 namespace App\Services\Utilities\Verification;
 
-use App\Models\UserPhoto;
-use Illuminate\Http\File;
-use App\Models\UserAccount;
-use Illuminate\Support\Carbon;
-use Illuminate\Http\UploadedFile;
+use App\Enums\eKYC;
 use App\Enums\SquidPayModuleTypes;
 use App\Repositories\IdType\IIdTypeRepository;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
+use App\Repositories\Tier\ITierApprovalCommentRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class VerificationService implements IVerificationService
 {
@@ -23,19 +22,27 @@ class VerificationService implements IVerificationService
     public IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     public ILogHistoryService $logHistoryService;
     public IIdTypeRepository $iIdTypeRepository;
+    public ITierApprovalCommentRepository $tierApprovalComment;
 
-    public function __construct(IUserPhotoRepository $userPhotoRepository, IUserDetailRepository $userDetailRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, ILogHistoryService $logHistoryService, IIdTypeRepository $iIdTypeRepository)
+    public function __construct(IUserPhotoRepository $userPhotoRepository,
+                                IUserDetailRepository $userDetailRepository,
+                                IUserSelfiePhotoRepository $userSelfiePhotoRepository,
+                                ILogHistoryService $logHistoryService,
+                                IIdTypeRepository $iIdTypeRepository,
+                                ITierApprovalCommentRepository $iTierApprovalCommentRepository)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
         $this->logHistoryService = $logHistoryService;
         $this->iIdTypeRepository = $iIdTypeRepository;
+        $this->iTierApprovalCommentRepository = $iTierApprovalCommentRepository;
     }
 
-    public function createSelfieVerification(array $data, ?string $userAccountId = null) {
+    public function createSelfieVerification(array $data, ?string $userAccountId = null)
+    {
         // Delete existing first
-        // Get details first 
+        // Get details first
         $userDetails = $this->userDetailRepository->getByUserId($userAccountId ? $userAccountId : request()->user()->id);
         // If no user Details
         if(!$userDetails) {
@@ -53,13 +60,22 @@ class VerificationService implements IVerificationService
         $selfiePhotoName = request()->user()->id . "/" . \Str::random(40) . "." . $selfiePhotoExt;
         // PUT FILE TO STORAGE
         $selfiePhotoPath = $this->saveFile($data['selfie_photo'], $selfiePhotoName, 'selfie_photo');
-        
+
         $data['photo_location'] = $selfiePhotoPath;
         $data['user_account_id'] = $userAccountId ? $userAccountId : request()->user()->id;
         $data['user_created'] = request()->user()->id;
         $data['user_updated'] = request()->user()->id;
         // SAVE SELFIE LOCATION ON USER DETAILS
         $record = $this->userSelfiePhotoRepository->create($data);
+
+        if(isset($data['remarks'])) {
+            $this->iTierApprovalCommentRepository->create([
+                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
+                'user_created' => $data['user_created'] = request()->user()->id,
+                'user_updated' => $data['user_updated'] = request()->user()->id
+            ]);
+        }
 
         $audit_remarks = request()->user()->id . "  has uploaded Selfie";
         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadSelfiePhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
@@ -88,9 +104,20 @@ class VerificationService implements IVerificationService
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
                 'id_number' => $data['id_number'],
-                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : ""
+                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                'remarks' => isset($data['remarks']) ? $data['remarks'] : ""
             ];
             $record = $this->userPhotoRepository->create($params);
+
+            if(isset($data['remarks'])) {
+                $this->iTierApprovalCommentRepository->create([
+                    'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                    'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
+                    'user_created' => $data['user_created'] = request()->user()->id,
+                    'user_updated' => $data['user_updated'] = request()->user()->id
+                ]);
+            }
+
             // Collect created record
             array_push($recordsCreated, $record);
 
@@ -99,7 +126,7 @@ class VerificationService implements IVerificationService
             $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadIdPhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
         }
 
-        
+
 
         return $recordsCreated;
     }
@@ -138,16 +165,26 @@ class VerificationService implements IVerificationService
     }
 
     // UPDATE TIER APPROVAL IDS OF USER PHOTOS AND SELFIE PHOTOS
-    public function updateTierApprovalIds(array $userIdPhotos, array $userSelfiePhotos, string $tierApprovalStatus) {
+    public function updateTierApprovalIds(array $userIdPhotos, array $userSelfiePhotos, string $tierApprovalStatus, bool $is_farmer=false) {
         // USER ID PHOTOS
         foreach($userIdPhotos as $photo) {
             $photo_instance = $this->userPhotoRepository->get($photo);
-            $this->userPhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus]);
+            $this->userPhotoRepository->update($photo_instance, [
+                'tier_approval_id' => $tierApprovalStatus,
+                'status' => $is_farmer ? 'APPROVED' : "PENDING",
+                'approved_by' => eKYC::eKYC,
+                'remarks' => eKYC::eKYC_remarks
+            ]);
         }
         // USER SELFIE PHOTOS
         foreach($userSelfiePhotos as $photo) {
             $photo_instance = $this->userSelfiePhotoRepository->get($photo);
-            $this->userSelfiePhotoRepository->update($photo_instance, ['tier_approval_id' => $tierApprovalStatus]);
+            $this->userSelfiePhotoRepository->update($photo_instance, [
+                'tier_approval_id' => $tierApprovalStatus,
+                'status' => $is_farmer ? 'APPROVED' : "PENDING",
+                'approved_by' => eKYC::eKYC,
+                'remarks' => eKYC::eKYC_remarks
+            ]);
         }
     }
 }

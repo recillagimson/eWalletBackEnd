@@ -30,4 +30,5 @@ interface IUserAccountService
     public function updateMobile(string $mobileField, string $mobile, UserAccount $user);
 
     public function validateMobile(string $mobileField, string $mobile);
+
 }

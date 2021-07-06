@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\UserUtilities;
 
 use App\Enums\AccountTiers;
+use App\Models\UserAccount;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Enums\SuccessMessages;
@@ -11,17 +12,20 @@ use Illuminate\Http\JsonResponse;
 use App\Enums\SquidPayModuleTypes;
 use App\Http\Controllers\Controller;
 use App\Traits\Errors\WithUserErrors;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Http\Requests\UserProfile\AvatarUploadRequest;
 use App\Services\Utilities\Responses\IResponseService;
+use App\Http\Requests\User\SupervisorUpdateUserRequest;
 use App\Http\Requests\UserProfile\UpdateProfileRequest;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Http\Requests\UserProfile\UpdateProfileBronzeRequest;
 use App\Http\Requests\UserProfile\UpdateProfileSilverRequest;
 use App\Services\Utilities\Verification\IVerificationService;
+use App\Http\Requests\UserProfile\UpdateFarmerToSilverRequest;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
 
 class UserProfileController extends Controller
 {
@@ -160,6 +164,40 @@ class UserProfileController extends Controller
         $createRecord = $this->userProfileService->changeAvatar($request->validated());
 
         return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::success);
+    }
+
+    public function updateProfile($id, UpdateUserRequest $request)
+    {
+        $fillRequest = $request->all();
+
+        $review = $this->userProfileService->updateUserProfile($id, $fillRequest, $request->user());
+
+        if ($review['status']) {
+            $message = SuccessMessages::updateUserPending;
+        } else {
+            $message = SuccessMessages::updateUserSuccessful;
+        }
+        
+
+        return $this->responseService->successResponse($review['data']->toArray(), $message);
+    }
+
+    public function supervisorUpdateProfile($id, SupervisorUpdateUserRequest $request)
+    {
+        $fillRequest = $request->all();
+
+        $review = $this->userProfileService->supervisorUpdateUserProfile($id, $fillRequest, $request->user());
+
+        $message = SuccessMessages::updateUserSuccessful;
+
+        return $this->responseService->successResponse($review['data']->toArray(), $message);
+    }
+
+    public function updateFarmerToSilver(UpdateFarmerToSilverRequest $request): JsonResponse
+    {
+        // dd($request->all());
+        // $record = $this->userProfileService->upgradeFarmerToSilver($request->all());
+        // return $this->responseService->successResponse($record, SuccessMessages::updateUserSuccessful);
     }
 
 }

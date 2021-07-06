@@ -7,7 +7,9 @@ use App\Http\Middleware\DecryptRequest;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\EnsureFormData;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Http\Middleware\RBPMiddleware;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\RequireUserTokenMiddleware;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -17,6 +19,7 @@ use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
 use Illuminate\Http\Middleware\SetCacheHeaders;
@@ -26,7 +29,6 @@ use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
-use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
 {
@@ -73,8 +75,7 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The application's route middleware.
-     *
+     * The application's route middleware.hhh
      * These middleware may be assigned to groups or used individually.
      *
      * @var array
@@ -91,5 +92,7 @@ class Kernel extends HttpKernel
         'verified' => EnsureEmailIsVerified::class,
         'form-data' => EnsureFormData::class,
         'decrypt.request' => DecryptRequest::class,
+        'rba' => RBPMiddleware::class,
+        'require.user.token' => RequireUserTokenMiddleware::class
     ];
 }
