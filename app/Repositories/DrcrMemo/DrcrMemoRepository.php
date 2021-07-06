@@ -62,6 +62,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         if($data['status'] == DrcrStatus::Approve){
             return $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::A,
+                'remarks' => 'Approved Dr/Cr Memo',
                 'approved_by' => $user->id,
                 'approved_at' => Carbon::now(),
                 'user_updated' => $user->id
@@ -70,11 +71,22 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         if ($data['status'] == DrcrStatus::Decline) {
             return $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::D,
+                'remarks' => $data['remarks'],
                 'declined_by' => $user->id,
                 'declined_at' => Carbon::now(),
                 'user_updated' => $user->id
             ]);
         }
+    }
+
+    public function totalDRMemo()
+    {
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('type_of_memo','=','DR')->where('status','=','APPROVED')->sum('amount');
+    }
+
+    public function totalCRMemo()
+    {
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('type_of_memo','=','CR')->where('status','=','APPROVED')->sum('amount');
     }
 
     public function updateMemo(UserAccount $user, $data)
