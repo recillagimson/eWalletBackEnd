@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'instapay_url' => env('secbank_instapay_url'),
-    'instapay_username' => env('secbank_instapay_username'),
-    'instapay_password' => env('secbank_instapay_password'),
-    'instapay_fund_account' => env('secbank_instapay_fund_account'),
+    'instapay_url' => env('SECBANK_INSTAPAY_URL'),
+    'instapay_username' => env('SECBANK_INSTAPAY_USERNAME'),
+    'instapay_password' => env('SECBANK_INSTAPAY_PASSWORD'),
+    'instapay_fund_account' => env('SECBANK_INSTAPAY_FUND_ACCOUNT'),
 
     'pesonet_url' => env('SECBANK_PESONET_URL'),
     'pesonet_username' => env('SECBANK_PESONET_USERNAME'),
