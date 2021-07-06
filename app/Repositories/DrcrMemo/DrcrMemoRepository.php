@@ -32,12 +32,12 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         ->orWhere('user_created', $user->id)
         ->where('status', $letterStatus)
         ->paginate($per_page);
-
     }
 
-    public function getAllPaginate($per_page = 15)
-    {
-        return $this->model->paginate($per_page);
+    public function getAllPaginate($per_page = 15) {
+        return $this->model
+        ->with(['user_account', 'user_details', 'user_balance_info'])
+        ->paginate($per_page);
     }
 
     public function getAllList(UserAccount $user, $data, $per_page = 15)
@@ -46,17 +46,18 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         if ($data === 'D') $letterStatus = DrcrStatus::D;
         if ($data === 'A') $letterStatus = DrcrStatus::A;
         return $this->model
-        ->with(['user_account', 'user_details', 'user_balance_info'])
-        ->where('created_by', $user->id)
-        ->orWhere('user_created', $user->id)
-        ->paginate($per_page);
-
+            ->with(['user_account', 'user_details', 'user_balance_info'])
+            ->where('status', $letterStatus)->paginate($per_page);
     }
 
-
+   
     public function getList(UserAccount $user, $per_page = 15)
     {
-        return $this->model->where('created_by', $user->id)->orWhere('user_created', $user->id)->paginate($per_page);
+        return $this->model
+            ->with(['user_account', 'user_details', 'user_balance_info'])
+            ->where('created_by', $user->id)
+            ->orWhere('user_created', $user->id)
+            ->paginate($per_page);
     }
 
     public function getPendingByCreatedBy(UserAccount $user)
@@ -71,7 +72,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 
     public function updateDrcr(UserAccount $user, $data)
     {
-        if ($data['status'] == DrcrStatus::Approve) {
+        if($data['status'] == DrcrStatus::Approve){
             $this->model->where('reference_number', $data['referenceNumber'])->update([
                 'status' => DrcrStatus::A,
                 'remarks' => 'Approved Dr/Cr Memo',
@@ -94,12 +95,12 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 
     public function totalDRMemo()
     {
-        return $this->model->where('created_at', '<=', Carbon::now()->subDay())->where('type_of_memo', '=', 'DR')->where('status', '=', 'APPROVED')->sum('amount');
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('type_of_memo','=','DR')->where('status','=','APPROVED')->sum('amount');
     }
 
     public function totalCRMemo()
     {
-        return $this->model->where('created_at', '<=', Carbon::now()->subDay())->where('type_of_memo', '=', 'CR')->where('status', '=', 'APPROVED')->sum('amount');
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('type_of_memo','=','CR')->where('status','=','APPROVED')->sum('amount');
     }
 
     public function updateMemo(UserAccount $user, $data)
@@ -118,7 +119,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         ]);
         return $this->getByReferenceNumber($data['referenceNumber'])->toArray();
     }
-
+    
 
     public function getDRCRMemo()
     {
@@ -129,4 +130,5 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
     {
         return $this->model->where('user_created', '=', $UserID)->where('status', '=', 'pending')->where('created_at', '<=', Carbon::now()->subDay())->count('status');
     }
+
 }
