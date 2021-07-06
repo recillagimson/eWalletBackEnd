@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\ForeignExchangeRateUpdate::class,
     ];
 
     /**
@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('every_four_hours:foreign_exchange_rates')->everyFourHours()->appendOutputTo(storage_path('logs/scheduler_foreign_exchange_rates.log'));
     }
 
     /**

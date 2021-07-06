@@ -17,6 +17,5 @@ interface IDrcrMemoRepository extends IRepository
     public function totalDRMemo();
     public function totalCRMemo();
     public function updateMemo(UserAccount $user, $data);
-    public function getDRCRMemo();
     public function getPerUser(string $UserID);
 }

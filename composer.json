@@ -10,7 +10,11 @@
     "require": {
         "php": "^7.4|^8.0",
         "ext-json": "^7.4",
+        "ext-libxml": "^7.4",
         "ext-openssl": "^7.4",
+        "ext-simplexml": "^7.4",
+        "ext-xmlwriter": "^7.4",
+        "codedredd/laravel-soap": "^2.0",
         "doctrine/dbal": "^3.0",
         "fideloper/proxy": "^4.4",
         "firebase/php-jwt": "^5.3",
@@ -21,6 +25,7 @@
         "laravel/tinker": "^2.5",
         "league/flysystem-aws-s3-v3": "~1.0",
         "niklasravnsborg/laravel-pdf": "^4.0",
+        "ricorocks-digital-agency/soap": "^1.4",
         "sendgrid/sendgrid": "^7.9",
         "tmilos/jose-jwt": "^2.0"
     },
@@ -28,6 +33,7 @@
         "barryvdh/laravel-ide-helper": "^2.9",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
+        "laminas/laminas-code": "3.1.0",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.0",

@@ -10,8 +10,8 @@ interface IUBPService
 
     public function getPurposes(): Response;
 
-    public function fundTransfer(string $refNo, string $fromFullName, string $zipCode, int $bankCode, string $recepientAccountNumber,
-                                 string $recepientAccountName, float $amount, string $transactionDate,
+    public function fundTransfer(string $refNo, string $fromFullName, string $zipCode, int $bankCode, string $recipientAccountNumber,
+                                 string $recipientAccountName, float $amount, string $transactionDate,
                                  string $instructions, string $provider, string $purpose = "1003"): Response;
 
     public function checkStatus(string $provider, string $refNo): Response;

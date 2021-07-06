@@ -8,6 +8,7 @@ use App\Enums\TpaProviders;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Str;
 
 class UBPService implements IUBPService
 {
@@ -102,8 +103,8 @@ class UBPService implements IUBPService
         return $this->apiService->get($url, $this->defaultHeaders);
     }
 
-    public function fundTransfer(string $refNo, string $fromFullName, string $zipCode, int $bankCode, string $recepientAccountNumber,
-                                 string $recepientAccountName, float $amount, string $transactionDate,
+    public function fundTransfer(string $refNo, string $fromFullName, string $zipCode, int $bankCode, string $recipientAccountNumber,
+                                 string $recipientAccountName, float $amount, string $transactionDate,
                                  string $instructions, string $provider, string $purpose = "1003"): Response
     {
         $headers = $this->getAuthorizationHeaders();
@@ -112,7 +113,7 @@ class UBPService implements IUBPService
             "senderRefId" => $refNo,
             "tranRequestDate" => $transactionDate,
             "sender" => [
-                "name" => $fromFullName,
+                "name" => Str::replace("-", " ", $fromFullName),
                 "address" => [
                     "line1" => " ",
                     "line2" => " ",
@@ -123,8 +124,8 @@ class UBPService implements IUBPService
                 ]
             ],
             "beneficiary" => [
-                "accountNumber" => $recepientAccountNumber,
-                "name" => $recepientAccountName,
+                "accountNumber" => $recipientAccountNumber,
+                "name" => Str::replace("-", " ", $recipientAccountName),
                 "address" => [
                     "line1" => "",
                     "line2" => "",
