@@ -4,15 +4,17 @@ namespace App\Services\DrcrMemo;
 
 use App\Enums\Currencies;
 use App\Enums\DrcrStatus;
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\TransactionCategoryIds;
-use App\Enums\TransactionStatuses;
 use App\Models\UserAccount;
+use App\Exports\DRCR\DRCRReport;
+use App\Enums\TransactionStatuses;
+use App\Enums\ReferenceNumberTypes;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithDrcrMemoErrors;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithDrcrMemoErrors;
 
 class DrcrMemoService implements IDrcrMemoService
 {
@@ -189,6 +191,6 @@ class DrcrMemoService implements IDrcrMemoService
 
     public function report(array $params) {
         $data = $this->drcrMemoRepository->reportData($params['from'], $params['to']);
-        
+        return Excel::download(new DRCRReport($data), 'report.xlsx');
     }
 }
