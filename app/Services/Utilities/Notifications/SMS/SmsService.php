@@ -5,16 +5,18 @@ namespace App\Services\Utilities\Notifications\SMS;
 
 
 use App\Enums\OtpTypes;
-use App\Enums\TpaProviders;
 use App\Models\Tier;
 use App\Models\UserUtilities\UserDetail;
 use App\Services\Utilities\API\IApiService;
+use App\Traits\Transactions\Send2BankHelpers;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class SmsService implements ISmsService
 {
+    use Send2BankHelpers;
+
     protected string $apiUrl;
 
     protected string $username;
@@ -94,7 +96,7 @@ class SmsService implements ISmsService
         $strServiceFee = number_format($serviceFee, 2, '.', ',');
         $strNewBalance = number_format($newBalance, 2, '.', ',');
         $strDate = $transactionDate->toDayDateTimeString();
-        $strProvider = $provider === TpaProviders::ubpPesonet ? 'UBP: Pesonet' : 'UBP: Instapay';
+        $strProvider = $this->getSend2BankProviderCaption($provider);
 
         $content = 'You have sent P' . $strAmount . ' of SquidPay on ' . $strDate . ' to the account ending in '
             . $hideAccountNo . '. Service Fee for this transaction is P' . $strServiceFee . '. Your new balance is P'

@@ -4,32 +4,34 @@
 namespace App\Services\Utilities\Notifications\Email;
 
 
-use SendGrid;
-use Carbon\Carbon;
-use App\Models\Tier;
 use App\Enums\OtpTypes;
-use SendGrid\Mail\Mail;
-use App\Enums\TpaProviders;
-use Illuminate\Support\Str;
-use App\Models\OutSend2Bank;
-use Illuminate\Http\Response;
-use Illuminate\Mail\Mailable;
-use App\Mail\LoginVerification;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
-use App\Mail\Send2Bank\Send2BankReceipt;
-use App\Mail\User\AdminUserVerification;
-use App\Models\UserUtilities\UserDetail;
-use App\Mail\Send2Bank\SenderNotification;
-use App\Mail\SendMoney\SendMoneyVerification;
-use Illuminate\Validation\ValidationException;
-use App\Mail\SendMoney\SendMoneySenderNotification;
-use App\Mail\TierApproval\TierUpgradeRequestApproved;
-use App\Mail\SendMoney\SendMoneyRecipientNotification;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
+use App\Mail\LoginVerification;
+use App\Mail\Send2Bank\Send2BankReceipt;
+use App\Mail\Send2Bank\SenderNotification;
+use App\Mail\SendMoney\SendMoneyRecipientNotification;
+use App\Mail\SendMoney\SendMoneySenderNotification;
+use App\Mail\SendMoney\SendMoneyVerification;
+use App\Mail\TierApproval\TierUpgradeRequestApproved;
+use App\Mail\User\AdminUserVerification;
+use App\Models\OutSend2Bank;
+use App\Models\Tier;
+use App\Models\UserUtilities\UserDetail;
+use App\Traits\Transactions\Send2BankHelpers;
+use Carbon\Carbon;
+use Illuminate\Http\Response;
+use Illuminate\Mail\Mailable;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use SendGrid;
+use SendGrid\Mail\Mail;
 
 class EmailService implements IEmailService
 {
+    use Send2BankHelpers;
+
     private string $fromAddress;
     private string $fromName;
     private string $apiKey;
@@ -146,7 +148,7 @@ class EmailService implements IEmailService
         $strServiceFee = number_format($serviceFee, 2, '.', ',');
         $strNewBalance = number_format($newBalance, 2, '.', ',');
         $strDate = $transactionDate->toDayDateTimeString();
-        $strProvider = $provider === TpaProviders::ubpPesonet ? 'UBP: Pesonet' : 'UBP: Instapay';
+        $strProvider = $this->getSend2BankProviderCaption($provider);
 
         $subject = 'SquidPay - Send To Bank Notification';
         $template = new SenderNotification($hideAccountNo, $strAmount, $strServiceFee, $strNewBalance, $strDate,
