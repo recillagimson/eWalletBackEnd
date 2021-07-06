@@ -4,7 +4,6 @@ namespace App\Repositories\OutSendMoney;
 
 use App\Repositories\Repository;
 use App\Models\OutSendMoney;
-use Carbon\Carbon;
 
 class OutSendMoneyRepository extends Repository implements IOutSendMoneyRepository
 {

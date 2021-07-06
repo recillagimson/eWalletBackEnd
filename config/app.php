@@ -88,8 +88,8 @@ return [
     |
     */
 
-    // 'timezone' => 'UTC',
-    'timezone' => 'Asia/Manila',
+    'timezone' => 'UTC',
+    //'timezone' => 'Asia/Manila',
 
     /*
     |--------------------------------------------------------------------------
