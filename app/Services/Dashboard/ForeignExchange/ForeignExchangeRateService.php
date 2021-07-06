@@ -20,7 +20,7 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
     }
 
     ///Update Foreign Currency Rates via Scheduler
-    public function updateForeignCurrencyRates()
+    public function updateForeignCurrencyRates(ForeignExchangeRate $foreignExchange)
     {
 
         $api = CurrencyRatesConfig::api . CurrencyRatesConfig::currencies . '&access_key=' . CurrencyRatesConfig::accessKey;
@@ -33,7 +33,7 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
         }
 
         DB::transaction(function() use ($result) {
-            $rates = collect($result['response'])->map(function($value) {
+            $data = collect($result['response'])->map(function($value) {
                 return [
                     'name' => $value['s'],
                     'from' => explode("/",$value['s'])[0],
@@ -41,10 +41,7 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
                 ];
             });
             DB::table('foreign_exchange_rates')->truncate();
-            foreach($rates as $rate) {
-                $this->model->create($rate);
-            }
-
+            DB::table('foreign_exchange_rates')->insert($data->toArray());
         });
     }
 
