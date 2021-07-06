@@ -37,9 +37,10 @@ trait Send2BankHelpers
 
     private function getSend2BankProviderCaption(string $provider): string
     {
-        //if ($provider === TpaProviders::ubpPesonet) return 'UBP: Pesonet';
-        //if ($provider === TpaProviders::ubpInstapay) return 'UBP: Instapay';
+        if ($provider === TpaProviders::ubpPesonet) return 'UBP: Pesonet';
+        if ($provider === TpaProviders::ubpInstapay) return 'UBP: Instapay';
         if ($provider === TpaProviders::secBankInstapay) return 'SecBank: Instapay';
+        if ($provider === TpaProviders::secBankPesonet) return 'SecBank: Pesonet';
 
         $this->tpaInvalidProvider();
     }
@@ -224,44 +225,38 @@ trait Send2BankHelpers
 
     private function handleInstapayTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
     {
-        if ($response->successful()) {
-            $error = $response->body();
-            Log::error('Instapay Error response', ['response' => $error]);
-            $this->transactionFailed();
-        } else {
-            $xmlService = new XmlService();
-            $xmlBody = $xmlService->toArray($response->body());
-            $xmlResponse = $xmlBody['payBankResponse'];
-            $xmlReturn = $xmlResponse['ns1payBankReturn"'];
+        $xmlService = new XmlService();
+        $xmlBody = $xmlService->toArray($response->body());
+        $xmlResponse = $xmlBody['payBankResponse'];
+        $xmlReturn = $xmlResponse['payBankReturn'];
 
-            $strData = Str::of($xmlReturn)->explode('|');
-            $data = [
-                'returnCode' => $strData[0],
-                'returnValue' => $strData[1],
-                'returnLocalRefId' => $strData[2],
-                'traceNo' => $strData[3],
-                'returnDupRespCode' => $strData[4],
-                'returnDupRespCodeMsg' => $strData[5],
-                'returnDupLocalRefID' => $strData[6]
-            ];
+        $strData = Str::of($xmlReturn)->explode('|');
+        $data = [
+            'returnCode' => $strData[0],
+            'returnValue' => $strData[1],
+            'returnLocalRefId' => $strData[2],
+            'traceNo' => $strData[3],
+            'returnDupRespCode' => $strData[4],
+            'returnDupRespCodeMsg' => $strData[5],
+            'returnDupLocalRefID' => $strData[6]
+        ];
 
-            if ($data['returnCode'] === SecBankInstapayReturnCodes::success) {
-                $send2Bank->status = TransactionStatuses::success;
-                $send2Bank->provider_transaction_id = $data['returnLocalRefId'];
-                $send2Bank->provider_remittance_id = $data['returnLocalRefId'];
-                $send2Bank->user_updated = $send2Bank->user_account_id;
-                $send2Bank->transaction_response = json_encode($data);
-                $send2Bank->save();
+        if ($data['returnCode'] === SecBankInstapayReturnCodes::success) {
+            $send2Bank->status = TransactionStatuses::success;
+            $send2Bank->provider_transaction_id = $data['returnLocalRefId'];
+            $send2Bank->provider_remittance_id = $data['returnLocalRefId'];
+            $send2Bank->user_updated = $send2Bank->user_account_id;
+            $send2Bank->transaction_response = json_encode($data);
+            $send2Bank->save();
 
-                $this->transactionHistories->log($send2Bank->user_account_id,
-                    $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
-                    $send2Bank->total_amount, $send2Bank->transaction_date,
-                    $send2Bank->user_account_id);
+            $this->transactionHistories->log($send2Bank->user_account_id,
+                $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
+                $send2Bank->total_amount, $send2Bank->transaction_date,
+                $send2Bank->user_account_id);
 
-            }
-
-            return $send2Bank;
         }
+
+        return $send2Bank;
     }
 
     private function handleInstapayCheckStatusResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank

@@ -13,7 +13,8 @@ trait UserHelpers
 {
     private function getUsernameByField(UserAccount $user, string $usernameField): string
     {
-        return $user->toArray()[$usernameField];
+        $userArray = $user->toArray();
+        return $userArray[$usernameField];
     }
 
     private function getUsernameField(Request $request): string

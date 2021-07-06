@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services\Send2Bank\Instapay;
+namespace App\Services\Send2Bank\Pesonet;
 
 
 use App\Enums\TpaProviders;
@@ -22,7 +22,7 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 
-class Send2BankInstapayService extends Send2BankService implements ISend2BankInstapayService
+class Send2BankSBPesonetService extends Send2BankService implements ISend2BankSBPesonetService
 {
     public function __construct(IUBPService $ubpService,
                                 ISecurityBankService $securityBankService,
@@ -39,10 +39,11 @@ class Send2BankInstapayService extends Send2BankService implements ISend2BankIns
                                 IServiceFeeRepository $serviceFees,
                                 IUserTransactionHistoryRepository $transactionHistories)
     {
-        parent::__construct($ubpService, $securityBankService, $referenceNumberService, $transactionValidationService, $notificationService,
-            $smsService, $emailService, $otpService, $users, $userBalances, $send2banks, $serviceFees, $transactionHistories, $logHistoryService);
+        parent::__construct($ubpService, $securityBankService, $referenceNumberService, $transactionValidationService,
+            $notificationService, $smsService, $emailService, $otpService, $users, $userBalances, $send2banks, $serviceFees,
+            $transactionHistories, $logHistoryService);
 
-        $this->transactionCategoryId = TransactionCategoryIds::send2BankInstaPay;
-        $this->provider = TpaProviders::ubpInstapay;
+        $this->transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
+        $this->provider = TpaProviders::secBankPesonet;
     }
 }

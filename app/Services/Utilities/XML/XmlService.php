@@ -16,12 +16,17 @@ class XmlService implements IXmlService
         $this->initialize();
     }
 
-    public function startElement(string $elementName, string $elementValue = null)
+    public function startElement(string $elementName, string $elementValue = null, bool $addClosingTag = false)
     {
         xmlwriter_start_element($this->xw, $elementName);
 
         if ($elementValue) {
             xmlwriter_text($this->xw, $elementValue);
+            xmlwriter_end_element($this->xw);
+            return;
+        }
+
+        if ($addClosingTag) {
             xmlwriter_end_element($this->xw);
         }
     }
@@ -60,6 +65,11 @@ class XmlService implements IXmlService
         xmlwriter_start_attribute($this->xw, 'xmlns:soapenv');
         xmlwriter_text($this->xw, 'http://schemas.xmlsoap.org/soap/envelope/');
         xmlwriter_end_attribute($this->xw);
+
+        xmlwriter_start_attribute($this->xw, 'xmlns:ser');
+        xmlwriter_text($this->xw, 'http://service.digi.sbc.com');
+        xmlwriter_end_attribute($this->xw);
+
         xmlwriter_start_element($this->xw, 'soapenv:Body');
     }
 

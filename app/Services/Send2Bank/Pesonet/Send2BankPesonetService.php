@@ -44,6 +44,6 @@ class Send2BankPesonetService extends Send2BankService implements ISend2BankPeso
             $transactionHistories, $logHistoryService);
 
         $this->transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
-        $this->provider = TpaProviders::secBankPesonet;
+        $this->provider = TpaProviders::ubpPesonet;
     }
 }

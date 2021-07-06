@@ -91,20 +91,45 @@ class SecurityBankService implements ISecurityBankService
     {
         $xmlService = new XmlService();
 
-        $xmlService->startElement('payBank');
+        $xmlService->startElement('ser:payBank');
 
-        $xmlService->startElement('username', $this->instapayUsername);
-        $xmlService->startElement('password', $this->instapayPassword);
-        $xmlService->startElement('acctFr', $this->instapayAccount);
-        $xmlService->startElement('Bank', $data['bank_code']);
-        $xmlService->startElement('acctTo', $data['account_number']);
-        $xmlService->startElement('accttoCurr', 'PHP');
-        $xmlService->startElement('amount', $data['amount']);
-        $xmlService->startElement('senderFirstName', $data['sender_first_name']);
-        $xmlService->startElement('senderLastName', $data['sender_first_name']);
-        $xmlService->startElement('recipientFirstName', $data['recipient_first_name']);
-        $xmlService->startElement('recipientLastName', $data['recipient_last_name']);
-        $xmlService->startElement('traceNo', $data['refNo']);
+        $xmlService->startElement('ser:username', $this->instapayUsername);
+        $xmlService->startElement('ser:password', $this->instapayPassword);
+        $xmlService->startElement('ser:acctFr', $this->instapayAccount);
+        $xmlService->startElement('ser:Bank', $data['bank_code']);
+        $xmlService->startElement('ser:acctTo', $data['account_number']);
+        $xmlService->startElement('ser:accttoCurr', 'PHP');
+        $xmlService->startElement('ser:amount', $data['amount']);
+        $xmlService->startElement('ser:senderFirstName', $data['sender_first_name']);
+        $xmlService->startElement('ser:senderMidName', ' ', true);
+        $xmlService->startElement('ser:senderLastName', $data['sender_first_name']);
+        $xmlService->startElement('ser:senderAddressLine1', null, true);
+        $xmlService->startElement('ser:senderAddressLine2', null, true);
+        $xmlService->startElement('ser:senderCity', null, true);
+        $xmlService->startElement('ser:senderStateProv', null, true);
+        $xmlService->startElement('ser:senderPostalCode', null, true);
+        $xmlService->startElement('ser:senderBirthDate', null, true);
+        $xmlService->startElement('ser:senderBirthPlace', null, true);
+        $xmlService->startElement('ser:senderNatureOfWork', null, true);
+        $xmlService->startElement('ser:senderContactDetails', null, true);
+        $xmlService->startElement('ser:senderSourceOfFunds', null, true);
+        $xmlService->startElement('ser:senderNationality', null, true);
+        $xmlService->startElement('ser:primaryIDType', null, true);
+        $xmlService->startElement('ser:primaryIDNo', null, true);
+        $xmlService->startElement('ser:secondaryIDType1', null, true);
+        $xmlService->startElement('ser:secondaryIDNo1', null, true);
+        $xmlService->startElement('ser:secondaryIDType2', null, true);
+        $xmlService->startElement('ser:secondaryIDNo2', null, true);
+        $xmlService->startElement('ser:originatingCountry', 'PH');
+        $xmlService->startElement('ser:recipientFirstName', $data['recipient_first_name']);
+        $xmlService->startElement('ser:recipientMidName', null, true);
+        $xmlService->startElement('ser:recipientLastName', $data['recipient_last_name']);
+        $xmlService->startElement('ser:recipientAddressLine1', null, true);
+        $xmlService->startElement('ser:recipientAddressLine2', null, true);
+        $xmlService->startElement('ser:recipientCity', null, true);
+        $xmlService->startElement('ser:recipientStateProv', null, true);
+        $xmlService->startElement('ser:recipientPostalCode', null, true);
+        $xmlService->startElement('ser:traceNo', $data['refNo']);
 
         return $xmlService->getString();
     }

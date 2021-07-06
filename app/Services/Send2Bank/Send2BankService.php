@@ -166,11 +166,11 @@ class Send2BankService implements ISend2BankService
 
             //$this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
 
-            //$userFullName = ucwords($user->profile->full_name);
+            $userFullName = ucwords($user->profile->full_name);
             $recipientFullName = ucwords($data['recipient_first_name'] . $data['recipient_last_name']);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
             $currentDate = Carbon::now();
-            //$transactionDate = $currentDate->toDateTimeLocalString('millisecond');
+            $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
             $otherPurpose = $data['other_purpose'] ?? '';
 
             $send2Bank = $this->send2banks->createTransaction($userId, $refNo, $data['bank_code'], $data['bank_name'],
@@ -184,10 +184,19 @@ class Send2BankService implements ISend2BankService
             $data['sender_last_name'] = $user->profile->last_name;
             $data['refNo'] = $refNo;
 
-            $transferResponse = $this->secBankService->fundTransfer($this->provider, $data);
+            if ($this->provider === TpaProviders::secBankInstapay || $this->provider === TpaProviders::secBankPesonet) {
+                $transferResponse = $this->secBankService->fundTransfer($this->provider, $data);
 
-            $updateReferenceCounter = true;
-            $send2Bank = $this->handleSecBankTransferResponse($send2Bank, $transferResponse);
+                $updateReferenceCounter = true;
+                $send2Bank = $this->handleSecBankTransferResponse($send2Bank, $transferResponse);
+            } else {
+                $transferResponse = $this->ubpService->fundTransfer($refNo, $userFullName, $user->profile->postal_code,
+                    $data['bank_code'], $data['account_number'], $recipientFullName, $data['amount'],
+                    $transactionDate, ' ', $this->provider);
+
+                $updateReferenceCounter = true;
+                $send2Bank = $this->handleTransferResponse($send2Bank, $transferResponse);
+            }
 
             $balanceInfo = $user->balanceInfo;
             $balanceInfo->available_balance -= $totalAmount;
@@ -198,7 +207,7 @@ class Send2BankService implements ISend2BankService
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
 
-            $this->logHistory($refNo, $currentDate, $totalAmount, $send2Bank->account_number);
+            $this->logHistory($userId, $refNo, $currentDate, $totalAmount, $send2Bank->account_number);
             return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();
@@ -247,7 +256,7 @@ class Send2BankService implements ISend2BankService
         $this->transactionFailed();
     }
 
-    public function logHistory(string $refNo, Carbon $logDate, float $amount, string $accountNo)
+    public function logHistory(string $userId, string $refNo, Carbon $logDate, float $amount, string $accountNo)
     {
         $spModule = $this->provider === TpaProviders::secBankInstapay ?
             SquidPayModuleTypes::send2BankInstapay :
@@ -259,7 +268,7 @@ class Send2BankService implements ISend2BankService
 
         $remarks = "Sent $amount to account number: $accountNo.";
 
-        $this->logHistories->logUserHistory($user->id, $refNo, $spModule,
+        $this->logHistories->logUserHistory($userId, $refNo, $spModule,
             null, $logDate, $remarks, $operation);
     }
 

@@ -43,10 +43,12 @@ use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\PayBills\PayBillsService;
 use App\Services\Send2Bank\Instapay\Send2BankInstapayService;
+use App\Services\Send2Bank\Instapay\Send2BankSBInstapayService;
 use App\Services\Send2Bank\ISend2BankDirectService;
 use App\Services\Send2Bank\ISend2BankService;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
 use App\Services\Send2Bank\Pesonet\Send2BankPesonetService;
+use App\Services\Send2Bank\Pesonet\Send2BankSBPesonetService;
 use App\Services\Send2Bank\Send2BankDirectService;
 use App\Services\Send2Bank\Send2BankService;
 use App\Services\SendMoney\ISendMoneyService;
@@ -280,9 +282,10 @@ class AppServiceProvider extends ServiceProvider
 
                 if ($provider) {
                     $provider = Str::lower($provider);
-                    //if ($provider == TpaProviders::ubpPesonet) return $this->app->get(Send2BankPesonetService::class);
-                    if ($provider == TpaProviders::secBankInstapay) return $this->app->get(Send2BankInstapayService::class);
-                    if ($provider == TpaProviders::secBankPesonet) return $this->app->get(Send2BankPesonetService::class);
+                    if ($provider == TpaProviders::ubpPesonet) return $this->app->get(Send2BankPesonetService::class);
+                    if ($provider == TpaProviders::ubpInstapay) return $this->app->get(Send2BankInstapayService::class);
+                    if ($provider == TpaProviders::secBankInstapay) return $this->app->get(Send2BankSBInstapayService::class);
+                    if ($provider == TpaProviders::secBankPesonet) return $this->app->get(Send2BankSBPesonetService::class);
                 }
 
                 return $this->app->get(Send2BankService::class);

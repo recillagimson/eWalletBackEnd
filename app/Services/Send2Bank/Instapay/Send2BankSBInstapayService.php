@@ -22,8 +22,9 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 
-class Send2BankInstapayService extends Send2BankService implements ISend2BankInstapayService
+class Send2BankSBInstapayService extends Send2BankService implements ISend2BankSBInstapayService
 {
+
     public function __construct(IUBPService $ubpService,
                                 ISecurityBankService $securityBankService,
                                 IReferenceNumberService $referenceNumberService,
@@ -43,6 +44,7 @@ class Send2BankInstapayService extends Send2BankService implements ISend2BankIns
             $smsService, $emailService, $otpService, $users, $userBalances, $send2banks, $serviceFees, $transactionHistories, $logHistoryService);
 
         $this->transactionCategoryId = TransactionCategoryIds::send2BankInstaPay;
-        $this->provider = TpaProviders::ubpInstapay;
+        $this->provider = TpaProviders::secBankInstapay;
     }
+
 }
