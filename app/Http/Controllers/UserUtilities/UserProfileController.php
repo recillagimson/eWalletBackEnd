@@ -193,7 +193,7 @@ class UserProfileController extends Controller
         return $this->responseService->successResponse($review['data']->toArray(), $message);
     }
 
-    public function updateFarmerToSilver(UpdateFarmerToSilverRequest $request): JsonResponse
+    public function updateFarmerToSilver(UpdateFarmerToSilverRequest $request)
     {
         // dd($request->all());
         // $record = $this->userProfileService->upgradeFarmerToSilver($request->all());
