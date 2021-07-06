@@ -35,7 +35,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 
    
 
-    public function getAllList(UserAccount $user, $data, $per_page = 15)
+    public function getAllList(UserAccount $user, $data)
     {
         if ($data === 'P') $letterStatus = DrcrStatus::P;
         if ($data === 'D') $letterStatus = DrcrStatus::D;
