@@ -102,7 +102,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
     {
         return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('type_of_memo','=','CR')->where('status','=','APPROVED')->sum('amount');
     }
-
+    
     public function updateMemo(UserAccount $user, $data)
     {
         $status = $data['status'];

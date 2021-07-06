@@ -54,5 +54,4 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
     {
         return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
     }
-
 }

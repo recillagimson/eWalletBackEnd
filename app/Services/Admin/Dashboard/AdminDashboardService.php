@@ -44,7 +44,7 @@ class AdminDashboardService implements IAdminDashboardService
         $this->drMemo = $drMemo;
     }
 
-    public function dashboard(string $UserID): array
+    public function dashboard()
     {
         //Get user count
         $UserDetails = $this->userDetail->getUserCount();

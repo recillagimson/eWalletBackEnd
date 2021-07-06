@@ -26,6 +26,8 @@ use App\Services\BuyLoad\BuyLoadService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\IDashboardService;
+use App\Services\Admin\Dashboard\AdminDashboardService;
+use App\Services\Admin\Dashboard\IAdminDashboardService;
 use App\Services\DrcrMemo\DrcrMemoService;
 use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Encryption\EncryptionService;
@@ -159,6 +161,9 @@ class AppServiceProvider extends ServiceProvider
 
         //Dashboard
         $this->app->bind(IDashboardService::class, DashboardService::class);
+
+        //Admin Dashboard
+        $this->app->bind(IAdminDashboardService::class, AdminDashboardService::class);
 
         //Foreign Exchange
         $this->app->bind(IForeignExchangeRateService::class, ForeignExchangeRateService::class);

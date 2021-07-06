@@ -59,6 +59,5 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
     {
         return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('service_fee');
     }
-
 }
 

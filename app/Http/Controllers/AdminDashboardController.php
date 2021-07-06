@@ -28,8 +28,8 @@ class AdminDashboardController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $UserID = $request->user()->id;
-        $Dashboard = $this->admindashboardService->dashboard($UserID);
+        //$UserID = $request->user()->id;
+        $Dashboard = $this->admindashboardService->dashboard();
         return $this->responseService->successResponse($Dashboard, SuccessMessages::success);
         //return response($Dashboard);
     }
