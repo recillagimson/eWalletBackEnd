@@ -18,7 +18,7 @@ class DashboardController extends Controller
     //private IForeignExchangeRateService $foreignExchangeRateService;
 
     public function __construct(
-            IForeignExchangeRateService $foreignExchangeRateService,
+           // IForeignExchangeRateService $foreignExchangeRateService,
             IDashboardService $dashboardService,
             IResponseService $responseService
         )
