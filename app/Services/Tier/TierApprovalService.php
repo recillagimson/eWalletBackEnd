@@ -4,11 +4,13 @@ namespace App\Services\Tier;
 
 use App\Enums\AccountTiers;
 use App\Models\TierApproval;
+use App\Repositories\IdType\IIdTypeRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\Tier\ITierApprovalCommentRepository;
 use App\Repositories\Tier\ITierRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
@@ -28,8 +30,10 @@ class TierApprovalService implements ITierApprovalService
     public ITierRepository $tierRepository;
     public IUserDetailRepository $userDetailRepository;
     public ISmsService $smsService;
+    public ITierApprovalCommentRepository $tierApprovalComment;
+    public IIdTypeRepository $idTypeRepository;
 
-    public function __construct(ITierApprovalRepository $tierApprovalRepository, INotificationRepository $notificationRepository, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IEmailService $emailService, IUserDetailRepository $userDetailRepository, ITierRepository $tierRepository, ISmsService $smsService)
+    public function __construct(ITierApprovalRepository $tierApprovalRepository, INotificationRepository $notificationRepository, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IEmailService $emailService, IUserDetailRepository $userDetailRepository, ITierRepository $tierRepository, ISmsService $smsService, ITierApprovalCommentRepository $tierApprovalComment, IIdTypeRepository $idTypeRepository)
     {
         $this->tierApprovalRepository = $tierApprovalRepository;
         $this->notificationRepository = $notificationRepository;
@@ -40,6 +44,8 @@ class TierApprovalService implements ITierApprovalService
         $this->userDetailRepository = $userDetailRepository;
         $this->tierRepository = $tierRepository;
         $this->smsService = $smsService;
+        $this->tierApprovalComment = $tierApprovalComment;
+        $this->idTypeRepository = $idTypeRepository;
     }
 
     public function updateOrCreateApprovalRequest(array $attr) {
@@ -86,12 +92,39 @@ class TierApprovalService implements ITierApprovalService
     }
 
     public function takePhotoAction(array $attr) {
-        $photo = $this->userPhotoRepository->get($attr['user_photo_id']);
-        $attr['reviewed_by'] = request()->user()->id;
-        $attr['reviewed_date'] = Carbon::now()->format('Y-m-d H:i:s');
-        $this->userPhotoRepository->update($photo, $attr);
-        $photo = $this->userPhotoRepository->get($attr['user_photo_id']);
-        return $photo;
+        \DB::beginTransaction();
+        try {
+            $photo = $this->userPhotoRepository->get($attr['user_photo_id']);
+            $attr['reviewed_by'] = request()->user()->id;
+            $attr['reviewed_date'] = Carbon::now()->format('Y-m-d H:i:s');
+            $this->userPhotoRepository->update($photo, $attr);
+            if($photo) {
+                $idType = $this->idTypeRepository->get($photo->id_type_id);
+                if($idType) {
+                    $remarks = $attr['approval_status'] == 'APPROVED' ? $idType->description . ' Approved'  : $idType->description . ' Declined';
+                    $this->tierApprovalComment->create([
+                        'tier_approval_id' => $photo->tier_approval_id,
+                        'remarks' => $remarks,
+                        'user_created' => request()->user()->id,
+                        'user_updated' => request()->user()->id,
+                    ]);
+                } else {
+                    throw ValidationException::withMessages([
+                        'id_type_id_not_found' => 'ID Type not found'
+                    ]);
+                }
+                $photo = $this->userPhotoRepository->get($attr['user_photo_id']);
+            } else {
+                throw ValidationException::withMessages([
+                    'photo_not_found' => 'Photo not found'
+                ]);
+            }
+            \DB::commit();
+            return $photo;
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return $e->getMessage();
+        }
     }
 
     public function takeSelfieAction(array $attr) {
