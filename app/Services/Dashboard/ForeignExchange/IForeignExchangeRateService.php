@@ -6,4 +6,5 @@ interface IForeignExchangeRateService
 {
     public function updateForeignCurrencyRates();
     public function getForeignCurrencyRates();
+    public function mappedSourceCode();
 }
