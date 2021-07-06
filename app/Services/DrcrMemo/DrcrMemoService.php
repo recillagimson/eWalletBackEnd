@@ -26,13 +26,12 @@ class DrcrMemoService implements IDrcrMemoService
     private IUserBalanceInfoRepository $userBalanceRepository;
     private IUserTransactionHistoryRepository $userTransHistory;
 
-    public function __construct(
-        IDrcrMemoRepository $drcrMemoRepository,
-        IReferenceNumberService $referenceNumberService,
-        IUserAccountRepository $userAccountRepository,
-        IUserBalanceInfoRepository $userBalanceRepository,
-        IUserTransactionHistoryRepository $userTransHistory
-    ) {
+    public function __construct(IDrcrMemoRepository $drcrMemoRepository,
+                                IReferenceNumberService $referenceNumberService,
+                                IUserAccountRepository $userAccountRepository,
+                                IUserBalanceInfoRepository $userBalanceRepository,
+        IUserTransactionHistoryRepository $userTransHistory)
+    {
         $this->drcrMemoRepository = $drcrMemoRepository;
         $this->referenceNumberService = $referenceNumberService;
         $this->userAccountRepository = $userAccountRepository;
@@ -67,7 +66,7 @@ class DrcrMemoService implements IDrcrMemoService
     public function getUser(string $accountNumber): array
     {
         $user = $this->userAccountRepository->getUserByAccountNumber($accountNumber);
-        if (!$user) return $this->userAccountNotFound();
+        if(!$user) return $this->userAccountNotFound();
 
         $customerName = $user->userDetail->first_name . ' ' . $user->userDetail->last_name;
         $balance = $user->balanceInfo->available_balance;
@@ -79,8 +78,8 @@ class DrcrMemoService implements IDrcrMemoService
         $customer = $this->getUserByAccountNumber($data);
         $typeOfMemo = $data['typeOfMemo'];
 
-        if (!$customer) return $this->userAccountNotFound();
-        if ($typeOfMemo !== ReferenceNumberTypes::CR && $typeOfMemo !== ReferenceNumberTypes::DR) return $this->invalidTypeOfMemo();
+        if(!$customer) return $this->userAccountNotFound();
+        if($typeOfMemo !== ReferenceNumberTypes::CR && $typeOfMemo !== ReferenceNumberTypes::DR) return $this->invalidTypeOfMemo();
 
         if ($data['typeOfMemo'] == ReferenceNumberTypes::DR) {
             $isEnough = $this->checkAmount($data, $customer->id);
@@ -99,6 +98,7 @@ class DrcrMemoService implements IDrcrMemoService
             if (!$isEnough) $this->insuficientBalance();
         }
         return $this->drcrMemoRepository->updateMemo($user, $data);
+
     }
 
 
@@ -111,9 +111,9 @@ class DrcrMemoService implements IDrcrMemoService
         $status = $data['status'];
         $remarks = $data['remarks'];
         $isEnough = $this->checkAmount($data, $drcrMemo->user_account_id);
-
-        if ($status !== DrcrStatus::Approve && $status !== DrcrStatus::Decline && $status !== DrcrStatus::Pending) return $this->invalidStatus1();
-        if (empty($remarks) && $status == DrcrStatus::Decline) return $this->isEmpty();
+        
+        if ($status !== DrcrStatus::Approve && $status !== DrcrStatus::Decline && $status !== DrcrStatus::Pending) return $this->invalidStatus1();   
+        if(empty($remarks) && $status == DrcrStatus::Decline) return $this->isEmpty();
         if ($this->userTransHistory->isExisting($drcrMemo->id)) return $this->isExisting();
 
         if ($status == DrcrStatus::Approve) {
@@ -125,13 +125,13 @@ class DrcrMemoService implements IDrcrMemoService
                 $this->creditMemo($drcrMemo->user_account_id, $drcrMemo->amount);
             }
         }
+     
+       $drcr = $this->drcrMemoRepository->updateDrcr($user, $data);
+       $drcr1 = (object) $this->drcrMemoRepository->updateDrcr($user, $data);
 
-        $drcr = $this->drcrMemoRepository->updateDrcr($user, $data);
-        $drcr1 = (object) $this->drcrMemoRepository->updateDrcr($user, $data);
+       $this->userTransHistory->log($drcr1->user_account_id, $drcr1->transaction_category_id, $drcr1->id, $drcr1->reference_number, $drcr1->amount, Carbon::parse($drcr1->updated_at), $drcr1->user_created);
 
-        $this->userTransHistory->log($drcr1->user_account_id, $drcr1->transaction_category_id, $drcr1->id, $drcr1->reference_number, $drcr1->amount, Carbon::parse($drcr1->updated_at), $drcr1->user_created);
-
-        return $drcr;
+       return $drcr;
     }
 
 
@@ -201,4 +201,5 @@ class DrcrMemoService implements IDrcrMemoService
 
         return $this->drcrMemoRepository->create($newMemo);
     }
+
 }
