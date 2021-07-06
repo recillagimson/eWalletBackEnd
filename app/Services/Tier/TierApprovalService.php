@@ -128,11 +128,25 @@ class TierApprovalService implements ITierApprovalService
     }
 
     public function takeSelfieAction(array $attr) {
-        $photo = $this->userSelfiePhotoRepository->get($attr['user_selfie_photo_id']);
-        $attr['reviewed_by'] = request()->user()->id;
-        $attr['reviewed_date'] = Carbon::now()->format('Y-m-d H:i:s');
-        $this->userSelfiePhotoRepository->update($photo, $attr);
-        $photo = $this->userSelfiePhotoRepository->get($attr['user_selfie_photo_id']);
-        return $photo;
+        \DB::beginTransaction();
+        try {
+            $photo = $this->userSelfiePhotoRepository->get($attr['user_selfie_photo_id']);
+            $attr['reviewed_by'] = request()->user()->id;
+            $attr['reviewed_date'] = Carbon::now()->format('Y-m-d H:i:s');
+            $this->userSelfiePhotoRepository->update($photo, $attr);
+            $photo = $this->userSelfiePhotoRepository->get($attr['user_selfie_photo_id']);
+            $remarks = $attr['status'] == 'APPROVED' ? "Selfie Approved" : "Selfie Declined";
+            $this->tierApprovalComment->create([
+                'tier_approval_id' => $photo->tier_approval_id,
+                'remarks' => $remarks,
+                'user_created' => request()->user()->id,
+                'user_updated' => request()->user()->id,
+            ]);
+            \DB::commit();
+            return $photo;
+        } catch(\Exception $e) {
+            \DB::rollBack();
+            return $e->getMessage();
+        }
     }
 }
