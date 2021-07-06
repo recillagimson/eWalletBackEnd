@@ -21,7 +21,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         return $this->model->where('user_account_id', $user->id)->get();
     }
 
-    public function getListByCreatedBy(UserAccount $user, $data, $per_page = 15)
+    public function getListByCreatedBy(UserAccount $user, $data)
     {
         if ($data === 'P') $letterStatus = DrcrStatus::P;
         if ($data === 'D') $letterStatus = DrcrStatus::D;
@@ -31,33 +31,31 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         ->where('created_by', $user->id)
         ->orWhere('user_created', $user->id)
         ->where('status', $letterStatus)
-        ->paginate($per_page);
+   
     }
 
-    public function getAllPaginate($per_page = 15) {
+    public function getAllPaginate() {
         return $this->model
         ->with(['user_account', 'user_details', 'user_balance_info'])
-        ->paginate($per_page);
     }
 
-    public function getAllList(UserAccount $user, $data, $per_page = 15)
+    public function getAllList(UserAccount $user, $data)
     {
         if ($data === 'P') $letterStatus = DrcrStatus::P;
         if ($data === 'D') $letterStatus = DrcrStatus::D;
         if ($data === 'A') $letterStatus = DrcrStatus::A;
         return $this->model
             ->with(['user_account', 'user_details', 'user_balance_info'])
-            ->where('status', $letterStatus)->paginate($per_page);
+            ->where('status', $letterStatus)
     }
 
    
-    public function getList(UserAccount $user, $per_page = 15)
+    public function getList(UserAccount $user)
     {
         return $this->model
             ->with(['user_account', 'user_details', 'user_balance_info'])
             ->where('created_by', $user->id)
             ->orWhere('user_created', $user->id)
-            ->paginate($per_page);
     }
 
     public function getPendingByCreatedBy(UserAccount $user)
