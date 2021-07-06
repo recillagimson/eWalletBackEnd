@@ -49,7 +49,9 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         if ($data === 'A') $letterStatus = DrcrStatus::A;
         return $this->model
             ->with(['user_account', 'user_details', 'user_balance_info'])
-            ->where('status', $letterStatus)->paginate($per_page);
+            ->where('status', $letterStatus)
+            // ->paginate($per_page);
+            ->get();
     }
 
    
@@ -59,7 +61,8 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             ->with(['user_account', 'user_details', 'user_balance_info'])
             ->where('created_by', $user->id)
             ->orWhere('user_created', $user->id)
-            ->paginate($per_page);
+            // ->paginate($per_page);
+            ->get();
     }
 
     public function getPendingByCreatedBy(UserAccount $user)
