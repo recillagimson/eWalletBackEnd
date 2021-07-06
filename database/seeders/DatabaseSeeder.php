@@ -29,7 +29,6 @@ class DatabaseSeeder extends Seeder
             insert_reference_counters::class,
             insert_tiers::class,
             ClientSeeder::class,
-            ForeignExchangeRateSeeder::class,
 
         ]);
 
