@@ -84,7 +84,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
         $records = $this->model
         ->with(['user_account'])
-        ->whereBetween('transaction_date', [$from, $to])
+        ->whereBetween('created_at', [$from, $to])
         ->where('total_amount', '>=', $amount_limit);
 
         return $records;
