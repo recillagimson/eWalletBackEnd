@@ -8,14 +8,14 @@ use Illuminate\Http\Response;
 
 use App\Enums\SuccessMessages;
 use App\Services\Dashboard\IDashboardService;
-use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
+//use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
 use App\Services\Utilities\Responses\IResponseService;
 
 class DashboardController extends Controller
 {
     private IDashboardService $dashboardService;
     private IResponseService $responseService;
-    private IForeignExchangeRateService $foreignExchangeRateService;
+    //private IForeignExchangeRateService $foreignExchangeRateService;
 
     public function __construct(
             IForeignExchangeRateService $foreignExchangeRateService,
@@ -25,7 +25,7 @@ class DashboardController extends Controller
     {
         $this->dashboardService = $dashboardService;
         $this->responseService = $responseService;
-        $this->foreignExchangeRateService = $foreignExchangeRateService;
+        //$this->foreignExchangeRateService = $foreignExchangeRateService;
     }
     /**
      * Display a listing of the resource.
@@ -41,9 +41,9 @@ class DashboardController extends Controller
         //return response()->json($Dashboard, Response::HTTP_OK);
     }
 
-    public function getForeignCurrencyRates() : JsonResponse
-    {
-        $data = $this->foreignExchangeRateService->getForeignCurrencyRates();
-        return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
-    }
+    //public function getForeignCurrencyRates() : JsonResponse
+    //{
+     //   $data = $this->foreignExchangeRateService->getForeignCurrencyRates();
+    //    return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
+    //}
 }
