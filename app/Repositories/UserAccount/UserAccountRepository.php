@@ -119,7 +119,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getUserCount()
     {
-        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','ACTIVE')->count('*');
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('is_active','=',1)->count('*');
     }
 
 }
