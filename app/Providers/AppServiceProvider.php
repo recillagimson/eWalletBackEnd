@@ -161,8 +161,8 @@ class AppServiceProvider extends ServiceProvider
         //Dashboard
         $this->app->bind(IDashboardService::class, DashboardService::class);
 
-        //Admin Dashboard
-        $this->app->bind(IAdminDashboardService::class, AdminDashboardService::class);
+        //Foreign Exchange
+        $this->app->bind(IForeignExchangeRateService::class, ForeignExchangeRateService::class);
 
         // Notification
         $this->app->bind(INotificationService::class, NotificationService::class);
