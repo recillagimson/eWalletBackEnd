@@ -19,4 +19,9 @@ class InReceiveMoneyRepository extends Repository implements IInReceiveMoneyRepo
             ->where('user_account_id', $userAccountId)
             ->sum('amount');
     }
+
+    public function getTotalReceiveMoney()
+    {
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','successful')->sum('amount');
+    }
 }
