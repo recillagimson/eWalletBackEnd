@@ -51,4 +51,3 @@ class DrcrMemo extends Model
 
 }
 
-}
