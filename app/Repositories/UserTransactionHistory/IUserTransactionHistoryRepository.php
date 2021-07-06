@@ -9,8 +9,15 @@ interface IUserTransactionHistoryRepository extends IRepository
 {
     public function getTotalTransactionAmountByUserAccountIdDateRange(string $userAccountId, string $from, $to);
 
-    public function log(string $userId, string $transactionCategoryId, string $transactionId, string $refNo,
-                        float $totalAmount, Carbon $transactionDate, string $userCreated);
+    public function log(
+        string $userId,
+        string $transactionCategoryId,
+        string $transactionId,
+        string $refNo,
+        float $totalAmount,
+        Carbon $transactionDate,
+        string $userCreated
+    );
 
     public function getByAuthUser();
 
@@ -21,5 +28,6 @@ interface IUserTransactionHistoryRepository extends IRepository
     public function countTransactionHistoryByDateRangeWithAmountLimitWithPaginate(string $from, string $to);
 
     public function countTransactionHistoryByDateRangeWithAmountLimit(string $from, string $to);
-}
 
+    public function isExisting(string $id);
+}
