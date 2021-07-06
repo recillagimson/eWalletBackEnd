@@ -14,8 +14,6 @@ use App\Services\AddMoney\IInAddMoneyService;
 use App\Services\AddMoney\InAddMoneyService;
 use App\Services\AddMoney\Providers\DragonPayService;
 use App\Services\AddMoney\Providers\IAddMoneyService;
-use App\Services\Admin\Dashboard\AdminDashboardService;
-use App\Services\Admin\Dashboard\IAdminDashboardService;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
 use App\Services\Auth\Registration\IRegistrationService;
@@ -42,6 +40,7 @@ use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\PayBills\PayBillsService;
+use App\Services\Send2Bank\Instapay\ISend2BankSBInstapayService;
 use App\Services\Send2Bank\Instapay\Send2BankInstapayService;
 use App\Services\Send2Bank\Instapay\Send2BankSBInstapayService;
 use App\Services\Send2Bank\ISend2BankDirectService;
@@ -274,6 +273,7 @@ class AppServiceProvider extends ServiceProvider
     private function bindSend2BankService()
     {
         $this->app->bind(ISend2BankPesonetService::class, Send2BankPesonetService::class);
+        $this->app->bind(ISend2BankSBInstapayService::class, Send2BankSBInstapayService::class);
         $this->app->when(Send2BankController::class)
             ->needs(ISend2BankService::class)
             ->give(function () {
