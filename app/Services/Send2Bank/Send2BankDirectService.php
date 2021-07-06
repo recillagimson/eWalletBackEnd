@@ -142,7 +142,7 @@ class Send2BankDirectService implements ISend2BankDirectService
             }
 
             // CREATE LOG HISTORY
-            $audit_remarks = request()->user()->id . " has transfered " . $totalAmount . " vi UBP Direct";
+            $audit_remarks = request()->user()->account_number . " has transfered " . $totalAmount . " vi UBP Direct";
 
             $this->logHistoryService->logUserHistory($userId, $refNo, SquidPayModuleTypes::sendMoneyUBPDirect, get_class(new OutSend2Bank()), $transactionDate, $audit_remarks);
 
