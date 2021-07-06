@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Enums\CurrencyRatesConfig;
 
-///Models
-use App\Models\Admin\ForeignExchangeRate;
-
 class ForeignExchangeRateSeeder extends Seeder
 {
     /**
@@ -30,8 +27,6 @@ class ForeignExchangeRateSeeder extends Seeder
             ];
         });
         DB::table('foreign_exchange_rates')->truncate();
-        foreach($data as $rate) {
-            ForeignExchangeRate::create($rate);
-        }
+        DB::table('foreign_exchange_rates')->insert($data->toArray());
     }
 }
