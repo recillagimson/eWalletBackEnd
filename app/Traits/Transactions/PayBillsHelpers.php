@@ -147,7 +147,7 @@ trait PayBillsHelpers
             'transaction_category_id' => PayBillsConfig::BILLS,
             'transaction_remarks' => 'Pay bills to ' . $biller['data']['name'],
             'message' => '',
-            'status' => $response['data']['status'],
+            'status' => TransactionStatuses::pending,
             'client_reference' =>  $response['data']['clientReference'],
             'billers_code' => $biller['data']['code'],
             'billers_name' => $biller['data']['name'],
