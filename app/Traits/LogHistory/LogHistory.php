@@ -43,7 +43,7 @@ trait LogHistory
                 $entry->Type == 'CR' ? 'Credit' : 'Debit',
                 $entry->reference_number,
                 strval($entry->total_amount),
-                "N/A",
+                $entry->Description,
                 strval($available_balance),
                 $entry->Status
             ];
