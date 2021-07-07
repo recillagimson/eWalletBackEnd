@@ -37,8 +37,8 @@ trait LogHistory
 
             $proc = [
                 $entry->transaction_date,
-                $entry->first_name . " " . $entry->last_name,
                 $entry->account_number,
+                $entry->first_name . " " . $entry->last_name,
                 strval($current_balance),
                 $entry->Type == 'CR' ? 'Credit' : 'Debit',
                 $entry->reference_number,

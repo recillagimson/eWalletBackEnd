@@ -57,7 +57,7 @@ class DRCRReport implements FromArray, WithHeadings, ShouldAutoSize
     {
         return [
             'Transaction Date', 'Customer ID', 'Customer Name', 'Current Balance', 'Type (DR/CR)', 'Category', 'Amount',
-            'Transaction Description', 'Available Balance'
+            'Transaction Description', 'Available Balance', 'Status'
         ];
     }
 
