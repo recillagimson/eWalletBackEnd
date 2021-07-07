@@ -8,6 +8,7 @@ use App\Traits\Errors\WithErrors;
 use App\Traits\Errors\WithUserErrors;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Carbon\Carbon;
 
 class UserAccountRepository extends Repository implements IUserAccountRepository
 {
@@ -114,6 +115,11 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         }
 
         return $this->userAccountNotFound();
+    }
+
+    public function getUserCount()
+    {
+        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('is_active','=',1)->count('*');
     }
 
 }

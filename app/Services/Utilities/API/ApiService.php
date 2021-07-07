@@ -31,6 +31,17 @@ class ApiService implements IApiService
         return Http::withHeaders($headers)->post($url, $data);
     }
 
+    public function postXml(string $url, string $xml, array $headers = null): Response
+    {
+        if (!$headers) {
+            $headers = $this->defaultHeaders;
+        }
+
+        return Http::withHeaders($headers)->send('POST', $url, [
+            'body' => $xml
+        ]);
+    }
+
     public function postAsForm(string $url, array $data, array $headers = null): Response
     {
         if (!$headers) {

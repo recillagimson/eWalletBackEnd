@@ -22,4 +22,3 @@ interface IUserTransactionHistoryRepository extends IRepository
 
     public function countTransactionHistoryByDateRangeWithAmountLimit(string $from, string $to);
 }
-

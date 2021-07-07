@@ -15,9 +15,8 @@ class TierApprovalCommentRepository extends Repository implements ITierApprovalC
     public function listTierApprovalComments(array $attr) 
     {
         $records = $this->model;
-        
         if($records && isset($records['tier_request_id'])) {
-            $records = $records->where('tier_request_id', $attr['tier_request_id']);
+            $records = $records->where('tier_approval_id', $attr['tier_request_id']);
         }
 
         return $records->get();

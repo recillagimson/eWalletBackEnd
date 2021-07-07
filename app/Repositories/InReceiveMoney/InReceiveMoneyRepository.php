@@ -4,6 +4,7 @@ namespace App\Repositories\InReceiveMoney;
 
 use App\Repositories\Repository;
 use App\Models\InReceiveMoney;
+use Carbon\Carbon;
 
 class InReceiveMoneyRepository extends Repository implements IInReceiveMoneyRepository
 {
@@ -18,5 +19,10 @@ class InReceiveMoneyRepository extends Repository implements IInReceiveMoneyRepo
             ->where('status', '!=', 'FAILED')
             ->where('user_account_id', $userAccountId)
             ->sum('amount');
+    }
+
+    public function getTotalReceiveMoney()
+    {
+        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=',1)->sum('amount');
     }
 }

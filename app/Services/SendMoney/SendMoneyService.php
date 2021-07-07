@@ -330,7 +330,7 @@ class SendMoneyService implements ISendMoneyService
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             // 'purpose_of_transfer_id' => '',
             'message' => $fillRequest['message'],
-           'status' => 'SUCCESS',
+            'status' => 'SUCCESS',
             'transaction_date' => date('Y-m-d H:i:s'),
             'transaction_category_id' => SendMoneyConfig::CXSEND,
             'transaction_remarks' => '',
