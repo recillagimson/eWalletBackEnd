@@ -9,6 +9,7 @@ use App\Models\UserAccount;
 use App\Exports\DRCR\DRCRReport;
 use App\Enums\TransactionStatuses;
 use App\Enums\ReferenceNumberTypes;
+use App\Enums\SuccessMessages;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Enums\TransactionCategoryIds;
 use App\Traits\Errors\WithDrcrMemoErrors;
@@ -18,6 +19,7 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\LogHistory\LogHistory;
 
 class DrcrMemoService implements IDrcrMemoService
@@ -30,6 +32,7 @@ class DrcrMemoService implements IDrcrMemoService
     private IUserBalanceInfoRepository $userBalanceRepository;
     private IUserTransactionHistoryRepository $userTransHistory;
     private IPDFService $pdfService;
+    private IResponseService $responseService;
     
     
     public function __construct(IDrcrMemoRepository $drcrMemoRepository,
@@ -37,7 +40,7 @@ class DrcrMemoService implements IDrcrMemoService
     IUserAccountRepository $userAccountRepository,
     IUserBalanceInfoRepository $userBalanceRepository,
     IUserTransactionHistoryRepository $userTransHistory, 
-    IPDFService $pdfService)
+    IPDFService $pdfService, IResponseService $responseService)
     {
         $this->pdfService = $pdfService;
         $this->drcrMemoRepository = $drcrMemoRepository;
@@ -45,6 +48,7 @@ class DrcrMemoService implements IDrcrMemoService
         $this->userAccountRepository = $userAccountRepository;
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransHistory = $userTransHistory;
+        $this->responseService = $responseService;
     }
 
     public function getList(UserAccount $user, $data, $per_page = 15)
@@ -213,17 +217,22 @@ class DrcrMemoService implements IDrcrMemoService
     public function report(array $params) {
         $data = $this->drcrMemoRepository->reportData($params['from'], $params['to']);
         $file_name = $params['from'] . "-" . $params['to'] . "." . $params['type'];
-        if($params['type'] == 'XLSX') {
-            return Excel::download(new DRCRReport($data, $params['from'], $params['to'], $params), $file_name, \Maatwebsite\Excel\Excel::XLSX);
-        } else if($params['type'] == 'CSV') {
-            return Excel::download(new DRCRReport($data, $params['from'], $params['to'], $params), $file_name, \Maatwebsite\Excel\Excel::CSV);
-        } else {
+        if($params['type'] == 'PDF') {
             $data = $this->processData($data);
             $records = [
                 'records' => $data
             ];
             ini_set("pcre.backtrack_limit", "5000000");
             return $this->pdfService->generatePDFNoUserPassword($records, 'reports.log_histories.log_histories');
+        } 
+        else if($params['type'] == 'CSV') {
+            return Excel::download(new DRCRReport($data, $params['from'], $params['to'], $params), $file_name, \Maatwebsite\Excel\Excel::CSV);
+        } 
+        else if($params['type'] == 'API')  {
+            return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
+        }
+        else {
+            return Excel::download(new DRCRReport($data, $params['from'], $params['to'], $params), $file_name, \Maatwebsite\Excel\Excel::XLSX);
         }
     }
 }
