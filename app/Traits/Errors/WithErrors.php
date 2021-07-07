@@ -41,7 +41,7 @@ trait WithErrors
         $feeAndCharges = array_merge(array('serviceFee' => $serviceFee), array('otherCharges' => $otherCharges));
         $providerArrayResponse = array_merge($providerArrayResponse['data'], $feeAndCharges);
         $withData = array('data' => $providerArrayResponse);
-        $providerError = array('provider_error' => $withData);
+        $providerError = array('provider_error' => [$withData]);
 
         return array_merge($withMessages, $withError, $providerError);
     }
