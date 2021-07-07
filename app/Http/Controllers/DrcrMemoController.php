@@ -128,7 +128,7 @@ class DrcrMemoController extends Controller
     }
 
     public function report(DRCRReportRequest $request) {
-        $report = $this->drcrMemoService->report($request->all());
+        return $this->drcrMemoService->report($request->all());
     }
 
 }
