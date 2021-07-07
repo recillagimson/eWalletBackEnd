@@ -4,10 +4,12 @@ namespace App\Services\DrcrMemo;
 
 use App\Enums\Currencies;
 use App\Enums\DrcrStatus;
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\TransactionCategoryIds;
-use App\Enums\TransactionStatuses;
 use App\Models\UserAccount;
+use App\Exports\DRCR\DRCRReport;
+use App\Enums\TransactionStatuses;
+use App\Enums\ReferenceNumberTypes;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Enums\TransactionCategoryIds;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -202,4 +204,8 @@ class DrcrMemoService implements IDrcrMemoService
         return $this->drcrMemoRepository->create($newMemo);
     }
 
+    public function report(array $params) {
+        $data = $this->drcrMemoRepository->reportData($params['from'], $params['to']);
+        return Excel::download(new DRCRReport($data), 'report.xlsx');
+    }
 }
