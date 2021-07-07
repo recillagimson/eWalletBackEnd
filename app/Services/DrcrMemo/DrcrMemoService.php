@@ -2,6 +2,7 @@
 
 namespace App\Services\DrcrMemo;
 
+use Carbon\Carbon;
 use App\Enums\Currencies;
 use App\Enums\DrcrStatus;
 use App\Models\UserAccount;
@@ -10,13 +11,12 @@ use App\Enums\TransactionStatuses;
 use App\Enums\ReferenceNumberTypes;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithDrcrMemoErrors;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithDrcrMemoErrors;
-use Carbon\Carbon;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class DrcrMemoService implements IDrcrMemoService
 {
@@ -206,6 +206,13 @@ class DrcrMemoService implements IDrcrMemoService
 
     public function report(array $params) {
         $data = $this->drcrMemoRepository->reportData($params['from'], $params['to']);
-        return Excel::download(new DRCRReport($data), 'report.xlsx');
+        $file_name = $params['from'] . "-" . $params['to'] . "." . $params['type'];
+        if($params['type'] == 'XLSX') {
+            return Excel::raw(new DRCRReport($data, $params['from'], $params['to'], $params), \Maatwebsite\Excel\Excel::XLSX);
+        } else if($params['type'] == 'CSV') {
+            return Excel::raw(new DRCRReport($data, $params['from'], $params['to'], $params), \Maatwebsite\Excel\Excel::CSV);
+        } else {
+            return Excel::raw(new DRCRReport($data, $params['from'], $params['to'], $params), \Maatwebsite\Excel\Excel::MPDF);
+        }
     }
 }
