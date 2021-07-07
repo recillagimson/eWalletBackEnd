@@ -34,7 +34,7 @@ trait WithErrors
     }
 
     // requested format for FE team
-    private function validationCatchErrorMessageMeralco($errorCode, $errorMessage, $providerArrayResponse, $serviceFee, $otherCharges)
+    private function validationCatchErrorMessageMeralco($errorCode, $errorMessage, $providerArrayResponse, $serviceFee, $otherCharges): array
     {
         $withMessages =  array('message' => 'The given data was invalid.');
         $withError  =  array('errors' => array('error_code' => [$errorCode], 'message' => [$errorMessage]));
