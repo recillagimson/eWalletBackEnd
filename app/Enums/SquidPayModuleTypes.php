@@ -13,6 +13,9 @@ class SquidPayModuleTypes
     const AddMoneyViaSquidPay = 'ADD_MONEY_SQUIDPAY';
     const sendMoneyUBPDirect = 'SEND_MONEY_UBP_DIRECT';
 
+    const send2BankInstapay = 'SEND2BANK_INSTAPAY';
+    const send2BankPesonet = 'SEND2BANK_PESONET';
+
     const updateProfile = 'UPDATE_PROFILE';
     const upgradeToSilver = 'UPGRADE_TO_SILVER';
     const upgradeToBronze = 'UPDATE_BRONZE';

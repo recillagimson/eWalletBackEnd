@@ -34,10 +34,10 @@ interface ISend2BankService
      * Fund transfer to recepient bank acccount
      *
      * @param string $userId
-     * @param array $recipient
+     * @param array $data
      * @throws Throwable
      */
-    public function fundTransfer(string $userId, array $recipient);
+    public function fundTransfer(string $userId, array $data);
 
     /**
      * Check updates on pending transactions and process them accordingly

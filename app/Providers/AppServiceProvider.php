@@ -26,6 +26,8 @@ use App\Services\BuyLoad\BuyLoadService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\IDashboardService;
+use App\Services\Admin\Dashboard\AdminDashboardService;
+use App\Services\Admin\Dashboard\IAdminDashboardService;
 use App\Services\DrcrMemo\DrcrMemoService;
 use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Encryption\EncryptionService;
@@ -34,21 +36,30 @@ use App\Services\FarmerProfile\FarmerProfileService;
 use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\KYCService\IKYCService;
 use App\Services\KYCService\KYCService;
+use App\Services\MyTask\IMyTaskService;
+use App\Services\MyTask\MyTaskService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\PayBills\PayBillsService;
+use App\Services\Send2Bank\Instapay\ISend2BankSBInstapayService;
 use App\Services\Send2Bank\Instapay\Send2BankInstapayService;
+use App\Services\Send2Bank\Instapay\Send2BankSBInstapayService;
 use App\Services\Send2Bank\ISend2BankDirectService;
 use App\Services\Send2Bank\ISend2BankService;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
 use App\Services\Send2Bank\Pesonet\Send2BankPesonetService;
+use App\Services\Send2Bank\Pesonet\Send2BankSBPesonetService;
 use App\Services\Send2Bank\Send2BankDirectService;
 use App\Services\Send2Bank\Send2BankService;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Services\SendMoney\SendMoneyService;
+use App\Services\TempUserDetail\ITempUserDetailService;
+use App\Services\TempUserDetail\TempUserDetailService;
 use App\Services\ThirdParty\BayadCenter\BayadCenterService;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
+use App\Services\ThirdParty\SecurityBank\ISecurityBankService;
+use App\Services\ThirdParty\SecurityBank\SecurityBankService;
 use App\Services\ThirdParty\UBP\IUBPService;
 use App\Services\ThirdParty\UBP\UBPService;
 use App\Services\Tier\ITierApprovalService;
@@ -61,10 +72,10 @@ use App\Services\UserAccount\IUserAccountService;
 use App\Services\UserAccount\UserAccountService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\UserProfile\UserProfileService;
-use App\Services\TempUserDetail\ITempUserDetailService;
-use App\Services\TempUserDetail\TempUserDetailService;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\API\IApiService;
+use App\Services\Utilities\CSV\CSVService;
+use App\Services\Utilities\CSV\ICSVService;
 use App\Services\Utilities\CurlService\CurlService;
 use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
@@ -79,6 +90,8 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\Notifications\SMS\SmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\OTP\OtpService;
+use App\Services\Utilities\PDF\IPDFService;
+use App\Services\Utilities\PDF\PDFService;
 use App\Services\Utilities\PrepaidLoad\ATM\AtmService;
 use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
@@ -94,16 +107,6 @@ use App\Services\Utilities\Verification\VerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use App\Services\Utilities\PDF\IPDFService;
-use App\Services\Utilities\PDF\PDFService;
-use App\Services\Utilities\CSV\ICSVService;
-use App\Services\Utilities\CSV\CSVService;
-use App\Services\MyTask\MyTaskService;
-use App\Services\MyTask\IMyTaskService;
-use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
-use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
-use App\Services\Admin\Dashboard\AdminDashboardService;
-use App\Services\Admin\Dashboard\IAdminDashboardService;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -131,6 +134,7 @@ class AppServiceProvider extends ServiceProvider
 
         //3PP APIs
         $this->app->singleton(IUBPService::class, UBPService::class);
+        $this->app->singleton(ISecurityBankService::class, SecurityBankService::class);
         $this->app->singleton(IBayadCenterService::class, BayadCenterService::class);
         $this->app->singleton(IAtmService::class, AtmService::class);
 
@@ -274,6 +278,7 @@ class AppServiceProvider extends ServiceProvider
     private function bindSend2BankService()
     {
         $this->app->bind(ISend2BankPesonetService::class, Send2BankPesonetService::class);
+        $this->app->bind(ISend2BankSBInstapayService::class, Send2BankSBInstapayService::class);
         $this->app->when(Send2BankController::class)
             ->needs(ISend2BankService::class)
             ->give(function () {
@@ -284,6 +289,8 @@ class AppServiceProvider extends ServiceProvider
                     $provider = Str::lower($provider);
                     if ($provider == TpaProviders::ubpPesonet) return $this->app->get(Send2BankPesonetService::class);
                     if ($provider == TpaProviders::ubpInstapay) return $this->app->get(Send2BankInstapayService::class);
+                    if ($provider == TpaProviders::secBankInstapay) return $this->app->get(Send2BankSBInstapayService::class);
+                    if ($provider == TpaProviders::secBankPesonet) return $this->app->get(Send2BankSBPesonetService::class);
                 }
 
                 return $this->app->get(Send2BankService::class);

@@ -77,7 +77,7 @@ class VerificationService implements IVerificationService
             ]);
         }
 
-        $audit_remarks = request()->user()->id . "  has uploaded Selfie";
+        $audit_remarks = request()->user()->account_number . "  has uploaded Selfie";
         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadSelfiePhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
 
 
@@ -122,7 +122,7 @@ class VerificationService implements IVerificationService
             array_push($recordsCreated, $record);
 
             $idType = $this->iIdTypeRepository->get($data['id_type_id']);
-            $audit_remarks = request()->user()->id . "  has uploaded " . $idType->type . ", " . $idType->description;
+            $audit_remarks = request()->user()->account_number . "  has uploaded " . $idType->type . ", " . $idType->description;
             $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadIdPhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
         }
 

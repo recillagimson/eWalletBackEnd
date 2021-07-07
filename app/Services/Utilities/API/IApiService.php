@@ -12,5 +12,7 @@ interface IApiService
 
     public function post(string $url, array $data, array $headers = null): Response;
 
+    public function postXml(string $url, string $xml, array $headers = null): Response;
+
     public function postAsForm(string $url, array $data, array $headers = null): Response;
 }

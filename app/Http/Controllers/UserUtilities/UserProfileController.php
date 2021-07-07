@@ -68,7 +68,7 @@ class UserProfileController extends Controller
         $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $details);
 
-        $audit_remarks = request()->user()->id . "  has updated his/her profile";
+        $audit_remarks = request()->user()->account_number . "  has updated his/her profile";
         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToBronze, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
 
         // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
@@ -104,12 +104,12 @@ class UserProfileController extends Controller
             ]);
             $this->verificationService->updateTierApprovalIds($request->id_photos_ids, $request->id_selfie_ids, $tierApproval->id);
 
-            $audit_remarks = request()->user()->id . " has requested to upgrade to Silver";
+            $audit_remarks = request()->user()->account_number . " has requested to upgrade to Silver";
             $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
         }
         $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $details);
-        $audit_remarks = request()->user()->id . " Profile Information has been successfully updated.";
+        $audit_remarks = request()->user()->account_number . " Profile Information has been successfully updated.";
         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
 
         // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
@@ -193,7 +193,7 @@ class UserProfileController extends Controller
         return $this->responseService->successResponse($review['data']->toArray(), $message);
     }
 
-    public function updateFarmerToSilver(UpdateFarmerToSilverRequest $request): JsonResponse
+    public function updateFarmerToSilver(UpdateFarmerToSilverRequest $request)
     {
         // dd($request->all());
         // $record = $this->userProfileService->upgradeFarmerToSilver($request->all());
