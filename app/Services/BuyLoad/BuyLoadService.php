@@ -93,7 +93,7 @@ class BuyLoadService implements IBuyLoadService
     }
 
     public function topupLoad(string $userId, string $recipientMobileNumber, string $productCode, string $productName,
-                              float $amount): array
+                              float $amount, string $url): array
     {
         try {
             DB::beginTransaction();
@@ -114,7 +114,7 @@ class BuyLoadService implements IBuyLoadService
 
             if (!$buyLoad) $this->transactionFailed();
 
-            $buyLoadResponse = $this->atmService->topupLoad($productCode, $recipientMobileNumber, $refNo);
+            $buyLoadResponse = $this->atmService->topupLoad($productCode, $recipientMobileNumber, $refNo, $url);
 
             $updateReferenceCounter = true;
             $buyLoad = $this->handleLoadTopupResponse($buyLoad, $buyLoadResponse);
@@ -140,7 +140,7 @@ class BuyLoadService implements IBuyLoadService
         }
     }
 
-    public function processPending(string $userId): array
+    public function processPending(string $userId, string $url="topup-inquiry"): array
     {
         $user = $this->users->getUser($userId);
         $balanceInfo = $user->balanceInfo;
@@ -149,7 +149,7 @@ class BuyLoadService implements IBuyLoadService
         $failCount = 0;
 
         foreach ($pendingBuyLoads as $buyLoad) {
-            $response = $this->atmService->checkStatus($buyLoad->reference_number);
+            $response = $this->atmService->checkStatus($buyLoad->reference_number, $url);
             $buyLoad = $this->handleStatusResponse($buyLoad, $response);
             $amount = $buyLoad->total_amount;
 

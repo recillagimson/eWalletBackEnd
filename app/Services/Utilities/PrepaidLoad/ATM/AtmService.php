@@ -101,7 +101,7 @@ class AtmService implements IAtmService
         $this->prefixNotSupported();
     }
 
-    public function topupLoad(string $productCode, string $mobileNumber, string $refNo): Response
+    public function topupLoad(string $productCode, string $mobileNumber, string $refNo, string $url): Response
     {
         $data = [
             'productCode' => $productCode,
@@ -111,12 +111,12 @@ class AtmService implements IAtmService
         $postData = $this->createATMPostBody($data);
         $headers = $this->getHeaders($postData);
 
-        $url = $this->baseUrl . $this->topupUrl;
+        $url = $this->baseUrl . '/' . $url;
         Log::info('Buy Load Topup', $postData);
         return $this->apiService->post($url, $postData, $headers);
     }
 
-    public function checkStatus(string $refNo): Response
+    public function checkStatus(string $refNo, string $url): Response
     {
         $data = [
             'agentRefNo' => $refNo
@@ -124,7 +124,7 @@ class AtmService implements IAtmService
         $postData = $this->createATMPostBody($data);
         $headers = $this->getHeaders($postData);
 
-        $url = $this->baseUrl . $this->topupInquiryUrl;
+        $url = $this->baseUrl . '/' . $url;
         return $this->apiService->post($url, $postData, $headers);
     }
 

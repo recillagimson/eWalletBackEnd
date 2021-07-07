@@ -12,7 +12,7 @@ interface IBuyLoadService
                                       float $amount);
 
     public function topupLoad(string $userId, string $recipientMobileNumber, string $productCode, string $productName,
-                              float $amount): array;
+                              float $amount, string $url): array;
 
-    public function processPending(string $userId): array;
+    public function processPending(string $userId, string $url="topup-inquiry"): array;
 }

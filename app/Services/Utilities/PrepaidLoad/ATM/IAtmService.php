@@ -19,9 +19,9 @@ interface IAtmService
 
     public function getProductsByProvider(string $provider): Collection;
 
-    public function topupLoad(string $productCode, string $mobileNumber, string $refNo): Response;
+    public function topupLoad(string $productCode, string $mobileNumber, string $refNo, string $url): Response;
 
-    public function checkStatus(string $refNo): Response;
+    public function checkStatus(string $refNo, string $url): Response;
 
     public function convertMobileNumberPrefixToAreaCode(string $mobileNo): string;
 }

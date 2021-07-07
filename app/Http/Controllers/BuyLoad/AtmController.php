@@ -90,7 +90,7 @@ class AtmController extends Controller
         $data = $request->validated();
 
         $response = $this->buyLoadService->topupLoad($userId, $data['mobile_number'], $data['product_code'],
-            $data['product_name'], $data['amount']);
+            $data['product_name'], $data['amount'], $data['url']);
 
         return $this->responseService->successResponse($response);
     }
@@ -98,7 +98,8 @@ class AtmController extends Controller
     public function processPending(Request $request): JsonResponse
     {
         $userId = $request->user()->id;
-        $response = $this->buyLoadService->processPending($userId);
+        $url = $request->query('url');
+        $response = $this->buyLoadService->processPending($userId, $url);
         return $this->responseService->successResponse($response);
     }
 }

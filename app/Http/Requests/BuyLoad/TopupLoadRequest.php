@@ -32,6 +32,7 @@ class TopupLoadRequest extends FormRequest
             'product_code' => 'required',
             'product_name' => 'required',
             'amount' => 'required|numeric|min:1',
+            'url' => 'required',
         ];
     }
 }
