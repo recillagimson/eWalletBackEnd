@@ -413,7 +413,7 @@ class SendMoneyService implements ISendMoneyService
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             'transaction_category_id' => SendMoneyConfig::CXSEND,
             'user_created' => $senderID,
-            'user_updated' => ''
+            'transaction_date' => $outSendMoney->transaction_date
         ]);
         $this->userTransactionHistoryRepository->create([
             'user_account_id' => $receiverID,
@@ -422,7 +422,7 @@ class SendMoneyService implements ISendMoneyService
             'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
             'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
             'user_created' => $receiverID,
-            'user_updated' => ''
+            'transaction_date' => $outSendMoney->transaction_date
         ]);
     }
 }
