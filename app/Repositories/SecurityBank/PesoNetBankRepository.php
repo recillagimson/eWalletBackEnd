@@ -16,4 +16,8 @@ class PesoNetBankRepository extends Repository implements IPesoNetBankRepository
     public function getListSorted($sortBy = 'bank_name', $sortDirection = 'ASC') {
         return $this->model->orderBy($sortBy, $sortDirection)->get();
     }
+
+    public function getByBankCode($bank_code) {
+        return $this->model->where('bank_bic', $bank_code)->first();
+    }
 }

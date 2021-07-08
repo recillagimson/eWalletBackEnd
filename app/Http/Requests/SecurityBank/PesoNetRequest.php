@@ -33,6 +33,9 @@ class PesoNetRequest extends FormRequest
             'sender_last_name' => 'required',
             'recipient_first_name' => 'required',
             'recipient_last_name' => 'required',
+            'sender_mobile' => 'required',
+            'sender_email' => 'required',
+            'remarks' => 'required'
         ];
     }
 }

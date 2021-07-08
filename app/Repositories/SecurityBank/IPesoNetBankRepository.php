@@ -7,4 +7,5 @@ use App\Repositories\IRepository;
 interface IPesoNetBankRepository extends IRepository
 {
     public function getListSorted($sortBy = 'bank_name', $sortDirection = 'ASC');
+    public function getByBankCode($bank_code);
 }

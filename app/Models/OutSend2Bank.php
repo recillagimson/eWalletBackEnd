@@ -37,6 +37,8 @@ class OutSend2Bank extends Model
         'particulars',
         'user_created',
         'user_updated',
+        'provider_remittance_id',
+        'transaction_response'
     ];
 
     protected $casts = [
