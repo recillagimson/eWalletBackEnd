@@ -173,6 +173,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('/secbank-pesonet')->group(function() {
             Route::get('/banks', [PesoNetController::class, 'getBanks']);
             Route::post('/validate', [PesoNetController::class, 'validateTransaction']);
+            Route::post('/transfer', [PesoNetController::class, 'transfer']);
         });
 
         Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks'])->name('provider.banks');

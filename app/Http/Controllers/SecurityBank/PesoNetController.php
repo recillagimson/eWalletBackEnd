@@ -32,4 +32,9 @@ class PesoNetController extends Controller
         $response = $this->pesoNetService->validateTransaction($request->all(), request()->user()->id);
         return $response;
     }
+
+    public function transfer(PesoNetRequest $request) {
+        $response = $this->pesoNetService->transfer($request->all(), request()->user()->id);
+        return $response;
+    }
 }

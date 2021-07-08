@@ -24,7 +24,15 @@ class PesoNetRequest extends FormRequest
     public function rules()
     {
         return [
-            'amount' => 'required|min:1|numeric'
+            'amount' => 'required|min:1|numeric',
+            'sender_address' => 'required',
+            'beneficiary_address' => 'required',
+            'account_number' => 'required',
+            'bank_code' => 'required',
+            'sender_first_name' => 'required',
+            'sender_last_name' => 'required',
+            'recipient_first_name' => 'required',
+            'recipient_last_name' => 'required',
         ];
     }
 }
