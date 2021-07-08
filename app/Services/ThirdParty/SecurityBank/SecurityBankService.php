@@ -55,6 +55,7 @@ class SecurityBankService implements ISecurityBankService
 
         if ($provider === TpaProviders::secBankPesonet) {
             $data = $this->generatePesonetPaybankRequest($data);
+            $json = json_encode($data);
             return $this->apiService->post($this->pesonetUrl, $data);
         }
     }
@@ -157,8 +158,19 @@ class SecurityBankService implements ISecurityBankService
             'destinationAcct' => $data['account_number'],
             'destinationBankBic' => $data['bank_code'],
             'senderName' => $data['sender_first_name'] . ' ' . $data['sender_last_name'],
+            'senderAdd1' => 'NA',
+            'senderAdd2' => '',
+            'senderAdd3' => '',
+            'senderadd4' => '',
+            'senderEmail' => '',
+            'senderMobileNumber' => '',
             'beneficiaryName' => $data['recipient_first_name'] . ' ' . $data['recipient_last_name'],
-            'beneficiaryAdd1' => 'na',
+            'beneficiaryAdd1' => 'NA',
+            'beneficiaryAdd2' => '',
+            'beneficiaryAdd3' => '',
+            'beneficiaryAdd4' => '',
+            'beneficiaryEmail' => '',
+            'beneficiaryMobileNumber' => '',
             'categoryPurpose' => 'CASH',
             'traceNo' => $data['refNo']
         ];
