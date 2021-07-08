@@ -41,6 +41,10 @@ class UserTransactionHistory extends Model
         return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
     }
 
+    public function user_details() {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
+    }
+
     // public function user_account_number() {
     //     return $this->hasOne(UserAccountNumber::class, 'user_account_id', 'user_account_id');
     // }
