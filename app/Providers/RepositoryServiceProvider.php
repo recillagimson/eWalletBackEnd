@@ -44,6 +44,8 @@ use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\QrTransactions\QrTransactionsRepository;
 use App\Repositories\ReferenceCounter\IReferenceCounterRepository;
 use App\Repositories\ReferenceCounter\ReferenceCounterRepository;
+use App\Repositories\SecurityBank\IPesoNetBankRepository;
+use App\Repositories\SecurityBank\PesoNetBankRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\Send2Bank\OutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
@@ -205,6 +207,9 @@ class RepositoryServiceProvider extends ServiceProvider
         
         //In Add Money BPI Repositories
         $this->app->bind(IInAddMoneyBPIRepository::class, InAddMoneyBPIRepository::class);
+
+        // Send2Bank Service PesoNet
+        $this->app->bind(IPesoNetBankRepository::class, PesoNetBankRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();

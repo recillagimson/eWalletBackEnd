@@ -35,6 +35,7 @@ use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\User\UserAccountController;
 use App\Http\Controllers\Merchant\MerchantController;
 use App\Http\Controllers\Tier\TierApprovalController;
+use App\Http\Controllers\SecurityBank\PesoNetController;
 use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserTransactionHistoryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
@@ -169,6 +170,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/send2bank')->middleware(['decrypt.request'])->name('send.to.bank.')->group(function () {
+        Route::prefix('/secbank-pesonet')->group(function() {
+            Route::get('/banks', [PesoNetController::class, 'getBanks']);
+        });
+
         Route::get('/{provider}/banks', [Send2BankController::class, 'getBanks'])->name('provider.banks');
         Route::get('/{provider}/purposes', [Send2BankController::class, 'getPurposes'])->name('provider.purposes');
         Route::post('/{provider}/validate', [Send2BankController::class, 'validateFundTransfer'])->name('provider.validate');
@@ -180,6 +185,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP'])->name('validate.ubp');
         Route::post('/{provider}', [Send2BankController::class, 'fundTransfer'])->name('provider');
         Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction'])->name('provider.transaction.update');
+
+        
     });
 
     Route::prefix('/load')->middleware(['decrypt.request'])->name('load.')->group(function () {
@@ -350,7 +357,6 @@ Route::middleware('auth:sanctum')->group(function () {
         
         Route::post('/report', [DrcrMemoController::class, 'report']);
     });
-
 
 });
 
