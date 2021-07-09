@@ -23,6 +23,7 @@ interface IUserAccountRepository extends IRepository
     public function getUser(string $id);
 
     public function getUserByAccountNumber(string $accountNumber);
+    public function getUserByAccountNumberWithRelations(string $accountNumber);
 
     public function getAccountNumber(string $userID);
 
