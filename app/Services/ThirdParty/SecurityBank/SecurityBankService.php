@@ -161,7 +161,7 @@ class SecurityBankService implements ISecurityBankService
             'senderAdd1' => 'NA',
             'senderAdd2' => '',
             'senderAdd3' => '',
-            'senderadd4' => '',
+            'senderAdd4' => '',
             'senderEmail' => '',
             'senderMobileNumber' => '',
             'beneficiaryName' => $data['recipient_first_name'] . ' ' . $data['recipient_last_name'],
@@ -172,6 +172,7 @@ class SecurityBankService implements ISecurityBankService
             'beneficiaryEmail' => '',
             'beneficiaryMobileNumber' => '',
             'categoryPurpose' => 'CASH',
+            'instruction' => '',
             'traceNo' => $data['refNo']
         ];
     }
