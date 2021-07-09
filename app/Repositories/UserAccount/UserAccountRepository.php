@@ -84,6 +84,14 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->model->where(['account_number' => $accountNumber])->first();
     }
 
+    public function getUserByAccountNumberWithRelations(string $accountNumber)
+    {
+        return $this->model
+            ->with(['profile', 'user_balance_info'])
+            ->where(['account_number' => $accountNumber])
+            ->first();
+    }
+
     public function getAccountNumber(string $userID)
     {
         return $this->model->where('id', $userID)->pluck('account_number')->first();
