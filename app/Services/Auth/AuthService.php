@@ -171,7 +171,7 @@ class AuthService implements IAuthService
 
     public function verify(string $userId, string $verificationType, string $otp)
     {
-        if (!App::environment('local')) {
+        if (App::environment('local')) {
             if ($otp === "1111") return;
             else $this->otpInvalid('Invalid OTP.');
         }
