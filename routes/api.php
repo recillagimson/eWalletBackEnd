@@ -59,6 +59,7 @@ use App\Http\Controllers\UserUtilities\TempUserDetailController;
 */
 
 
+if (App::environment('local')) {
     Route::prefix('/utils')->group(function () {
         Route::post('/encrypt', [PayloadController::class, 'encrypt']);
         Route::post('/decrypt', [PayloadController::class, 'decrypt']);
@@ -72,6 +73,8 @@ use App\Http\Controllers\UserUtilities\TempUserDetailController;
         Route::post('/verify/signature', [AtmController::class, 'verify']);
         Route::get('/network-types', [AtmController::class, 'showPrefixNetworkList']);
     });
+}
+
 
 
 Route::prefix('/clients')->middleware(['form-data'])->name('client.')->group(function () {
