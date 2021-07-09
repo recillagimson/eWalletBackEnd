@@ -25,10 +25,10 @@ interface IUserAccountService
 
     public function updateEmail(string $email, object $user): array;
 
-    public function validateEmail(string $userId, string $emailField, string $email);
+    public function validateEmail(string $userId, string $email);
 
-    public function updateMobile(string $mobileField, string $mobile, UserAccount $user);
+    public function updateMobile(string $userId, string $mobile, UserAccount $user): array;
 
-    public function validateMobile(string $mobileField, string $mobile);
+    public function validateMobile(string $userId, string $mobile);
 
 }

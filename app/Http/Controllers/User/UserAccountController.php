@@ -51,7 +51,7 @@ class UserAccountController extends Controller
         $fillRequest = $request->validated();
         $userId = $request->user()->id;
         $emailField = $this->getEmailField($request);
-        $review = $this->userAccountService->validateEmail($userId, $emailField, $fillRequest[$emailField]);
+        $review = $this->userAccountService->validateEmail($userId, $fillRequest[$emailField]);
 
         return $this->responseService->successResponse([
             $emailField => $fillRequest[$emailField]
@@ -70,8 +70,9 @@ class UserAccountController extends Controller
     public function validateMobile(UpdateMobileRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
+        $userId = $request->user()->id;
         $mobileField = $this->getMobileField($request);
-        $review = $this->userAccountService->validateMobile($mobileField, $fillRequest[$mobileField]);
+        $review = $this->userAccountService->validateMobile($userId, $fillRequest[$mobileField]);
 
         return $this->responseService->successResponse([
             $mobileField => $fillRequest[$mobileField]
@@ -81,8 +82,9 @@ class UserAccountController extends Controller
     public function updateMobile(UpdateMobileRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
+        $userId = $request->user()->id;
         $mobileField = $this->getMobileField($request);
-        $postback = $this->userAccountService->updateMobile($mobileField, $fillRequest[$mobileField], $request->user());
+        $postback = $this->userAccountService->updateMobile($userId, $fillRequest[$mobileField], $request->user());
 
         return $this->responseService->successResponse($postback, SuccessMessages::updateMobileSuccessful);
     }

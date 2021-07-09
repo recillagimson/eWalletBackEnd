@@ -60,13 +60,19 @@ class SmsService implements ISmsService
 
     public function sendMoneyVerification(string $to, string $otp)
     {
-        $content = 'Hi Squidee! Your send money verification code is: ' . $otp .'. DO NOT SHARE this OTP';
+        $content = 'Hi Squidee! Your send money verification code is: ' . $otp . '. DO NOT SHARE this OTP';
         $this->sendMessages($to, $content);
     }
 
-    public function updateEmailVerification(string $to, string $otp)
+    public function updateProfileVerification(string $to, string $otp)
     {
-        $content = 'Hi Squidee! Your update email verification code is: ' . $otp .'. DO NOT SHARE this OTP';
+        $content = 'Hi Squidee! Your update profile verification code is: ' . $otp . '. DO NOT SHARE this OTP';
+        $this->sendMessages($to, $content);
+    }
+
+    public function updateMobileVerification(string $to, string $otp)
+    {
+        $content = 'Hi Squidee! Your update mobile verification code is: ' . $otp . '. DO NOT SHARE this OTP';
         $this->sendMessages($to, $content);
     }
 
@@ -148,5 +154,6 @@ class SmsService implements ISmsService
         $content = "Your tier upgrade has been approved. Your tier is now " . $tier->tier_name;
         $this->sendMessages($to, $content);
     }
+
 
 }
