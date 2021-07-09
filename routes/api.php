@@ -58,7 +58,7 @@ use App\Http\Controllers\UserUtilities\TempUserDetailController;
 |
 */
 
-if (App::environment('local')) {
+
     Route::prefix('/utils')->group(function () {
         Route::post('/encrypt', [PayloadController::class, 'encrypt']);
         Route::post('/decrypt', [PayloadController::class, 'decrypt']);
@@ -72,7 +72,7 @@ if (App::environment('local')) {
         Route::post('/verify/signature', [AtmController::class, 'verify']);
         Route::get('/network-types', [AtmController::class, 'showPrefixNetworkList']);
     });
-}
+
 
 Route::prefix('/clients')->middleware(['form-data'])->name('client.')->group(function () {
     Route::post('/token', [ClientController::class, 'getToken'])->name('get.token');
@@ -347,7 +347,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
         Route::put('/update/memo', [DrcrMemoController::class, 'updateMemo']);
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
-        
+
         Route::post('/report', [DrcrMemoController::class, 'report']);
     });
 
