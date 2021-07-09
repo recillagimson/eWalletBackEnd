@@ -184,7 +184,7 @@ class Send2BankService implements ISend2BankService
             //$this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
 
             $userFullName = ucwords($user->profile->full_name);
-            $recipientFullName = ucwords($data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
+            $recipientFullName = ucwords($data['account_name'] ?: $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
