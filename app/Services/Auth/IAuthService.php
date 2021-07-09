@@ -117,6 +117,15 @@ interface IAuthService
     public function generateTransactionOTP(UserAccount $user, string $otpType);
 
     /**
+     * Generates an otp token
+     *
+     * @param string $otpType
+     * @param string $userId
+     * @return object
+     */
+    public function generateOTP(string $otpType, string $userId): object;
+
+    /**
      * Send OTP
      *
      * @param string $usernameField

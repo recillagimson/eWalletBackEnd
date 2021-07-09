@@ -171,8 +171,8 @@ class AuthService implements IAuthService
 
     public function verify(string $userId, string $verificationType, string $otp)
     {
-        if(App::environment('local')) {
-            if($otp === "1111") return;
+        if (!App::environment('local')) {
+            if ($otp === "1111") return;
             else $this->otpInvalid('Invalid OTP.');
         }
 
@@ -256,10 +256,10 @@ class AuthService implements IAuthService
         ];
     }
 
-    private function generateOTP(string $otpType, string $userId): object
+    public function generateOTP(string $otpType, string $userId): object
     {
-        if(App::environment('local')) {
-            return (object) [
+        if (App::environment('local')) {
+            return (object)[
                 'status' => true,
                 'token' => "1111",
                 'message' => "OTP generated",
