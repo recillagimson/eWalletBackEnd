@@ -144,6 +144,8 @@ class UBPService implements IUBPService
             ]
         ];
 
+        $json = json_encode($data);
+
         $transferUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetTransferUrl : $this->instaPayTransferUrl;
         $url = $this->baseUrl . $transferUrl;
         return $this->apiService->post($url, $data, $headers);
