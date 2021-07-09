@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h2>Hi!</h2>
+<h2>Hi Squidee!,</h2>
 <p>
     You have sent P {{ $amount }} of SquidPay on {{ $transactionDate }} to the account ending in {{ $accountNo }}.
     Service Fee for this transaction is P {{ $serviceFee }}. Your new balance is P {{ $newBalance }} with SquidPay

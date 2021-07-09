@@ -9,6 +9,7 @@ use App\Enums\SquidPayModuleTypes;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategories;
 use App\Enums\TransactionStatuses;
+use App\Repositories\ProviderBanks\IProviderBanksRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -55,6 +56,7 @@ class Send2BankService implements ISend2BankService
 
     protected string $transactionCategoryId;
     protected string $provider;
+    private IProviderBanksRepository $providerBanks;
 
     public function __construct(IUBPService $ubpService,
                                 ISecurityBankService $secBankService,
@@ -64,12 +66,13 @@ class Send2BankService implements ISend2BankService
                                 ISmsService $smsService,
                                 IEmailService $emailService,
                                 IOtpService $otpService,
+                                ILogHistoryService $logHistories,
                                 IUserAccountRepository $users,
                                 IUserBalanceInfoRepository $userBalances,
                                 IOutSend2BankRepository $send2banks,
                                 IServiceFeeRepository $serviceFees,
                                 IUserTransactionHistoryRepository $transactionHistories,
-                                ILogHistoryService $logHistories)
+                                IProviderBanksRepository $providerBanks)
     {
         $this->ubpService = $ubpService;
         $this->referenceNumberService = $referenceNumberService;
@@ -78,6 +81,7 @@ class Send2BankService implements ISend2BankService
         $this->smsService = $smsService;
         $this->emailService = $emailService;
         $this->otpService = $otpService;
+        $this->providerBanks = $providerBanks;
 
         $this->users = $users;
         $this->userBalances = $userBalances;
@@ -105,6 +109,19 @@ class Send2BankService implements ISend2BankService
                 return [
                     'code' => $bank[0],
                     'bank' => $bank[1]
+                ];
+            });
+
+            return $banks->all();
+        }
+
+        if ($this->provider === TpaProviders::secBankPesonet) {
+            $bankCollection = $this->providerBanks->getPesonetBanks();
+
+            $banks = $bankCollection->map(function ($item) {
+                return [
+                    'code' => $item->code,
+                    'bank' => $item->name,
                 ];
             });
 

@@ -14,7 +14,7 @@ class UpdateDrcmemRemarksNullable extends Migration
     public function up()
     {
         Schema::table('drcr_memos', function (Blueprint $table) {
-            $table->string('remarks', 100)->nullable()->change();
+            $table->string('remarks', 100)->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class UpdateDrcmemRemarksNullable extends Migration
     public function down()
     {
         Schema::table('drcr_memos', function (Blueprint $table) {
-            $table->string('remarks', 100)->change();
+            $table->dropColumn('remarks');
         });
     }
 }

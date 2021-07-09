@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Traits\UserHelpers;
 use App\Enums\SuccessMessages;
-use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UpdateEmailRequest;
 use App\Http\Requests\User\UpdateMobileRequest;
-use App\Services\UserAccount\IUserAccountService;
 use App\Http\Requests\UserRole\SetUserRoleRequest;
-use App\Services\Utilities\Responses\IResponseService;
-use App\Http\Resources\UserAccount\UserAccountListCollection;
-use App\Models\UserAccount;
 use App\Http\Resources\UserAccount\UserAccountCollection;
+use App\Http\Resources\UserAccount\UserAccountListCollection;
 use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
+use App\Services\UserAccount\IUserAccountService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Traits\UserHelpers;
+use Illuminate\Http\JsonResponse;
 
 class UserAccountController extends Controller
 {
@@ -31,12 +30,12 @@ class UserAccountController extends Controller
         $this->userRoleRepository = $userRoleRepository;
     }
 
-    public function index(): JsonResponse 
+    public function index(): JsonResponse
     {
         $records = $this->userAccountService->getAllPaginated();
         $records = new UserAccountListCollection($records);
 
-        return $this->responseService->successResponse($records->toArray($records) , SuccessMessages::success);
+        return $this->responseService->successResponse($records->toArray($records), SuccessMessages::success);
     }
 
     public function show(string $id): JsonResponse
@@ -50,8 +49,9 @@ class UserAccountController extends Controller
     public function validateEmail(UpdateEmailRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
+        $userId = $request->user()->id;
         $emailField = $this->getEmailField($request);
-        $review = $this->userAccountService->validateEmail($emailField, $fillRequest[$emailField]);
+        $review = $this->userAccountService->validateEmail($userId, $emailField, $fillRequest[$emailField]);
 
         return $this->responseService->successResponse([
             $emailField => $fillRequest[$emailField]
@@ -62,7 +62,7 @@ class UserAccountController extends Controller
     {
         $fillRequest = $request->validated();
         $emailField = $this->getEmailField($request);
-        $postback = $this->userAccountService->updateEmail($emailField, $fillRequest[$emailField], $request->user());
+        $postback = $this->userAccountService->updateEmail($fillRequest[$emailField], $request->user());
 
         return $this->responseService->successResponse($postback, SuccessMessages::updateEmailSuccessful);
     }

@@ -298,7 +298,7 @@ class BuyLoadService implements IBuyLoadService
 
         $remarks = "Loaded $productCode to mobile number: $mobileNumber.";
 
-        $this->logHistories->logUserHistory($userId, $refNo, $spModule,
+        $this->logHistoryService->logUserHistory($userId, $refNo, $spModule,
             null, $logDate, $remarks, $operation);
     }
 }

@@ -23,9 +23,9 @@ interface IUserAccountService
 
     public function findById(string $id);
 
-    public function updateEmail(string $emailField, string $email, object $user);
+    public function updateEmail(string $email, object $user): array;
 
-    public function validateEmail(string $emailField, string $email);
+    public function validateEmail(string $userId, string $emailField, string $email);
 
     public function updateMobile(string $mobileField, string $mobile, UserAccount $user);
 

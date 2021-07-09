@@ -3,10 +3,12 @@
 namespace App\Services\UserAccount;
 
 use App\Enums\OtpTypes;
+use App\Enums\UsernameTypes;
 use App\Models\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
+use App\Services\Auth\IAuthService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Traits\Errors\WithAuthErrors;
@@ -27,11 +29,13 @@ class UserAccountService implements IUserAccountService
     private IEmailService $emailService;
     private IUserAccountNumberRepository $userAccountNumbers;
     private ITempUserDetailRepository $tempUserDetail;
+    private IAuthService $authService;
 
     public function __construct(IUserAccountRepository $users,
                                 IUserAccountNumberRepository $userAccountNumbers,
                                 IOtpService $otpService,
                                 IEmailService $emailService,
+                                IAuthService $authService,
                                 ITempUserDetailRepository $tempUserDetail)
     {
         $this->users = $users;
@@ -39,6 +43,7 @@ class UserAccountService implements IUserAccountService
         $this->otpService = $otpService;;
         $this->emailService = $emailService;
         $this->tempUserDetail = $tempUserDetail;
+        $this->authService = $authService;
     }
 
     public function getAdminUsers(): Collection
@@ -128,7 +133,7 @@ class UserAccountService implements IUserAccountService
 
         $result = $this->users->findById($id);
 
-        if(!$result) {
+        if (!$result) {
             throw ValidationException::withMessages([
                 'user_not_found' => 'User Account not found'
             ]);
@@ -137,27 +142,30 @@ class UserAccountService implements IUserAccountService
         return $result;
     }
 
-    public function updateEmail(string $emailField, string $email, object $user) {
+    public function updateEmail(string $email, object $user): array
+    {
+        $user = $this->users->get($user->id);
+        if (!$user) $this->accountDoesntExist();
+        $this->checkEmail($user, $email);
 
         $identifier = OtpTypes::updateEmail . ':' . $user->id;
         $this->otpService->ensureValidated($identifier);
 
-        $this->validateEmail($emailField, $email);
-
         $this->users->update($user, [
-            $emailField => $email
+            'email' => $email
         ]);
 
-        return $this->updateEmailResponse($emailField, $email);
+        return $this->updateEmailResponse($email);
     }
 
-    public function validateEmail(string $emailField, string $email)
+    public function validateEmail(string $userId, string $emailField, string $email)
     {
-        $user = $this->users->getByEmail($emailField, $email);
-        if (!$user) return;
+        $user = $this->users->get($userId);
+        if (!$user) $this->accountDoesntExist();
+        $this->checkEmail($user, $email);
 
-        if ($user->verified) $this->emailAlreadyTaken();
-        $user->forceDelete();
+        $otp = $this->authService->generateOTP(OtpTypes::updateEmail, $user->id);
+        $this->emailService->updateEmailVerification($email, $otp->token);
     }
 
     public function updateMobile(string $mobileField, string $mobile, UserAccount $user): array
@@ -183,10 +191,10 @@ class UserAccountService implements IUserAccountService
         $user->forceDelete();
     }
 
-    private function updateEmailResponse($emailField, $email): array
+    private function updateEmailResponse($email): array
     {
         return [
-            $emailField => $email,
+            'email' => $email,
         ];
     }
 
@@ -195,5 +203,13 @@ class UserAccountService implements IUserAccountService
         return [
             $mobileField => $mobile,
         ];
+    }
+
+    private function checkEmail(UserAccount $user, string $email)
+    {
+        $existingUser = $this->users->getByUsername(UsernameTypes::Email, $email);
+        if ($existingUser) {
+            if ($existingUser->id !== $user->id) $this->emailAlreadyTaken();
+        }
     }
 }
