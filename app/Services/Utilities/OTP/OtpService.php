@@ -8,6 +8,7 @@ use App\Traits\Errors\WithAuthErrors;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
+use Log;
 
 class OtpService implements IOtpService
 {
@@ -151,7 +152,13 @@ class OtpService implements IOtpService
 
         $otp->increment('no_times_attempted');
 
-        if ($otp->token == $token) {
+        Log::debug('OTP Validate', [
+            'identifier' => $identifier,
+            'token' => $token,
+            'otp' => $otp->toArray()
+        ]);
+
+        if ($otp->token === $token) {
             $otp->validated = true;
             $otp->save();
 
