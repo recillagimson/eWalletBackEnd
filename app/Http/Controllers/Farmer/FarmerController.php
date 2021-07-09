@@ -51,7 +51,7 @@ class FarmerController extends Controller
     }
 
     public function farmerVerificationUserAccountNumberOnly(FarmerVerificationUsingAccountNumberOnlyRequest $request) {
-        $record = $this->userAccountRepository->getUserByAccountNumber($request->account_number);
+        $record = $this->userAccountRepository->getUserByAccountNumberWithRelations($request->account_number);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
