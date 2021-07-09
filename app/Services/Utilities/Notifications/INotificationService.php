@@ -17,6 +17,8 @@ interface INotificationService
 
     public function sendMoneyVerification(string $to, string $otp);
 
+    public function sendS2BVerification(string $to, string $otp);
+
     public function updateProfileVerification(string $to, string $otp);
 
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName);

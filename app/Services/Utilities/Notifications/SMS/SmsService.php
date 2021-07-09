@@ -54,13 +54,19 @@ class SmsService implements ISmsService
 
     public function sendLoginVerification(string $to, string $otp)
     {
-        $content = 'Hi Squidee! Your login verification code is: '.$otp .'. DO NOT SHARE this OTP';
+        $content = 'Hi Squidee! Your login verification code is: ' . $otp . '. DO NOT SHARE this OTP';
         $this->sendMessages($to, $content);
     }
 
     public function sendMoneyVerification(string $to, string $otp)
     {
         $content = 'Hi Squidee! Your send money verification code is: ' . $otp . '. DO NOT SHARE this OTP';
+        $this->sendMessages($to, $content);
+    }
+
+    public function sendS2BVerification(string $to, string $otp)
+    {
+        $content = 'Hi Squidee! Your send to bank verification code is: ' . $otp . '. DO NOT SHARE this OTP';
         $this->sendMessages($to, $content);
     }
 

@@ -99,6 +99,13 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
+    public function sendS2BVerification(string $to, string $otp)
+    {
+        $subject = 'SquidPay - Send to Bank Verification';
+        $template = new OtpVerification($subject, $otp);
+        $this->sendMessage($to, $subject, $template);
+    }
+
     /**
      * Sends an email for update email verification
      *
@@ -235,5 +242,6 @@ class EmailService implements IEmailService
         $template = new TierUpgradeRequestApproved($userDetail, $tier);
         $this->sendMessage($to, $subject, $template);
     }
+
 
 }
