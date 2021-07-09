@@ -67,4 +67,9 @@ class NotificationService implements INotificationService
     {
         // TODO: Implement tierUpgradeNotification() method.
     }
+
+    public function sendS2BVerification(string $to, string $otp)
+    {
+        // TODO: Implement sendS2BVerification() method.
+    }
 }
