@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateDrcmemRemarksNullable extends Migration
+class CreateProviderBanksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,12 @@ class UpdateDrcmemRemarksNullable extends Migration
      */
     public function up()
     {
-        Schema::table('drcr_memos', function (Blueprint $table) {
-            $table->string('remarks', 100)->nullable();
+        Schema::create('provider_banks', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('provider', 20);
+            $table->string('code', 20);
+            $table->string('name', 150);
+            $table->timestamps();
         });
     }
 
@@ -25,8 +29,6 @@ class UpdateDrcmemRemarksNullable extends Migration
      */
     public function down()
     {
-        Schema::table('drcr_memos', function (Blueprint $table) {
-            $table->dropColumn('remarks');
-        });
+        Schema::dropIfExists('provider_banks');
     }
 }

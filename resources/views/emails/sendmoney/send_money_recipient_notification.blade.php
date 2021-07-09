@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <h2>Hi,</h2>
+    <h2>Hi Squidee!,</h2>
     <p>You have received ₱{{ $amount }} of SquidPay on {{ date('Y-m-d H:i:s') }} from {{ $senderName }}. Your new balance is ₱{{ $newBalance }} with Ref No. {{ $refNo }}. Use now to buy load, send money, pay bills and a lot more!</p>
 </body>
 
