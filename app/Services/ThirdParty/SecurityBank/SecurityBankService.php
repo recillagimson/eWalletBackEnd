@@ -56,6 +56,7 @@ class SecurityBankService implements ISecurityBankService
 
         if ($provider === TpaProviders::secBankPesonet) {
             $data = $this->generatePesonetPaybankRequest($data);
+            $json = json_encode($data);
             return $this->apiService->post($this->pesonetUrl, $data);
         }
     }

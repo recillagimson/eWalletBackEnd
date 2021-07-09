@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
-use App\Models\TierApproval;
 use App\Repositories\Admin\Permission\IPermissionRepository;
 use App\Repositories\Admin\Permission\PermissionRepository;
 use App\Repositories\Admin\Role\IRoleRepository;
@@ -40,6 +39,8 @@ use App\Repositories\Payload\IPayloadRepository;
 use App\Repositories\Payload\PayloadRepository;
 use App\Repositories\PrepaidLoad\IPrepaidLoadRepository;
 use App\Repositories\PrepaidLoad\PrepaidLoadRepository;
+use App\Repositories\ProviderBanks\IProviderBanksRepository;
+use App\Repositories\ProviderBanks\ProviderBanksRepository;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\QrTransactions\QrTransactionsRepository;
 use App\Repositories\ReferenceCounter\IReferenceCounterRepository;
@@ -91,10 +92,10 @@ use App\Repositories\UserUtilities\SignupHost\ISignupHostRepository;
 use App\Repositories\UserUtilities\SignupHost\SignupHostRepository;
 use App\Repositories\UserUtilities\SourceOfFund\ISourceOfFundRepository;
 use App\Repositories\UserUtilities\SourceOfFund\SourceOfFundRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 use App\Repositories\UserUtilities\TempUserDetail\TempUserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
 use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
 use App\Repositories\UserUtilities\UserRole\UserRoleRepository;
 use App\Services\Auth\UserKey\UserKeyService;
@@ -138,6 +139,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IMaritalStatusRepository::class, MaritalStatusRepository::class);
         $this->app->bind(ICurrencyRepository::class, CurrencyRepository::class);
         $this->app->bind(ICountryRepository::class, CountryRepository::class);
+        $this->app->bind(IProviderBanksRepository::class, ProviderBanksRepository::class);
 
         //Utilities Repositories
         $this->app->bind(IOtpRepository::class, OtpRepository::class);
@@ -189,7 +191,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Pay Bills Repositories
         $this->app->bind(IOutPayBillsRepository::class, OutPayBillsRepository::class);
-        
+
         //Temp User Repositories
         $this->app->bind(ITempUserDetailRepository::class, TempUserDetailRepository::class);
 
@@ -198,13 +200,13 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Permission Repositories
         $this->app->bind(IPermissionRepository::class, PermissionRepository::class);
-        
+
         // User Role Repositories
         $this->app->bind(IUserRoleRepository::class, UserRoleRepository::class);
 
         //Drcr Memos Repositories
         $this->app->bind(IDrcrMemoRepository::class, DrcrMemoRepository::class);
-        
+
         //In Add Money BPI Repositories
         $this->app->bind(IInAddMoneyBPIRepository::class, InAddMoneyBPIRepository::class);
 

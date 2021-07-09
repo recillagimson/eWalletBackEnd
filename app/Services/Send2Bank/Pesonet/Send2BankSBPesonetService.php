@@ -6,6 +6,7 @@ namespace App\Services\Send2Bank\Pesonet;
 
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategoryIds;
+use App\Repositories\ProviderBanks\IProviderBanksRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -37,11 +38,12 @@ class Send2BankSBPesonetService extends Send2BankService implements ISend2BankSB
                                 IUserBalanceInfoRepository $userBalances,
                                 IOutSend2BankRepository $send2banks,
                                 IServiceFeeRepository $serviceFees,
-                                IUserTransactionHistoryRepository $transactionHistories)
+                                IUserTransactionHistoryRepository $transactionHistories,
+                                IProviderBanksRepository $providerBanks)
     {
         parent::__construct($ubpService, $securityBankService, $referenceNumberService, $transactionValidationService,
-            $notificationService, $smsService, $emailService, $otpService, $users, $userBalances, $send2banks, $serviceFees,
-            $transactionHistories, $logHistoryService);
+            $notificationService, $smsService, $emailService, $otpService, $logHistoryService,
+            $users, $userBalances, $send2banks, $serviceFees, $transactionHistories, $providerBanks);
 
         $this->transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
         $this->provider = TpaProviders::secBankPesonet;

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateDrcmemRemarksNullable extends Migration
+class ChangePrimaryKeyInProviderBanksTable1 extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class UpdateDrcmemRemarksNullable extends Migration
      */
     public function up()
     {
-        Schema::table('drcr_memos', function (Blueprint $table) {
-            $table->string('remarks', 100)->nullable();
+        Schema::table('provider_banks', function (Blueprint $table) {
+            $table->primary(['provider', 'code']);
         });
     }
 
@@ -25,8 +25,8 @@ class UpdateDrcmemRemarksNullable extends Migration
      */
     public function down()
     {
-        Schema::table('drcr_memos', function (Blueprint $table) {
-            $table->dropColumn('remarks');
+        Schema::table('provider_banks', function (Blueprint $table) {
+            $table->dropPrimary(['provider', 'code']);
         });
     }
 }
