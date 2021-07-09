@@ -51,12 +51,18 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getAdminUsersByName(string $lastName, string $firstName): Collection
     {
-        return $this->getAdminUserBaseQuery()->whereHas('profile', function (Builder $query) use ($lastName, $firstName) {
+        $record = $this->getAdminUserBaseQuery()->whereHas('profile', function (Builder $query) use ($lastName, $firstName) {
             $query->where([
                 ['last_name', 'like', $lastName . '%'],
                 ['first_name', 'like', $firstName . '%'],
             ]);
         })->get();
+
+        if($record) {
+            return $record;
+        }
+
+        return $this->userAccountNotFound();
     }
 
     public function getUser(string $id)
