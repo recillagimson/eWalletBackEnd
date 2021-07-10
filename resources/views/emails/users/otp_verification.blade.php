@@ -8,7 +8,7 @@
 
 <body>
 <h2>Hi Squidee!,</h2>
-<p>This is your send money verification code: {{ $code }} (👍≖‿‿≖)👍 👍(≖‿‿≖👍)</p>
+<p>This is your verification code: {{ $code }}. <b>DO NOT SHARE</b> this OTP.</p>
 </body>
 
 </html>
