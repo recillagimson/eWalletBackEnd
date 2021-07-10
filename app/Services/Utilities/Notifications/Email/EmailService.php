@@ -190,7 +190,7 @@ class EmailService implements IEmailService
     {
         $subject = 'SquidPay - Buy Load Notification';
         $strAmount = number_format($amount, 2);
-        $strBalance = number_format($amount, 2);
+        $strBalance = number_format($newBalance, 2);
         $strTransactionDate = $transactionDate->toDayDateTimeString();
 
         $template = new BuyLoadSenderNotification($strAmount, $productName, $recipientMobileNumber, $strTransactionDate,
