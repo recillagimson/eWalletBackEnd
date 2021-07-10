@@ -4,6 +4,7 @@
 namespace App\Services\Send2Bank;
 
 
+use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TpaProviders;
