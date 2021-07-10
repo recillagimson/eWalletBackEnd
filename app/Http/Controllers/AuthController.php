@@ -21,7 +21,6 @@ use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Log;
 
 class AuthController extends Controller
 {
@@ -188,14 +187,7 @@ class AuthController extends Controller
         $user = $request->user();
         $data = $request->validated();
 
-        Log::debug('Verification Info:', [
-            'userId' => $user->id,
-            'otp_type' => $data['otp_type'],
-            'code' => $data['code']
-        ]);
-
         $this->authService->verify($user->id, $data['otp_type'], $data['code']);
-
         return $this->responseService->successResponse([], SuccessMessages::otpVerificationSuccessful);
     }
 
