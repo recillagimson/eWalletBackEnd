@@ -28,7 +28,9 @@ class DatabaseSeeder extends Seeder
             insert_transaction_categories::class,
             insert_reference_counters::class,
             insert_tiers::class,
+
             ClientSeeder::class,
+            SecPesonetBanks::class,
 
         ]);
 
