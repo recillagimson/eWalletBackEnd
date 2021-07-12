@@ -81,7 +81,7 @@ class RegistrationService implements IRegistrationService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $this->authService->verify($user->id, OtpTypes::registration, $otp);
+        $this->authService->verify($user->id, OtpTypes::registration, $otp, $user->otp_enabled);
 
         $user->verified = true;
         $user->save();
