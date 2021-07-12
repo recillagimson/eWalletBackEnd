@@ -209,7 +209,7 @@ class AuthService implements IAuthService
         if (!$user) $this->accountDoesntExist();
 
         $otp = $this->generateOTP($otpType, $user->id, $user->otp_enabled);
-        if (App::environment('local')) return;
+        if (App::environment('local') || !$user->otp_enabled) return;
 
         $notif = $notifService == null ? $this->notificationService : $notifService;
 

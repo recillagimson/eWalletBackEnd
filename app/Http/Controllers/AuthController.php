@@ -200,6 +200,7 @@ class AuthController extends Controller
     public function resendOTP(ResendOtpRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $user = $request->user();
         $usernameField = $this->getUsernameField($request);
         $this->authService->sendOTP($usernameField, $data[$usernameField], $data['otp_type']);
 
