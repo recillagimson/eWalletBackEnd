@@ -100,7 +100,7 @@ class UserKeyService implements IUserKeyService
         $this->validateUser($user);
 
         $identifier = $otpType . ':' . $user->id;
-        if ($requireOtp) $this->otpService->ensureValidated($identifier);
+        if ($requireOtp) $this->otpService->ensureValidated($identifier, $user->otp_enabled);
         $this->checkKey($user->id, $key);
         $this->updateKey($user, $keyType, $key);
     }
@@ -113,7 +113,7 @@ class UserKeyService implements IUserKeyService
         $this->checkKey($user->id, $newKey);
 
         $identifier = $otpType . ':' . $user->id;
-        if ($requireOtp) $this->otpService->ensureValidated($identifier);
+        if ($requireOtp) $this->otpService->ensureValidated($identifier, $user->otp_enabled);
         $this->updateKey($user, $keyType, $newKey);
     }
 

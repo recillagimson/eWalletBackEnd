@@ -3,27 +3,26 @@
 namespace App\Services\SendMoney;
 
 use App\Enums\ErrorCodes;
-use Carbon\Carbon;
 use App\Enums\OtpTypes;
-use App\Enums\SendMoneyConfig;
 use App\Enums\ReferenceNumberTypes;
-use App\Enums\TransactionCategories;
+use App\Enums\SendMoneyConfig;
 use App\Enums\TransactionCategoryIds;
-use App\Traits\Errors\WithSendMoneyErrors;
-use App\Services\Utilities\OTP\IOtpService;
-use App\Repositories\LogHistory\ILogHistoryRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
-use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
+use App\Repositories\LogHistory\ILogHistoryRepository;
+use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
-use App\Services\Utilities\Notifications\INotificationService;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\OTP\IOtpService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Traits\Errors\WithSendMoneyErrors;
+use Carbon\Carbon;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -97,7 +96,7 @@ class SendMoneyService implements ISendMoneyService
         $senderDetails = $this->userDetails($senderID);
         $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
-        $this->otpService->ensureValidated($identifier);
+        $this->otpService->ensureValidated($identifier, $user->otp_enabled);
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
         if (!$receiverDetails) $this->recipientDetailsNotFound();
