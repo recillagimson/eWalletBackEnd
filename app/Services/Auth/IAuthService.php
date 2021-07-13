@@ -86,8 +86,9 @@ interface IAuthService
      * @param string $userId
      * @param string $verificationType
      * @param string $otp
+     * @param bool $otpEnabled
      */
-    public function verify(string $userId, string $verificationType, string $otp);
+    public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true);
 
     /**
      * Validate OTP and provides user token
@@ -121,9 +122,10 @@ interface IAuthService
      *
      * @param string $otpType
      * @param string $userId
+     * @param bool $otpEnabled
      * @return object
      */
-    public function generateOTP(string $otpType, string $userId): object;
+    public function generateOTP(string $otpType, string $userId, bool $otpEnabled = true): object;
 
     /**
      * Send OTP

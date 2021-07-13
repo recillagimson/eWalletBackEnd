@@ -5,7 +5,6 @@ namespace App\Services\BuyLoad;
 
 
 use App\Enums\AtmPrepaidResponseCodes;
-use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TransactionCategories;
@@ -104,7 +103,8 @@ class BuyLoadService implements IBuyLoadService
             $user = $this->users->getUser($userId);
             $this->transactionValidationService->validateUser($user);
             $this->transactionValidationService->validate($user, $transactionCategoryId, $amount);
-            $this->otpService->ensureValidated(OtpTypes::buyLoad . ':' . $userId);
+
+            //$this->otpService->ensureValidated(OtpTypes::buyLoad . ':' . $userId);
 
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::BuyLoad);
             $currentDate = Carbon::now();

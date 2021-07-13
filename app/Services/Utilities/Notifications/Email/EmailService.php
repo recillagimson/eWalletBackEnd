@@ -16,6 +16,7 @@ use App\Mail\SendMoney\SendMoneySenderNotification;
 use App\Mail\SendMoney\SendMoneyVerification;
 use App\Mail\TierApproval\TierUpgradeRequestApproved;
 use App\Mail\User\AdminUserVerification;
+use App\Mail\User\OtpVerification;
 use App\Models\OutSend2Bank;
 use App\Models\Tier;
 use App\Models\UserUtilities\UserDetail;
@@ -98,6 +99,13 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
+    public function sendS2BVerification(string $to, string $otp)
+    {
+        $subject = 'SquidPay - Send to Bank Verification';
+        $template = new OtpVerification($subject, $otp);
+        $this->sendMessage($to, $subject, $template);
+    }
+
     /**
      * Sends an email for update email verification
      *
@@ -107,7 +115,20 @@ class EmailService implements IEmailService
     public function updateEmailVerification(string $to, string $otp)
     {
         $subject = 'SquidPay - Update Email Verification';
-        $template = new SendMoneyVerification($otp);
+        $template = new OtpVerification($subject, $otp);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    /**
+     * Sends an email for update profile verification
+     *
+     * @param string $to
+     * @param string $otp
+     */
+    public function updateProfileVerification(string $to, string $otp)
+    {
+        $subject = 'SquidPay - Update Profile Verification';
+        $template = new OtpVerification($subject, $otp);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -169,7 +190,7 @@ class EmailService implements IEmailService
     {
         $subject = 'SquidPay - Buy Load Notification';
         $strAmount = number_format($amount, 2);
-        $strBalance = number_format($amount, 2);
+        $strBalance = number_format($newBalance, 2);
         $strTransactionDate = $transactionDate->toDayDateTimeString();
 
         $template = new BuyLoadSenderNotification($strAmount, $productName, $recipientMobileNumber, $strTransactionDate,

@@ -154,6 +154,8 @@ trait Send2BankHelpers
         if ($send2Bank->provider === TpaProviders::secBankInstapay) {
             return $this->handleInstapayCheckStatusResponse($send2Bank, $response);
         }
+
+        return $send2Bank;
     }
 
     private function handleDirectTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank

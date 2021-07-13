@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Payload;
+namespace App\Http\Requests\Farmer;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DecryptRequest extends FormRequest
+class FarmerVerificationUsingAccountNumberOnlyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
@@ -21,11 +21,10 @@ class DecryptRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'id' => 'required',
-            'payload' => 'required|json'
+            'account_number' => 'required|exists:user_accounts,account_number',
         ];
     }
 }

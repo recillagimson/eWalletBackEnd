@@ -1,51 +1,51 @@
 <?php
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BPIController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TierController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\IdTypeController;
-use App\Http\Controllers\KYC\KYCController;
-use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\AddMoneyController;
-use App\Http\Controllers\DrcrMemoController;
-use App\Http\Controllers\PayBillsController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Send2BankController;
-use App\Http\Controllers\SendMoneyController;
-use App\Http\Controllers\UserPhotoController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\HelpCenterController;
-use App\Http\Controllers\ServiceFeeController;
-use App\Http\Controllers\BuyLoad\AtmController;
-use App\Http\Controllers\ImageUploadController;
-use App\Http\Controllers\PrepaidLoadController;
 use App\Http\Controllers\Admin\MyTaskController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Farmer\FarmerController;
-use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\ForgotKeyController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BPIController;
+use App\Http\Controllers\BuyLoad\AtmController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DrcrMemoController;
+use App\Http\Controllers\Farmer\FarmerController;
+use App\Http\Controllers\HelpCenterController;
+use App\Http\Controllers\IdTypeController;
+use App\Http\Controllers\ImageUploadController;
+use App\Http\Controllers\KYC\KYCController;
 use App\Http\Controllers\Log\LogHistoryController;
+use App\Http\Controllers\Merchant\MerchantController;
+use App\Http\Controllers\NewsAndUpdateController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PayBillsController;
+use App\Http\Controllers\PayloadController;
+use App\Http\Controllers\PrepaidLoadController;
+use App\Http\Controllers\Send2BankController;
+use App\Http\Controllers\SendMoneyController;
+use App\Http\Controllers\ServiceFeeController;
+use App\Http\Controllers\Tier\TierApprovalCommentController;
+use App\Http\Controllers\Tier\TierApprovalController;
+use App\Http\Controllers\TierController;
 use App\Http\Controllers\User\AdminUserController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\User\UserAccountController;
-use App\Http\Controllers\Merchant\MerchantController;
-use App\Http\Controllers\Tier\TierApprovalController;
-use App\Http\Controllers\UserUtilities\CountryController;
+use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\UserTransactionHistoryController;
+use App\Http\Controllers\UserUtilities\CountryController;
 use App\Http\Controllers\UserUtilities\CurrencyController;
-use App\Http\Controllers\Tier\TierApprovalCommentController;
-use App\Http\Controllers\UserUtilities\SignupHostController;
-use App\Http\Controllers\UserUtilities\NationalityController;
-use App\Http\Controllers\UserUtilities\UserProfileController;
-use App\Http\Controllers\UserUtilities\NatureOfWorkController;
-use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
+use App\Http\Controllers\UserUtilities\NationalityController;
+use App\Http\Controllers\UserUtilities\NatureOfWorkController;
+use App\Http\Controllers\UserUtilities\SignupHostController;
+use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
+use App\Http\Controllers\UserUtilities\UserProfileController;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,7 +58,8 @@ use App\Http\Controllers\UserUtilities\TempUserDetailController;
 |
 */
 
-if (App::environment('local')) {
+
+if (App::environment(['local', 'staging'])) {
     Route::prefix('/utils')->group(function () {
         Route::post('/encrypt', [PayloadController::class, 'encrypt']);
         Route::post('/decrypt', [PayloadController::class, 'decrypt']);
@@ -73,6 +74,8 @@ if (App::environment('local')) {
         Route::get('/network-types', [AtmController::class, 'showPrefixNetworkList']);
     });
 }
+
+
 
 Route::prefix('/clients')->middleware(['form-data'])->name('client.')->group(function () {
     Route::post('/token', [ClientController::class, 'getToken'])->name('get.token');
@@ -231,6 +234,7 @@ Route::middleware('auth:sanctum')->group(function () {
             // FARMER
             Route::middleware(['require.user.token'])->post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
             Route::middleware(['require.user.token'])->post('/farmer/verification', [FarmerController::class, 'farmerVerification']);
+            Route::middleware(['require.user.token'])->post('/farmer/verification/account-number', [FarmerController::class, 'farmerVerificationUserAccountNumberOnly']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
@@ -347,7 +351,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/get/user/{accountNumber}', [DrcrMemoController::class, 'getUser']);
         Route::put('/update/memo', [DrcrMemoController::class, 'updateMemo']);
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
-        
+
         Route::post('/report', [DrcrMemoController::class, 'report']);
     });
 

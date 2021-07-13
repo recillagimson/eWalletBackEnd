@@ -169,14 +169,14 @@ class AuthService implements IAuthService
         }
     }
 
-    public function verify(string $userId, string $verificationType, string $otp)
+    public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true)
     {
-        if (App::environment('local')) {
+        if (App::environment('local') || !$otpEnabled) {
             if ($otp === "1111") return;
             else $this->otpInvalid('Invalid OTP.');
         }
 
-        $identifier = $verificationType.':'.$userId;
+        $identifier = $verificationType . ':' . $userId;
         $otpValidity = $this->otpService->validate($identifier, $otp);
         if (!$otpValidity->status) $this->otpInvalid($otpValidity->message);
     }
@@ -186,7 +186,7 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $this->verify($user->id, OtpTypes::login, $otp);
+        $this->verify($user->id, OtpTypes::login, $otp, $user->otp_enabled);
     }
 
     public function generateTransactionOTP(UserAccount $user, string $otpType)
@@ -208,7 +208,7 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $otp = $this->generateOTP($otpType, $user->id);
+        $otp = $this->generateOTP($otpType, $user->id, $user->otp_enabled);
         if (App::environment('local')) return;
 
         $notif = $notifService == null ? $this->notificationService : $notifService;
@@ -221,8 +221,10 @@ class AuthService implements IAuthService
             $notif->sendPasswordVerification($username, $otp->token, $otpType);
         elseif ($otpType === OtpTypes::sendMoney)
             $notif->sendMoneyVerification($username, $otp->token);
-        elseif ($otpType === OtpTypes::updateEmail)
-            $notif->updateEmailVerification($username, $otp->token);
+        elseif ($otpType === OtpTypes::send2Bank)
+            $notif->sendS2BVerification($username, $otp->token);
+        elseif ($otpType === OtpTypes::updateProfile)
+            $notif->updateProfileVerification($username, $otp->token);
         else
             $this->otpTypeInvalid();
     }
@@ -256,9 +258,9 @@ class AuthService implements IAuthService
         ];
     }
 
-    public function generateOTP(string $otpType, string $userId): object
+    public function generateOTP(string $otpType, string $userId, bool $otpEnabled = true): object
     {
-        if (App::environment('local')) {
+        if (App::environment('local') || !$otpEnabled) {
             return (object)[
                 'status' => true,
                 'token' => "1111",
