@@ -356,27 +356,27 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
+    // ADMIN
+    Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->name('list');
+        Route::post('/', [RoleController::class, 'store'])->name('store');
+        Route::get('/{role}', [RoleController::class, 'show'])->name('show');
+        Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show');
+        Route::put('/{role}', [RoleController::class, 'update'])->name('update');
+        Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
+    
+    });
+    
+    Route::prefix('/admin/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function () {
+        Route::get('/', [RoleController::class, 'rolePermissions'])->name('list');
+        Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
+    });
 });
 
 
 // DragonPay PostBack
 
 
-// ADMIN
-Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
-    Route::get('/', [RoleController::class, 'index'])->name('list');
-    Route::post('/', [RoleController::class, 'store'])->name('store');
-    Route::get('/{role}', [RoleController::class, 'show'])->name('show');
-    Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show');
-    Route::put('/{role}', [RoleController::class, 'update'])->name('update');
-    Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
-
-});
-
-Route::prefix('/admin/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function () {
-    Route::get('/', [RoleController::class, 'rolePermissions'])->name('list');
-    Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
-});
 
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
