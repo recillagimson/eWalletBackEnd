@@ -216,8 +216,29 @@ class DrcrMemoService implements IDrcrMemoService
     }
 
     public function report(array $params, string $currentUser = '') {
-        $data = $this->drcrMemoRepository->reportData($params['from'], $params['to']);
-        $fileName = 'reports/' . $params['from'] . "-" . $params['to'] . "." . $params['type'];
+
+        $from = Carbon::now()->format('Y-m-d');
+        $to = Carbon::now()->subDays(30)->format('Y-m-d');
+        $type = 'XLSX';
+        $filter_by = '';
+        $filter_value = '';
+
+        if($params && isset($params['from']) && isset($params['to'])) {
+            $from = $params['from'];
+            $to = $params['to'];
+        }
+
+        if($params && isset($params['type'])) {
+            $type = $params['type'];
+        }
+
+        if($params && isset($params['filter_by']) && isset($params['filter_value'])) {
+            $filter_by = $params['filter_by'];
+            $filter_value = $params['filter_value'];
+        }
+
+        $data = $this->drcrMemoRepository->reportData($from, $to, $filter_by, $filter_value);
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
         if($params['type'] == 'PDF') {
             $data = $this->processData($data);
             $records = [

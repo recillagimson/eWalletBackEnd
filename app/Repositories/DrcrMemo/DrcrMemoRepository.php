@@ -167,9 +167,33 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         return $this->model->where('user_created', '=', $UserID)->where('status', '=', 'pending')->where('created_at', '<=', Carbon::now()->subDay())->count('status');
     }
 
-    public function reportData(string $from, string $to) {
-        return DRCRProcedure::where('transaction_date', '>=', $from)
-            ->where('transaction_date', '<=', $to)
-            ->get();
+    public function reportData(string $from, string $to, string $filterBy = '', string $filterValue = '') {
+        $record = DRCRProcedure::where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to);
+
+        if($filterBy && $filterValue) {
+            // IF CUSTOMER_ID
+            if($filterBy == 'CUSTOMER_ID') {
+                $record = $record->where('user_account_id', $filterValue);
+            } 
+            // IF CUSTOMER_NAME
+            else if ($filterBy == 'CUSTOMER_NAME') {
+                $record = $record->where(function($q) use($filterValue) {
+                    $q->where('first_name', 'LIKE', '%' . $filterValue . '%')
+                      ->orWhere('last_name', 'LIKE', '%' . $filterValue . '%');
+                });
+            }
+            // IF TYPE
+            else if($filterBy == 'TYPE') {
+                $record = $record->where('transaction_type', $filterValue );
+            }
+            // IF STATUS
+            else if($filterBy == 'STATUS') {
+                $record = $record->where('Status', $filterValue);
+            }
+        }
+
+        dd($record->get());
+        return $record->get();
     }
 }
