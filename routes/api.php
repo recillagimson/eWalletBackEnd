@@ -58,6 +58,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+\Illuminate\Support\Facades\Log::debug(config('app.env'));
 
 if (App::environment(['local', 'staging', 'production'])) {
     Route::prefix('/utils')->group(function () {
