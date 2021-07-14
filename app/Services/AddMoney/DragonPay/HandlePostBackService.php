@@ -300,13 +300,13 @@ class HandlePostBackService implements IHandlePostBackService
         $strDigest = "{$data['txnid']}:{$data['refno']}:{$data['status']}:{$data['message']}:{$this->secretKey}}";
         $digest = sha1($strDigest);
 
-        if ($data['digest'] !== $digest) {
-            Log::debug('Digest Info:', [
-                'plainText' => $strDigest,
-                'digestFromPayload' => $digest,
-                'originalDigest' => $data['digest']
-            ]);
+        Log::debug('Digest Info:', [
+            'plainText' => $strDigest,
+            'digestFromPayload' => $digest,
+            'originalDigest' => $data['digest']
+        ]);
 
+        if ($data['digest'] !== $digest) {
             $this->invalidPayload();
         }
     }
