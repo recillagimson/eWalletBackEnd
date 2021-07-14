@@ -185,7 +185,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             }
             // IF TYPE
             else if($filterBy == 'TYPE') {
-                $record = $record->where('transaction_type', $filterValue );
+                $record = $record->where('Type', $filterValue );
             }
             // IF STATUS
             else if($filterBy == 'STATUS') {
