@@ -193,7 +193,6 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             }
         }
 
-        dd($record->get());
         return $record->get();
     }
 }
