@@ -6,21 +6,22 @@ use Carbon\Carbon;
 use App\Enums\Currencies;
 use App\Enums\DrcrStatus;
 use App\Models\UserAccount;
+use App\Enums\SuccessMessages;
 use App\Exports\DRCR\DRCRReport;
 use App\Enums\TransactionStatuses;
 use App\Enums\ReferenceNumberTypes;
-use App\Enums\SuccessMessages;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Enums\TransactionCategoryIds;
+use App\Traits\LogHistory\LogHistory;
+use Illuminate\Support\Facades\Storage;
 use App\Traits\Errors\WithDrcrMemoErrors;
 use App\Services\Utilities\PDF\IPDFService;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
+use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\Responses\IResponseService;
-use App\Traits\LogHistory\LogHistory;
 
 class DrcrMemoService implements IDrcrMemoService
 {
@@ -214,25 +215,44 @@ class DrcrMemoService implements IDrcrMemoService
         return $this->drcrMemoRepository->create($newMemo);
     }
 
-    public function report(array $params) {
+    public function report(array $params, string $currentUser = '') {
         $data = $this->drcrMemoRepository->reportData($params['from'], $params['to']);
-        $file_name = $params['from'] . "-" . $params['to'] . "." . $params['type'];
+        $fileName = 'reports/' . $params['from'] . "-" . $params['to'] . "." . $params['type'];
         if($params['type'] == 'PDF') {
             $data = $this->processData($data);
             $records = [
                 'records' => $data
             ];
             ini_set("pcre.backtrack_limit", "5000000");
-            return $this->pdfService->generatePDFNoUserPassword($records, 'reports.log_histories.log_histories');
+            $file = $this->pdfService->generatePDFNoUserPassword($records, 'reports.log_histories.log_histories', true);
+            $url = $this->storeToS3($currentUser, $file['file_name'], $fileName);
+            unlink($file['file_name']);
+            $temp_url = $this->s3TempUrl($url);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
         else if($params['type'] == 'CSV') {
-            return Excel::download(new DRCRReport($data, $params['from'], $params['to'], $params), $file_name, \Maatwebsite\Excel\Excel::CSV);
+            Excel::download(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
         else if($params['type'] == 'API')  {
             return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
         }
         else {
-            return Excel::download(new DRCRReport($data, $params['from'], $params['to'], $params), $file_name, \Maatwebsite\Excel\Excel::XLSX);
+            Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         }
+    }
+
+    public function storeToS3(string $currentUser, $file, string $fileName) {
+        $folderName = 'reports/' . $currentUser;
+        $generated_link = Storage::disk('s3')->putFileAs($folderName, $file, $fileName);
+        return $generated_link;
+    }
+
+    public function s3TempUrl(string $generated_link) {
+        $temp_url = Storage::disk('s3')->temporaryUrl($generated_link, Carbon::now()->addMinutes(30));
+        return $temp_url;
     }
 }
