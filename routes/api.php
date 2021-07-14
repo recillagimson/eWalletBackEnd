@@ -356,7 +356,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/report', [DrcrMemoController::class, 'report']);
     });
 
-
+    Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/postback', [AddMoneyController::class, 'postBack']);
+    });
 });
 
 
