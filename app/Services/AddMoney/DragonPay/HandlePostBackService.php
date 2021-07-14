@@ -14,6 +14,7 @@ use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
+use Log;
 
 class HandlePostBackService implements IHandlePostBackService
 {
@@ -300,6 +301,12 @@ class HandlePostBackService implements IHandlePostBackService
         $digest = sha1($strDigest);
 
         if ($data['digest'] !== $digest) {
+            Log::debug('Digest Info:', [
+                'plainText' => $strDigest,
+                'digestFromPayload' => $digest,
+                'originalDigest' => $data['digest']
+            ]);
+
             $this->invalidPayload();
         }
     }
