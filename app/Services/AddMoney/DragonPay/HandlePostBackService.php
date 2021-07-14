@@ -87,7 +87,7 @@ class HandlePostBackService implements IHandlePostBackService
         $status = $postBackData['status'];
         $message = $postBackData['message'];
 
-        $this->validatePayLoad($postBackData);
+        //$this->validatePayLoad($postBackData);
         $this->validate($referenceNumber);
 
         $addMoneyRow = $this->addMoneys->getByReferenceNumber($referenceNumber);
