@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-if (App::environment(['local', 'staging'])) {
+if (App::environment(['local', 'staging', 'production'])) {
     Route::prefix('/utils')->group(function () {
         Route::post('/encrypt', [PayloadController::class, 'encrypt']);
         Route::post('/decrypt', [PayloadController::class, 'decrypt']);
