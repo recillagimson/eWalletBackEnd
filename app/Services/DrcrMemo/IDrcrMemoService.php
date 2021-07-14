@@ -6,8 +6,8 @@ use App\Models\UserAccount;
 
 interface IDrcrMemoService
 {
-    public function getAllList(UserAccount $user, $data);
-    public function getList(UserAccount $user, $data, $per_page = 15);
+    public function getAllList(UserAccount $user, $data, $from = '', $to = '');
+    public function getList(UserAccount $user, $data, $per_page = 15, $from = '', $to = '');
     public function show(string $referenceNumber);
     public function getUser(string $accountNumber);
     public function store(UserAccount $user, $data);
