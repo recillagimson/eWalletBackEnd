@@ -96,6 +96,14 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
 use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
 use App\Repositories\UserUtilities\UserRole\UserRoleRepository;
+use App\Repositories\Address\Region\RegionRepository;
+use App\Repositories\Address\Region\IRegionRepository;
+use App\Repositories\Address\Province\ProvinceRepository;
+use App\Repositories\Address\Province\IProvinceRepository;
+use App\Repositories\Address\Municipality\MunicipalityRepository;
+use App\Repositories\Address\Municipality\IMunicipalityRepository;
+use App\Repositories\Address\Barangay\BarangayRepository;
+use App\Repositories\Address\Barangay\IBarangayRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -155,6 +163,12 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IOutSendMoneyRepository::class, OutSendMoneyRepository::class);
         $this->app->bind(IUserBalanceInfoRepository::class, UserBalanceInfoRepository::class);
         $this->app->bind(IQrTransactionsRepository::class, QrTransactionsRepository::class);
+
+        // Address
+        $this->app->bind(IRegionRepository::class, RegionRepository::class);
+        $this->app->bind(IProvinceRepository::class, ProvinceRepository::class);
+        $this->app->bind(IMunicipalityRepository::class, MunicipalityRepository::class);
+        $this->app->bind(IBarangayRepository::class, BarangayRepository::class);
 
         // Notification Repository
         $this->app->bind(INotificationRepository::class, NotificationRepository::class);

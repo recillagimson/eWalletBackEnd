@@ -188,7 +188,7 @@ class AuthController extends Controller
         $user = $request->user();
         $data = $request->validated();
 
-        $this->authService->verify($user->id, $data['otp_type'], $data['code']);
+        $this->authService->verify($user->id, $data['otp_type'], $data['code'], $user->otp_enabled);
         return $this->responseService->successResponse([], SuccessMessages::otpVerificationSuccessful);
     }
 

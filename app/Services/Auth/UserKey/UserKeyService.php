@@ -90,7 +90,7 @@ class UserKeyService implements IUserKeyService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         $this->validateUser($user);
-        $this->authService->verify($user->id, OtpTypes::passwordRecovery, $otp);
+        $this->authService->verify($user->id, OtpTypes::passwordRecovery, $otp, $user->otp_enabled);
     }
 
     public function resetKey(string $usernameField, string $username, string $key, string $keyType,

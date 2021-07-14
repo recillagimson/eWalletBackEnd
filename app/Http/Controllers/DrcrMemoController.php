@@ -36,7 +36,16 @@ class DrcrMemoController extends Controller
         if($request->has('per_page')) {
             $per_page = $request->per_page;
         }
-        $list = $this->drcrMemoService->getList(request()->user(), $data, $per_page);
+
+        $from = '';
+        $to = '';
+
+        if($request->has('from') && $request->has('to')) {
+            $from = $request->from;
+            $to = $request->to;
+        }
+
+        $list = $this->drcrMemoService->getList(request()->user(), $data, $per_page, $from, $to);
         return $this->responseService->successResponse($list->toArray(), SuccessMessages::success);
     }
 
@@ -51,8 +60,17 @@ class DrcrMemoController extends Controller
         if($request->has('per_page')) {
             $per_page = $request->per_page;
         }
+
+        $from = '';
+        $to = '';
+
+        if($request->has('from') && $request->has('to')) {
+            $from = $request->from;
+            $to = $request->to;
+        }
+
         $data = $request->route('status');
-        $list = $this->drcrMemoService->getAllList(request()->user(), $data, $per_page);
+        $list = $this->drcrMemoService->getAllList(request()->user(), $data, $per_page, $from, $to);
         return $this->responseService->successResponse($list->toArray(), SuccessMessages::success);
     }
 

@@ -150,7 +150,7 @@ class UserAccountService implements IUserAccountService
         if (!$user) $this->accountDoesntExist();
         $this->checkEmail($user, $email);
 
-        $otp = $this->authService->generateOTP(OtpTypes::updateEmail, $user->id);
+        $otp = $this->authService->generateOTP(OtpTypes::updateEmail, $user->id, $user->otp_enabled);
         $this->emailService->updateEmailVerification($email, $otp->token);
     }
 
@@ -176,7 +176,7 @@ class UserAccountService implements IUserAccountService
         if (!$user) $this->accountDoesntExist();
         $this->checkMobile($user, $mobile);
 
-        $otp = $this->authService->generateOTP(OtpTypes::updateMobile, $user->id);
+        $otp = $this->authService->generateOTP(OtpTypes::updateMobile, $user->id, $user->otp_enabled);
         $this->smsService->updateMobileVerification($mobile, $otp->token);
     }
 

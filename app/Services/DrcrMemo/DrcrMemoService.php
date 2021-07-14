@@ -51,19 +51,19 @@ class DrcrMemoService implements IDrcrMemoService
         $this->responseService = $responseService;
     }
 
-    public function getList(UserAccount $user, $data, $per_page = 15)
+    public function getList(UserAccount $user, $data, $per_page = 15, $from = '', $to ='')
     {
-        if ($data === 'ALL') return $this->drcrMemoRepository->getList($user, $per_page);
+        if ($data === 'ALL') return $this->drcrMemoRepository->getList($user, $per_page, $from, $to);
         if ($data !== DrcrStatus::Approve && $data !== DrcrStatus::Decline && $data !== DrcrStatus::Pending) return $this->invalidStatus();
-        return $this->drcrMemoRepository->getListByCreatedBy($user, $data, $per_page);
+        return $this->drcrMemoRepository->getListByCreatedBy($user, $data, $per_page, $from, $to);
     }
 
 
-    public function getAllList(UserAccount $user, $data, $per_page = 15)
+    public function getAllList(UserAccount $user, $data, $per_page = 15, $from = '', $to = '')
     {
-        if ($data === 'ALL') return $this->drcrMemoRepository->getAllPaginate($per_page);
+        if ($data === 'ALL') return $this->drcrMemoRepository->getAllPaginate($per_page, $from, $to);
         if ($data !== DrcrStatus::Approve && $data !== DrcrStatus::Decline && $data !== DrcrStatus::Pending) return $this->invalidStatus();
-        return $this->drcrMemoRepository->getAllList($user, $data, $per_page);
+        return $this->drcrMemoRepository->getAllList($user, $data, $per_page, $from, $to);
     }
 
 
