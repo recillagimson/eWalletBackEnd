@@ -366,8 +366,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
     Route::get('/', [RoleController::class, 'index'])->name('list');
     Route::post('/', [RoleController::class, 'store'])->name('store');
-    Route::get('/{role}', [RoleController::class, 'show'])->name('show');
-    Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show');
+    Route::get('/{role}', [RoleController::class, 'show'])->name('show.role');
+    Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show.user.role');
     Route::put('/{role}', [RoleController::class, 'update'])->name('update');
     Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
 
