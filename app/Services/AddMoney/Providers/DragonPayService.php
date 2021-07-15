@@ -21,6 +21,7 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
@@ -474,9 +475,9 @@ class DragonPayService implements IAddMoneyService
      * A request builder with DragonPay baseURL
      *
      * @param string $endpoint
-     * @return response $response
+     * @return Response
      */
-    public function dragonpayRequest(string $endpoint): response
+    public function dragonpayRequest(string $endpoint): Response
     {
         $response = Http::withToken($this->getToken())->get($this->baseURL . $endpoint);
 
