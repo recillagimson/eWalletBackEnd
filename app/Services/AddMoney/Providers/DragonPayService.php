@@ -123,7 +123,7 @@ class DragonPayService implements IAddMoneyService
      * @param array $urlParams
      * @return json $response
      */
-    public function addMoney(UserAccount $user, array $urlParams)
+    public function addMoney(UserAccount $user, array $urlParams): json
     {
         $this->setUserAccountID($user->id);
         $this->setReferenceNumber($this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaWebBank));
@@ -133,7 +133,7 @@ class DragonPayService implements IAddMoneyService
         $amount = $urlParams['amount'];
 
         $token = $this->getToken();
-        $txnID =  $this->referenceNumber;
+        $txnID = $this->referenceNumber;
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
         $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
@@ -213,7 +213,7 @@ class DragonPayService implements IAddMoneyService
      *
      * @return string-base64
      */
-    protected function getToken()
+    protected function getToken(): string
     {
         return base64_encode($this->merchantID . ':' . $this->key);
     }
@@ -224,7 +224,7 @@ class DragonPayService implements IAddMoneyService
      * @param uuid $userAccountID
      * @return string
      */
-    public function getFullname(string $userAccountID)
+    public function getFullname(string $userAccountID): string
     {
         $userDetails = $this->userDetails->getByUserId($userAccountID);
 
@@ -242,7 +242,7 @@ class DragonPayService implements IAddMoneyService
      * @param string $email
      * @return array
      */
-    public function createBody(float $amount, string $beneficiaryName, string $email)
+    public function createBody(float $amount, string $beneficiaryName, string $email): array
     {
         return [
             'Amount' => $this->formatAmount($amount),
@@ -262,10 +262,10 @@ class DragonPayService implements IAddMoneyService
      * @param float $amount
      * @return string
      */
-    public function formatAmount(float $amount)
+    public function formatAmount(float $amount): string
     {
         if (!strpos($amount, '.')) return number_format($amount, 2, '.', '');
-        return (string) $amount;
+        return (string)$amount;
     }
 
     /**
@@ -274,7 +274,7 @@ class DragonPayService implements IAddMoneyService
      * @param response $response
      * @return exception
      */
-    public function handleError($response)
+    public function handleError($response): exception
     {
         if ($response->status() == 401) {
 
@@ -360,7 +360,7 @@ class DragonPayService implements IAddMoneyService
      * @return array
      * @throws noRecordsFound
      **/
-    public function getStatus(UserAccount $user, array $request)
+    public function getStatus(UserAccount $user, array $request): array
     {
         $this->setUserAccountID($user->id);
 
@@ -416,7 +416,7 @@ class DragonPayService implements IAddMoneyService
      * @param float|null $amount
      * @return string
      **/
-    private function validateStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe, $amount = null)
+    private function validateStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe, $amount = null): string
     {
         if ($squidPayTransaction->status != $statusShouldBe) {
 
@@ -438,16 +438,15 @@ class DragonPayService implements IAddMoneyService
      *
      * @param InAddMoneyFromBank $squidPayTransaction
      * @param string $statusShouldBe
-     * @return string
+     * @return void
      **/
-    private function updateTransStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe)
+    private function updateTransStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe): void
     {
         $this->addMoneys->update(
             $squidPayTransaction,
             ['status' => $statusShouldBe]
         );
 
-        return $statusShouldBe;
     }
 
     /**
@@ -458,7 +457,7 @@ class DragonPayService implements IAddMoneyService
      * @param array $identifier
      * @return json $response
      */
-    public function getTransStatusFromDragonPay(array $identifier)
+    public function getTransStatusFromDragonPay(array $identifier): json
     {
         if (array_key_exists('reference_number', $identifier)) {
 
@@ -477,7 +476,7 @@ class DragonPayService implements IAddMoneyService
      * @param string $endpoint
      * @return response $response
      */
-    public function dragonpayRequest(string $endpoint)
+    public function dragonpayRequest(string $endpoint): response
     {
         $response = Http::withToken($this->getToken())->get($this->baseURL . $endpoint);
 
@@ -493,7 +492,7 @@ class DragonPayService implements IAddMoneyService
      * @param array $referenceNumber
      * @return object $responseData
      */
-    public function cancelAddMoney(UserAccount $user, array $referenceNumber)
+    public function cancelAddMoney(UserAccount $user, array $referenceNumber): object
     {
         $this->setUserAccountID($user->id);
 
@@ -545,13 +544,9 @@ class DragonPayService implements IAddMoneyService
      * @param UserAccount $user
      * @return array
      */
-    public function updateUserTransactionStatus(UserAccount $user)
+    public function updateUserTransactionStatus(UserAccount $user): array
     {
         $this->setUserAccountID($user->id);
-
-        $successTransCount = 0;
-        $failedTransCount = 0;
-        $pendingTransCount = 0;
 
         $pendingAddMoneys = $this->addMoneys->getUserPending($this->userAccountID);
 
@@ -583,7 +578,7 @@ class DragonPayService implements IAddMoneyService
                     break;
 
                 default:
-                    return $this->noStatusReceived();
+                    $this->noStatusReceived();
                     break;
             }
 
@@ -651,25 +646,10 @@ class DragonPayService implements IAddMoneyService
      * @param object $dateToFormat
      * @return string
      **/
-    public function dateToYYYYMMDD(object $dateToFormat)
+    public function dateToYYYYMMDD(object $dateToFormat): string
     {
         return $dateToFormat->isoFormat('YYYY-MM-DD');
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Thrown when there is no email in database
@@ -764,9 +744,8 @@ class DragonPayService implements IAddMoneyService
     /**
      * Thrown when there an unrecognizable status found in DragonPays response
      *
-     * @return error500
      */
-    private function unrecognizableStatusFound()
+    private function unrecognizableStatusFound(): void
     {
         $this->logHistory->create([
             'user_account_id' => $this->userAccountID,
