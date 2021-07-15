@@ -16,14 +16,16 @@ use App\Repositories\Tier\ITierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
+
+;
 
 class DragonPayService implements IAddMoneyService
 {
@@ -326,7 +328,7 @@ class DragonPayService implements IAddMoneyService
     /**
      * Validate the user accoirding to the user's
      * tier and amount in the transaction
-     * 
+     *
      * @param UserAccount $userAccountID
      * @param float $amount
      * @return exception|float $serviceFee
@@ -378,45 +380,20 @@ class DragonPayService implements IAddMoneyService
                 $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe, $squidPayAddMoney->amount);
                 break;
 
+            case 'A':
+            case 'V':
+            case 'K':
+            case 'R':
             case 'F':
                 $statusShouldBe = DragonPayStatusTypes::Failure;
 
                 $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
                 break;
 
+            case 'U':
             case 'P':
                 $statusShouldBe = DragonPayStatusTypes::Pending;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
 
-            case 'U':
-                $statusShouldBe = DragonPayStatusTypes::Pending;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
-
-            case 'R':
-                $statusShouldBe = DragonPayStatusTypes::Failure;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
-
-            case 'K':
-                $statusShouldBe = DragonPayStatusTypes::Failure;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
-
-            case 'V':
-                $statusShouldBe = DragonPayStatusTypes::Failure;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
-
-            case 'A':
-                $statusShouldBe = DragonPayStatusTypes::Failure;
-                
                 $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
                 break;
 
@@ -442,7 +419,7 @@ class DragonPayService implements IAddMoneyService
     private function validateStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe, $amount = null)
     {
         if ($squidPayTransaction->status != $statusShouldBe) {
-                    
+
             $this->updateTransStatus($squidPayTransaction, $statusShouldBe);
 
             if ($amount) {
@@ -576,9 +553,9 @@ class DragonPayService implements IAddMoneyService
         $failedTransCount = 0;
         $pendingTransCount = 0;
 
-        $squidPayTrans = $this->addMoneys->getByUserAccountID($this->userAccountID);
+        $oldestPending = $this->addMoneys->getUserOldestPending($this->userAccountID);
 
-        $dateOf1stTrans = $this->dateToYYYYMMDD($squidPayTrans->first()->created_at);
+        $dateOf1stTrans = $oldestPending ? $this->dateToYYYYMMDD($oldestPending->created_at) : Carbon::now();
         $dateTomorrow = $this->dateToYYYYMMDD(Carbon::now()->addDay(1));
 
         $dragPayTrans = $this->dragonpayRequest('/transactions?startdate=' . $dateOf1stTrans . '&enddate=' . $dateTomorrow)->json();
@@ -591,35 +568,20 @@ class DragonPayService implements IAddMoneyService
                 case 'S':
                     $statusShouldBe = DragonPayStatusTypes::Success;
                     break;
-    
+
+                case 'A':
+                case 'V':
+                case 'K':
+                case 'R':
                 case 'F':
                     $statusShouldBe = DragonPayStatusTypes::Failure;
                     break;
-    
+
+                case 'U':
                 case 'P':
                     $statusShouldBe = DragonPayStatusTypes::Pending;
                     break;
-    
-                case 'U':
-                    $statusShouldBe = DragonPayStatusTypes::Pending;
-                    break;
-    
-                case 'R':
-                    $statusShouldBe = DragonPayStatusTypes::Failure;
-                    break;
-    
-                case 'K':
-                    $statusShouldBe = DragonPayStatusTypes::Failure;
-                    break;
-    
-                case 'V':
-                    $statusShouldBe = DragonPayStatusTypes::Failure;
-                    break;
-    
-                case 'A':
-                    $statusShouldBe = DragonPayStatusTypes::Failure;
-                    break;
-    
+
                 default:
                     return $this->noStatusReceived();
                     break;
@@ -634,11 +596,11 @@ class DragonPayService implements IAddMoneyService
             ];
         }
 
-        foreach ($squidPayTrans as $squidPayTrans) {
-            
-            if (array_key_exists($squidPayTrans->reference_number, $dragPayDataToInsert)) {
+        foreach ($oldestPending as $oldestPending) {
 
-                switch ($dragPayDataToInsert[$squidPayTrans->reference_number]['status']) {
+            if (array_key_exists($oldestPending->reference_number, $dragPayDataToInsert)) {
+
+                switch ($dragPayDataToInsert[$oldestPending->reference_number]['status']) {
                     case DragonPayStatusTypes::Success:
                         $successTransCount = $successTransCount + 1;
                         break;
@@ -650,17 +612,17 @@ class DragonPayService implements IAddMoneyService
                     case DragonPayStatusTypes::Failure:
                         $failedTransCount = $failedTransCount + 1;
                         break;
-                    
+
                     default:
                         return $this->unrecognizableStatusFound();
                         break;
                 }
 
-                $this->addMoneys->update($squidPayTrans, $dragPayDataToInsert[$squidPayTrans->reference_number]);
+                $this->addMoneys->update($oldestPending, $dragPayDataToInsert[$oldestPending->reference_number]);
             } else {
-                
+
                 $failedTransCount = $failedTransCount + 1;
-                $this->addMoneys->update($squidPayTrans, ['status' => DragonPayStatusTypes::Failure]);
+                $this->addMoneys->update($oldestPending, ['status' => DragonPayStatusTypes::Failure]);
             }
         }
 

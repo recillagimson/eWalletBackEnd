@@ -42,7 +42,17 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
         return $this->model->where('user_account_id', $userAccountID)->orderBy('created_at', 'asc')->get();
     }
 
-    public function getSumOfTransactions($from, $to, $userAccountID) {
+    public function getUserOldestPending(string $userId)
+    {
+        return $this->model->where('user_account_id', $userId)
+            ->where('status', DragonPayStatusTypes::Pending)
+            ->where('deleted_at', null)
+            ->orderBy('created_at', 'asc')
+            ->first();
+    }
+
+    public function getSumOfTransactions($from, $to, $userAccountID)
+    {
         return $this->model->where('transaction_date', '>=', $from)
             ->where('transaction_date', '<=', $to)
             ->where('status', '!=', 'FAILED')
@@ -52,6 +62,6 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
 
     public function getTotalAddMoney()
     {
-        return $this->model->where('status','=','SUCCESS')->where('transaction_date','<=',Carbon::now()->subDay())->sum('amount');
+        return $this->model->where('status', '=', 'SUCCESS')->where('transaction_date', '<=', Carbon::now()->subDay())->sum('amount');
     }
 }
