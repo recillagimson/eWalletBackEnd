@@ -3,6 +3,7 @@
 namespace App\Repositories\InAddMoney;
 
 use App\Repositories\IRepository;
+use Illuminate\Database\Eloquent\Collection;
 
 interface IInAddMoneyRepository extends IRepository
 {
@@ -12,7 +13,7 @@ interface IInAddMoneyRepository extends IRepository
 
     public function getLatestPendingByUserAccountID(string $userAccountID);
 
-    public function getUserOldestPending(string $userId);
+    public function getUserPending(string $userId): Collection;
 
     public function getByMultipleReferenceNumber(array $referenceNumbers);
 

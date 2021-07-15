@@ -6,6 +6,7 @@ use App\Enums\DragonPayStatusTypes;
 use App\Models\InAddMoneyFromBank;
 use App\Repositories\Repository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
 {
@@ -42,13 +43,13 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
         return $this->model->where('user_account_id', $userAccountID)->orderBy('created_at', 'asc')->get();
     }
 
-    public function getUserOldestPending(string $userId)
+    public function getUserPending(string $userId): Collection
     {
         return $this->model->where('user_account_id', $userId)
             ->where('status', DragonPayStatusTypes::Pending)
             ->where('deleted_at', null)
             ->orderBy('created_at', 'asc')
-            ->first();
+            ->get();
     }
 
     public function getSumOfTransactions($from, $to, $userAccountID)

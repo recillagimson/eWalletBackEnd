@@ -553,9 +553,9 @@ class DragonPayService implements IAddMoneyService
         $failedTransCount = 0;
         $pendingTransCount = 0;
 
-        $oldestPending = $this->addMoneys->getUserOldestPending($this->userAccountID);
+        $pendingAddMoneys = $this->addMoneys->getUserPending($this->userAccountID);
 
-        $dateOf1stTrans = $oldestPending ? $this->dateToYYYYMMDD($oldestPending->created_at) : Carbon::now();
+        $dateOf1stTrans = $pendingAddMoneys->count() > 0 ? $this->dateToYYYYMMDD($pendingAddMoneys->first()->created_at) : Carbon::now();
         $dateTomorrow = $this->dateToYYYYMMDD(Carbon::now()->addDay(1));
 
         $dragPayTrans = $this->dragonpayRequest('/transactions?startdate=' . $dateOf1stTrans . '&enddate=' . $dateTomorrow)->json();
@@ -596,11 +596,11 @@ class DragonPayService implements IAddMoneyService
             ];
         }
 
-        foreach ($oldestPending as $oldestPending) {
+        foreach ($pendingAddMoney as $pendingAddMoneys) {
 
-            if (array_key_exists($oldestPending->reference_number, $dragPayDataToInsert)) {
+            if (array_key_exists($pendingAddMoney->reference_number, $dragPayDataToInsert)) {
 
-                switch ($dragPayDataToInsert[$oldestPending->reference_number]['status']) {
+                switch ($dragPayDataToInsert[$pendingAddMoney->reference_number]['status']) {
                     case DragonPayStatusTypes::Success:
                         $successTransCount = $successTransCount + 1;
                         break;
@@ -618,11 +618,10 @@ class DragonPayService implements IAddMoneyService
                         break;
                 }
 
-                $this->addMoneys->update($oldestPending, $dragPayDataToInsert[$oldestPending->reference_number]);
+                $this->addMoneys->update($pendingAddMoney, $dragPayDataToInsert[$pendingAddMoneys->reference_number]);
             } else {
-
                 $failedTransCount = $failedTransCount + 1;
-                $this->addMoneys->update($oldestPending, ['status' => DragonPayStatusTypes::Failure]);
+                $this->addMoneys->update($pendingAddMoney, ['status' => DragonPayStatusTypes::Failure]);
             }
         }
 
