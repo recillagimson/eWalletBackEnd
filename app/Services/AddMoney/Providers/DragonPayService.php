@@ -596,32 +596,35 @@ class DragonPayService implements IAddMoneyService
             ];
         }
 
-        foreach ($pendingAddMoney as $pendingAddMoneys) {
+        $successTransCount = 0;
+        $pendingTransCount = 0;
+        $failedTransCount = 0;
 
-            if (array_key_exists($pendingAddMoney->reference_number, $dragPayDataToInsert)) {
+        foreach ($pendingAddMoneys as $addMoney) {
+            if (array_key_exists($addMoney->reference_number, $dragPayDataToInsert)) {
 
-                switch ($dragPayDataToInsert[$pendingAddMoney->reference_number]['status']) {
+                switch ($dragPayDataToInsert[$addMoney->reference_number]['status']) {
                     case DragonPayStatusTypes::Success:
-                        $successTransCount = $successTransCount + 1;
+                        $successTransCount += 1;
                         break;
 
                     case DragonPayStatusTypes::Pending:
-                        $pendingTransCount = $pendingTransCount + 1;
+                        $pendingTransCount += 1;
                         break;
 
                     case DragonPayStatusTypes::Failure:
-                        $failedTransCount = $failedTransCount + 1;
+                        $failedTransCount += 1;
                         break;
 
                     default:
-                        return $this->unrecognizableStatusFound();
+                        $this->unrecognizableStatusFound();
                         break;
                 }
 
-                $this->addMoneys->update($pendingAddMoney, $dragPayDataToInsert[$pendingAddMoneys->reference_number]);
+                $this->addMoneys->update($addMoney, $dragPayDataToInsert[$pendingAddMoneys->reference_number]);
             } else {
-                $failedTransCount = $failedTransCount + 1;
-                $this->addMoneys->update($pendingAddMoney, ['status' => DragonPayStatusTypes::Failure]);
+                $failedTransCount += 1;
+                $this->addMoneys->update($addMoney, ['status' => DragonPayStatusTypes::Failure]);
             }
         }
 
@@ -631,7 +634,7 @@ class DragonPayService implements IAddMoneyService
             SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
             __METHOD__,
             Carbon::now(),
-            'Update user`s add money transaction statuses',
+            'Update user`s pending add money transaction statuses',
             null
         );
 
