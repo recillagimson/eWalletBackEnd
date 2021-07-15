@@ -193,7 +193,6 @@ class HandlePostBackService implements IHandlePostBackService
         }
 
         if (isset($addMoneyRow->status) && $addMoneyRow->status != 'PENDING') {
-
             $this->transactionIsUpToDate();
         }
     }
