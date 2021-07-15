@@ -621,7 +621,7 @@ class DragonPayService implements IAddMoneyService
                         break;
                 }
 
-                $this->addMoneys->update($addMoney, $dragPayDataToInsert[$pendingAddMoneys->reference_number]);
+                $this->addMoneys->update($addMoney, $dragPayDataToInsert[$addMoney->reference_number]);
             } else {
                 $failedTransCount += 1;
                 $this->addMoneys->update($addMoney, ['status' => DragonPayStatusTypes::Failure]);
