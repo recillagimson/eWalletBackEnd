@@ -44,6 +44,10 @@ use App\Http\Controllers\UserUtilities\SignupHostController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\RegionController;
+use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\MunicipalityController;
+use App\Http\Controllers\BarangayController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
@@ -207,7 +211,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'nationality' => NationalityController::class,
             'nature_of_work' => NatureOfWorkController::class,
             'signup_host' => SignupHostController::class,
-            'source_of_fund' => SourceOfFundController::class,
+            'source_of_fund' => SourceOfFundController::class
         ]);
 
         Route::prefix('/user_accounts')->group(function (){
@@ -252,6 +256,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/validate', [AtmController::class, 'validateLoadTopup'])->name('validate.load.top.up');
             Route::post('/products', [AtmController::class, 'getProductsByProvider'])->name('get.products.by.provider');
             Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
+        });
+
+        Route::prefix('/address')->group(function() {
+            Route::get('/regions', [RegionController::class, 'index']);
+            Route::post('/provinces', [ProvinceController::class, 'getProvinces']);
+            Route::post('/municipalities', [MunicipalityController::class, 'getMunicipalities']);
+            Route::post('/barangays', [BarangayController::class, 'getBarangays']);
         });
 
         Route::prefix('/bpi')->group(function() {
@@ -356,27 +367,27 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
+    // ADMIN
+    Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->name('list');
+        Route::post('/', [RoleController::class, 'store'])->name('store');
+        Route::get('/{role}', [RoleController::class, 'show'])->name('show');
+        Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show');
+        Route::put('/{role}', [RoleController::class, 'update'])->name('update');
+        Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
+    
+    });
+    
+    Route::prefix('/admin/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function () {
+        Route::get('/', [RoleController::class, 'rolePermissions'])->name('list');
+        Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
+    });
 });
 
 
 // DragonPay PostBack
 
 
-// ADMIN
-Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
-    Route::get('/', [RoleController::class, 'index'])->name('list');
-    Route::post('/', [RoleController::class, 'store'])->name('store');
-    Route::get('/{role}', [RoleController::class, 'show'])->name('show');
-    Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show');
-    Route::put('/{role}', [RoleController::class, 'update'])->name('update');
-    Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
-
-});
-
-Route::prefix('/admin/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function () {
-    Route::get('/', [RoleController::class, 'rolePermissions'])->name('list');
-    Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
-});
 
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
