@@ -70,7 +70,7 @@ class AddMoneyService implements IAddMoneyService
         $serviceFee = $this->serviceFees->getByTierAndTransCategory($user->tier_id,
             TransactionCategoryIds::cashinDragonPay);
         $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
-        $serviceFeeId = $serviceFee ? $serviceFee->id : null;
+        $serviceFeeId = $serviceFee ? $serviceFee->id : '';
         $totalAmount = $data['amount'] + $serviceFeeAmount;
 
         $this->transactionValidationService->validate($user,
