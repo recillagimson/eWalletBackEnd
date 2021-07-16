@@ -147,29 +147,26 @@ class AddMoneyService implements IAddMoneyService
 
     private function updateStatus(InAddMoneyFromBank $addMoney): InAddMoneyFromBank
     {
-        try {
-            $response = $this->dragonPayService->checkStatus($addMoney->reference_number);
-            if (!$response->successful()) {
-                $errors = $response->json();
+        $response = $this->dragonPayService->checkStatus($addMoney->reference_number);
+        if (!$response->successful()) {
+            $errors = $response->json();
 
-                if ($response->status() === Response::HTTP_NOT_FOUND)
-                    $errors = ['message' => 'Record not found.'];
+            if ($response->status() === Response::HTTP_NOT_FOUND)
+                $errors = ['message' => 'Record not found.'];
 
-                Log::error('DragonPay Check Status Error: ', $errors);
+            Log::error('DragonPay Check Status Error: ', $errors);
+        } else {
+            $responseData = $response->json();
+            $updatedStatus = $responseData['Status'];
+
+            if ($updatedStatus === DragonPayStatusTypes::Pending) return $addMoney;
+
+            if ($updatedStatus === DragonPayStatusTypes::Success) {
+                $user = $this->userAccounts->getUser($addMoney->user_account_id);
+                return $this->handleSuccessTransaction($user->balanceInfo, $addMoney, $responseData);
             } else {
-                $responseData = $response->json();
-                $updatedStatus = $responseData['Status'];
-
-                if ($updatedStatus === DragonPayStatusTypes::Pending) return $addMoney;
-
-                if ($updatedStatus === DragonPayStatusTypes::Success) {
-                    $user = $this->userAccounts->getUser($addMoney->user_account_id);
-                    return $this->handleSuccessTransaction($user->balanceInfo, $addMoney, $responseData);
-                } else {
-                    return $this->handleFailedTransaction($addMoney, $responseData);
-                }
+                return $this->handleFailedTransaction($addMoney, $responseData);
             }
-        } catch (Exception $e) {
         }
 
         return $addMoney;
