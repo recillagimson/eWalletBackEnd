@@ -30,13 +30,13 @@ class SendMoneyController extends Controller
      * @param SendMoneyRequest $request
      * @return JsonResponse
      */
-    public function send(SendMoneyRequest $request)//: JsonResponse
+    public function send(SendMoneyRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
         $usernameField = $this->getUsernameField($request);
-        return $this->sendMoneyService->send($usernameField, $fillRequest, $request->user());
+        $postback = $this->sendMoneyService->send($usernameField, $fillRequest, $request->user());
 
-        //return $this->responseService->successResponse($postback, SuccessMessages::sendMoneySuccessFul);
+        return $this->responseService->successResponse($postback, SuccessMessages::sendMoneySuccessFul);
     }
 
     /**
