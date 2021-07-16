@@ -3,6 +3,7 @@
 namespace App\Repositories\OutPayBills;
 
 use App\Enums\TransactionStatuses;
+use App\Models\BillerReport;
 use App\Models\OutPayBills;
 use App\Repositories\Repository;
 use Illuminate\Database\Eloquent\Builder;
@@ -58,6 +59,19 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
     public function totalservicefeePayBills()
     {
         return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('service_fee');
+    }
+
+    public function reportData(string $from, string $to, string $filterBy = '', string $filterValue = '') {
+        $records = BillerReport::where('transaction_date', '>=', $from)
+        ->where('transaction_date', '<=', $to);
+
+        // dump($from);
+        // dd($to);
+        // if($filterValue != '' && $filterBy != '') {
+        //     $records = $records->where($filterBy, )
+        // }
+
+        return $records->get();
     }
 }
 
