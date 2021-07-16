@@ -166,7 +166,7 @@ class AddMoneyService implements IAddMoneyService
                     $user = $this->userAccounts->getUser($addMoney->user_account_id);
                     return $this->handleSuccessTransaction($user->balanceInfo, $addMoney, $responseData);
                 } else {
-                    return $this->handleFailedTransaction($addMoney);
+                    return $this->handleFailedTransaction($addMoney, $responseData);
                 }
             }
         } catch (Exception $e) {
@@ -214,7 +214,7 @@ class AddMoneyService implements IAddMoneyService
         return $addMoney;
     }
 
-    private function handleFailedTransaction(InAddMoneyFromBank $addMoney): InAddMoneyFromBank
+    private function handleFailedTransaction(InAddMoneyFromBank $addMoney, array $responseData): InAddMoneyFromBank
     {
         try {
             DB::beginTransaction();
@@ -222,6 +222,7 @@ class AddMoneyService implements IAddMoneyService
             $addMoney->status = TransactionStatuses::failed;
             $addMoney->dragonpay_reference = $responseData['RefNo'];
             $addMoney->dragonpay_channel_reference_number = $responseData['ProcMsg'];
+            $addMoney->transaction_remarks = $responseData['Description'];
             $addMoney->save();
 
             $this->logHistoryService->logUserHistory($addMoney->user_account_id,
