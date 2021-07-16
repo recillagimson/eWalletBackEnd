@@ -4,6 +4,7 @@ namespace App\Services\Report;
 
 use Carbon\Carbon;
 use App\Enums\SuccessMessages;
+use App\Exports\Biller\BillerReport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
@@ -57,22 +58,18 @@ class ReportService implements IReportService
             $url = $this->storeToS3($currentUser, $file['file_name'], $fileName);
             unlink($file['file_name']);
             $temp_url = $this->s3TempUrl($url);
-            dd($temp_url);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
-        // else if($params['type'] == 'CSV') {
-        //     Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
-        //     $temp_url = $this->s3TempUrl($fileName);
-        //     return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
-        // } 
-        // else if($params['type'] == 'API')  {
-        //     return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
-        // }
-        // else {
-        //     Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
-        //     $temp_url = $this->s3TempUrl($fileName);
-        //     return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
-        // }
+        else if($params['type'] == 'CSV') {
+            Excel::store(new BillerReport($records, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        } 
+        else {
+            Excel::store(new BillerReport($records, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        }
     }
 
     public function storeToS3(string $currentUser, $file, string $fileName) {

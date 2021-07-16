@@ -16,6 +16,6 @@ class ReportController extends Controller
     }
 
     public function billerReport(Request $request) {
-        $response = $this->reportService->billersReport($request->all(), request()->user()->id);
+        return $this->reportService->billersReport($request->all(), request()->user()->id);
     }
 }
