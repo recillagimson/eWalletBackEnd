@@ -252,7 +252,7 @@ class DrcrMemoService implements IDrcrMemoService
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
         else if($params['type'] == 'CSV') {
-            Excel::download(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, \Maatwebsite\Excel\Excel::CSV);
+            Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
