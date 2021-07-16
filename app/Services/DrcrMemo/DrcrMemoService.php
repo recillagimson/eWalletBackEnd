@@ -236,7 +236,7 @@ class DrcrMemoService implements IDrcrMemoService
             $filter_by = $params['filter_by'];
             $filter_value = $params['filter_value'];
         }
-
+        
         $data = $this->drcrMemoRepository->reportData($from, $to, $filter_by, $filter_value);
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
         if($params['type'] == 'PDF') {
