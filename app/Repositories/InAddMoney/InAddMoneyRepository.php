@@ -3,6 +3,7 @@
 namespace App\Repositories\InAddMoney;
 
 use App\Enums\DragonPayStatusTypes;
+use App\Enums\TransactionStatuses;
 use App\Models\InAddMoneyFromBank;
 use App\Repositories\Repository;
 use Carbon\Carbon;
@@ -46,7 +47,7 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
     public function getUserPending(string $userId): Collection
     {
         return $this->model->where('user_account_id', $userId)
-            ->where('status', DragonPayStatusTypes::Pending)
+            ->where('status', TransactionStatuses::pending)
             ->where('deleted_at', null)
             ->orderBy('created_at', 'asc')
             ->get();

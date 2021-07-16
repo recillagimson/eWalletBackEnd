@@ -21,6 +21,7 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Traits\Errors\WithUserErrors;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -28,7 +29,7 @@ use Illuminate\Validation\ValidationException;
 
 class DragonPayService implements IAddMoneyService
 {
-
+    use WithUserErrors;
     /**
      * DragonPay API base URL V1
      *
@@ -834,4 +835,6 @@ class DragonPayService implements IAddMoneyService
             'reference_number' => 'No record found.'
         ]);
     }
+
+
 }

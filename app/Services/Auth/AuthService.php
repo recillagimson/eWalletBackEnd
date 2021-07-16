@@ -87,7 +87,7 @@ class AuthService implements IAuthService
         $this->updateLastLogin($user);
 
         //ProcessUserPending::dispatch($user);
-        $this->transactionService->processUserPending($user);
+        //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userWebToken, $firstLogin);

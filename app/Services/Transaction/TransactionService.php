@@ -6,7 +6,7 @@ namespace App\Services\Transaction;
 use App\Models\UserAccount;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\AddMoney\InAddMoneyService;
+use App\Services\AddMoneyV2\IAddMoneyService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
@@ -23,7 +23,7 @@ class TransactionService implements ITransactionService
     private IPayBillsService $paybillsService;
     private ISend2BankPesonetService $s2bService;
     private IBuyLoadService $buyLoadService;
-    private InAddMoneyService $addMoneyService;
+    private IAddMoneyService $addMoneyService;
 
     public function __construct(IUserBalanceRepository $userBalanceRepository,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepository,
@@ -31,7 +31,7 @@ class TransactionService implements ITransactionService
                                 IPayBillsService $paybillsService,
                                 ISend2BankPesonetService $s2bService,
                                 IBuyLoadService $buyLoadService,
-                                InAddMoneyService $addMoneyService)
+                                IAddMoneyService $addMoneyService)
     {
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
@@ -46,7 +46,7 @@ class TransactionService implements ITransactionService
     {
         Log::info('Processing Pending Transactions:', $user->toArray());
 
-        $addMoneyResponse = $this->addMoneyService->updateUserTransactionStatus($user);
+        $addMoneyResponse = $this->addMoneyService->processPending($user->id);
         Log::info('Add Money Via DragonPay:', $addMoneyResponse);
 
         $paybillsResponse = $this->paybillsService->processPending($user);

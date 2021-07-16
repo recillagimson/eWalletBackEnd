@@ -15,7 +15,7 @@ class LogHistoryService implements ILogHistoryService
     }
 
     public function logUserHistory(string $user_account_id, string $reference_number = null, string $squidpay_module = null, string $namespace = null, $transaction_date, string $remarks, string $operation = null) {
-        $record = $this->logHistoryRepository->create([
+        return $this->logHistoryRepository->create([
             'user_account_id' => $user_account_id,
             "reference_number" => $user_account_id,
             "squidpay_module" => $squidpay_module,
@@ -23,11 +23,9 @@ class LogHistoryService implements ILogHistoryService
             "transaction_date" => $transaction_date,
             "remarks" => $remarks,
             "operation" => $operation,
-            "user_created" => request()->user()->id,
-            "user_updated" => request()->user()->id,
+            "user_created" => $user_account_id,
+            "user_updated" => $user_account_id,
         ]);
-
-        return $record;
     }
 
     public function logUserHistoryUnauthenticated(string $user_account_id, string $reference_number = null, string $squidpay_module = null, string $namespace = null, $transaction_date, string $remarks, string $operation = null) {
