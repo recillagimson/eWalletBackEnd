@@ -175,6 +175,8 @@ class AddMoneyService implements IAddMoneyService
     private function handleSuccessTransaction(UserBalanceInfo $balanceInfo, InAddMoneyFromBank $addMoney, array $responseData): InAddMoneyFromBank
     {
         try {
+            DB::beginTransaction();
+
             $addMoney->status = TransactionStatuses::success;
             $addMoney->dragonpay_reference = $responseData['RefNo'];
             $addMoney->dragonpay_channel_reference_number = $responseData['ProcMsg'];
@@ -199,7 +201,10 @@ class AddMoneyService implements IAddMoneyService
                 Carbon::now(),
                 'Successfully Added Money On The Account via DragonPay',
                 TransactionCategories::AddMoneyWebBankDragonPay);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             Log::error('Add Money Success Error: ', $e->getTrace());
         }
 
@@ -224,6 +229,7 @@ class AddMoneyService implements IAddMoneyService
                 Carbon::now(),
                 'Failed to add money on the account via DragonPay',
                 TransactionCategories::AddMoneyWebBankDragonPay);
+            DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Add Money Failed Error: ', $e->getTrace());
