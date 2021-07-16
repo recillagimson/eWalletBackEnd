@@ -46,8 +46,8 @@ class TransactionService implements ITransactionService
     {
         Log::info('Processing Pending Transactions:', $user->toArray());
 
-        $addMoneyResponse = $this->addMoneyService->processPending($user->id);
-        Log::info('Add Money Via DragonPay:', $addMoneyResponse);
+        //$addMoneyResponse = $this->addMoneyService->processPending($user->id);
+        //Log::info('Add Money Via DragonPay:', $addMoneyResponse);
 
         $paybillsResponse = $this->paybillsService->processPending($user);
         Log::info('Pay Bills Process Pending Result:', $paybillsResponse);
