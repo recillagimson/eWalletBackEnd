@@ -7,26 +7,30 @@ use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SendMoneyConfig;
 use App\Enums\TransactionCategoryIds;
+use App\Enums\UsernameTypes;
+use App\Models\UserAccount;
+use App\Traits\Errors\WithSendMoneyErrors;
+use App\Services\Utilities\OTP\IOtpService;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
-use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithSendMoneyErrors;
 use Carbon\Carbon;
+use App\Traits\UserHelpers;
 
 class SendMoneyService implements ISendMoneyService
 {
-    use WithSendMoneyErrors;
+    use WithSendMoneyErrors, UserHelpers;
 
     private IOutSendMoneyRepository $outSendMoney;
     private IInReceiveMoneyRepository $inReceiveMoney;
@@ -42,6 +46,7 @@ class SendMoneyService implements ISendMoneyService
     private ISmsService $smsService;
     private IOtpService $otpService;
     private ITransactionValidationService $transactionValidationService;
+    private INotificationRepository $notificationRepository;
 
     public function __construct(
         IOutSendMoneyRepository $outSendMoney,
@@ -57,7 +62,8 @@ class SendMoneyService implements ISendMoneyService
         IEmailService $emailService,
         ISmsService $smsService,
         IOtpService $otpService,
-        ITransactionValidationService $transactionValidationService
+        ITransactionValidationService $transactionValidationService,
+        INotificationRepository $notificationRepository
 
     ) {
         $this->outSendMoney = $outSendMoney;
@@ -74,6 +80,7 @@ class SendMoneyService implements ISendMoneyService
         $this->smsService = $smsService;
         $this->otpService = $otpService;
         $this->transactionValidationService = $transactionValidationService;
+        $this->notificationRepository = $notificationRepository;
     }
 
 
@@ -89,6 +96,7 @@ class SendMoneyService implements ISendMoneyService
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
+        $receiverUser = $this->userAccounts->get($receiverID);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest);
@@ -123,6 +131,8 @@ class SendMoneyService implements ISendMoneyService
 
         $this->logHistories($senderID, $receiverID, $fillRequest);
         $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest);
+        $this->senderNotification($user, $username, $fillRequest, $receiverID, $senderID);
+        $this->recipientNotification($receiverUser, $username, $fillRequest, $senderID, $receiverID);
 
         return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username);
     }
@@ -298,22 +308,36 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function senderNotification($username, $fillRequest, $receiverID, $senderID)
+    private function senderNotification(UserAccount $user, $username, $fillRequest, $receiverID, $senderID)
     {
-        if(!$username) return null;
         $userDetail  = $this->userDetailRepository->getByUserId($receiverID);
         $fillRequest['serviceFee'] = SendMoneyConfig::ServiceFee;
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
-        $this->notificationService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
+
+        $usernameField = $this->getUsernameFieldByAvailability($user);
+        $username = $this->getUsernameByField($user, $usernameField);
+        $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
+        $notifService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
+
+        $description = 'Hi Squidee! You have forwarded: ' . $fillRequest['amount'] . ' to ' . $userDetail->first_name . '. This amount has been debited to your account. Your new balance is P ' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
+        $title = 'SquidPay - Send Money Notification';
+        $this->insertNotification($user, $title, $description);
     }
 
 
-    private function recipientNotification($username, $fillRequest, $senderID, $receiverID)
+    private function recipientNotification(UserAccount $user, $username, $fillRequest, $senderID, $receiverID)
     {
-        if (!$username) return null;
+
         $userDetail  = $this->userDetailRepository->getByUserId($senderID);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
-        $this->notificationService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
+         $usernameField = $this->getUsernameFieldByAvailability($user);
+        $username = $this->getUsernameByField($user, $usernameField);
+        $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
+        $notifService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
+
+        $description = 'Hi Squidee! You have received P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' from ' . $userDetail->first_name . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Use now to buy load, send money, pay bills and a lot more!';
+        $title = 'SquidPay - Send Money Notification';
+        $this->insertNotification($user, $title, $description);
     }
 
 
@@ -422,6 +446,17 @@ class SendMoneyService implements ISendMoneyService
             'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
             'user_created' => $receiverID,
             'transaction_date' => $outSendMoney->transaction_date
+        ]);
+    }
+
+    private function insertNotification(UserAccount $user, $title, $description)
+    {
+        $this->notificationRepository->create([
+            'title' => $title,
+            'status' => '1',
+            'description' => $description,
+            'user_account_id' => $user->id,
+            'user_created' => $user->id
         ]);
     }
 }

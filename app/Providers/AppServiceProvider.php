@@ -44,6 +44,8 @@ use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\PayBills\PayBillsService;
+use App\Services\Report\IReportService;
+use App\Services\Report\ReportService;
 use App\Services\Send2Bank\Instapay\ISend2BankSBInstapayService;
 use App\Services\Send2Bank\Instapay\Send2BankInstapayService;
 use App\Services\Send2Bank\Instapay\Send2BankSBInstapayService;
@@ -219,6 +221,8 @@ class AppServiceProvider extends ServiceProvider
 
         // My Task
         $this->app->bind(IMyTaskService::class, MyTaskService::class);
+        // Report
+        $this->app->bind(IReportService::class, ReportService::class);
     }
 
     /**
