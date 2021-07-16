@@ -161,7 +161,7 @@ class UserAccountService implements IUserAccountService
         $this->checkEmail($user, $email);
 
         $identifier = OtpTypes::updateEmail . ':' . $user->id;
-        $this->otpService->ensureValidated($identifier);
+        $this->otpService->ensureValidated($identifier, $user->otp_enabled);
 
         $this->users->update($user, [
             'email' => $email
@@ -187,7 +187,7 @@ class UserAccountService implements IUserAccountService
         $this->checkMobile($user, $mobile);
 
         $identifier = OtpTypes::updateMobile . ':' . $user->id;
-        $this->otpService->ensureValidated($identifier);
+        $this->otpService->ensureValidated($identifier, $user->otp_enabled);
 
         $this->users->update($user, [
             UsernameTypes::MobileNumber => $mobile

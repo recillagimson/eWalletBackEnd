@@ -171,9 +171,9 @@ class OtpService implements IOtpService
         $this->otpInvalid();
     }
 
-    public function ensureValidated(string $identifier)
+    public function ensureValidated(string $identifier, bool $otpEnabled = true)
     {
-        if (App::environment('local')) return;
+        if (App::environment('local') || !$otpEnabled) return;
 
         $otp = $this->otps->getByIdentifier($identifier, true);
         if (!$otp) $this->otpInvalid();

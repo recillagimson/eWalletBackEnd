@@ -182,7 +182,7 @@ class Send2BankService implements ISend2BankService
             $this->transactionValidationService
                 ->validate($user, $this->transactionCategoryId, $totalAmount);
 
-            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
+            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
 
             $userFullName = ucwords($user->profile->full_name);
             $recipientFullName = ucwords($data['account_name'] ?: $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);

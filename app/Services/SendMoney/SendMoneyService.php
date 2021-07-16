@@ -3,30 +3,29 @@
 namespace App\Services\SendMoney;
 
 use App\Enums\ErrorCodes;
-use Carbon\Carbon;
 use App\Enums\OtpTypes;
-use App\Enums\SendMoneyConfig;
 use App\Enums\ReferenceNumberTypes;
-use App\Enums\TransactionCategories;
+use App\Enums\SendMoneyConfig;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\UsernameTypes;
 use App\Models\UserAccount;
 use App\Traits\Errors\WithSendMoneyErrors;
 use App\Services\Utilities\OTP\IOtpService;
+use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
-use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
-use App\Services\Utilities\Notifications\INotificationService;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
+use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use Carbon\Carbon;
 use App\Traits\UserHelpers;
 
 class SendMoneyService implements ISendMoneyService
@@ -105,7 +104,7 @@ class SendMoneyService implements ISendMoneyService
         $senderDetails = $this->userDetails($senderID);
         $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
-        $this->otpService->ensureValidated($identifier);
+        $this->otpService->ensureValidated($identifier, $user->otp_enabled);
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
         if (!$receiverDetails) $this->recipientDetailsNotFound();
@@ -328,14 +327,14 @@ class SendMoneyService implements ISendMoneyService
 
     private function recipientNotification(UserAccount $user, $username, $fillRequest, $senderID, $receiverID)
     {
-    
+
         $userDetail  = $this->userDetailRepository->getByUserId($senderID);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
          $usernameField = $this->getUsernameFieldByAvailability($user);
         $username = $this->getUsernameByField($user, $usernameField);
         $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
         $notifService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
-        
+
         $description = 'Hi Squidee! You have received P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' from ' . $userDetail->first_name . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Use now to buy load, send money, pay bills and a lot more!';
         $title = 'SquidPay - Send Money Notification';
         $this->insertNotification($user, $title, $description);

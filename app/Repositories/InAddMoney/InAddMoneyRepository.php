@@ -3,9 +3,11 @@
 namespace App\Repositories\InAddMoney;
 
 use App\Enums\DragonPayStatusTypes;
+use App\Enums\TransactionStatuses;
 use App\Models\InAddMoneyFromBank;
 use App\Repositories\Repository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
 {
@@ -42,7 +44,17 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
         return $this->model->where('user_account_id', $userAccountID)->orderBy('created_at', 'asc')->get();
     }
 
-    public function getSumOfTransactions($from, $to, $userAccountID) {
+    public function getUserPending(string $userId): Collection
+    {
+        return $this->model->where('user_account_id', $userId)
+            ->where('status', TransactionStatuses::pending)
+            ->where('deleted_at', null)
+            ->orderBy('created_at', 'asc')
+            ->get();
+    }
+
+    public function getSumOfTransactions($from, $to, $userAccountID)
+    {
         return $this->model->where('transaction_date', '>=', $from)
             ->where('transaction_date', '<=', $to)
             ->where('status', '!=', 'FAILED')
@@ -52,6 +64,6 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
 
     public function getTotalAddMoney()
     {
-        return $this->model->where('status','=','SUCCESS')->where('transaction_date','<=',Carbon::now()->subDay())->sum('amount');
+        return $this->model->where('status', '=', 'SUCCESS')->where('transaction_date', '<=', Carbon::now()->subDay())->sum('amount');
     }
 }
