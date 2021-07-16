@@ -70,6 +70,7 @@ class AddMoneyService implements IAddMoneyService
         $serviceFee = $this->serviceFees->getByTierAndTransCategory($user->tier_id,
             TransactionCategoryIds::cashinDragonPay);
         $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
+        $serviceFeeId = $serviceFee ? $serviceFee->id : null;
         $totalAmount = $data['amount'] + $serviceFeeAmount;
 
         $this->transactionValidationService->validate($user,
@@ -90,7 +91,7 @@ class AddMoneyService implements IAddMoneyService
 
             if ($responseData['Status'] === DragonPayStatusTypes::requestSuccessful) {
                 $this->createTransaction($userId, $refNo, $data['amount'], $serviceFeeAmount,
-                    $serviceFee->id, $totalAmount, TransactionCategoryIds::cashinDragonPay, '',
+                    $serviceFeeId, $totalAmount, TransactionCategoryIds::cashinDragonPay, '',
                     $currentDate);
 
                 $this->logHistoryService->logUserHistory($userId,
