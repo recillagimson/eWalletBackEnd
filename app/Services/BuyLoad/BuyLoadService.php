@@ -181,7 +181,7 @@ class BuyLoadService implements IBuyLoadService
     {
         if (!$response->successful()) {
             $errors = $response->json();
-            Log::error('BuyLoad UBP Error', $errors);
+            Log::error('BuyLoad Error', $errors);
             $this->transactionFailed();
         } else {
             $responseData = $response->json();
