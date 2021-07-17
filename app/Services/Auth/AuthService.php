@@ -103,7 +103,7 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
 
-        //ProcessUserPending::dispatch($user);
+        ProcessUserPending::dispatch($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
