@@ -21,6 +21,7 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Traits\Errors\WithAuthErrors;
 use App\Traits\Errors\WithUserErrors;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class TransactionValidationService implements ITransactionValidationService
@@ -130,12 +131,18 @@ class TransactionValidationService implements ITransactionValidationService
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
 
                 $sumUp = $totalTransactionCurrentMonth + $totalAmount;
-                if ((Double) $sumUp <= (Double) $tier->monthly_limit) return;
+                if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
-                if(isset($customMessage) && count($customMessage) > 0) {
+                if (isset($customMessage) && count($customMessage) > 0) {
                     $this->handleCustomErrorMessage($customMessage['key'], $customMessage['value']);
                 }
 
+                Log::error('Account Monthly Limit Exceeded:', [
+                    'totalFrom' => $from,
+                    'totalTo' => $to,
+                    'totalMonthlyAmount' => $sumUp,
+                    'tierMonthlyLimit' => $tier->monthly_limit
+                ]);
                 $this->userMonthlyLimitExceeded();
             }
 
