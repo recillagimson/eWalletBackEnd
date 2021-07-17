@@ -124,8 +124,8 @@ class AddMoneyService implements IAddMoneyService
     public function processPending(string $userId)
     {
         $pendingTransactions = $this->addMoney->getUserPending($userId);
-        if (!$pendingTransactions) return;
-        if ($pendingTransactions->count() <= 0) return;
+        if (!$pendingTransactions) return $this->getDefaultProcessPending();
+        if ($pendingTransactions->count() <= 0) return $this->getDefaultProcessPending();
 
         $pendingCount = $pendingTransactions->count();
         $successCount = 0;
@@ -258,6 +258,15 @@ class AddMoneyService implements IAddMoneyService
         ];
 
         return $this->addMoney->create($row);
+    }
+
+    private function getDefaultProcessPending(): array
+    {
+        return [
+            'total_pending_count' => 0,
+            'success_count' => 0,
+            'failed_count' => 0
+        ];
     }
 
 
