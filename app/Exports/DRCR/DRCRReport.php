@@ -61,7 +61,7 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
     public function view(): View
     {
         return view('reports.log_histories.log_histories', [
-            'records' => $this->processData($this->data)
+            'records' => $this->records
         ]);
     }
 

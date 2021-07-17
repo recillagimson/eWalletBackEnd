@@ -68,6 +68,9 @@ class ReportService implements IReportService
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
+        else if($params['type'] == 'API')  {
+            return $this->responseService->successResponse($records, SuccessMessages::success);
+        }
         else {
             Excel::store(new BillerReport($records, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
             $temp_url = $this->s3TempUrl($fileName);
