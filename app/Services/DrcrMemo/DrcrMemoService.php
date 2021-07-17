@@ -240,15 +240,18 @@ class DrcrMemoService implements IDrcrMemoService
         $data = $this->drcrMemoRepository->reportData($from, $to, $filter_by, $filter_value);
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
         if($params['type'] == 'PDF') {
-            $data = $this->processData($data);
-            $records = [
-                'records' => $data
-            ];
-            ini_set("pcre.backtrack_limit", "5000000");
-            $file = $this->pdfService->generatePDFNoUserPassword($records, 'reports.log_histories.log_histories', true);
-            $url = $this->storeToS3($currentUser, $file['file_name'], $fileName);
-            unlink($file['file_name']);
-            $temp_url = $this->s3TempUrl($url);
+            Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::MPDF);
+            $temp_url = $this->s3TempUrl($fileName);
+            dd($temp_url);
+            // $data = $this->processData($data);
+            // $records = [
+            //     'records' => $data
+            // ];
+            // ini_set("pcre.backtrack_limit", "5000000");
+            // $file = $this->pdfService->generatePDFNoUserPassword($records, 'reports.log_histories.log_histories', true);
+            // $url = $this->storeToS3($currentUser, $file['file_name'], $fileName);
+            // unlink($file['file_name']);
+            // $temp_url = $this->s3TempUrl($url);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
         else if($params['type'] == 'CSV') {
