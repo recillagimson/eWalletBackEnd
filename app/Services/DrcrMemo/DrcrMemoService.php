@@ -242,7 +242,6 @@ class DrcrMemoService implements IDrcrMemoService
         if($params['type'] == 'PDF') {
             Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::MPDF);
             $temp_url = $this->s3TempUrl($fileName);
-            dd($temp_url);
             // $data = $this->processData($data);
             // $records = [
             //     'records' => $data

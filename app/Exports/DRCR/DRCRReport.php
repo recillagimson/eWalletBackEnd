@@ -76,8 +76,9 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
     public function registerEvents(): array
     {
         $count = count($this->records);
+        $type = $this->type;
         return [
-            AfterSheet::class => function (AfterSheet $event) use($count) {
+            AfterSheet::class => function (AfterSheet $event) use($count, $type) {
                 $i = 0;
                 while($i < $count) {
                     $cells = 'A' . ($i + 1) . ":J" . ($i + 1);
@@ -94,7 +95,7 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
                             'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                         ],
                         'font' => [
-                            'size' => 15,
+                            'size' => 12,
                             'color' => ['argb' => '000'],
                         ]
                     ];
@@ -109,21 +110,37 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
                     }
 
                     $event->sheet->getStyle($cells)->applyFromArray($style);
-                    $event->sheet->getDelegate()->getStyle($cells)->getFont()->setSize(60);
+                    if($type == 'PDF') {
+                        $event->sheet->getDelegate()->getStyle($cells)->getFont()->setSize(60);
+                    }
                     // $event->sheet->getDelegate()->getColumnDimension('J')->setWidth(100);
                     $event->sheet->getDelegate()->getRowDimension($i+1)->setRowHeight(20);
                     $i++;
                 }
-                $event->sheet->getDelegate()->getColumnDimension('A')->setWidth(100);
-                $event->sheet->getDelegate()->getColumnDimension('B')->setWidth(100);
-                $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(100);
-                $event->sheet->getDelegate()->getColumnDimension('D')->setWidth(100);
-                $event->sheet->getDelegate()->getColumnDimension('E')->setWidth(100);
-                $event->sheet->getDelegate()->getColumnDimension('F')->setWidth(100);
-                $event->sheet->getDelegate()->getColumnDimension('G')->setWidth(100);
-                $event->sheet->getDelegate()->getColumnDimension('H')->setWidth(100);
-                $event->sheet->getDelegate()->getColumnDimension('I')->setWidth(100);
-                $event->sheet->getDelegate()->getColumnDimension('J')->setWidth(100);
+                if($type == 'PDF') {
+                    $event->sheet->getDelegate()->getColumnDimension('A')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('B')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('D')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('E')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('F')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('G')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('H')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('I')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('J')->setWidth(100);
+                } else {
+                    $event->sheet->getDelegate()->getColumnDimension('A')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('B')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('D')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('E')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('F')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('G')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('H')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('I')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('J')->setWidth(50);
+                }
+                
             },
         ];
     }
