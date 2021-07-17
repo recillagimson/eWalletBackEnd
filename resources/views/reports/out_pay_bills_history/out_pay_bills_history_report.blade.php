@@ -30,25 +30,25 @@
         @foreach($records as $record)
         <tr>
             <td>
-                {{ $record['account_number'] }}
+                {{ $record['0'] }}
             </td>
             <td>
-                {{ $record['first_name'] . " " . $record['middle_name'] . " " . $record['last_name'] }}
+                {{ $record['1'] }}
             </td>
             <td>
-                {{ $record['reference_number'] }}
+                {{ $record['2'] }}
             </td>
             <td>
-                {{ $record['transaction_date'] }}
+                {{ $record['3'] }}
             </td>
             <td>
-                {{ $record['billers_name'] }}
+                {{ $record['4'] }}
             </td>
             <td>
-                {{ $record['total_amount'] }}
+                {{ $record['5'] }}
             </td>
             <td>
-                {{ $record['status'] }}
+                {{ $record['6'] }}
             </td>
         </tr>
         @endforeach
