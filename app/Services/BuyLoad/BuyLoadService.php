@@ -218,7 +218,8 @@ class BuyLoadService implements IBuyLoadService
     private function handleStatusResponse(OutBuyLoad $buyLoad, Response $response)
     {
         if (!$response->successful()) {
-            return;
+            $error = $response->json();
+            Log::error('BuyLoad Error', $error);
         } else {
             $responseData = $response->json();
             $state = $responseData['responseCode'];

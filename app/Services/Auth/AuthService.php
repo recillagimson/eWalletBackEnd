@@ -70,7 +70,6 @@ class AuthService implements IAuthService
         $this->emailService = $emailService;
         $this->smsService = $smsService;
 
-
         $this->transactionService = $transactionService;
     }
 
@@ -85,7 +84,7 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
 
-        $this->transactionService->processUserPending($user);
+        //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userWebToken, $firstLogin);
@@ -102,7 +101,7 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
 
-        $this->transactionService->processUserPending($user);
+        //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
