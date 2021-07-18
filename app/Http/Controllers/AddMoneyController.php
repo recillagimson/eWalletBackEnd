@@ -10,10 +10,11 @@ use App\Http\Requests\DragonPay\DragonPayPostBackRequest;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
+use App\Services\AddMoneyV2\IAddMoneyService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\Utilities\Responses\IResponseService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class AddMoneyController extends Controller
 {
@@ -21,26 +22,30 @@ class AddMoneyController extends Controller
     private IInAddMoneyService $addMoneyService;
     private IResponseService $responseService;
     private IInAddMoneyRepository $addMoneys;
+    private IAddMoneyService $addMoneyServiceV2;
 
     public function __construct(IHandlePostBackService $postBackService,
                                 IEncryptionService $encryptionService,
                                 IInAddMoneyService $addMoneyService,
                                 IResponseService $responseService,
-                                IInAddMoneyRepository $addMoneys) {
+                                IInAddMoneyRepository $addMoneys,
+                                IAddMoneyService $addMoneyServiceV2)
+    {
 
         $this->postBackService = $postBackService;
         $this->encryptionService = $encryptionService;
         $this->addMoneyService = $addMoneyService;
         $this->responseService = $responseService;
         $this->addMoneys = $addMoneys;
+        $this->addMoneyServiceV2 = $addMoneyServiceV2;
     }
 
-    public function addMoney(AddMoneyRequest $request)
+    public function addMoney(AddMoneyRequest $request): JsonResponse
     {
         $requestParams = $request->validated();
         $user = $request->user();
 
-        $addMoney = $this->addMoneyService->addMoney($user, $requestParams);
+        $addMoney = $this->addMoneyServiceV2->generateUrl($user->id, $requestParams);
 
         return $this->responseService->successResponse($addMoney, SuccessMessages::URLGenerated);
     }
@@ -48,24 +53,23 @@ class AddMoneyController extends Controller
     public function postBack(DragonPayPostBackRequest $request)
     {
         $postBackData = $request->validated();
+        $this->addMoneyServiceV2->handlePostBack($postBackData);
 
-        $postBack = $this->postBackService->insertPostBackData($postBackData);
-
-        //return $postBack;
-        // return response() is handled in the service for complication reasons
+        return response('result=OK', 200, [
+            'Content-type' => 'text/plain'
+        ]);
     }
 
-    public function cancel(AddMoneyCancelRequest $request)
+    public function cancel(AddMoneyCancelRequest $request): JsonResponse
     {
         $referenceNumber = $request->validated();
         $user = $request->user();
 
-        $cancel = $this->addMoneyService->cancelAddMoney($user, $referenceNumber);
-
+        $this->addMoneyService->cancelAddMoney($user, $referenceNumber);
         return $this->responseService->successResponse(null, SuccessMessages::addMoneyCancel);
     }
 
-    public function getStatus(AddMoneyStatusRequest $request)
+    public function getStatus(AddMoneyStatusRequest $request): JsonResponse
     {
         $user = $request->user();
         $requestParams = $request->validated();
@@ -75,7 +79,7 @@ class AddMoneyController extends Controller
         return $this->responseService->successResponse($status, SuccessMessages::addMoneyStatusAcquired);
     }
 
-    public function getLatestPendingTrans(Request $request)
+    public function getLatestPendingTrans(Request $request): JsonResponse
     {
         $user = $request->user();
 
@@ -84,12 +88,10 @@ class AddMoneyController extends Controller
         return $this->responseService->successResponse($transaction->toArray(), SuccessMessages::success);
     }
 
-    public function updateUserTrans(Request $request)
+    public function updateUserTrans(Request $request): JsonResponse
     {
         $user = $request->user();
-
-        $updatedTransactions = $this->addMoneyService->updateUserTransactionStatus($user);
-
+        $updatedTransactions = $this->addMoneyServiceV2->processPending($user->id);
         return $this->responseService->successResponse($updatedTransactions, SuccessMessages::success);
     }
 }

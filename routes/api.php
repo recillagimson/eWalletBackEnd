@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\ForgotKeyController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarangayController;
 use App\Http\Controllers\BPIController;
 use App\Http\Controllers\BuyLoad\AtmController;
 use App\Http\Controllers\ClientController;
@@ -19,11 +20,15 @@ use App\Http\Controllers\ImageUploadController;
 use App\Http\Controllers\KYC\KYCController;
 use App\Http\Controllers\Log\LogHistoryController;
 use App\Http\Controllers\Merchant\MerchantController;
+use App\Http\Controllers\MunicipalityController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PayBillsController;
 use App\Http\Controllers\PayloadController;
 use App\Http\Controllers\PrepaidLoadController;
+use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\RegionController;
+use App\Http\Controllers\Report\ReportController;
 use App\Http\Controllers\Send2BankController;
 use App\Http\Controllers\SendMoneyController;
 use App\Http\Controllers\ServiceFeeController;
@@ -44,10 +49,6 @@ use App\Http\Controllers\UserUtilities\SignupHostController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
-use App\Http\Controllers\RegionController;
-use App\Http\Controllers\ProvinceController;
-use App\Http\Controllers\MunicipalityController;
-use App\Http\Controllers\BarangayController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
@@ -62,8 +63,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-if (App::environment(['local', 'staging'])) {
+if (App::environment(['local', 'staging', 'production'])) {
     Route::prefix('/utils')->group(function () {
         Route::post('/encrypt', [PayloadController::class, 'encrypt']);
         Route::post('/decrypt', [PayloadController::class, 'decrypt']);
@@ -366,29 +366,30 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/report', [DrcrMemoController::class, 'report']);
     });
 
+    Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/postback', [AddMoneyController::class, 'postBack']);
+    });
 
+    // ADMIN
+    Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->name('list');
+        Route::post('/', [RoleController::class, 'store'])->name('store');
+        Route::get('/{role}', [RoleController::class, 'show'])->name('show.role');
+        Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show.user.role');
+        Route::put('/{role}', [RoleController::class, 'update'])->name('update');
+        Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
+
+    });
+
+    Route::prefix('/admin/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function () {
+        Route::get('/', [RoleController::class, 'rolePermissions'])->name('list');
+        Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
+    });
+
+    Route::prefix('/report')->middleware(['decrypt.request'])->group(function() {
+        Route::post('/biller', [ReportController::class, 'billerReport']);
+    });
 });
-
-
-// DragonPay PostBack
-
-
-// ADMIN
-Route::prefix('/admin/roles')->middleware(['decrypt.request'])->name('roles.')->group(function () {
-    Route::get('/', [RoleController::class, 'index'])->name('list');
-    Route::post('/', [RoleController::class, 'store'])->name('store');
-    Route::get('/{role}', [RoleController::class, 'show'])->name('show');
-    Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show');
-    Route::put('/{role}', [RoleController::class, 'update'])->name('update');
-    Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
-
-});
-
-Route::prefix('/admin/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function () {
-    Route::get('/', [RoleController::class, 'rolePermissions'])->name('list');
-    Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
-});
-
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
     Route::get('/postback', [AddMoneyController::class, 'postBack']);

@@ -115,12 +115,12 @@ class UBPService implements IUBPService
             "sender" => [
                 "name" => Str::replace("-", " ", $fromFullName),
                 "address" => [
-                    "line1" => " ",
+                    "line1" => "Metro Manila",
                     "line2" => " ",
                     "city" => " ",
                     "province" => " ",
                     "zipCode" => $zipCode,
-                    "country" => " "
+                    "country" => "PH"
                 ]
             ],
             "beneficiary" => [
