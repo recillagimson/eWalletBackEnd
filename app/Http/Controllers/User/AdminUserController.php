@@ -10,6 +10,7 @@ use App\Http\Requests\User\SearchAdminUserByEmailRequest;
 use App\Http\Requests\User\SearchAdminUserByNameRequest;
 use App\Http\Requests\User\UpdateAdminUserRequest;
 use App\Http\Resources\User\AdminUserResource;
+use App\Models\UserAccount;
 use App\Services\UserAccount\IUserAccountService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
@@ -92,5 +93,19 @@ class AdminUserController extends Controller
         $userId = $request->route('id');
         $this->userService->deleteAdminUser($userId);
         return $this->responseService->noContentResponse();
+    }
+
+    public function toggleActivation(UserAccount $user): JsonResponse
+    {
+        $userId = $user->id;
+        $response = $this->userService->toggleActivation($userId);
+        return $this->responseService->successResponse($response);
+    }
+
+    public function toggleLockout(UserAccount $user): JsonResponse
+    {
+        $userId = $user->id;
+        $response = $this->userService->toggleLockout($userId);
+        return $this->responseService->successResponse($response);
     }
 }

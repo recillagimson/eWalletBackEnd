@@ -14,6 +14,7 @@ use App\Services\UserAccount\IUserAccountService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserAccountController extends Controller
 {
@@ -89,8 +90,11 @@ class UserAccountController extends Controller
         return $this->responseService->successResponse($postback, SuccessMessages::updateMobileSuccessful);
     }
 
-    public function setAccountRole(SetUserRoleRequest $request) {
-        $records =  $this->userRoleRepository->setUserRoles($request->all());
+    public function setAccountRole(SetUserRoleRequest $request): JsonResponse
+    {
+        $records = $this->userRoleRepository->setUserRoles($request->all());
         return $this->responseService->successResponse($records, SuccessMessages::success);
     }
+
+
 }
