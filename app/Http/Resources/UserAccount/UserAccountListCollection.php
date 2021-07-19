@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\UserAccount;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class UserAccountListCollection extends ResourceCollection
@@ -9,14 +10,14 @@ class UserAccountListCollection extends ResourceCollection
     /**
      * Transform the resource collection into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         $collection = $this->getCollection();
 
-        $collection = $collection->transform(function($item) {
+        $collection = $collection->transform(function ($item) {
             return [
                 'user_accounts' => [
                     'id' => $item->id,

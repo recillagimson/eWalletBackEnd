@@ -70,6 +70,7 @@ class AddMoneyService implements IAddMoneyService
         $serviceFee = $this->serviceFees->getByTierAndTransCategory($user->tier_id,
             TransactionCategoryIds::cashinDragonPay);
         $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
+        $serviceFeeId = $serviceFee ? $serviceFee->id : '';
         $totalAmount = $data['amount'] + $serviceFeeAmount;
 
         $this->transactionValidationService->validate($user,
@@ -90,7 +91,7 @@ class AddMoneyService implements IAddMoneyService
 
             if ($responseData['Status'] === DragonPayStatusTypes::requestSuccessful) {
                 $this->createTransaction($userId, $refNo, $data['amount'], $serviceFeeAmount,
-                    $serviceFee->id, $totalAmount, TransactionCategoryIds::cashinDragonPay, '',
+                    $serviceFeeId, $totalAmount, TransactionCategoryIds::cashinDragonPay, '',
                     $currentDate);
 
                 $this->logHistoryService->logUserHistory($userId,
@@ -123,8 +124,8 @@ class AddMoneyService implements IAddMoneyService
     public function processPending(string $userId)
     {
         $pendingTransactions = $this->addMoney->getUserPending($userId);
-        if (!$pendingTransactions) return;
-        if ($pendingTransactions->count() <= 0) return;
+        if (!$pendingTransactions) return $this->getDefaultProcessPending();
+        if ($pendingTransactions->count() <= 0) return $this->getDefaultProcessPending();
 
         $pendingCount = $pendingTransactions->count();
         $successCount = 0;
@@ -146,29 +147,26 @@ class AddMoneyService implements IAddMoneyService
 
     private function updateStatus(InAddMoneyFromBank $addMoney): InAddMoneyFromBank
     {
-        try {
-            $response = $this->dragonPayService->checkStatus($addMoney->reference_number);
-            if (!$response->successful()) {
-                $errors = $response->json();
+        $response = $this->dragonPayService->checkStatus($addMoney->reference_number);
+        if (!$response->successful()) {
+            $errors = $response->json();
 
-                if ($response->status() === Response::HTTP_NOT_FOUND)
-                    $errors = ['message' => 'Record not found.'];
+            if ($response->status() === Response::HTTP_NOT_FOUND)
+                $errors = ['message' => 'Record not found.'];
 
-                Log::error('DragonPay Check Status Error: ', $errors);
+            Log::error('DragonPay Check Status Error: ', $errors);
+        } else {
+            $responseData = $response->json();
+            $updatedStatus = $responseData['Status'];
+
+            if ($updatedStatus === DragonPayStatusTypes::Pending) return $addMoney;
+
+            if ($updatedStatus === DragonPayStatusTypes::Success) {
+                $user = $this->userAccounts->getUser($addMoney->user_account_id);
+                return $this->handleSuccessTransaction($user->balanceInfo, $addMoney, $responseData);
             } else {
-                $responseData = $response->json();
-                $updatedStatus = $responseData['Status'];
-
-                if ($updatedStatus === DragonPayStatusTypes::Pending) return $addMoney;
-
-                if ($updatedStatus === DragonPayStatusTypes::Success) {
-                    $user = $this->userAccounts->getUser($addMoney->user_account_id);
-                    return $this->handleSuccessTransaction($user->balanceInfo, $addMoney, $responseData);
-                } else {
-                    return $this->handleFailedTransaction($addMoney);
-                }
+                return $this->handleFailedTransaction($addMoney, $responseData);
             }
-        } catch (Exception $e) {
         }
 
         return $addMoney;
@@ -213,7 +211,7 @@ class AddMoneyService implements IAddMoneyService
         return $addMoney;
     }
 
-    private function handleFailedTransaction(InAddMoneyFromBank $addMoney): InAddMoneyFromBank
+    private function handleFailedTransaction(InAddMoneyFromBank $addMoney, array $responseData): InAddMoneyFromBank
     {
         try {
             DB::beginTransaction();
@@ -221,6 +219,7 @@ class AddMoneyService implements IAddMoneyService
             $addMoney->status = TransactionStatuses::failed;
             $addMoney->dragonpay_reference = $responseData['RefNo'];
             $addMoney->dragonpay_channel_reference_number = $responseData['ProcMsg'];
+            $addMoney->transaction_remarks = $responseData['Description'];
             $addMoney->save();
 
             $this->logHistoryService->logUserHistory($addMoney->user_account_id,
@@ -230,6 +229,7 @@ class AddMoneyService implements IAddMoneyService
                 Carbon::now(),
                 'Failed to add money on the account via DragonPay',
                 TransactionCategories::AddMoneyWebBankDragonPay);
+            DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Add Money Failed Error: ', $e->getTrace());
@@ -258,6 +258,15 @@ class AddMoneyService implements IAddMoneyService
         ];
 
         return $this->addMoney->create($row);
+    }
+
+    private function getDefaultProcessPending(): array
+    {
+        return [
+            'total_pending_count' => 0,
+            'success_count' => 0,
+            'failed_count' => 0
+        ];
     }
 
 
