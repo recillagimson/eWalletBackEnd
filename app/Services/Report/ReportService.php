@@ -41,10 +41,11 @@ class ReportService implements IReportService
             $to = $params['to'];
         }
 
-        if($params && isset($params['filterBy']) && isset($params['filterValue'])) {
-            $filterBy = $params['filterBy'];
-            $filterValue = $params['filterValue'];
+        if($params && isset($params['filter_by']) && isset($params['filter_value'])) {
+            $filterBy = $params['filter_by'];
+            $filterValue = $params['filter_value'];
         }
+
 
         $records = $this->payBills->reportData($from, $to, $filterBy, $filterValue);
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
