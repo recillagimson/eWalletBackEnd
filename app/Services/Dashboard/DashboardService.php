@@ -1,33 +1,38 @@
 <?php
 
 namespace App\Services\Dashboard;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\App;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Services\Transaction\ITransactionService;
 use Illuminate\Validation\ValidationException;
 
 //Repository
-use App\Repositories\UserAccount\IUserAccountRepository;
 
 class DashboardService implements IDashboardService
 {
     public IUserAccountRepository $userDetail;
+    private ITransactionService $transactionService;
+    private IUserAccountRepository $userAccounts;
 
-    public function __construct(IUserAccountRepository $userdetail)
+    public function __construct(IUserAccountRepository $userdetail,
+                                IUserAccountRepository $userAccounts,
+                                ITransactionService $transactionService)
     {
         $this->userDetail = $userdetail;
+        $this->transactionService = $transactionService;
+        $this->userAccounts = $userAccounts;
     }
 
-    public function dashboard(string $UserID)
+    public function dashboard(string $userID)
     {
         //Get user details
-        $UserDetails = $this->userDetail->getUserInfo($UserID);
-        
-        if($UserDetails)
-        {
-            return $UserDetails;    
-        }
-        else
-        {
+        $user = $this->userAccounts->getUser($userID);
+        $UserDetails = $this->userDetail->getUserInfo($userID);
+
+        $this->transactionService->processUserPending($user);
+
+        if ($UserDetails) {
+            return $UserDetails;
+        } else {
             throw ValidationException::withMessages([
                 'user_details' => "Current user's details can't be found."
             ]);

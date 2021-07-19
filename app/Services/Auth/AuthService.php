@@ -5,7 +5,6 @@ namespace App\Services\Auth;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Enums\UsernameTypes;
-use App\Jobs\Transactions\ProcessUserPending;
 use App\Models\UserAccount;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -71,7 +70,6 @@ class AuthService implements IAuthService
         $this->emailService = $emailService;
         $this->smsService = $smsService;
 
-
         $this->transactionService = $transactionService;
     }
 
@@ -86,7 +84,6 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
 
-        //ProcessUserPending::dispatch($user);
         //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
@@ -104,7 +101,7 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
 
-        ProcessUserPending::dispatch($user);
+        //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);

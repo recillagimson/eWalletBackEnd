@@ -181,7 +181,7 @@ class BuyLoadService implements IBuyLoadService
     {
         if (!$response->successful()) {
             $errors = $response->json();
-            Log::error('BuyLoad UBP Error', $errors);
+            Log::error('BuyLoad Error', $errors);
             $this->transactionFailed();
         } else {
             $responseData = $response->json();
@@ -218,7 +218,8 @@ class BuyLoadService implements IBuyLoadService
     private function handleStatusResponse(OutBuyLoad $buyLoad, Response $response)
     {
         if (!$response->successful()) {
-            return;
+            $error = $response->json();
+            Log::error('BuyLoad Error', $error);
         } else {
             $responseData = $response->json();
             $state = $responseData['responseCode'];
