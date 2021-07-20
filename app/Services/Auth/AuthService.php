@@ -311,6 +311,4 @@ class AuthService implements IAuthService
         $user->last_login = Carbon::now();
         $user->save();
     }
-
-
 }

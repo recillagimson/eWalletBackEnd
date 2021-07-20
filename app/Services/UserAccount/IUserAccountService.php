@@ -31,4 +31,8 @@ interface IUserAccountService
 
     public function validateMobile(string $userId, string $mobile);
 
+    public function toggleActivation(string $userId): array;
+
+    public function toggleLockout(string $userId): array;
+
 }

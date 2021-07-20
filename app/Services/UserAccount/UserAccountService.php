@@ -43,7 +43,7 @@ class UserAccountService implements IUserAccountService
     {
         $this->users = $users;
         $this->userAccountNumbers = $userAccountNumbers;
-        $this->otpService = $otpService;;
+        $this->otpService = $otpService;
         $this->emailService = $emailService;
         $this->tempUserDetail = $tempUserDetail;
         $this->authService = $authService;
@@ -196,7 +196,33 @@ class UserAccountService implements IUserAccountService
         return $this->updateMobileResponse(UsernameTypes::MobileNumber, $mobile);
     }
 
+    public function toggleActivation(string $userId): array
+    {
+        $user = $this->users->get($userId);
+        if (!$user) $this->userAccountNotFound();
 
+        $user->toggleActivation();
+
+        return $this->getToggleResponse($userId, 'is_active', $user->is_active);
+    }
+
+    public function toggleLockout(string $userId): array
+    {
+        $user = $this->users->get($userId);
+        if (!$user) $this->userAccountNotFound();
+
+        $user->toggleLockout();
+
+        return $this->getToggleResponse($userId, 'is_lockout', $user->is_lockout);
+    }
+
+    private function getToggleResponse(string $id, string $field, bool $value): array
+    {
+        return [
+            'id' => $id,
+            $field => $value
+        ];
+    }
 
     private function updateEmailResponse($email): array
     {
@@ -227,4 +253,6 @@ class UserAccountService implements IUserAccountService
             if ($existingUser->id !== $user->id) $this->mobileAlreadyTaken();
         }
     }
+
+
 }
