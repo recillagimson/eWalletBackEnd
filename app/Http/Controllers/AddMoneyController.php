@@ -55,7 +55,7 @@ class AddMoneyController extends Controller
         $postBackData = $request->validated();
         $this->addMoneyServiceV2->handlePostBack($postBackData);
 
-        return response('result=OK', 200, [
+        return response('', 200, [
             'Content-type' => 'text/plain'
         ]);
     }
