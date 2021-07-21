@@ -16,18 +16,20 @@ use App\Repositories\Tier\ITierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Traits\Errors\WithUserErrors;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 
 class DragonPayService implements IAddMoneyService
 {
-
+    use WithUserErrors;
     /**
      * DragonPay API base URL V1
      *
@@ -119,9 +121,9 @@ class DragonPayService implements IAddMoneyService
      *
      * @param UserAccount $user
      * @param array $urlParams
-     * @return json $response
+     * @return array|mixed
      */
-    public function addMoney(UserAccount $user, array $urlParams)
+    public function addMoney(UserAccount $user, array $urlParams): array
     {
         $this->setUserAccountID($user->id);
         $this->setReferenceNumber($this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaWebBank));
@@ -131,7 +133,7 @@ class DragonPayService implements IAddMoneyService
         $amount = $urlParams['amount'];
 
         $token = $this->getToken();
-        $txnID =  $this->referenceNumber;
+        $txnID = $this->referenceNumber;
         $url = $this->baseURL . '/' . $txnID . '/post';
         $beneficiaryName = $this->getFullname($userAccountID);
         $addMoneyServiceFee = $this->validateTiersAndLimits($user, $amount);
@@ -153,7 +155,6 @@ class DragonPayService implements IAddMoneyService
         // on DragPay API Error
         $this->handleError($response);
 
-        $currentAddMoneyRecord = null;
         if ($response->status() == 200 || $response->status() == 201) {
 
             $currentAddMoneyRecord = $this->insertAddMoneyRecord(
@@ -166,16 +167,17 @@ class DragonPayService implements IAddMoneyService
                 $transactionCategoryID->id,
                 $body['Description']
             );
+
+            $this->logGenerateURLInLogHistory($currentAddMoneyRecord->reference_number);
         }
 
-        $this->logGenerateURLInLogHistory($currentAddMoneyRecord->reference_number);
         return $response->json();
     }
 
     /**
-     * Set the $userAccountID
+     * Set user account id
      *
-     * @param uuid $userAccountID
+     * @param string $userAccountID
      */
     public function setUserAccountID(string $userAccountID)
     {
@@ -196,22 +198,23 @@ class DragonPayService implements IAddMoneyService
      * Get the email from user_accounts
      *
      * @param UserAccount $user
-     * @return string|exception $email
+     * @return mixed
+     * @throws ValidationException
      */
     public function getEmail(UserAccount $user)
     {
         if ($user->email != null) return $user->email;
 
-        return $this->invalidEmail();
+        $this->invalidEmail();
     }
 
     /**
      * Build the DragonPay token to be
      * used as the Auth token
      *
-     * @return string-base64
+     * @return string
      */
-    protected function getToken()
+    protected function getToken(): string
     {
         return base64_encode($this->merchantID . ':' . $this->key);
     }
@@ -219,10 +222,11 @@ class DragonPayService implements IAddMoneyService
     /**
      * Get the fullname (First name and Last name)
      *
-     * @param uuid $userAccountID
+     * @param string $userAccountID
      * @return string
+     * @throws ValidationException
      */
-    public function getFullname(string $userAccountID)
+    public function getFullname(string $userAccountID): string
     {
         $userDetails = $this->userDetails->getByUserId($userAccountID);
 
@@ -240,7 +244,7 @@ class DragonPayService implements IAddMoneyService
      * @param string $email
      * @return array
      */
-    public function createBody(float $amount, string $beneficiaryName, string $email)
+    public function createBody(float $amount, string $beneficiaryName, string $email): array
     {
         return [
             'Amount' => $this->formatAmount($amount),
@@ -260,31 +264,30 @@ class DragonPayService implements IAddMoneyService
      * @param float $amount
      * @return string
      */
-    public function formatAmount(float $amount)
+    public function formatAmount(float $amount): string
     {
         if (!strpos($amount, '.')) return number_format($amount, 2, '.', '');
-        return (string) $amount;
+        return (string)$amount;
     }
 
     /**
      * Handles the error response from DragonPay API
      *
-     * @param response $response
-     * @return exception
+     * @param Response $response
      */
-    public function handleError($response)
+    public function handleError(Response $response)
     {
         if ($response->status() == 401) {
 
-            return $this->missingAuthToken();
+            $this->missingAuthToken();
 
         } elseif ($response->status() == 500) {
 
-            return $this->invalidToken();
+            $this->invalidToken();
 
         } elseif ($response->status() == 422 && $response->json() == 'Invalid parameter') {
 
-            return $this->invalidParams();
+            $this->invalidParams();
         }
     }
 
@@ -299,9 +302,10 @@ class DragonPayService implements IAddMoneyService
      * @param float $totalAmount
      * @param string $transactionCategoryID
      * @param string $transactionRemarks
-     * @return void
      */
-    public function insertAddMoneyRecord(string $userAccountID, string $refNo, float $amount, float $serviceFee, string $serviceFeeID, float $totalAmount, string $transactionCategoryID, string $transactionRemarks)
+    public function insertAddMoneyRecord(string $userAccountID, string $refNo, float $amount, float $serviceFee,
+                                         string $serviceFeeID, float $totalAmount, string $transactionCategoryID,
+                                         string $transactionRemarks)
     {
         $row = [
             'user_account_id' => $userAccountID,
@@ -318,20 +322,19 @@ class DragonPayService implements IAddMoneyService
             'status' => 'PENDING',
         ];
 
-        return $rowInserted = $this->addMoneys->create($row);
-
-        if (!$rowInserted) return $this->cantWriteToTable();
+        return $this->addMoneys->create($row);
     }
 
     /**
      * Validate the user accoirding to the user's
      * tier and amount in the transaction
-     * 
-     * @param UserAccount $userAccountID
+     *
+     * @param UserAccount $user
      * @param float $amount
-     * @return exception|float $serviceFee
+     * @return object
+     * @throws ValidationException
      */
-    public function validateTiersAndLimits(UserAccount $user, float $amount)
+    public function validateTiersAndLimits(UserAccount $user, float $amount): object
     {
         $tier = $this->tiers->get($user->tier_id);
 
@@ -339,10 +342,10 @@ class DragonPayService implements IAddMoneyService
 
         $serviceFee = $this->serviceFees->getAmountByTransactionAndUserAccountId($addMoneyTransCategory->id, $user->tier_id);
 
-        if (!is_object($serviceFee) && $serviceFee == 0) $serviceFee = (object) ['id' => 'N/A','amount' => 0];
+        if (!is_object($serviceFee) && $serviceFee == 0) $serviceFee = (object)['id' => 'N/A', 'amount' => 0];
 
         // temporary validation; need to consider limits (daily & monthly) and threshold (daily & monthly)
-        if ($amount > $tier->daily_limit) return $this->tierLimitExceeded();
+        if ($amount > $tier->daily_limit) $this->tierLimitExceeded();
 
         // return $addMoneyServiceFee;
         return $serviceFee;
@@ -356,9 +359,9 @@ class DragonPayService implements IAddMoneyService
      * @param UserAccount $user
      * @param array $request
      * @return array
-     * @throws noRecordsFound
-     **/
-    public function getStatus(UserAccount $user, array $request)
+     * @throws ValidationException
+     */
+    public function getStatus(UserAccount $user, array $request): array
     {
         $this->setUserAccountID($user->id);
 
@@ -378,50 +381,25 @@ class DragonPayService implements IAddMoneyService
                 $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe, $squidPayAddMoney->amount);
                 break;
 
+            case 'A':
+            case 'V':
+            case 'K':
+            case 'R':
             case 'F':
                 $statusShouldBe = DragonPayStatusTypes::Failure;
 
                 $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
                 break;
 
+            case 'U':
             case 'P':
                 $statusShouldBe = DragonPayStatusTypes::Pending;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
 
-            case 'U':
-                $statusShouldBe = DragonPayStatusTypes::Pending;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
-
-            case 'R':
-                $statusShouldBe = DragonPayStatusTypes::Failure;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
-
-            case 'K':
-                $statusShouldBe = DragonPayStatusTypes::Failure;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
-
-            case 'V':
-                $statusShouldBe = DragonPayStatusTypes::Failure;
-                
-                $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
-                break;
-
-            case 'A':
-                $statusShouldBe = DragonPayStatusTypes::Failure;
-                
                 $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
                 break;
 
             default:
-                return $this->noStatusReceived();
+                $this->noStatusReceived();
                 break;
         }
 
@@ -439,10 +417,10 @@ class DragonPayService implements IAddMoneyService
      * @param float|null $amount
      * @return string
      **/
-    private function validateStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe, $amount = null)
+    private function validateStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe, $amount = null): string
     {
         if ($squidPayTransaction->status != $statusShouldBe) {
-                    
+
             $this->updateTransStatus($squidPayTransaction, $statusShouldBe);
 
             if ($amount) {
@@ -461,16 +439,15 @@ class DragonPayService implements IAddMoneyService
      *
      * @param InAddMoneyFromBank $squidPayTransaction
      * @param string $statusShouldBe
-     * @return string
+     * @return void
      **/
-    private function updateTransStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe)
+    private function updateTransStatus(InAddMoneyFromBank $squidPayTransaction, string $statusShouldBe): void
     {
         $this->addMoneys->update(
             $squidPayTransaction,
             ['status' => $statusShouldBe]
         );
 
-        return $statusShouldBe;
     }
 
     /**
@@ -479,9 +456,9 @@ class DragonPayService implements IAddMoneyService
      * pending for a period of time (not sure how long)
      *
      * @param array $identifier
-     * @return json $response
+     * @return array|mixed
      */
-    public function getTransStatusFromDragonPay(array $identifier)
+    public function getTransStatusFromDragonPay(array $identifier): array
     {
         if (array_key_exists('reference_number', $identifier)) {
 
@@ -498,9 +475,9 @@ class DragonPayService implements IAddMoneyService
      * A request builder with DragonPay baseURL
      *
      * @param string $endpoint
-     * @return response $response
+     * @return Response
      */
-    public function dragonpayRequest(string $endpoint)
+    public function dragonpayRequest(string $endpoint): Response
     {
         $response = Http::withToken($this->getToken())->get($this->baseURL . $endpoint);
 
@@ -514,14 +491,14 @@ class DragonPayService implements IAddMoneyService
      *
      * @param UserAccount $user
      * @param array $referenceNumber
-     * @return object $responseData
+     * @return object
+     * @throws ValidationException
      */
-    public function cancelAddMoney(UserAccount $user, array $referenceNumber)
+    public function cancelAddMoney(UserAccount $user, array $referenceNumber): object
     {
         $this->setUserAccountID($user->id);
 
         $referenceNumber = $referenceNumber['reference_number'];
-
         $addMoneyRecord = $this->addMoneys->getByReferenceNumber($referenceNumber);
 
         if ($addMoneyRecord == null) {
@@ -530,15 +507,13 @@ class DragonPayService implements IAddMoneyService
             ]);
         }
 
-        if ($addMoneyRecord->user_account_id != $user->id) return $this->unauthorizedForThisRecord();
-
-        if ($addMoneyRecord->status != DragonPayStatusTypes::Pending) return $this->nonPendingTrans();
+        if ($addMoneyRecord->user_account_id != $user->id) $this->unauthorizedForThisRecord();
+        if ($addMoneyRecord->status != DragonPayStatusTypes::Pending) $this->nonPendingTrans();
 
         $response = $this->dragonpayRequest('/void/' . $referenceNumber);
         $response = json_decode($response->body());
 
-        if ($response->Status < 0) return $this->nonPendingTrans();
-
+        if ($response->Status < 0) $this->nonPendingTrans();
         return $this->addMoneys->update($addMoneyRecord, ['status' => DragonPayStatusTypes::Failure]);
     }
 
@@ -568,18 +543,14 @@ class DragonPayService implements IAddMoneyService
      * @param UserAccount $user
      * @return array
      */
-    public function updateUserTransactionStatus(UserAccount $user)
+    public function updateUserTransactionStatus(UserAccount $user): array
     {
         $this->setUserAccountID($user->id);
 
-        $successTransCount = 0;
-        $failedTransCount = 0;
-        $pendingTransCount = 0;
+        $pendingAddMoneys = $this->addMoneys->getUserPending($this->userAccountID);
 
-        $squidPayTrans = $this->addMoneys->getByUserAccountID($this->userAccountID);
-
-        $dateOf1stTrans = $this->dateToYYYYMMDD($squidPayTrans->first()->created_at);
-        $dateTomorrow = $this->dateToYYYYMMDD(Carbon::now()->addDay(1));
+        $dateOf1stTrans = $pendingAddMoneys->count() > 0 ? $this->dateToYYYYMMDD($pendingAddMoneys->first()->created_at) : Carbon::now();
+        $dateTomorrow = $this->dateToYYYYMMDD(Carbon::now()->addDays(1));
 
         $dragPayTrans = $this->dragonpayRequest('/transactions?startdate=' . $dateOf1stTrans . '&enddate=' . $dateTomorrow)->json();
 
@@ -591,37 +562,22 @@ class DragonPayService implements IAddMoneyService
                 case 'S':
                     $statusShouldBe = DragonPayStatusTypes::Success;
                     break;
-    
+
+                case 'A':
+                case 'V':
+                case 'K':
+                case 'R':
                 case 'F':
                     $statusShouldBe = DragonPayStatusTypes::Failure;
                     break;
-    
+
+                case 'U':
                 case 'P':
                     $statusShouldBe = DragonPayStatusTypes::Pending;
                     break;
-    
-                case 'U':
-                    $statusShouldBe = DragonPayStatusTypes::Pending;
-                    break;
-    
-                case 'R':
-                    $statusShouldBe = DragonPayStatusTypes::Failure;
-                    break;
-    
-                case 'K':
-                    $statusShouldBe = DragonPayStatusTypes::Failure;
-                    break;
-    
-                case 'V':
-                    $statusShouldBe = DragonPayStatusTypes::Failure;
-                    break;
-    
-                case 'A':
-                    $statusShouldBe = DragonPayStatusTypes::Failure;
-                    break;
-    
+
                 default:
-                    return $this->noStatusReceived();
+                    $this->noStatusReceived();
                     break;
             }
 
@@ -634,33 +590,35 @@ class DragonPayService implements IAddMoneyService
             ];
         }
 
-        foreach ($squidPayTrans as $squidPayTrans) {
-            
-            if (array_key_exists($squidPayTrans->reference_number, $dragPayDataToInsert)) {
+        $successTransCount = 0;
+        $pendingTransCount = 0;
+        $failedTransCount = 0;
 
-                switch ($dragPayDataToInsert[$squidPayTrans->reference_number]['status']) {
+        foreach ($pendingAddMoneys as $addMoney) {
+            if (array_key_exists($addMoney->reference_number, $dragPayDataToInsert)) {
+
+                switch ($dragPayDataToInsert[$addMoney->reference_number]['status']) {
                     case DragonPayStatusTypes::Success:
-                        $successTransCount = $successTransCount + 1;
+                        $successTransCount += 1;
                         break;
 
                     case DragonPayStatusTypes::Pending:
-                        $pendingTransCount = $pendingTransCount + 1;
+                        $pendingTransCount += 1;
                         break;
 
                     case DragonPayStatusTypes::Failure:
-                        $failedTransCount = $failedTransCount + 1;
+                        $failedTransCount += 1;
                         break;
-                    
+
                     default:
-                        return $this->unrecognizableStatusFound();
+                        $this->unrecognizableStatusFound();
                         break;
                 }
 
-                $this->addMoneys->update($squidPayTrans, $dragPayDataToInsert[$squidPayTrans->reference_number]);
+                $this->addMoneys->update($addMoney, $dragPayDataToInsert[$addMoney->reference_number]);
             } else {
-                
-                $failedTransCount = $failedTransCount + 1;
-                $this->addMoneys->update($squidPayTrans, ['status' => DragonPayStatusTypes::Failure]);
+                $failedTransCount += 1;
+                $this->addMoneys->update($addMoney, ['status' => DragonPayStatusTypes::Failure]);
             }
         }
 
@@ -670,7 +628,7 @@ class DragonPayService implements IAddMoneyService
             SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
             __METHOD__,
             Carbon::now(),
-            'Update user`s add money transaction statuses',
+            'Update user`s pending add money transaction statuses',
             null
         );
 
@@ -687,25 +645,10 @@ class DragonPayService implements IAddMoneyService
      * @param object $dateToFormat
      * @return string
      **/
-    public function dateToYYYYMMDD(object $dateToFormat)
+    public function dateToYYYYMMDD(object $dateToFormat): string
     {
         return $dateToFormat->isoFormat('YYYY-MM-DD');
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Thrown when there is no email in database
@@ -778,31 +721,10 @@ class DragonPayService implements IAddMoneyService
     }
 
     /**
-     * Thrown when the App can't write to
-     * the table for some reason
-     */
-    private function cantWriteToTable()
-    {
-        $this->logHistory->create([
-            'user_account_id' => $this->userAccountID,
-            'reference_number' => 'N/A',
-            'squidpay_module' => SquidPayModuleTypes::AddMoneyViaWebBanksDragonPay,
-            'namespace' => __METHOD__,
-            'transaction_date' => Carbon::now(),
-            'remarks' => 'Can`t write to table.',
-            'user_created' => $this->userAccountID,
-            'user_updated' => $this->userAccountID
-        ]);
-
-        $this->throw500();
-    }
-
-    /**
      * Thrown when there an unrecognizable status found in DragonPays response
      *
-     * @return error500
      */
-    private function unrecognizableStatusFound()
+    private function unrecognizableStatusFound(): void
     {
         $this->logHistory->create([
             'user_account_id' => $this->userAccountID,
@@ -913,4 +835,6 @@ class DragonPayService implements IAddMoneyService
             'reference_number' => 'No record found.'
         ]);
     }
+
+
 }

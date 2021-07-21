@@ -82,6 +82,7 @@ trait Send2BankHelpers
             } elseif ($state === UbpResponseStates::creditedToAccount) {
                 $status = TransactionStatuses::success;
             } else {
+                Log::info('Send2Bank Transaction Failed:', $data);
                 $this->transactionFailed();
             }
 

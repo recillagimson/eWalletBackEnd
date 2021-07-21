@@ -14,6 +14,7 @@ use App\Services\UserAccount\IUserAccountService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserAccountController extends Controller
 {
@@ -30,20 +31,21 @@ class UserAccountController extends Controller
         $this->userRoleRepository = $userRoleRepository;
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $records = $this->userAccountService->getAllPaginated();
         $records = new UserAccountListCollection($records);
 
-        return $this->responseService->successResponse($records->toArray($records), SuccessMessages::success);
+        return $this->responseService->successResponse($records->toArray($request), SuccessMessages::success);
     }
 
-    public function show(string $id): JsonResponse
+    public function show(Request $request): JsonResponse
     {
+        $id = $request->route('id');
         $record = $this->userAccountService->findById($id);
         $record = new UserAccountCollection($record);
 
-        return $this->responseService->successResponse($record->toArray($record), SuccessMessages::success);
+        return $this->responseService->successResponse($record->toArray($request), SuccessMessages::success);
     }
 
     public function validateEmail(UpdateEmailRequest $request): JsonResponse
@@ -51,7 +53,8 @@ class UserAccountController extends Controller
         $fillRequest = $request->validated();
         $userId = $request->user()->id;
         $emailField = $this->getEmailField($request);
-        $review = $this->userAccountService->validateEmail($userId, $fillRequest[$emailField]);
+
+        $this->userAccountService->validateEmail($userId, $fillRequest[$emailField]);
 
         return $this->responseService->successResponse([
             $emailField => $fillRequest[$emailField]
@@ -72,7 +75,8 @@ class UserAccountController extends Controller
         $fillRequest = $request->validated();
         $userId = $request->user()->id;
         $mobileField = $this->getMobileField($request);
-        $review = $this->userAccountService->validateMobile($userId, $fillRequest[$mobileField]);
+
+        $this->userAccountService->validateMobile($userId, $fillRequest[$mobileField]);
 
         return $this->responseService->successResponse([
             $mobileField => $fillRequest[$mobileField]
@@ -89,8 +93,11 @@ class UserAccountController extends Controller
         return $this->responseService->successResponse($postback, SuccessMessages::updateMobileSuccessful);
     }
 
-    public function setAccountRole(SetUserRoleRequest $request) {
-        $records =  $this->userRoleRepository->setUserRoles($request->all());
+    public function setAccountRole(SetUserRoleRequest $request): JsonResponse
+    {
+        $records = $this->userRoleRepository->setUserRoles($request->all());
         return $this->responseService->successResponse($records, SuccessMessages::success);
     }
+
+
 }

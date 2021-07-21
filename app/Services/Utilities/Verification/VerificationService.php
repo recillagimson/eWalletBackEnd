@@ -172,8 +172,8 @@ class VerificationService implements IVerificationService
             $this->userPhotoRepository->update($photo_instance, [
                 'tier_approval_id' => $tierApprovalStatus,
                 'status' => $is_farmer ? 'APPROVED' : "PENDING",
-                'approved_by' => eKYC::eKYC,
-                'remarks' => eKYC::eKYC_remarks
+                'approved_by' => $is_farmer ? eKYC::eKYC : '',
+                'remarks' => $is_farmer ? eKYC::eKYC_remarks : ''
             ]);
         }
         // USER SELFIE PHOTOS
@@ -182,8 +182,8 @@ class VerificationService implements IVerificationService
             $this->userSelfiePhotoRepository->update($photo_instance, [
                 'tier_approval_id' => $tierApprovalStatus,
                 'status' => $is_farmer ? 'APPROVED' : "PENDING",
-                'approved_by' => eKYC::eKYC,
-                'remarks' => eKYC::eKYC_remarks
+                'approved_by' => $is_farmer ? eKYC::eKYC : '',
+                'remarks' => $is_farmer ? eKYC::eKYC_remarks : ''
             ]);
         }
     }

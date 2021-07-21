@@ -41,9 +41,9 @@ trait LogHistory
                 $entry->first_name . " " . $entry->last_name,
                 strval($current_balance),
                 $entry->Type == 'CR' ? 'Credit' : 'Debit',
-                $entry->reference_number,
-                strval($entry->total_amount),
                 $entry->Description,
+                strval($entry->total_amount),
+                $entry->reference_number,
                 strval($available_balance),
                 $entry->Status
             ];

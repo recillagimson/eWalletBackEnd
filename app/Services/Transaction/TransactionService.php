@@ -6,6 +6,7 @@ namespace App\Services\Transaction;
 use App\Models\UserAccount;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\AddMoneyV2\IAddMoneyService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
@@ -22,13 +23,15 @@ class TransactionService implements ITransactionService
     private IPayBillsService $paybillsService;
     private ISend2BankPesonetService $s2bService;
     private IBuyLoadService $buyLoadService;
+    private IAddMoneyService $addMoneyService;
 
     public function __construct(IUserBalanceRepository $userBalanceRepository,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepository,
                                 ICSVService $csvService,
                                 IPayBillsService $paybillsService,
                                 ISend2BankPesonetService $s2bService,
-                                IBuyLoadService $buyLoadService)
+                                IBuyLoadService $buyLoadService,
+                                IAddMoneyService $addMoneyService)
     {
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
@@ -36,21 +39,22 @@ class TransactionService implements ITransactionService
         $this->paybillsService = $paybillsService;
         $this->s2bService = $s2bService;
         $this->buyLoadService = $buyLoadService;
+        $this->addMoneyService = $addMoneyService;
     }
 
     public function processUserPending(UserAccount $user)
     {
         Log::info('Processing Pending Transactions:', $user->toArray());
 
-        //TODO: PAY BILLS
+        $addMoneyResponse = $this->addMoneyService->processPending($user->id);
+        Log::info('Add Money Via DragonPay:', $addMoneyResponse);
+
         $paybillsResponse = $this->paybillsService->processPending($user);
         Log::info('Pay Bills Process Pending Result:', $paybillsResponse);
 
-        //TODO: SEND2BANK PESONET / INSTAPAY
         $s2bResponse = $this->s2bService->processPending($user->id);
         Log::info('Send 2 Bank Process Pending Result:', $s2bResponse);
 
-        //TODO: BUY LOAD
         $buyLoadResponse = $this->buyLoadService->processPending($user->id);
         Log::info('Buy Load Process Pending Result:', $buyLoadResponse);
     }

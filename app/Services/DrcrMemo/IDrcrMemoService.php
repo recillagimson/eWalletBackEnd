@@ -13,5 +13,5 @@ interface IDrcrMemoService
     public function store(UserAccount $user, $data);
     public function updateMemo(UserAccount $user, $data);
     public function approval(UserAccount $user, $data);
-    public function report(array $params);
+    public function report(array $params, string $currentUser = '');
 }
