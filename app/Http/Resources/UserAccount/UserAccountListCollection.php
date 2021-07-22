@@ -18,6 +18,7 @@ class UserAccountListCollection extends ResourceCollection
         $collection = $this->getCollection();
 
         $collection = $collection->transform(function ($item) {
+            $tierApproval = $item->tierApprovals->first();
             return [
                 'user_accounts' => [
                     'id' => $item->id,
@@ -25,6 +26,7 @@ class UserAccountListCollection extends ResourceCollection
                     'email' => $item->email,
                     'mobile_number' => $item->mobile_number,
                     'is_active' => $item->is_active,
+                    'account_number' => $item->account_number,
                     'created_at' => $item->created_at,
                 ],
                 'user_details' => [
@@ -33,7 +35,13 @@ class UserAccountListCollection extends ResourceCollection
                     'middle_name' => optional($item->profile)->middle_name,
                 ],
                 'tier' => [
-                    'name' => $item->tier->name
+                    'name' => $item->tier->name,
+                    'tier_class' => $item->tier->class,
+                    'account_status' => $item->tier->account_status
+                ],
+                'tier_approvals' => [
+                    'verified_date' => $tierApproval ? $tierApproval->approved_date : null,
+                    'verified_by' => $tierApproval ? $tierApproval->approved_by : null
                 ]
             ];
         });
