@@ -65,11 +65,34 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
         $records = BillerReport::where('transaction_date', '>=', $from)
         ->where('transaction_date', '<=', $to);
 
-        // dump($from);
-        // dd($to);
-        // if($filterValue != '' && $filterBy != '') {
-        //     $records = $records->where($filterBy, )
-        // }
+        if($filterValue != '' && $filterBy != '') {
+
+            // IF CUSTOMER_ID
+            if($filterBy == 'CUSTOMER_ID') {
+                $records = $records->where('account_number', $filterValue);
+            } 
+            // IF CUSTOMER_NAME
+            else if ($filterBy == 'CUSTOMER_NAME') {
+                $records = $records->where(function($q) use($filterValue) {
+                    $q->where('first_name', 'LIKE', '%' . $filterValue . '%')
+                      ->orWhere('last_name', 'LIKE', '%' . $filterValue . '%')
+                      ->orWhere('middle_name', 'LIKE', '%' . $filterValue . '%');
+                });
+            }
+            // IF STATUS
+            else if($filterBy == 'STATUS') {
+                $records = $records->where('status', $filterValue);
+            }
+            // IF REFERENCE NUMBER
+            else if($filterBy == 'REFERENCE_NUMBER') {
+                $records = $records->where('reference_number', $filterValue);
+            }
+            // IF BILLERS NAME
+            else if($filterBy == 'BILLER_COMPANY') {
+                $records = $records->where('billers_name', 'LIKE', '%' . $filterValue . '%');
+            }
+
+        }
 
         return $records->get();
     }
