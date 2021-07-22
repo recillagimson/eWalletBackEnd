@@ -27,7 +27,9 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getAllUsersPaginated($perPage)
     {
-        $result = $this->model->with(['profile', 'tier'])->orderBy('created_at', 'DESC')->paginate($perPage);
+        $result = $this->model->with(['profile', 'tier', 'tierApprovals' => function($q) {
+            return $q->where('status', 'APPROVED');
+        }])->orderBy('created_at', 'DESC')->paginate($perPage);
         
         return $result;
     }

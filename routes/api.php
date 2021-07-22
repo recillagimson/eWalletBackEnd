@@ -313,7 +313,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [TierApprovalCommentController::class, 'create']);
     });
 
-    Route::prefix('/tiers/approval')->middleware(['decrypt.request', 'rba'])->group(function () {
+    Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [TierApprovalController::class, 'index']);
         // Route::post('/', [TierApprovalController::class, 'store']);
         Route::get('/{tierApproval}', [TierApprovalController::class, 'show'])->name('show');

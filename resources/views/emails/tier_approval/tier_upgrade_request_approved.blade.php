@@ -8,9 +8,16 @@
 
 <body>
     <h2>Hi {{ $name }},</h2>
-    <p>
-        Your Tier Upgrade request has been approved. Your Tier is now {{ $tier }}
-    </p>
+    <p>Your account is now fully verified.</p>  
+
+<p>You may now enjoy additional features.</p>   
+
+
+Send Money<br>
+RELIABLE and FREE SquidPay-to-SquidPay money transfer.<p>
+
+Send to Bank<br> 
+24/7 online fund transfer -- anytime, anywhere.</p>  
 </body>
 
 </html>
