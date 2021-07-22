@@ -4,7 +4,6 @@
 namespace App\Services\Auth\UserKey;
 
 
-use App\Enums\OtpTypes;
 use App\Enums\UserKeyTypes;
 use App\Enums\UsernameTypes;
 use App\Models\UserAccount;
@@ -90,7 +89,7 @@ class UserKeyService implements IUserKeyService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         $this->validateUser($user);
-        $this->authService->verify($user->id, OtpTypes::passwordRecovery, $otp, $user->otp_enabled);
+        $this->authService->verify($user->id, $otpType, $otp, $user->otp_enabled);
     }
 
     public function resetKey(string $usernameField, string $username, string $key, string $keyType,
