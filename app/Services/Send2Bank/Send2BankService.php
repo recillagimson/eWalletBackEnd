@@ -131,7 +131,9 @@ class Send2BankService implements ISend2BankService
 
         $response = $this->ubpService->getBanks($this->provider);
         if (!$response->successful()) $this->tpaErrorOccured($this->getSend2BankProviderCaption($this->provider));
-        return json_decode($response->body())->records;
+        $banks = collect(json_decode($response->body())->records);
+
+        return $banks->sortBy('bank')->all();
     }
 
     public function getPurposes(): array
