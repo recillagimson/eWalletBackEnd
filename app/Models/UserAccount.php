@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
@@ -82,6 +83,11 @@ class UserAccount extends Authenticatable
     public function verificationToken(): HasOne
     {
         return $this->hasOne(AdminUserVerifyToken::class);
+    }
+
+    public function tierApprovals(): HasMany
+    {
+        return $this->HasMany(TierApproval::class, 'user_account_id', 'id');
     }
 
     public function updateLockout(int $maxLoginAttempts)

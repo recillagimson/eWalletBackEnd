@@ -70,7 +70,9 @@ class TierApprovalController extends Controller
      */
     public function update(TierApprovalRequest $request, TierApproval $tierApproval)
     {
-        $record = $this->iTierApprovalService->updateStatus($request->all(), $tierApproval);
+        $params = $request->all();
+        $params['actioned_by'] = request()->user()->id;
+        $record = $this->iTierApprovalService->updateStatus($params, $tierApproval);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
