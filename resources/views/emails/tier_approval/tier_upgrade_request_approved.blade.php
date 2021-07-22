@@ -10,7 +10,7 @@
     <h2>Hi {{ $name }},</h2>
     <p>Your account is now fully verified.</p>  
 
-<p>You may now enjoy additional features with 100k transaction limit.</p>   
+<p>You may now enjoy additional features.</p>   
 
 
 Send Money<br>
