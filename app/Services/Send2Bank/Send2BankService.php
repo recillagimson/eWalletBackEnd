@@ -126,7 +126,7 @@ class Send2BankService implements ISend2BankService
                 ];
             });
 
-            return $banks->all();
+            return $banks->sortBy('bank')->all();
         }
 
         $response = $this->ubpService->getBanks($this->provider);
