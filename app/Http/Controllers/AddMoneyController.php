@@ -46,7 +46,6 @@ class AddMoneyController extends Controller
         $user = $request->user();
 
         $addMoney = $this->addMoneyServiceV2->generateUrl($user->id, $requestParams);
-
         return $this->responseService->successResponse($addMoney, SuccessMessages::URLGenerated);
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use App\Enums\OtpTypes;
+use App\Enums\UsernameTypes;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,6 +30,10 @@ class GenerateTransOtpRequest extends FormRequest
             'otp_type' => [
                 'required',
                 Rule::in(OtpTypes::transactionOtps)
+            ],
+            'type' => [
+                'nullable',
+                Rule::in(UsernameTypes::usernameTypes)
             ]
         ];
     }
