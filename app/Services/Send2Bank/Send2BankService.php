@@ -113,7 +113,7 @@ class Send2BankService implements ISend2BankService
                 ];
             });
 
-            return $banks->all();
+            return $banks->sortBy('bank')->all();
         }
 
         if ($this->provider === TpaProviders::secBankPesonet) {
