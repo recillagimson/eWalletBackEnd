@@ -19,7 +19,9 @@ class TierApproval extends Model
         "user_created",
         "user_updated",
         "transaction_number",
+        "approved_by",
         "approved_date",
+        "declined_by",
         "declined_date",
     ];
 

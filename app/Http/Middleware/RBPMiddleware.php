@@ -20,7 +20,7 @@ class RBPMiddleware
         $exceptions = [
             
         ];
-
+        
         $current_route = \Route::getCurrentRoute()->getActionName();
         
         if(in_array($current_route, $exceptions)) {
