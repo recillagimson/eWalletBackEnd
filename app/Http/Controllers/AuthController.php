@@ -171,7 +171,7 @@ class AuthController extends Controller
     {
         $user = $request->user();
         $data = $request->validated();
-        $type = isset($data['type']) ? $data['type'] : null;
+        $type = $data['type'] ?? null;
         $this->authService->generateTransactionOTP($user, $data['otp_type'], $type);
 
         return $this->responseService->successResponse([], SuccessMessages::otpSent);

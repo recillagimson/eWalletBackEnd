@@ -193,10 +193,10 @@ class AuthService implements IAuthService
         $this->verify($user->id, OtpTypes::login, $otp, $user->otp_enabled);
     }
 
-    public function generateTransactionOTP(UserAccount $user, string $otpType, string $type)
+    public function generateTransactionOTP(UserAccount $user, string $otpType, ?string $type)
     {
         $usernameField = $this->getUsernameFieldByAvailability($user);
-        
+
         if ($type) {
             $usernameField = $type;
         }
