@@ -46,7 +46,6 @@ class AddMoneyController extends Controller
         $user = $request->user();
 
         $addMoney = $this->addMoneyServiceV2->generateUrl($user->id, $requestParams);
-
         return $this->responseService->successResponse($addMoney, SuccessMessages::URLGenerated);
     }
 
@@ -55,7 +54,7 @@ class AddMoneyController extends Controller
         $postBackData = $request->validated();
         $this->addMoneyServiceV2->handlePostBack($postBackData);
 
-        return response('result=OK', 200, [
+        return response('', 200, [
             'Content-type' => 'text/plain'
         ]);
     }

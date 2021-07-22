@@ -113,7 +113,7 @@ class Send2BankService implements ISend2BankService
                 ];
             });
 
-            return $banks->all();
+            return $banks->sortBy('bank')->all();
         }
 
         if ($this->provider === TpaProviders::secBankPesonet) {
@@ -126,12 +126,14 @@ class Send2BankService implements ISend2BankService
                 ];
             });
 
-            return $banks->all();
+            return $banks->sortBy('bank')->all();
         }
 
         $response = $this->ubpService->getBanks($this->provider);
         if (!$response->successful()) $this->tpaErrorOccured($this->getSend2BankProviderCaption($this->provider));
-        return json_decode($response->body())->records;
+        $banks = collect(json_decode($response->body())->records);
+
+        return $banks->sortBy('bank')->values()->all();
     }
 
     public function getPurposes(): array
