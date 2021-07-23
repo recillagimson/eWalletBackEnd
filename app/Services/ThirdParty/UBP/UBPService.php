@@ -137,7 +137,7 @@ class UBPService implements IUBPService
                 ]
             ],
             "remittance" => [
-                "amount" => number_format($amount, 2),
+                "amount" => number_format($amount, 2, '.', ''),
                 "currency" => "PHP",
                 "receivingBank" => $bankCode,
                 "purpose" => $purpose,
