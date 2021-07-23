@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 use DB;
 use App\Enums\CurrencyRatesConfig;
+use Illuminate\Support\Str;
 
 //Models
 use App\Models\Admin\ForeignExchangeRate;
@@ -26,10 +27,11 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
     ///Update Foreign Currency Rates via Scheduler
     public function updateForeignCurrencyRates()
     {
+        DB::table('foreign_exchange_rates')->truncate();
         DB::transaction(function() {
             $rates = $this->mappedSourceCode()->toArray();
-            DB::table('foreign_exchange_rates')->truncate();
             foreach($rates as $rate) {
+                $rate['id'] = (string)Str::uuid();
                 $this->model->create($rate);
             }
 

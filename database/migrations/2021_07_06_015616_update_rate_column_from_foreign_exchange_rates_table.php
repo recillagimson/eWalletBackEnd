@@ -14,7 +14,12 @@ class UpdateRateColumnFromForeignExchangeRatesTable extends Migration
     public function up()
     {
         Schema::table('foreign_exchange_rates', function (Blueprint $table) {
+            $table->dropColumn('id');
+        });
+
+        Schema::table('foreign_exchange_rates', function (Blueprint $table) {
             //
+            $table->uuid('id')->primary();
             $table->renameColumn('from', 'code');
             $table->float('rate', 15, 10)->change();
         });
@@ -31,6 +36,11 @@ class UpdateRateColumnFromForeignExchangeRatesTable extends Migration
             //
             $table->renameColumn('code', 'from');
             $table->decimal('rate', 8, 2)->change();
+        });
+
+        Schema::table('foreign_exchange_rates', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->primary('id');
         });
     }
 }
