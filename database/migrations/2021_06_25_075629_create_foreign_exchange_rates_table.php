@@ -13,14 +13,7 @@ class CreateForeignExchangeRatesTable extends Migration
      */
     public function up()
     {
-        Schema::create('foreign_exchange_rates', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('from');
-            $table->decimal('rate', 8, 2);
-            $table->timestamps();
-            $table->softDeletes();
-        });
+       
     }
 
     /**
@@ -30,6 +23,6 @@ class CreateForeignExchangeRatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('foreign_exchange_rates');
+       
     }
 }
