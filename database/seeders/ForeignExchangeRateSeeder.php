@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
+use Illuminate\Support\Str;
+
 
 ///Models
 use App\Models\Admin\ForeignExchangeRate;
