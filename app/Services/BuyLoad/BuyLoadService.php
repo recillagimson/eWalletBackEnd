@@ -5,7 +5,6 @@ namespace App\Services\BuyLoad;
 
 
 use App\Enums\AtmPrepaidResponseCodes;
-use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TransactionCategories;
@@ -104,7 +103,8 @@ class BuyLoadService implements IBuyLoadService
             $user = $this->users->getUser($userId);
             $this->transactionValidationService->validateUser($user);
             $this->transactionValidationService->validate($user, $transactionCategoryId, $amount);
-            $this->otpService->ensureValidated(OtpTypes::buyLoad . ':' . $userId);
+
+            //$this->otpService->ensureValidated(OtpTypes::buyLoad . ':' . $userId);
 
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::BuyLoad);
             $currentDate = Carbon::now();
@@ -181,7 +181,7 @@ class BuyLoadService implements IBuyLoadService
     {
         if (!$response->successful()) {
             $errors = $response->json();
-            Log::error('BuyLoad UBP Error', $errors);
+            Log::error('BuyLoad Error', $errors);
             $this->transactionFailed();
         } else {
             $responseData = $response->json();
@@ -218,7 +218,8 @@ class BuyLoadService implements IBuyLoadService
     private function handleStatusResponse(OutBuyLoad $buyLoad, Response $response)
     {
         if (!$response->successful()) {
-            return;
+            $error = $response->json();
+            Log::error('BuyLoad Error', $error);
         } else {
             $responseData = $response->json();
             $state = $responseData['responseCode'];

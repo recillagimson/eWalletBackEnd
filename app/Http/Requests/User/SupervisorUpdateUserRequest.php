@@ -56,7 +56,7 @@ class SupervisorUpdateUserRequest extends FormRequest
                 'date'
             ],
             'house_no_street' => [
-                'max:50'
+                'max:100'
             ],
             'province_state' => [
                 'max:50'

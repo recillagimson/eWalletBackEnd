@@ -82,6 +82,7 @@ trait Send2BankHelpers
             } elseif ($state === UbpResponseStates::creditedToAccount) {
                 $status = TransactionStatuses::success;
             } else {
+                Log::info('Send2Bank Transaction Failed:', $data);
                 $this->transactionFailed();
             }
 
@@ -154,6 +155,8 @@ trait Send2BankHelpers
         if ($send2Bank->provider === TpaProviders::secBankInstapay) {
             return $this->handleInstapayCheckStatusResponse($send2Bank, $response);
         }
+
+        return $send2Bank;
     }
 
     private function handleDirectTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
@@ -270,35 +273,29 @@ trait Send2BankHelpers
 
     private function handlePesonetTransferResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
     {
-        if ($response->successful()) {
-            $error = $response->body();
-            Log::error('Instapay Error response', ['response' => $error]);
-            $this->transactionFailed();
-        } else {
-            $data = $response->json();
-            if (!$data) $this->transactionFailed();
+        $data = $response->json();
+        if (!$data) $this->transactionFailed();
 
-            if ($data['status'] === SecBankPesonetStatus::success) {
-                $send2Bank->status = TransactionStatuses::success;
-                $send2Bank->provider_transaction_id = $data['localRefId'];
-                $send2Bank->provider_remittance_id = $data['localRefId'];
-                $send2Bank->transaction_response = json_encode($data);
-
-                $this->transactionHistories->log($send2Bank->user_account_id,
-                    $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
-                    $send2Bank->total_amount, $send2Bank->transaction_date,
-                    $send2Bank->user_account_id);
-            } else if ($data['status'] === SecBankPesonetStatus::pending) {
-                $send2Bank->status = TransactionStatuses::pending;
-            } else {
-                $this->transactionFailed();
-            }
-
-            $send2Bank->user_updated = $send2Bank->user_account_id;
+        if ($data['status'] === SecBankPesonetStatus::success) {
+            $send2Bank->status = TransactionStatuses::success;
+            $send2Bank->provider_transaction_id = $data['localRefId'];
+            $send2Bank->provider_remittance_id = $data['localRefId'];
             $send2Bank->transaction_response = json_encode($data);
-            $send2Bank->save();
 
-            return $send2Bank;
+            $this->transactionHistories->log($send2Bank->user_account_id,
+                $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
+                $send2Bank->total_amount, $send2Bank->transaction_date,
+                $send2Bank->user_account_id);
+        } else if ($data['status'] === SecBankPesonetStatus::pending) {
+            $send2Bank->status = TransactionStatuses::pending;
+        } else {
+            $this->transactionFailed();
         }
+
+        $send2Bank->user_updated = $send2Bank->user_account_id;
+        $send2Bank->transaction_response = json_encode($data);
+        $send2Bank->save();
+
+        return $send2Bank;
     }
 }

@@ -23,12 +23,16 @@ interface IUserAccountService
 
     public function findById(string $id);
 
-    public function updateEmail(string $emailField, string $email, object $user);
+    public function updateEmail(string $email, object $user): array;
 
-    public function validateEmail(string $emailField, string $email);
+    public function validateEmail(string $userId, string $email);
 
-    public function updateMobile(string $mobileField, string $mobile, UserAccount $user);
+    public function updateMobile(string $userId, string $mobile, UserAccount $user): array;
 
-    public function validateMobile(string $mobileField, string $mobile);
+    public function validateMobile(string $userId, string $mobile);
+
+    public function toggleActivation(string $userId): array;
+
+    public function toggleLockout(string $userId): array;
 
 }

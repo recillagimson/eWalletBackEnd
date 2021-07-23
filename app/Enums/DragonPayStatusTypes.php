@@ -4,14 +4,17 @@ namespace App\Enums;
 
 class DragonPayStatusTypes
 {
-    const Success = 'SUCCESS';
-    const Failure = 'FAILED';
-    const Pending = 'PENDING';
-    const Unknown = 'UNKNOWN';
-    const Refund = 'REFUND';
-    const Chargeback = 'CHARGEBACK';
-    const Void = 'VOID';
-    const Authorized = 'AUTHRORIZED';
+    const Success = 'S';
+    const Failure = 'F';
+    const Pending = 'P';
+    const Unknown = 'U';
+    const Refund = 'R';
+    const Chargeback = 'K';
+    const Void = 'V';
+    const Authorized = 'A';
+
+    const requestSuccessful = 'S';
+    const requestFailed = 'F';
 
     // const Success = ['S', 'SUCCESS'];
     // const Failure = ['F', 'FAILURE'];

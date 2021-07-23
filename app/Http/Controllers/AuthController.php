@@ -171,7 +171,8 @@ class AuthController extends Controller
     {
         $user = $request->user();
         $data = $request->validated();
-        $this->authService->generateTransactionOTP($user, $data['otp_type']);
+        $type = $data['type'] ?? null;
+        $this->authService->generateTransactionOTP($user, $data['otp_type'], $type);
 
         return $this->responseService->successResponse([], SuccessMessages::otpSent);
     }
@@ -186,8 +187,8 @@ class AuthController extends Controller
     {
         $user = $request->user();
         $data = $request->validated();
-        $this->authService->verify($user->id, $data['otp_type'], $data['code']);
 
+        $this->authService->verify($user->id, $data['otp_type'], $data['code'], $user->otp_enabled);
         return $this->responseService->successResponse([], SuccessMessages::otpVerificationSuccessful);
     }
 
@@ -200,6 +201,7 @@ class AuthController extends Controller
     public function resendOTP(ResendOtpRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $user = $request->user();
         $usernameField = $this->getUsernameField($request);
         $this->authService->sendOTP($usernameField, $data[$usernameField], $data['otp_type']);
 

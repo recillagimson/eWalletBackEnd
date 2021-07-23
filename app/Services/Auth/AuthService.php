@@ -5,12 +5,12 @@ namespace App\Services\Auth;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Enums\UsernameTypes;
-use App\Jobs\Transactions\ProcessUserPending;
 use App\Models\UserAccount;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserKeys\PasswordHistory\IPasswordHistoryRepository;
 use App\Repositories\UserKeys\PinCodeHistory\IPinCodeHistoryRepository;
+use App\Services\Transaction\ITransactionService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
@@ -41,6 +41,7 @@ class AuthService implements IAuthService
     private IOtpService $otpService;
     private IEmailService $emailService;
     private ISmsService $smsService;
+    private ITransactionService $transactionService;
 
 
     public function __construct(IUserAccountRepository $userAccts,
@@ -50,7 +51,8 @@ class AuthService implements IAuthService
                                 IEmailService $emailService,
                                 ISmsService $smsService,
                                 INotificationService $notificationService,
-                                IOtpService $otpService)
+                                IOtpService $otpService,
+                                ITransactionService $transactionService)
     {
         $this->maxLoginAttempts = config('auth.account_lockout_attempt');
         $this->daysToResetAttempts = config('auth.account_lockout_attempt_reset');
@@ -67,6 +69,8 @@ class AuthService implements IAuthService
         $this->notificationService = $notificationService;
         $this->emailService = $emailService;
         $this->smsService = $smsService;
+
+        $this->transactionService = $transactionService;
     }
 
     public function login(string $usernameField, array $creds, string $ip): array
@@ -80,7 +84,7 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
 
-        ProcessUserPending::dispatch($user);
+        //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userWebToken, $firstLogin);
@@ -97,7 +101,7 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
 
-        ProcessUserPending::dispatch($user);
+        //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
@@ -169,14 +173,14 @@ class AuthService implements IAuthService
         }
     }
 
-    public function verify(string $userId, string $verificationType, string $otp)
+    public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true)
     {
-        if(App::environment('local')) {
-            if($otp === "1111") return;
+        if (App::environment('local') || !$otpEnabled) {
+            if ($otp === "1111") return;
             else $this->otpInvalid('Invalid OTP.');
         }
 
-        $identifier = $verificationType.':'.$userId;
+        $identifier = $verificationType . ':' . $userId;
         $otpValidity = $this->otpService->validate($identifier, $otp);
         if (!$otpValidity->status) $this->otpInvalid($otpValidity->message);
     }
@@ -186,12 +190,17 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $this->verify($user->id, OtpTypes::login, $otp);
+        $this->verify($user->id, OtpTypes::login, $otp, $user->otp_enabled);
     }
 
-    public function generateTransactionOTP(UserAccount $user, string $otpType)
+    public function generateTransactionOTP(UserAccount $user, string $otpType, ?string $type)
     {
         $usernameField = $this->getUsernameFieldByAvailability($user);
+
+        if ($type) {
+            $usernameField = $type;
+        }
+
         $username = $this->getUsernameByField($user, $usernameField);
         $notifService = $usernameField === UsernameTypes::MobileNumber ? $this->smsService : $this->emailService;
 
@@ -208,8 +217,8 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $otp = $this->generateOTP($otpType, $user->id);
-        if (App::environment('local')) return;
+        $otp = $this->generateOTP($otpType, $user->id, $user->otp_enabled);
+        if (App::environment('local') || !$user->otp_enabled) return;
 
         $notif = $notifService == null ? $this->notificationService : $notifService;
 
@@ -221,8 +230,10 @@ class AuthService implements IAuthService
             $notif->sendPasswordVerification($username, $otp->token, $otpType);
         elseif ($otpType === OtpTypes::sendMoney)
             $notif->sendMoneyVerification($username, $otp->token);
-        elseif ($otpType === OtpTypes::updateEmail)
-            $notif->updateEmailVerification($username, $otp->token);
+        elseif ($otpType === OtpTypes::send2Bank)
+            $notif->sendS2BVerification($username, $otp->token);
+        elseif ($otpType === OtpTypes::updateProfile)
+            $notif->updateProfileVerification($username, $otp->token);
         else
             $this->otpTypeInvalid();
     }
@@ -256,10 +267,10 @@ class AuthService implements IAuthService
         ];
     }
 
-    private function generateOTP(string $otpType, string $userId): object
+    public function generateOTP(string $otpType, string $userId, bool $otpEnabled = true): object
     {
-        if(App::environment('local')) {
-            return (object) [
+        if (App::environment('local') || !$otpEnabled) {
+            return (object)[
                 'status' => true,
                 'token' => "1111",
                 'message' => "OTP generated",
@@ -305,6 +316,4 @@ class AuthService implements IAuthService
         $user->last_login = Carbon::now();
         $user->save();
     }
-
-
 }

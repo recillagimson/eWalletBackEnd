@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Payload;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\App;
 
 class DecryptRequest extends FormRequest
 {
@@ -14,7 +13,7 @@ class DecryptRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return App::environment('local');
+        return true;
     }
 
     /**

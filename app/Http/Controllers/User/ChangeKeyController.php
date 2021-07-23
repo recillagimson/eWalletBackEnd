@@ -63,7 +63,7 @@ class ChangeKeyController extends Controller
         $data = $request->validated();
         $userId = $request->user()->id;
         $otpType = $this->getOtpTypeFromUserKeyType($keyType);
-        $this->authService->verify($userId, $otpType, $data['code']);
+        $this->authService->verify($userId, $otpType, $data['code'], $request->user()->otp_enabled);
 
         return $this->responseService->successResponse([], SuccessMessages::passwordRecoveryVerificationSuccessful);
     }

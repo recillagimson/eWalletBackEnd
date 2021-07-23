@@ -3,9 +3,9 @@
 
 namespace App\Services\Utilities\Notifications;
 
-use Carbon\Carbon;
 use App\Models\Tier;
 use App\Models\UserUtilities\UserDetail;
+use Carbon\Carbon;
 
 class NotificationService implements INotificationService
 {
@@ -15,14 +15,17 @@ class NotificationService implements INotificationService
 
     public function sendLoginVerification(string $to, string $otp)
     {
+        // TODO: Implement sendLoginVerification() method.
     }
 
     public function sendAccountVerification(string $to, string $otp)
     {
+        // TODO: Implement sendAccountVerification() method.
     }
 
     public function sendPasswordVerification(string $to, string $otp, string $otpType)
     {
+        // TODO: Implement sendPasswordVerification() method.
     }
 
     public function sendMoneyVerification(string $to, string $otp)
@@ -30,9 +33,9 @@ class NotificationService implements INotificationService
         // TODO: Implement sendMoneyVerification() method.
     }
 
-    public function updateEmailVerification(string $to, string $otp)
+    public function updateProfileVerification(string $to, string $otp)
     {
-        // TODO: Implement updateEmailVerification() method.
+        // TODO: Implement updateProfileVerification() method.
     }
 
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName)
@@ -44,7 +47,6 @@ class NotificationService implements INotificationService
     {
         // TODO: Implement sendMoneyRecipientNotification() method.
     }
-
 
     public function payBillsNotification(string $to, array $fillRequest, string $biller)
     {
@@ -61,7 +63,13 @@ class NotificationService implements INotificationService
         // TODO: Implement buyLoadNotification() method.
     }
 
-    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier) {
+    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier)
+    {
         // TODO: Implement tierUpgradeNotification() method.
+    }
+
+    public function sendS2BVerification(string $to, string $otp)
+    {
+        // TODO: Implement sendS2BVerification() method.
     }
 }

@@ -54,6 +54,7 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
             'id_photos',
             'selfie_photos',
             'id_photos.id_type',
+            'id_photos.reviewer:user_details.id,first_name,last_name,middle_name',
             'user_account',
             'user_detail'
         ])->find($tierApproval->id);

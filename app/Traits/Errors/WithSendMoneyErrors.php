@@ -5,7 +5,6 @@ namespace App\Traits\Errors;
 
 
 use App\Enums\ErrorCodes;
-use Illuminate\Validation\ValidationException;
 
 trait WithSendMoneyErrors
 {
@@ -20,7 +19,7 @@ trait WithSendMoneyErrors
 
     private function invalidAccount()
     {
-        $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exists.');
+        $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exist.');
     }
 
     private function invalidRecipient()

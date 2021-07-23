@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class RenameUserAccountsTable extends Migration
@@ -13,7 +12,7 @@ class RenameUserAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::rename('useraccounts', 'user_accounts');
+        Schema::rename('userAccounts', 'user_accounts');
     }
 
     /**
@@ -23,6 +22,6 @@ class RenameUserAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::rename('user_accounts', 'useraccounts');
+        Schema::rename('user_accounts', 'userAccounts');
     }
 }

@@ -3,11 +3,14 @@
 namespace App\Services\UserAccount;
 
 use App\Enums\OtpTypes;
+use App\Enums\UsernameTypes;
 use App\Models\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
+use App\Services\Auth\IAuthService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Traits\Errors\WithAuthErrors;
 use App\Traits\Errors\WithUserErrors;
@@ -27,18 +30,24 @@ class UserAccountService implements IUserAccountService
     private IEmailService $emailService;
     private IUserAccountNumberRepository $userAccountNumbers;
     private ITempUserDetailRepository $tempUserDetail;
+    private IAuthService $authService;
+    private ISmsService $smsService;
 
     public function __construct(IUserAccountRepository $users,
                                 IUserAccountNumberRepository $userAccountNumbers,
                                 IOtpService $otpService,
                                 IEmailService $emailService,
+                                ISmsService $smsService,
+                                IAuthService $authService,
                                 ITempUserDetailRepository $tempUserDetail)
     {
         $this->users = $users;
         $this->userAccountNumbers = $userAccountNumbers;
-        $this->otpService = $otpService;;
+        $this->otpService = $otpService;
         $this->emailService = $emailService;
         $this->tempUserDetail = $tempUserDetail;
+        $this->authService = $authService;
+        $this->smsService = $smsService;
     }
 
     public function getAdminUsers(): Collection
@@ -119,16 +128,14 @@ class UserAccountService implements IUserAccountService
 
     public function getAllPaginated($perPage = 10) {
 
-        $result = $this->users->getAllUsersPaginated($perPage);
-
-        return $result;
+        return $this->users->getAllUsersPaginated($perPage);
     }
 
     public function findById(string $id) {
 
         $result = $this->users->findById($id);
 
-        if(!$result) {
+        if (!$result) {
             throw ValidationException::withMessages([
                 'user_not_found' => 'User Account not found'
             ]);
@@ -137,56 +144,90 @@ class UserAccountService implements IUserAccountService
         return $result;
     }
 
-    public function updateEmail(string $emailField, string $email, object $user) {
+    public function validateEmail(string $userId, string $email)
+    {
+        $user = $this->users->get($userId);
+        if (!$user) $this->accountDoesntExist();
+        $this->checkEmail($user, $email);
+
+        $otp = $this->authService->generateOTP(OtpTypes::updateEmail, $user->id, $user->otp_enabled);
+        $this->emailService->updateEmailVerification($email, $otp->token);
+    }
+
+    public function updateEmail(string $email, object $user): array
+    {
+        $user = $this->users->get($user->id);
+        if (!$user) $this->accountDoesntExist();
+        $this->checkEmail($user, $email);
 
         $identifier = OtpTypes::updateEmail . ':' . $user->id;
-        $this->otpService->ensureValidated($identifier);
-
-        $this->validateEmail($emailField, $email);
+        $this->otpService->ensureValidated($identifier, $user->otp_enabled);
 
         $this->users->update($user, [
-            $emailField => $email
+            'email' => $email
         ]);
 
-        return $this->updateEmailResponse($emailField, $email);
+        return $this->updateEmailResponse($email);
     }
 
-    public function validateEmail(string $emailField, string $email)
+    public function validateMobile(string $userId, string $mobile)
     {
-        $user = $this->users->getByEmail($emailField, $email);
-        if (!$user) return;
+        $user = $this->users->get($userId);
+        if (!$user) $this->accountDoesntExist();
+        $this->checkMobile($user, $mobile);
 
-        if ($user->verified) $this->emailAlreadyTaken();
-        $user->forceDelete();
+        $otp = $this->authService->generateOTP(OtpTypes::updateMobile, $user->id, $user->otp_enabled);
+        $this->smsService->updateMobileVerification($mobile, $otp->token);
     }
 
-    public function updateMobile(string $mobileField, string $mobile, UserAccount $user): array
+    public function updateMobile(string $userId, string $mobile, UserAccount $user): array
     {
+        $user = $this->users->get($userId);
+        if (!$user) $this->accountDoesntExist();
+        $this->checkMobile($user, $mobile);
 
         $identifier = OtpTypes::updateMobile . ':' . $user->id;
-        $this->otpService->ensureValidated($identifier);
-
-        $this->validateMobile($mobileField, $mobile);
+        $this->otpService->ensureValidated($identifier, $user->otp_enabled);
 
         $this->users->update($user, [
-            $mobileField => $mobile
+            UsernameTypes::MobileNumber => $mobile
         ]);
 
-        return $this->updateMobileResponse($mobileField, $mobile);
+        return $this->updateMobileResponse(UsernameTypes::MobileNumber, $mobile);
     }
 
-    public function validateMobile(string $mobileField, string $mobile) {
-        $user = $this->users->getByUsername($mobileField, $mobile);
-        if (!$user) return;
+    public function toggleActivation(string $userId): array
+    {
+        $user = $this->users->get($userId);
+        if (!$user) $this->userAccountNotFound();
 
-        if ($user->verified) $this->mobileAlreadyTaken();
-        $user->forceDelete();
+        $user->toggleActivation();
+
+        return $this->getToggleResponse($userId, 'is_active', $user->is_active);
     }
 
-    private function updateEmailResponse($emailField, $email): array
+    public function toggleLockout(string $userId): array
+    {
+        $user = $this->users->get($userId);
+        if (!$user) $this->userAccountNotFound();
+
+        $user->toggleLockout();
+
+        return $this->getToggleResponse($userId, 'is_lockout', $user->is_lockout);
+    }
+
+    private function getToggleResponse(string $id, string $field, bool $value): array
     {
         return [
-            $emailField => $email,
+            'id' => $id,
+            $field => $value
+        ];
+    }
+
+    private function updateEmailResponse($email): array
+    {
+        return [
+            'email' => $email,
         ];
     }
 
@@ -196,4 +237,22 @@ class UserAccountService implements IUserAccountService
             $mobileField => $mobile,
         ];
     }
+
+    private function checkEmail(UserAccount $user, string $email)
+    {
+        $existingUser = $this->users->getByUsername(UsernameTypes::Email, $email);
+        if ($existingUser) {
+            if ($existingUser->id !== $user->id) $this->emailAlreadyTaken();
+        }
+    }
+
+    private function checkMobile(UserAccount $user, string $mobileNumber)
+    {
+        $existingUser = $this->users->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
+        if ($existingUser) {
+            if ($existingUser->id !== $user->id) $this->mobileAlreadyTaken();
+        }
+    }
+
+
 }

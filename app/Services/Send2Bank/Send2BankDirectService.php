@@ -105,7 +105,7 @@ class Send2BankDirectService implements ISend2BankDirectService
                 ->validate($user, $transactionCategoryId, $totalAmount);
 
 
-            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
+            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
 
             $currentDate = Carbon::now();

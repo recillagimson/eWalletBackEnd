@@ -3,9 +3,9 @@
 namespace App\Services\Utilities\Notifications;
 
 
-use Carbon\Carbon;
 use App\Models\Tier;
 use App\Models\UserUtilities\UserDetail;
+use Carbon\Carbon;
 
 interface INotificationService
 {
@@ -17,7 +17,9 @@ interface INotificationService
 
     public function sendMoneyVerification(string $to, string $otp);
 
-    public function updateEmailVerification(string $to, string $otp);
+    public function sendS2BVerification(string $to, string $otp);
+
+    public function updateProfileVerification(string $to, string $otp);
 
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName);
 

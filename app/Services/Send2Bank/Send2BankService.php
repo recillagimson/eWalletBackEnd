@@ -4,11 +4,13 @@
 namespace App\Services\Send2Bank;
 
 
+use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategories;
 use App\Enums\TransactionStatuses;
+use App\Repositories\ProviderBanks\IProviderBanksRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -55,6 +57,7 @@ class Send2BankService implements ISend2BankService
 
     protected string $transactionCategoryId;
     protected string $provider;
+    private IProviderBanksRepository $providerBanks;
 
     public function __construct(IUBPService $ubpService,
                                 ISecurityBankService $secBankService,
@@ -64,12 +67,13 @@ class Send2BankService implements ISend2BankService
                                 ISmsService $smsService,
                                 IEmailService $emailService,
                                 IOtpService $otpService,
+                                ILogHistoryService $logHistories,
                                 IUserAccountRepository $users,
                                 IUserBalanceInfoRepository $userBalances,
                                 IOutSend2BankRepository $send2banks,
                                 IServiceFeeRepository $serviceFees,
                                 IUserTransactionHistoryRepository $transactionHistories,
-                                ILogHistoryService $logHistories)
+                                IProviderBanksRepository $providerBanks)
     {
         $this->ubpService = $ubpService;
         $this->referenceNumberService = $referenceNumberService;
@@ -78,6 +82,7 @@ class Send2BankService implements ISend2BankService
         $this->smsService = $smsService;
         $this->emailService = $emailService;
         $this->otpService = $otpService;
+        $this->providerBanks = $providerBanks;
 
         $this->users = $users;
         $this->userBalances = $userBalances;
@@ -108,12 +113,27 @@ class Send2BankService implements ISend2BankService
                 ];
             });
 
-            return $banks->all();
+            return $banks->sortBy('bank')->all();
+        }
+
+        if ($this->provider === TpaProviders::secBankPesonet) {
+            $bankCollection = $this->providerBanks->getPesonetBanks();
+
+            $banks = $bankCollection->map(function ($item) {
+                return [
+                    'code' => $item->code,
+                    'bank' => $item->name,
+                ];
+            });
+
+            return $banks->sortBy('bank')->all();
         }
 
         $response = $this->ubpService->getBanks($this->provider);
         if (!$response->successful()) $this->tpaErrorOccured($this->getSend2BankProviderCaption($this->provider));
-        return json_decode($response->body())->records;
+        $banks = collect(json_decode($response->body())->records);
+
+        return $banks->sortBy('bank')->values()->all();
     }
 
     public function getPurposes(): array
@@ -164,10 +184,10 @@ class Send2BankService implements ISend2BankService
             $this->transactionValidationService
                 ->validate($user, $this->transactionCategoryId, $totalAmount);
 
-            //$this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId);
+            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
 
             $userFullName = ucwords($user->profile->full_name);
-            $recipientFullName = ucwords($data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
+            $recipientFullName = ucwords($data['account_name'] ?: $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');

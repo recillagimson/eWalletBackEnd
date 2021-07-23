@@ -115,12 +115,12 @@ class UBPService implements IUBPService
             "sender" => [
                 "name" => Str::replace("-", " ", $fromFullName),
                 "address" => [
-                    "line1" => " ",
+                    "line1" => "Metro Manila",
                     "line2" => " ",
                     "city" => " ",
                     "province" => " ",
                     "zipCode" => $zipCode,
-                    "country" => " "
+                    "country" => "PH"
                 ]
             ],
             "beneficiary" => [
@@ -143,6 +143,8 @@ class UBPService implements IUBPService
                 "instructions" => $instructions
             ]
         ];
+
+        $json = json_encode($data);
 
         $transferUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetTransferUrl : $this->instaPayTransferUrl;
         $url = $this->baseUrl . $transferUrl;

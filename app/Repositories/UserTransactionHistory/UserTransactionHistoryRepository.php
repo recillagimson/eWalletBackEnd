@@ -40,7 +40,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     public function getByAuthUser() {
         return $this->model->with(['transaction_category'])
             ->where('user_account_id', request()->user()->id)
-            ->orderBy('created_at', 'DESC')
+            ->orderBy('transaction_date', 'DESC')
             ->paginate();
     }
 
@@ -83,11 +83,17 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             // })      
 
         $records = $this->model
-        ->with(['user_account'])
+        ->with(['user_account', 'user_details'])
         ->whereBetween('created_at', [$from, $to])
         ->where('total_amount', '>=', $amount_limit);
 
         return $records;
+    }
+
+    public function isExisting(string $id)
+    {
+        if ($this->model->where('transaction_id', $id)->first()) return true;
+        return false;
     }
 
 }

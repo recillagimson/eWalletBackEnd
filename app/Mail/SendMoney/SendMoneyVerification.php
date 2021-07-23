@@ -3,7 +3,6 @@
 namespace App\Mail\SendMoney;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -28,12 +27,12 @@ class SendMoneyVerification extends Mailable
      *
      * @return $this
      */
-    public function build()
+    public function build(): SendMoneyVerification
     {
         return $this->view('emails.sendmoney.send_money_verification')
-        ->subject('SquidPay - Send Money Verification')
-        ->with([
-            'code' => $this->otp
-        ]);
+            ->subject('SquidPay - Send Money Verification')
+            ->with([
+                'code' => $this->otp
+            ]);
     }
 }

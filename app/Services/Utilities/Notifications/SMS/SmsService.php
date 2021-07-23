@@ -42,49 +42,62 @@ class SmsService implements ISmsService
     public function sendPasswordVerification(string $to, string $otp, string $otpType)
     {
         $pinOrPassword = $otpType === OtpTypes::passwordRecovery ? 'password' : 'pin code';
-        $content = 'Your ' . $pinOrPassword . ' recovery code is: ' . $otp;
+        $content = 'Hi Squidee! Your ' . $pinOrPassword . ' recovery code is: ' . $otp . '. DO NOT SHARE this OTP';
         $this->sendMessages($to, $content);
     }
 
     public function sendAccountVerification(string $to, string $otp)
     {
-        $content = 'Your account verification code is: '.$otp;
+        $content = 'Hi Squidee! Your account verification code is: '.$otp .'. DO NOT SHARE this OTP';
         $this->sendMessages($to, $content);
     }
 
     public function sendLoginVerification(string $to, string $otp)
     {
-        $content = 'Your login verification code is: '.$otp;
+        $content = 'Hi Squidee! Your login verification code is: ' . $otp . '. DO NOT SHARE this OTP';
         $this->sendMessages($to, $content);
     }
 
     public function sendMoneyVerification(string $to, string $otp)
     {
-        $content = 'Your send money verification code is: ' . $otp;
+        $content = 'Hi Squidee! Your send money verification code is: ' . $otp . '. DO NOT SHARE this OTP';
         $this->sendMessages($to, $content);
     }
 
-    public function updateEmailVerification(string $to, string $otp)
+    public function sendS2BVerification(string $to, string $otp)
     {
-        $content = 'Your update email verification code is: ' . $otp;
+        $content = 'Hi Squidee! Your send to bank verification code is: ' . $otp . '. DO NOT SHARE this OTP';
+        $this->sendMessages($to, $content);
+    }
+
+    public function updateProfileVerification(string $to, string $otp)
+    {
+        $content = 'Hi Squidee! Your update profile verification code is: ' . $otp . '. DO NOT SHARE this OTP';
+        $this->sendMessages($to, $content);
+    }
+
+    public function updateMobileVerification(string $to, string $otp)
+    {
+        $content = 'Hi Squidee! Your update mobile verification code is: ' . $otp . '. DO NOT SHARE this OTP';
         $this->sendMessages($to, $content);
     }
 
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName)
     {
-        $content = 'You have sent P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' to ' . $receiverName . '. Convenience fee for this transaction is P' . $fillRequest['serviceFee'] . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
+        $content = 'Hi Squidee! You have forwarded: ' . $fillRequest['amount'] . ' to ' . $receiverName . '. This amount has been debited to your account. Your new balance is P ' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
         $this->sendMessages($to, $content);
     }
 
+
     public function sendMoneyRecipientNotification(string $to, array $fillRequest, string $senderName)
     {
-        $content = 'You have received P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' from ' . $senderName . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Use now to buy load, send money, pay bills and a lot more!';
+        $content = 'Hi Squidee! You have received P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' from ' . $senderName . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Use now to buy load, send money, pay bills and a lot more!';
         $this->sendMessages($to, $content);
     }
 
     public function payBillsNotification(string $to, array $fillRequest, string $biller)
     {
-        $content = 'You have paid P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' to ' . $biller . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using our Pay Bills service.';
+        $content = 'Hi Squidee! You have paid P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' to ' . $biller . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using our Pay Bills service.';
         $this->sendMessages($to, $content);
     }
 
@@ -98,7 +111,7 @@ class SmsService implements ISmsService
         $strDate = $transactionDate->toDayDateTimeString();
         $strProvider = $this->getSend2BankProviderCaption($provider);
 
-        $content = 'You have sent P' . $strAmount . ' of SquidPay on ' . $strDate . ' to the account ending in '
+        $content = 'Hi Squidee! You have sent P' . $strAmount . ' of SquidPay on ' . $strDate . ' to the account ending in '
             . $hideAccountNo . '. Service Fee for this transaction is P' . $strServiceFee . '. Your new balance is P'
             . $strNewBalance . ' with SquidPay Ref. No. ' . $refNo . ' & ' . $strProvider . ' Remittance No. ' . $remittanceId
             . '. Thank you for using SquidPay!';
@@ -112,7 +125,7 @@ class SmsService implements ISmsService
         $strAmount = number_format($amount, 2);
         $strNewBalance = number_format($newBalance, 2);
 
-        $content = 'You have paid P' . $strAmount . ' of SquidPay to purchase ' . $productName . ' for ' .
+        $content = 'Hi Squidee! You have paid P' . $strAmount . ' of SquidPay to purchase ' . $productName . ' for ' .
             $recipientMobileNumber . ' on ' . $strDate . '. Your SquidPay balance is P' . $strNewBalance .
             '. Ref. No. ' . $refNo . '.';
         $this->sendMessages($to, $content);
@@ -144,8 +157,9 @@ class SmsService implements ISmsService
     }
 
     public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier) {
-        $content = "Your tier upgrade has been approved. Your tier is now " . $tier->tier_name;
+       $content = "Hi Squidee! Your account is now fully verified. Login to your account and enjoy additional features.";
         $this->sendMessages($to, $content);
     }
+
 
 }

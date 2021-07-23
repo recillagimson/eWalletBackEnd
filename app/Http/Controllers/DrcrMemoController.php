@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\DrcrMemo\ShowRequest;
+use App\Services\DrcrMemo\IDrcrMemoService;
+use App\Http\Requests\DRCR\DRCRReportRequest;
+use App\Http\Requests\DrcrMemo\GetUserRequest;
 use App\Http\Requests\DrcrMemo\ApprovalRequest;
 use App\Http\Requests\DrcrMemo\DrcrMemoRequest;
-use App\Http\Requests\DrcrMemo\GetUserRequest;
-use App\Http\Requests\DrcrMemo\ShowRequest;
 use App\Http\Requests\DrcrMemo\UpdateMemoRequest;
-use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Utilities\Responses\IResponseService;
-use Illuminate\Http\JsonResponse;
 
 class DrcrMemoController extends Controller
 {
@@ -35,7 +36,16 @@ class DrcrMemoController extends Controller
         if($request->has('per_page')) {
             $per_page = $request->per_page;
         }
-        $list = $this->drcrMemoService->getList(request()->user(), $data, $per_page);
+
+        $from = '';
+        $to = '';
+
+        if($request->has('from') && $request->has('to')) {
+            $from = $request->from;
+            $to = $request->to;
+        }
+
+        $list = $this->drcrMemoService->getList(request()->user(), $data, $per_page, $from, $to);
         return $this->responseService->successResponse($list->toArray(), SuccessMessages::success);
     }
 
@@ -50,8 +60,17 @@ class DrcrMemoController extends Controller
         if($request->has('per_page')) {
             $per_page = $request->per_page;
         }
+
+        $from = '';
+        $to = '';
+
+        if($request->has('from') && $request->has('to')) {
+            $from = $request->from;
+            $to = $request->to;
+        }
+
         $data = $request->route('status');
-        $list = $this->drcrMemoService->getAllList(request()->user(), $data, $per_page);
+        $list = $this->drcrMemoService->getAllList(request()->user(), $data, $per_page, $from, $to);
         return $this->responseService->successResponse($list->toArray(), SuccessMessages::success);
     }
 
@@ -126,6 +145,8 @@ class DrcrMemoController extends Controller
         return $this->responseService->successResponse($approval, SuccessMessages::success);
     }
 
-
+    public function report(DRCRReportRequest $request) {
+        return $this->drcrMemoService->report($request->all(), request()->user()->id);
+    }
 
 }

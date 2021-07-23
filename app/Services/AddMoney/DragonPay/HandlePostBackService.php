@@ -8,14 +8,13 @@ use App\Enums\SuccessMessages;
 use App\Enums\TransactionCategories;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Transaction\ITransactionService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
+use Log;
 
 class HandlePostBackService implements IHandlePostBackService
 {
@@ -24,7 +23,7 @@ class HandlePostBackService implements IHandlePostBackService
      *
      * @var string
      */
-    protected $moduleTransCategory;
+    protected string $moduleTransCategory;
 
     /**
      * Current transaction's reference number, the one that
@@ -32,22 +31,22 @@ class HandlePostBackService implements IHandlePostBackService
      *
      * @var string
      */
-    protected $referenceNumber;
+    protected string $referenceNumber;
 
     /**
      * Authenticated user's user account ID
      *
-     * @var uuid
+     * @var string
      */
-    protected $userAccountID;
+    protected string $userAccountID;
+
+    private string $secretKey;
 
     private IInAddMoneyRepository $addMoneys;
     private IUserBalanceInfoRepository $balanceInfos;
     private IUserTransactionHistoryRepository $userTransactions;
     private ILogHistoryRepository $logHistories;
-    private ITransactionCategoryRepository $transactionCategories;
     private IResponseService $responseService;
-    private ITransactionService $transactionService;
     private ILogHistoryService $logHistoryService;
     private IUserTransactionHistoryRepository $transactionHistories;
 
@@ -56,9 +55,7 @@ class HandlePostBackService implements IHandlePostBackService
                                 IUserTransactionHistoryRepository $transactionHistories,
                                 IUserTransactionHistoryRepository $userTransactions,
                                 ILogHistoryRepository $logHistories,
-                                ITransactionCategoryRepository $transactionCategories,
                                 IResponseService $responseService,
-                                ITransactionService $transactionService,
                                 ILogHistoryService $logHistoryService) {
 
         $this->moduleTransCategory = TransactionCategories::AddMoneyWebBankDragonPay;
@@ -67,11 +64,11 @@ class HandlePostBackService implements IHandlePostBackService
         $this->balanceInfos = $balanceInfos;
         $this->userTransactions = $userTransactions;
         $this->logHistories = $logHistories;
-        $this->transactionCategories = $transactionCategories;
         $this->responseService = $responseService;
-        $this->transactionService = $transactionService;
         $this->logHistoryService = $logHistoryService;
         $this->transactionHistories = $transactionHistories;
+
+        $this->secretKey = config('dragonpay.dp_key');
     }
 
     /**
@@ -81,18 +78,16 @@ class HandlePostBackService implements IHandlePostBackService
      *
      * @param array $postBackData
      * @return object $responseData
+     * @throws ValidationException
      */
-    public function insertPostBackData(array $postBackData)
+    public function insertPostBackData(array $postBackData): object
     {
         $referenceNumber = $postBackData['txnid'];
         $dragonpayReference = $postBackData['refno'];
         $status = $postBackData['status'];
         $message = $postBackData['message'];
-        $digest = $postBackData['digest'];
 
-        $transactionCategory = $this->transactionCategories->getByName($this->moduleTransCategory);
-
-        // if Add Money row is missing or the record does not have a 'PENDING' status
+        //$this->validatePayLoad($postBackData);
         $this->validate($referenceNumber);
 
         $addMoneyRow = $this->addMoneys->getByReferenceNumber($referenceNumber);
@@ -103,8 +98,6 @@ class HandlePostBackService implements IHandlePostBackService
 
         if ($status == 'S') {
             $message = explode(' ', $message);
-            $channelNum = $message[0];
-            $channelCode = $message[1];
             $channelRefNo = $message[4];
 
             $this->addMoneys->update($addMoneyRow, [
@@ -188,7 +181,7 @@ class HandlePostBackService implements IHandlePostBackService
      * Validates the transaction's status
      *
      * @param string $referenceNumber
-     * @return exception
+     * @throws ValidationException
      */
     public function validate(string $referenceNumber)
     {
@@ -196,12 +189,11 @@ class HandlePostBackService implements IHandlePostBackService
 
         if (!isset($addMoneyRow->status)) {
 
-            return $this->transactionNotFound();
+            $this->transactionNotFound();
         }
 
         if (isset($addMoneyRow->status) && $addMoneyRow->status != 'PENDING') {
-
-            return $this->transactionIsUpToDate();
+            $this->transactionIsUpToDate();
         }
     }
 
@@ -211,12 +203,13 @@ class HandlePostBackService implements IHandlePostBackService
      * @param string $userAccountID
      * @param float $amount
      * @return bool
+     * @throws ValidationException
      */
-    public function addAmountToUserBalance(string $userAccountID, float $amount)
+    public function addAmountToUserBalance(string $userAccountID, float $amount): bool
     {
         $userBalanceInfo = $this->balanceInfos->getByUserAccountID($userAccountID);
 
-        if ($userBalanceInfo == null) return $this->userBalanceInfoNotFound();
+        if ($userBalanceInfo == null) $this->userBalanceInfoNotFound();
 
         $balance = $userBalanceInfo->available_balance + $amount;
 
@@ -246,8 +239,8 @@ class HandlePostBackService implements IHandlePostBackService
      * Logs the user's transaction (generate URL) in
      * user transaction history
      *
-     * @param uuid $transactionID
-     * @param uuid $transCategoryID
+     * @param string $transactionID
+     * @param string $transCategoryID
      * @return void
      */
     public function logSuccessInUserTransHistory(string $transactionID, string $transCategoryID)
@@ -261,17 +254,6 @@ class HandlePostBackService implements IHandlePostBackService
             'user_updated' => $this->userAccountID
         ]);
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -303,5 +285,28 @@ class HandlePostBackService implements IHandlePostBackService
         throw ValidationException::withMessages([
             'amount' => 'User balance info not found.'
         ]);
+    }
+
+    private function invalidPayload()
+    {
+        throw ValidationException::withMessages([
+            'payload' => 'Payload is invalid.'
+        ]);
+    }
+
+    private function validatePayLoad(array $data)
+    {
+        $strDigest = "{$data['txnid']}:{$data['refno']}:{$data['status']}:{$data['message']}:{$this->secretKey}}";
+        $digest = sha1($strDigest);
+
+        Log::debug('Digest Info:', [
+            'plainText' => $strDigest,
+            'digestFromPayload' => $digest,
+            'originalDigest' => $data['digest']
+        ]);
+
+        if ($data['digest'] !== $digest) {
+            $this->invalidPayload();
+        }
     }
 }

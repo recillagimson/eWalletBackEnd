@@ -4,27 +4,25 @@
 namespace App\Services\Transaction;
 
 
-use App\Enums\AccountTiers;
-use App\Models\UserAccount;
-use Illuminate\Support\Carbon;
-use App\Models\TransactionCategory;
 use App\Enums\TransactionCategoryIds;
+use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
-use App\Traits\Errors\WithAuthErrors;
-use App\Traits\Errors\WithUserErrors;
-use App\Repositories\Tier\ITierRepository;
-use Illuminate\Validation\ValidationException;
-use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
-use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
+use App\Repositories\Send2Bank\IOutSend2BankRepository;
+use App\Repositories\Tier\ITierRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
-use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Traits\Errors\WithAuthErrors;
+use App\Traits\Errors\WithUserErrors;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class TransactionValidationService implements ITransactionValidationService
 {
@@ -57,7 +55,7 @@ class TransactionValidationService implements ITransactionValidationService
         $this->transactionCategoryRepository = $transactionCategoryRepository;
         $this->tierRepository = $tierRepository;
 
-        
+
         $this->outBuyLoadRepository = $outBuyLoadRepository;
         $this->outsend2BankRepository = $outsend2BankRepository;
         $this->outSendMoneyRepository = $outSendMoneyRepository;
@@ -81,10 +79,8 @@ class TransactionValidationService implements ITransactionValidationService
         // DRAGONPAY CASHINDRAGONPAY
         if ($cashin) {
             // FOR CASH IN TRANSACTIONS
-            // MUST BE TIER 2 AND ABOVE
             // Stage 5 Checking if total transaction is maxed out
-            if ($user->tier_id !== AccountTiers::tier1) $this->checkUserMonthlyTransactionLimit($user, $totalAmount, $transactionCategoryId);
-            $this->userTierInvalid();
+            $this->checkUserMonthlyTransactionLimit($user, $totalAmount, $transactionCategoryId);
         } else {
             // FOR NON-CASHIN TRANSACTIONS
             // Stage 4 Check if balance is sufficient
@@ -123,11 +119,11 @@ class TransactionValidationService implements ITransactionValidationService
                     $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
                     $totalTransactionCurrentMonth = $buyLoad + $payBills + $send2Banks + $sendMoney;
-                    
+
                 } else {
                     $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
                     $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                    
+
                     $totalTransactionCurrentMonth = $addMoneyFromBank + $receiveMoney;
                 }
 
@@ -135,12 +131,18 @@ class TransactionValidationService implements ITransactionValidationService
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
 
                 $sumUp = $totalTransactionCurrentMonth + $totalAmount;
-                if ((Double) $sumUp <= (Double) $tier->monthly_limit) return;
+                if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
-                if(isset($customMessage) && count($customMessage) > 0) {
+                if (isset($customMessage) && count($customMessage) > 0) {
                     $this->handleCustomErrorMessage($customMessage['key'], $customMessage['value']);
                 }
 
+                Log::error('Account Monthly Limit Exceeded:', [
+                    'totalFrom' => $from,
+                    'totalTo' => $to,
+                    'totalMonthlyAmount' => $sumUp,
+                    'tierMonthlyLimit' => $tier->monthly_limit
+                ]);
                 $this->userMonthlyLimitExceeded();
             }
 

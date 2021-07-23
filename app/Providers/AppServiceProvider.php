@@ -14,6 +14,10 @@ use App\Services\AddMoney\IInAddMoneyService;
 use App\Services\AddMoney\InAddMoneyService;
 use App\Services\AddMoney\Providers\DragonPayService;
 use App\Services\AddMoney\Providers\IAddMoneyService;
+use App\Services\AddMoneyV2\AddMoneyService;
+use App\Services\AddMoneyV2\IAddMoneyService as IAddMoneyServiceV2;
+use App\Services\Admin\Dashboard\AdminDashboardService;
+use App\Services\Admin\Dashboard\IAdminDashboardService;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\IAuthService;
 use App\Services\Auth\Registration\IRegistrationService;
@@ -26,8 +30,6 @@ use App\Services\BuyLoad\BuyLoadService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\IDashboardService;
-use App\Services\Admin\Dashboard\AdminDashboardService;
-use App\Services\Admin\Dashboard\IAdminDashboardService;
 use App\Services\DrcrMemo\DrcrMemoService;
 use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Encryption\EncryptionService;
@@ -42,6 +44,8 @@ use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\PayBills\PayBillsService;
+use App\Services\Report\IReportService;
+use App\Services\Report\ReportService;
 use App\Services\Send2Bank\Instapay\ISend2BankSBInstapayService;
 use App\Services\Send2Bank\Instapay\Send2BankInstapayService;
 use App\Services\Send2Bank\Instapay\Send2BankSBInstapayService;
@@ -58,6 +62,8 @@ use App\Services\TempUserDetail\ITempUserDetailService;
 use App\Services\TempUserDetail\TempUserDetailService;
 use App\Services\ThirdParty\BayadCenter\BayadCenterService;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
+use App\Services\ThirdParty\DragonPay\DragonPayService as DragonPayServiceV2;
+use App\Services\ThirdParty\DragonPay\IDragonPayService;
 use App\Services\ThirdParty\SecurityBank\ISecurityBankService;
 use App\Services\ThirdParty\SecurityBank\SecurityBankService;
 use App\Services\ThirdParty\UBP\IUBPService;
@@ -137,6 +143,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ISecurityBankService::class, SecurityBankService::class);
         $this->app->singleton(IBayadCenterService::class, BayadCenterService::class);
         $this->app->singleton(IAtmService::class, AtmService::class);
+        $this->app->singleton(IDragonPayService::class, DragonPayServiceV2::class);
 
         //APP SERVICES
         $this->app->singleton(IAuthService::class, AuthService::class);
@@ -144,6 +151,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(IRegistrationService::class, RegistrationService::class);
 
         $this->app->bind(IInAddMoneyService::class, InAddMoneyService::class);
+        $this->app->bind(IAddMoneyServiceV2::class, AddMoneyService::class);
         $this->app->bind(IHandlePostBackService::class, HandlePostBackService::class);
         $this->app->bind(IUserProfileService::class, UserProfileService::class);
         $this->app->bind(IOutBuyLoadService::class, OutBuyLoadService::class);
@@ -213,6 +221,8 @@ class AppServiceProvider extends ServiceProvider
 
         // My Task
         $this->app->bind(IMyTaskService::class, MyTaskService::class);
+        // Report
+        $this->app->bind(IReportService::class, ReportService::class);
     }
 
     /**

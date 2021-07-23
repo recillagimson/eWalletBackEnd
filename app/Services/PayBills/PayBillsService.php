@@ -83,8 +83,8 @@ class PayBillsService implements IPayBillsService
                 $arrayResponse['data'][$x]['code'] == 'RFID1' || 
                 $arrayResponse['data'][$x]['code'] == 'ETRIP' ||
                 $arrayResponse['data'][$x]['code'] == 'SPLAN' || 
-                //$arrayResponse['data'][$x]['code'] == 'CNVRG' || 
-                //$arrayResponse['data'][$x]['code'] == 'PLDT6' || 
+                $arrayResponse['data'][$x]['code'] == 'SKY01' || 
+                $arrayResponse['data'][$x]['code'] == 'MCARE ' || 
                // $arrayResponse['data'][$x]['code'] == 'AEON1' || 
                 //$arrayResponse['data'][$x]['code'] == 'BNECO' || 
                 $arrayResponse['data'][$x]['code'] == 'PRULI' || 
@@ -139,7 +139,7 @@ class PayBillsService implements IPayBillsService
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
-        if($arrayResponse['data']['code'] === 1) return $this->tpaErrorCatchMeralco($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return $this->tpaErrorCatchMeralco($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
         $this->validateTransaction($billerCode, $data, $user);
         return $this->validationResponse($user, $response, $billerCode, $data);
     }
