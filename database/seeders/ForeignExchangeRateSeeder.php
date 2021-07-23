@@ -28,6 +28,7 @@ class ForeignExchangeRateSeeder extends Seeder
         $data = $this->foreignExchangeRateService->mappedSourceCode();
         DB::table('foreign_exchange_rates')->truncate();
         foreach($data as $rate) {
+            $rate['id'] = (string)Str::uuid();
             ForeignExchangeRate::create($rate);
         }
     }
