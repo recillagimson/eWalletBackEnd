@@ -40,6 +40,7 @@ class UserAccountListCollection extends ResourceCollection
                     'account_status' => $item->tier->account_status
                 ],
                 'tier_approvals' => [
+                    'id' => $tierApproval ? $tierApproval->id : null,
                     'verified_date' => $tierApproval ? $tierApproval->approved_date : null,
                     'verified_by' => $tierApproval ? $tierApproval->approved_by : null
                 ]
@@ -58,6 +59,7 @@ class UserAccountListCollection extends ResourceCollection
             'current_page' => $this->currentPage(),
             'data' => $collection,
             "first_page_url" => $this->url(1),
+            "from" => (($this->currentPage() * $this->perPage()) - $this->perPage()) + 1,
             "last_page" => $this->lastPage(),
             "last_page_url" => $this->url($this->lastPage()),
             "links" => $pages,
@@ -65,6 +67,7 @@ class UserAccountListCollection extends ResourceCollection
             "path" => $this->getOptions()['path'],
             "per_page" => $this->perPage(),
             "prev_page_url" => $this->previousPageUrl(),
+            "to" => $this->currentPage() * $this->perPage(),
             "total" => $this->total()
         ];
     }
