@@ -34,7 +34,7 @@ trait WithAuthErrors
 
     public function accountDoesntExist()
     {
-        $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exists.');
+        $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exist.');
     }
 
     public function invalidCredentials()

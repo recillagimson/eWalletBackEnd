@@ -41,10 +41,11 @@ class ReportService implements IReportService
             $to = $params['to'];
         }
 
-        if($params && isset($params['filterBy']) && isset($params['filterValue'])) {
-            $filterBy = $params['filterBy'];
-            $filterValue = $params['filterValue'];
+        if($params && isset($params['filter_by']) && isset($params['filter_value'])) {
+            $filterBy = $params['filter_by'];
+            $filterValue = $params['filter_value'];
         }
+
 
         $records = $this->payBills->reportData($from, $to, $filterBy, $filterValue);
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
@@ -69,7 +70,7 @@ class ReportService implements IReportService
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
         else if($params['type'] == 'API')  {
-            return $this->responseService->successResponse($records, SuccessMessages::success);
+            return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
         }
         else {
             Excel::store(new BillerReport($records, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);

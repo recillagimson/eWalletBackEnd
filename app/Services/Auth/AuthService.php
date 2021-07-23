@@ -5,7 +5,6 @@ namespace App\Services\Auth;
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
 use App\Enums\UsernameTypes;
-use App\Jobs\Transactions\ProcessUserPending;
 use App\Models\UserAccount;
 use App\Repositories\Client\IClientRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -71,7 +70,6 @@ class AuthService implements IAuthService
         $this->emailService = $emailService;
         $this->smsService = $smsService;
 
-
         $this->transactionService = $transactionService;
     }
 
@@ -86,7 +84,6 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
 
-        //ProcessUserPending::dispatch($user);
         //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
@@ -104,7 +101,7 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user);
 
-        ProcessUserPending::dispatch($user);
+        //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
@@ -196,9 +193,14 @@ class AuthService implements IAuthService
         $this->verify($user->id, OtpTypes::login, $otp, $user->otp_enabled);
     }
 
-    public function generateTransactionOTP(UserAccount $user, string $otpType)
+    public function generateTransactionOTP(UserAccount $user, string $otpType, ?string $type)
     {
         $usernameField = $this->getUsernameFieldByAvailability($user);
+
+        if ($type) {
+            $usernameField = $type;
+        }
+
         $username = $this->getUsernameByField($user, $usernameField);
         $notifService = $usernameField === UsernameTypes::MobileNumber ? $this->smsService : $this->emailService;
 
@@ -314,6 +316,4 @@ class AuthService implements IAuthService
         $user->last_login = Carbon::now();
         $user->save();
     }
-
-
 }

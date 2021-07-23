@@ -42,7 +42,7 @@ class UpdateProfileBronzeRequest  extends FormRequest
             // 'emergency_lock_status'=>['required', 'max:10'],
             // 'report_exception_status'=>['required', 'max:10'],
             'postal_code'=>['required', 'max:5'],
-            'house_no_street'=>['required', 'max:50'],
+            'house_no_street'=>['required', 'max:100'],
             'city'=>['required', 'max:50'],
             'province_state'=>['required', 'max:50'],
         ];

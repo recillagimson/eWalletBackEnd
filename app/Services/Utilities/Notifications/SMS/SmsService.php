@@ -157,7 +157,7 @@ class SmsService implements ISmsService
     }
 
     public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier) {
-        $content = "Your tier upgrade has been approved. Your tier is now " . $tier->tier_name;
+       $content = "Hi Squidee! Your account is now fully verified. Login to your account and enjoy additional features.";
         $this->sendMessages($to, $content);
     }
 

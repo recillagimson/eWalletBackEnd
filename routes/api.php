@@ -235,6 +235,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
             Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
+
             // FARMER
             Route::middleware(['require.user.token'])->post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
             Route::middleware(['require.user.token'])->post('/farmer/verification', [FarmerController::class, 'farmerVerification']);
@@ -248,6 +249,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/transaction/histories/count/pdf', [UserTransactionHistoryController::class, 'downloadCountTotalAmountEachUserPDF']);
             Route::post('/transaction/histories/count/csv', [UserTransactionHistoryController::class, 'downloadCountTotalAmountEachUserCSV']);
             Route::get('/log/history', [LogHistoryController::class, 'index']);
+
+            Route::middleware(['require.user.token'])->get('/{user}/toggle/activation', [AdminUserController::class, 'toggleActivation']);
+            Route::middleware(['require.user.token'])->get('/{user}/toggle/lockout', [AdminUserController::class, 'toggleLockout']);
         });
 
 
@@ -309,7 +313,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [TierApprovalCommentController::class, 'create']);
     });
 
-    Route::prefix('/tiers/approval')->middleware(['decrypt.request', 'rba'])->group(function () {
+    Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [TierApprovalController::class, 'index']);
         // Route::post('/', [TierApprovalController::class, 'store']);
         Route::get('/{tierApproval}', [TierApprovalController::class, 'show'])->name('show');

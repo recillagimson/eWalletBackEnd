@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
 use App\Http\Requests\PayBills\PayBillsRequest;
+use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Services\PayBills\IPayBillsService;
+use App\Services\Utilities\PDF\IPDFService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
-use Request;
-use Illuminate\Http\Response;
-use App\Repositories\OutPayBills\IOutPayBillsRepository;
-use App\Services\Utilities\PDF\IPDFService;
 
 class PayBillsController extends Controller
 {
@@ -32,7 +30,6 @@ class PayBillsController extends Controller
     /**
      * Gets biller request
      *
-     * @param array $billers
      * @return JsonResponse
      */
     public function getBillers(): JsonResponse
@@ -43,11 +40,9 @@ class PayBillsController extends Controller
     }
 
     /**
-     * Gets biller's information 
+     * Gets biller's information
      *
      * @param PayBillsRequest $request
-     * @param string $billerCode
-     * @param array $billerInformation
      * @return JsonResponse
      */
     public function getBillerInformation(PayBillsRequest $request): JsonResponse
@@ -62,8 +57,6 @@ class PayBillsController extends Controller
     /**
      * Gets the Wallet Balance of SquidPay
      *
-     * @param PayBillsRequest $request
-     * @param array $getWalletBalance
      * @return JsonResponse
      */
     public function getWalletBalance(): JsonResponse
@@ -78,10 +71,6 @@ class PayBillsController extends Controller
      * Verify's the account reference number
      *
      * @param PayBillsRequest $request
-     * @param string $billerCode
-     * @param string $accountNumber
-     * @param array $data
-     * @param array $verifyAccount
      * @return JsonResponse
      */
     public function validateAccount(PayBillsRequest $request): JsonResponse
@@ -96,12 +85,9 @@ class PayBillsController extends Controller
 
 
     /**
-     * Creates Payment  
+     * Creates Payment
      *
      * @param PayBillsRequest $request
-     * @param string $billerCode
-     * @param array $data
-     * @param array $createPayment
      * @return JsonResponse
      */
     public function createPayment(PayBillsRequest $request): JsonResponse
@@ -118,9 +104,6 @@ class PayBillsController extends Controller
      * Check the status of payment creation
      *
      * @param PayBillsRequest $request
-     * @param string $billerCode
-     * @param string $clientReference
-     * @param array $inquirePayment
      * @return JsonResponse
      */
     public function inquirePayment(PayBillsRequest $request): JsonResponse
@@ -155,7 +138,7 @@ class PayBillsController extends Controller
         $getAllBillers = $this->outPayBillsRepository->getAllBillers();
         $data = [
             'datas' => $getAllBillers,
-        ]; 
+        ];
 
         return $this->pdfService->generatePDFNoUserPassword($data, 'reports.out_pay_bills_history.out_pay_bills_history');
     }

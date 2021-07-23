@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-
 use App\Enums\SuccessMessages;
 use App\Services\Dashboard\IDashboardService;
 use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
 use App\Services\Utilities\Responses\IResponseService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+//use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
 
 class DashboardController extends Controller
 {
@@ -27,10 +27,12 @@ class DashboardController extends Controller
         $this->responseService = $responseService;
         $this->foreignExchangeRateService = $foreignExchangeRateService;
     }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
     public function index(Request $request) : JsonResponse
     {
@@ -46,4 +48,5 @@ class DashboardController extends Controller
         $data = $this->foreignExchangeRateService->getForeignCurrencyRates();
         return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
     }
+
 }

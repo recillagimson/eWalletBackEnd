@@ -8,7 +8,9 @@ use App\Traits\HasS3Links;
 use App\Traits\UsesUuid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
@@ -83,6 +85,11 @@ class UserAccount extends Authenticatable
         return $this->hasOne(AdminUserVerifyToken::class);
     }
 
+    public function tierApprovals(): HasMany
+    {
+        return $this->HasMany(TierApproval::class, 'user_account_id', 'id');
+    }
+
     public function updateLockout(int $maxLoginAttempts)
     {
         $this->login_failed_attempts += 1;
@@ -119,11 +126,27 @@ class UserAccount extends Authenticatable
         $this->tokens()->where('name', $tokenName)->delete();
     }
 
-    public function roles() {
+    public function roles(): HasManyThrough
+    {
         return $this->hasManyThrough(Role::class, UserRole::class, 'user_account_id', 'id', 'id', 'role_id');
     }
 
-    public function user_balance_info() {
+    public function user_balance_info(): HasOne
+    {
         return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
+    }
+
+    public function toggleActivation()
+    {
+        $this->is_active = !$this->is_active;
+        $this->save();
+    }
+
+    public function toggleLockout()
+    {
+        $this->is_lockout = !$this->is_lockout;
+        $this->login_failed_attempts = 0;
+        $this->last_failed_attempt = null;
+        $this->save();
     }
 }

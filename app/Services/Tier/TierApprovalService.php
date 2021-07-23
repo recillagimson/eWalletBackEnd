@@ -68,16 +68,30 @@ class TierApprovalService implements ITierApprovalService
             $tier = $this->tierRepository->get(AccountTiers::tier2);
             $details = $this->userDetailRepository->getByUserId($tierApproval->user_account_id);
             if($attr['status'] === 'APPROVED') {
-                $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
-                if($user_account->mobile_number) {
-                    // SMS USER FOR NOTIFICATION
-                    $this->smsService->tierUpgradeNotification($user_account->mobile_number, $details, $tier);
-                }
+                $this->userAccountRepository->update($user_account, [
+                    'tier_id' => AccountTiers::tier2,
+                ]);
 
-                if($user_account->email) {
-                    // EMAIL USER FOR NOTIFICATION
-                    $this->emailService->tierUpgradeNotification($user_account->email, $details, $tier);
-                }                
+                $this->tierApprovalRepository->update($tierApproval, [
+                    'approved_by' => $attr['actioned_by'],
+                    'approved_date' => Carbon::now()->format('Y-m-d H:i:s')
+                ]);
+
+                // if($user_account->mobile_number) {
+                //     // SMS USER FOR NOTIFICATION
+                //     $this->smsService->tierUpgradeNotification($user_account->mobile_number, $details, $tier);
+                // }
+
+                // if($user_account->email) {
+                //     // EMAIL USER FOR NOTIFICATION
+                //     $this->emailService->tierUpgradeNotification($user_account->email, $details, $tier);
+                // }                
+            } else if($attr['status'] === 'DECLINED') {
+
+                $this->tierApprovalRepository->update($tierApproval, [
+                    'declined_by' => $attr['actioned_by'],
+                    'declined_date' => Carbon::now()->format('Y-m-d H:i:s')
+                ]);
             }
 
             \DB::commit();
