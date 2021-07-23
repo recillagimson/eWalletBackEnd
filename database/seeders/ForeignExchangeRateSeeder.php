@@ -4,11 +4,19 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
-use App\Enums\CurrencyRatesConfig;
+use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
+
+///Models
+use App\Models\Admin\ForeignExchangeRate;
 
 class ForeignExchangeRateSeeder extends Seeder
 {
+    private IForeignExchangeRateService $foreignExchangeRateService;
+
+    public function __construct(IForeignExchangeRateService $foreignExchangeRateService)
+    {
+        $this->foreignExchangeRateService = $foreignExchangeRateService;
+    }
     /**
      * Run the database seeds.
      *
@@ -17,16 +25,10 @@ class ForeignExchangeRateSeeder extends Seeder
     public function run()
     {
         //
-        $api = CurrencyRatesConfig::api . CurrencyRatesConfig::currencies . '&access_key=' . CurrencyRatesConfig::accessKey;
-        $result = Http::get($api)['response'];
-        $data = collect($result)->map(function($value) {
-            return [
-                'name' => $value['s'],
-                'from' => explode("/",$value['s'])[0],
-                'rate' => $value['o']
-            ];
-        });
+        $data = $this->foreignExchangeRateService->mappedSourceCode();
         DB::table('foreign_exchange_rates')->truncate();
-        DB::table('foreign_exchange_rates')->insert($data->toArray());
+        foreach($data as $rate) {
+            ForeignExchangeRate::create($rate);
+        }
     }
 }
