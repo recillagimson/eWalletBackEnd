@@ -12,7 +12,7 @@ class ForeignExchangeRate extends Model
 
     protected $fillable = [
         'name',
-        'from',
+        'code',
         'rate'
     ];
 
