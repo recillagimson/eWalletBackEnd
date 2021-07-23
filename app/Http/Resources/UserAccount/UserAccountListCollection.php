@@ -41,6 +41,7 @@ class UserAccountListCollection extends ResourceCollection
                 ],
                 'tier_approvals' => [
                     'id' => $tierApproval ? $tierApproval->id : null,
+                    'status' => $tierApproval ? $tierApproval->status : null,
                     'verified_date' => $tierApproval ? $tierApproval->approved_date : null,
                     'verified_by' => $tierApproval ? $tierApproval->approved_by : null
                 ]
