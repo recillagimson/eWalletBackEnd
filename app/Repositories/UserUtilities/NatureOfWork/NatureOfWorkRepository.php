@@ -12,4 +12,9 @@ class NatureOfWorkRepository extends Repository implements INatureOfWorkReposito
         parent::__construct($model);
     }
 
+    public function getAllNaturesofWork()
+    {
+        return $this->model->orderBy('description')->get();
+    }
+
 }
