@@ -14,7 +14,7 @@ class NationalityRepository extends Repository implements INationalityRepository
 
     public function getAllNationalities()
     {
-        return $this->model->orderBy('description')->all();
+        return $this->model->orderBy('description')->get();
     }
 
 }
