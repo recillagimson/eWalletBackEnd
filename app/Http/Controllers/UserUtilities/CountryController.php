@@ -40,7 +40,7 @@ class CountryController extends Controller
      */
     public function index(): JsonResponse
     {
-        $records = $this->countryRepository->getAll()->sortBy('description');
+        $records = $this->countryRepository->getAllNaturesofWork();
 
         // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);

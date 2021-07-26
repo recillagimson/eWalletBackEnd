@@ -40,7 +40,7 @@ class SourceOfFundController extends Controller
      */
     public function index(): JsonResponse
     {
-        $records = $this->sourceOfFundRepository->getAll()->sortBy('description');
+        $records = $this->sourceOfFundRepository->getAllSourceOfFunds();
 
         // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
