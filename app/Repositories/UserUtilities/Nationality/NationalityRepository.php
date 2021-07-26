@@ -12,4 +12,9 @@ class NationalityRepository extends Repository implements INationalityRepository
         parent::__construct($model);
     }
 
+    public function getAllNationalities()
+    {
+        return $this->model->orderBy('description')->all();
+    }
+
 }
