@@ -54,6 +54,9 @@ class KYCService implements IKYCService
 
     public function initOCR(array $attr, $idType = '') {
         $url = env('KYC_APP_OCR_URL');
+        if($idType == 'passport') {
+            $url = env('KYC_APP_OCR_URL_PASSPORT');
+        }
         $headers = $this->getAuthorizationHeaders();
         $headers[4] = "transactionId: " . (string)Str::uuid();
         $id = new \CURLFILE($attr['id_photo']->getPathname());
