@@ -10,7 +10,7 @@ class eKYC
     const eKYC_remarks = "eKYC Approval";
 
     const returnableFields = [
-        'surname', 'name', 'middlename', 'id', 'doe', 'valid_date'
+        'surname', 'name', 'middlename', 'id', 'doe', 'valid_date', 'lic_no'
     ];
     const Passport = '0edb764a-9131-11eb-b44f-1c1b0d14e211';
     const PRC = '0edb7c7e-9131-11eb-b44f-1c1b0d14e211';
