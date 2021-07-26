@@ -110,6 +110,8 @@ use App\Services\Utilities\ServiceFee\IServiceFeeService;
 use App\Services\Utilities\ServiceFee\ServiceFeeService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Services\Utilities\Verification\VerificationService;
+use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
+use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
