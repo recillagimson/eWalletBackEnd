@@ -31,6 +31,11 @@ class DatabaseSeeder extends Seeder
 
             ClientSeeder::class,
             SecPesonetBanks::class,
+            ForeignExchangeRateSeeder::class,
+            BarangaysSeeder::class,
+            MunicipalitiesSeeder::class,
+            ProvincesSeeder::class,
+            RegionsSeeder::class,
 
         ]);
 

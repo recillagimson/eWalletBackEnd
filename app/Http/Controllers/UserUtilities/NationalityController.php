@@ -40,7 +40,7 @@ class NationalityController extends Controller
      */
     public function index(): JsonResponse
     {
-        $records = $this->nationalityRepository->getAll();
+       $records = $this->nationalityRepository->getAll()->sortBy('description');
 
         // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
