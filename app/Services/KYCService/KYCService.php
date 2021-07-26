@@ -52,15 +52,18 @@ class KYCService implements IKYCService
         return $this->curlService->curlPost($url, $data, $headers);
     }
 
-    public function initOCR(array $attr) {
+    public function initOCR(array $attr, $idType = '') {
         $url = env('KYC_APP_OCR_URL');
         $headers = $this->getAuthorizationHeaders();
-
         $headers[4] = "transactionId: " . (string)Str::uuid();
-
         $id = new \CURLFILE($attr['id_photo']->getPathname());
-
+        
         $data = array('id' => $id);
+        if($idType) {
+            // $headers[5] = "cardType: " . $idType; 
+            $data['cardType'] = $idType;
+        }
+
         return $this->curlService->curlPost($url, $data, $headers);
     }
 
@@ -86,6 +89,36 @@ class KYCService implements IKYCService
         $reponse = $this->curlService->curlPost($url, $data, $headers);
         unlink($tempImage);
         return $reponse;
+    }
+
+    public function checkIDExpiration(array $attr, $idType = 'phl_dl') {
+        
+        $initOCR = $this->initOCR([
+            'id_photo' => $attr['id_photo']
+        ], $idType);
+        
+        if($initOCR && isset($initOCR['result'])  && isset($initOCR['result']['0']) && $initOCR['result']['0']->details && $initOCR['result']['0']->details->doe) {
+            // GET DATE OF EXPIRATION
+            $doe = $initOCR['result']['0']->details->doe;
+            $expDate = Carbon::parse($doe->value);
+            $now = Carbon::now();
+
+            // NOT Expired
+            if($expDate->greaterThan($now)) {
+                return [
+                    'message' => 'ID not expired',
+                    'data' => $doe
+                ];
+            } else {
+                return [
+                    'message' => 'ID expired',
+                    'data' => $doe
+                ];
+            }
+        }
+
+        return $initOCR;
+        
     }
 
 }
