@@ -33,6 +33,7 @@ class MunicipalitiesSeeder extends Seeder
                 'name' => $value->name,
                 'municipality_code' => $value->municipality_code,
                 'province_code' => $value->province_code,
+                'zip_code' => $value->zip_code,
             ];
         })->chunk(500)->each(function ($chunk)  {
             $this->municipality::query()->insert($chunk->toArray());

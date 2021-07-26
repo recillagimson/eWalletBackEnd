@@ -40,7 +40,7 @@ class MaritalStatusController extends Controller
      */
     public function index(): JsonResponse
     {
-        $records = $this->maritalStatusRepository->getAll();
+        $records = $this->maritalStatusRepository->getMaritalStatuses();
 
         // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
 use App\Services\Dashboard\IDashboardService;
+use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,14 +15,17 @@ class DashboardController extends Controller
 {
     private IDashboardService $dashboardService;
     private IResponseService $responseService;
+    private IForeignExchangeRateService $foreignExchangeRateService;
 
     public function __construct(
-        IDashboardService $dashboardService,
+            IForeignExchangeRateService $foreignExchangeRateService,
+            IDashboardService $dashboardService,
             IResponseService $responseService
         )
     {
         $this->dashboardService = $dashboardService;
         $this->responseService = $responseService;
+        $this->foreignExchangeRateService = $foreignExchangeRateService;
     }
 
     /**
@@ -38,4 +42,11 @@ class DashboardController extends Controller
         return $this->responseService->successResponse($Dashboard->toArray(), SuccessMessages::success);
         //return response()->json($Dashboard, Response::HTTP_OK);
     }
+
+    public function getForeignCurrencyRates() : JsonResponse
+    {
+        $data = $this->foreignExchangeRateService->getForeignCurrencyRates();
+        return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
+    }
+
 }

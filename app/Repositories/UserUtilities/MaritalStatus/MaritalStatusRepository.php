@@ -12,4 +12,9 @@ class MaritalStatusRepository extends Repository implements IMaritalStatusReposi
         parent::__construct($model);
     }
 
+    public function getAllMaritalStatuses()
+    {
+        return $this->model->orderBy('description')->get();
+    }
+
 }

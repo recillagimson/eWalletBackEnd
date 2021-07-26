@@ -6,5 +6,5 @@ use App\Repositories\IRepository;
 
 interface ICountryRepository extends IRepository
 {
-    
+    public function getAllNaturesofWork();  
 }
