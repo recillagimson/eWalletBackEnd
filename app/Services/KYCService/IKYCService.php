@@ -9,4 +9,5 @@ interface IKYCService {
     public function initMerchantFaceMatch(array $attr);
     public function initOCR(array $attr, $idType = '');
     public function checkIDExpiration(array $attr, $idType = 'phl_dl');
+    public function matchOCR(array $attr);
 }

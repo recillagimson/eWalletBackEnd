@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\KYC\OCRRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Services\KYCService\IKYCService;
+use App\Http\Requests\KYC\MatchOCRRequest;
 use App\Http\Requests\KYC\FaceMatchRequest;
 use League\CommonMark\Inline\Element\Image;
 use App\Http\Requests\KYC\ExpirationCheckRequest;
@@ -39,6 +40,11 @@ class KYCController extends Controller
 
     public function checkIDExpiration(ExpirationCheckRequest $request) {
         $response =  $this->kycService->checkIDExpiration($request->all(), $request->id_type);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
+    }
+
+    public function matchOCR(MatchOCRRequest $request) {
+        $response =  $this->kycService->matchOCR($request->all());
         return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 }
