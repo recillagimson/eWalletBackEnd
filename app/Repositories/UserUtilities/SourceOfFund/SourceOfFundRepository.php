@@ -12,4 +12,9 @@ class SourceOfFundRepository extends Repository implements ISourceOfFundReposito
         parent::__construct($model);
     }
 
+    public function getAllSourceOfFunds()
+    {
+        return $this->model->orderBy('description')->get();
+    }
+
 }

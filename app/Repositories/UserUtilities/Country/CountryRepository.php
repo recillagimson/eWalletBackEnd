@@ -12,4 +12,9 @@ class CountryRepository extends Repository implements ICountryRepository
         parent::__construct($model);
     }
 
+    public function getAllNaturesofWork()
+    {
+        return $this->model->orderBy('description')->get();
+    }
+
 }

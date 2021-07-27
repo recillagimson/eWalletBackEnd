@@ -12,8137 +12,9764 @@ class Addresses
         {
            "name":"ADAMS",
            "province_code":"0128",
-           "municipality_code":"012801"
+           "municipality_code":"012801",
+           "zip_code":"2922"
         },
         {
            "name":"BACARRA",
            "province_code":"0128",
-           "municipality_code":"012802"
+           "municipality_code":"012802",
+           "zip_code":"2916"
         },
         {
            "name":"BADOC",
            "province_code":"0128",
-           "municipality_code":"012803"
+           "municipality_code":"012803",
+           "zip_code":"2904"
         },
         {
            "name":"BANGUI",
            "province_code":"0128",
-           "municipality_code":"012804"
+           "municipality_code":"012804",
+           "zip_code":"2920"
         },
         {
            "name":"CITY OF BATAC",
            "province_code":"0128",
-           "municipality_code":"012805"
+           "municipality_code":"012805",
+           "zip_code":"2906"
         },
         {
            "name":"BURGOS",
            "province_code":"0128",
-           "municipality_code":"012806"
+           "municipality_code":"012806",
+           "zip_code":"2918"
         },
         {
            "name":"CARASI",
            "province_code":"0128",
-           "municipality_code":"012807"
+           "municipality_code":"012807",
+           "zip_code":"2911"
         },
         {
            "name":"CURRIMAO",
            "province_code":"0128",
-           "municipality_code":"012808"
+           "municipality_code":"012808",
+           "zip_code":"2903"
         },
         {
            "name":"DINGRAS",
            "province_code":"0128",
-           "municipality_code":"012809"
+           "municipality_code":"012809",
+           "zip_code":"2913"
         },
         {
            "name":"DUMALNEG",
            "province_code":"0128",
-           "municipality_code":"012810"
+           "municipality_code":"012810",
+           "zip_code":"2921"
         },
         {
            "name":"BANNA (ESPIRITU)",
            "province_code":"0128",
-           "municipality_code":"012811"
+           "municipality_code":"012811",
+           "zip_code":"2908"
         },
         {
            "name":"LAOAG CITY (Capital)",
            "province_code":"0128",
-           "municipality_code":"012812"
+           "municipality_code":"012812",
+           "zip_code":"2900"
         },
         {
            "name":"MARCOS",
            "province_code":"0128",
-           "municipality_code":"012813"
+           "municipality_code":"012813",
+           "zip_code":"2907"
         },
         {
            "name":"NUEVA ERA",
            "province_code":"0128",
-           "municipality_code":"012814"
+           "municipality_code":"012814",
+           "zip_code":"2909"
         },
         {
            "name":"PAGUDPUD",
            "province_code":"0128",
-           "municipality_code":"012815"
+           "municipality_code":"012815",
+           "zip_code":"2919"
         },
         {
            "name":"PAOAY",
            "province_code":"0128",
-           "municipality_code":"012816"
+           "municipality_code":"012816",
+           "zip_code":"2902"
         },
         {
            "name":"PASUQUIN",
            "province_code":"0128",
-           "municipality_code":"012817"
+           "municipality_code":"012817",
+           "zip_code":"2917"
         },
         {
            "name":"PIDDIG",
            "province_code":"0128",
-           "municipality_code":"012818"
+           "municipality_code":"012818",
+           "zip_code":"2912"
         },
         {
            "name":"PINILI",
            "province_code":"0128",
-           "municipality_code":"012819"
+           "municipality_code":"012819",
+           "zip_code":"2905"
         },
         {
            "name":"SAN NICOLAS",
            "province_code":"0128",
-           "municipality_code":"012820"
+           "municipality_code":"012820",
+           "zip_code":"2901"
         },
         {
            "name":"SARRAT",
            "province_code":"0128",
-           "municipality_code":"012821"
+           "municipality_code":"012821",
+           "zip_code":"2914"
         },
         {
            "name":"SOLSONA",
            "province_code":"0128",
-           "municipality_code":"012822"
+           "municipality_code":"012822",
+           "zip_code":"2910"
         },
         {
            "name":"VINTAR",
            "province_code":"0128",
-           "municipality_code":"012823"
+           "municipality_code":"012823",
+           "zip_code":"2915"
         },
         {
            "name":"ALILEM",
            "province_code":"0129",
-           "municipality_code":"012901"
+           "municipality_code":"012901",
+           "zip_code":"2716"
         },
         {
            "name":"BANAYOYO",
            "province_code":"0129",
-           "municipality_code":"012902"
+           "municipality_code":"012902",
+           "zip_code":"2708"
         },
         {
            "name":"BANTAY",
            "province_code":"0129",
-           "municipality_code":"012903"
+           "municipality_code":"012903",
+           "zip_code":"2727"
         },
         {
            "name":"BURGOS",
            "province_code":"0129",
-           "municipality_code":"012904"
+           "municipality_code":"012904",
+           "zip_code":"2724"
         },
         {
            "name":"CABUGAO",
            "province_code":"0129",
-           "municipality_code":"012905"
+           "municipality_code":"012905",
+           "zip_code":"2732"
         },
         {
            "name":"CITY OF CANDON",
            "province_code":"0129",
-           "municipality_code":"012906"
+           "municipality_code":"012906",
+           "zip_code":"2710"
         },
         {
            "name":"CAOAYAN",
            "province_code":"0129",
-           "municipality_code":"012907"
+           "municipality_code":"012907",
+           "zip_code":"2702"
         },
         {
            "name":"CERVANTES",
            "province_code":"0129",
-           "municipality_code":"012908"
+           "municipality_code":"012908",
+           "zip_code":"2718"
         },
         {
            "name":"GALIMUYOD",
            "province_code":"0129",
-           "municipality_code":"012909"
+           "municipality_code":"012909",
+           "zip_code":"2709"
         },
         {
            "name":"GREGORIO DEL PILAR (CONCEPCION)",
            "province_code":"0129",
-           "municipality_code":"012910"
+           "municipality_code":"012910",
+           "zip_code":"2720"
         },
         {
            "name":"LIDLIDDA",
            "province_code":"0129",
-           "municipality_code":"012911"
+           "municipality_code":"012911",
+           "zip_code":"2723"
         },
         {
            "name":"MAGSINGAL",
            "province_code":"0129",
-           "municipality_code":"012912"
+           "municipality_code":"012912",
+           "zip_code":"2730"
         },
         {
            "name":"NAGBUKEL",
            "province_code":"0129",
-           "municipality_code":"012913"
+           "municipality_code":"012913",
+           "zip_code":"2725"
         },
         {
            "name":"NARVACAN",
            "province_code":"0129",
-           "municipality_code":"012914"
+           "municipality_code":"012914",
+           "zip_code":"2704"
         },
         {
            "name":"QUIRINO (ANGKAKI)",
            "province_code":"0129",
-           "municipality_code":"012915"
+           "municipality_code":"012915",
+           "zip_code":"2721"
         },
         {
            "name":"SALCEDO (BAUGEN)",
            "province_code":"0129",
-           "municipality_code":"012916"
+           "municipality_code":"012916",
+           "zip_code":"2711"
         },
         {
            "name":"SAN EMILIO",
            "province_code":"0129",
-           "municipality_code":"012917"
+           "municipality_code":"012917",
+           "zip_code":"2722"
         },
         {
            "name":"SAN ESTEBAN",
            "province_code":"0129",
-           "municipality_code":"012918"
+           "municipality_code":"012918",
+           "zip_code":"2706"
         },
         {
            "name":"SAN ILDEFONSO",
            "province_code":"0129",
-           "municipality_code":"012919"
+           "municipality_code":"012919",
+           "zip_code":"2728"
         },
         {
            "name":"SAN JUAN (LAPOG)",
            "province_code":"0129",
-           "municipality_code":"012920"
+           "municipality_code":"012920",
+           "zip_code":"2731"
         },
         {
            "name":"SAN VICENTE",
            "province_code":"0129",
-           "municipality_code":"012921"
+           "municipality_code":"012921",
+           "zip_code":"2726"
         },
         {
            "name":"SANTA",
            "province_code":"0129",
-           "municipality_code":"012922"
+           "municipality_code":"012922",
+           "zip_code":"2703"
         },
         {
            "name":"SANTA CATALINA",
            "province_code":"0129",
-           "municipality_code":"012923"
+           "municipality_code":"012923",
+           "zip_code":"2701"
         },
         {
            "name":"SANTA CRUZ",
            "province_code":"0129",
-           "municipality_code":"012924"
+           "municipality_code":"012924",
+           "zip_code":"2713"
         },
         {
            "name":"SANTA LUCIA",
            "province_code":"0129",
-           "municipality_code":"012925"
+           "municipality_code":"012925",
+           "zip_code":"2712"
         },
         {
            "name":"SANTA MARIA",
            "province_code":"0129",
-           "municipality_code":"012926"
+           "municipality_code":"012926",
+           "zip_code":"2705"
         },
         {
            "name":"SANTIAGO",
            "province_code":"0129",
-           "municipality_code":"012927"
+           "municipality_code":"012927",
+           "zip_code":"2707"
         },
         {
            "name":"SANTO DOMINGO",
            "province_code":"0129",
-           "municipality_code":"012928"
+           "municipality_code":"012928",
+           "zip_code":"2729"
         },
         {
            "name":"SIGAY",
            "province_code":"0129",
-           "municipality_code":"012929"
+           "municipality_code":"012929",
+           "zip_code":"2719"
         },
         {
            "name":"SINAIT",
            "province_code":"0129",
-           "municipality_code":"012930"
+           "municipality_code":"012930",
+           "zip_code":"2733"
         },
         {
            "name":"SUGPON",
            "province_code":"0129",
-           "municipality_code":"012931"
+           "municipality_code":"012931",
+           "zip_code":"2717"
         },
         {
            "name":"SUYO",
            "province_code":"0129",
-           "municipality_code":"012932"
+           "municipality_code":"012932",
+           "zip_code":"2715"
         },
         {
            "name":"TAGUDIN",
            "province_code":"0129",
-           "municipality_code":"012933"
+           "municipality_code":"012933",
+           "zip_code":"2714"
         },
         {
            "name":"CITY OF VIGAN (Capital)",
            "province_code":"0129",
-           "municipality_code":"012934"
+           "municipality_code":"012934",
+           "zip_code":"2700"
         },
         {
            "name":"AGOO",
            "province_code":"0133",
-           "municipality_code":"013301"
+           "municipality_code":"013301",
+           "zip_code":"2504"
         },
         {
            "name":"ARINGAY",
            "province_code":"0133",
-           "municipality_code":"013302"
+           "municipality_code":"013302",
+           "zip_code":"2503"
         },
         {
            "name":"BACNOTAN",
            "province_code":"0133",
-           "municipality_code":"013303"
+           "municipality_code":"013303",
+           "zip_code":"2515"
         },
         {
            "name":"BAGULIN",
            "province_code":"0133",
-           "municipality_code":"013304"
+           "municipality_code":"013304",
+           "zip_code":"2512"
         },
         {
            "name":"BALAOAN",
            "province_code":"0133",
-           "municipality_code":"013305"
+           "municipality_code":"013305",
+           "zip_code":"2517"
         },
         {
            "name":"BANGAR",
            "province_code":"0133",
-           "municipality_code":"013306"
+           "municipality_code":"013306",
+           "zip_code":"2519"
         },
         {
            "name":"BAUANG",
            "province_code":"0133",
-           "municipality_code":"013307"
+           "municipality_code":"013307",
+           "zip_code":"2501"
         },
         {
            "name":"BURGOS",
            "province_code":"0133",
-           "municipality_code":"013308"
+           "municipality_code":"013308",
+           "zip_code":"2510"
         },
         {
            "name":"CABA",
            "province_code":"0133",
-           "municipality_code":"013309"
+           "municipality_code":"013309",
+           "zip_code":"2502"
         },
         {
            "name":"LUNA",
            "province_code":"0133",
-           "municipality_code":"013310"
+           "municipality_code":"013310",
+           "zip_code":"2518"
         },
         {
            "name":"NAGUILIAN",
            "province_code":"0133",
-           "municipality_code":"013311"
+           "municipality_code":"013311",
+           "zip_code":"2511"
         },
         {
            "name":"PUGO",
            "province_code":"0133",
-           "municipality_code":"013312"
+           "municipality_code":"013312",
+           "zip_code":"2508"
         },
         {
            "name":"ROSARIO",
            "province_code":"0133",
-           "municipality_code":"013313"
+           "municipality_code":"013313",
+           "zip_code":"2506"
         },
         {
            "name":"CITY OF SAN FERNANDO (Capital)",
            "province_code":"0133",
-           "municipality_code":"013314"
+           "municipality_code":"013314",
+           "zip_code":"2500"
         },
         {
            "name":"SAN GABRIEL",
            "province_code":"0133",
-           "municipality_code":"013315"
+           "municipality_code":"013315",
+           "zip_code":"2513"
         },
         {
            "name":"SAN JUAN",
            "province_code":"0133",
-           "municipality_code":"013316"
+           "municipality_code":"013316",
+           "zip_code":"2514"
         },
         {
            "name":"SANTO TOMAS",
            "province_code":"0133",
-           "municipality_code":"013317"
+           "municipality_code":"013317",
+           "zip_code":"2505"
         },
         {
            "name":"SANTOL",
            "province_code":"0133",
-           "municipality_code":"013318"
+           "municipality_code":"013318",
+           "zip_code":"2516"
         },
         {
            "name":"SUDIPEN",
            "province_code":"0133",
-           "municipality_code":"013319"
+           "municipality_code":"013319",
+           "zip_code":"2520"
         },
         {
            "name":"TUBAO",
            "province_code":"0133",
-           "municipality_code":"013320"
+           "municipality_code":"013320",
+           "zip_code":"2509"
         },
         {
            "name":"AGNO",
            "province_code":"0155",
-           "municipality_code":"015501"
+           "municipality_code":"015501",
+           "zip_code":"2408"
         },
         {
            "name":"AGUILAR",
            "province_code":"0155",
-           "municipality_code":"015502"
+           "municipality_code":"015502",
+           "zip_code":"2415"
         },
         {
            "name":"CITY OF ALAMINOS",
            "province_code":"0155",
-           "municipality_code":"015503"
+           "municipality_code":"015503",
+           "zip_code":"2404"
         },
         {
            "name":"ALCALA",
            "province_code":"0155",
-           "municipality_code":"015504"
+           "municipality_code":"015504",
+           "zip_code":"2425"
         },
         {
            "name":"ANDA",
            "province_code":"0155",
-           "municipality_code":"015505"
+           "municipality_code":"015505",
+           "zip_code":"2405"
         },
         {
            "name":"ASINGAN",
            "province_code":"0155",
-           "municipality_code":"015506"
+           "municipality_code":"015506",
+           "zip_code":"2439"
         },
         {
            "name":"BALUNGAO",
            "province_code":"0155",
-           "municipality_code":"015507"
+           "municipality_code":"015507",
+           "zip_code":"2442"
         },
         {
            "name":"BANI",
            "province_code":"0155",
-           "municipality_code":"015508"
+           "municipality_code":"015508",
+           "zip_code":"2407"
         },
         {
            "name":"BASISTA",
            "province_code":"0155",
-           "municipality_code":"015509"
+           "municipality_code":"015509",
+           "zip_code":"2422"
         },
         {
            "name":"BAUTISTA",
            "province_code":"0155",
-           "municipality_code":"015510"
+           "municipality_code":"015510",
+           "zip_code":"2424"
         },
         {
            "name":"BAYAMBANG",
            "province_code":"0155",
-           "municipality_code":"015511"
+           "municipality_code":"015511",
+           "zip_code":"2423"
         },
         {
            "name":"BINALONAN",
            "province_code":"0155",
-           "municipality_code":"015512"
+           "municipality_code":"015512",
+           "zip_code":"2436"
         },
         {
            "name":"BINMALEY",
            "province_code":"0155",
-           "municipality_code":"015513"
+           "municipality_code":"015513",
+           "zip_code":"2417"
         },
         {
            "name":"BOLINAO",
            "province_code":"0155",
-           "municipality_code":"015514"
+           "municipality_code":"015514",
+           "zip_code":"2406"
         },
         {
            "name":"BUGALLON",
            "province_code":"0155",
-           "municipality_code":"015515"
+           "municipality_code":"015515",
+           "zip_code":"2416"
         },
         {
            "name":"BURGOS",
            "province_code":"0155",
-           "municipality_code":"015516"
+           "municipality_code":"015516",
+           "zip_code":"2410"
         },
         {
            "name":"CALASIAO",
            "province_code":"0155",
-           "municipality_code":"015517"
+           "municipality_code":"015517",
+           "zip_code":"2418"
         },
         {
            "name":"DAGUPAN CITY",
            "province_code":"0155",
-           "municipality_code":"015518"
+           "municipality_code":"015518",
+           "zip_code":"2400"
         },
         {
            "name":"DASOL",
            "province_code":"0155",
-           "municipality_code":"015519"
+           "municipality_code":"015519",
+           "zip_code":"2411"
         },
         {
            "name":"INFANTA",
            "province_code":"0155",
-           "municipality_code":"015520"
+           "municipality_code":"015520",
+           "zip_code":"2412"
         },
         {
            "name":"LABRADOR",
            "province_code":"0155",
-           "municipality_code":"015521"
+           "municipality_code":"015521",
+           "zip_code":"2402"
         },
         {
            "name":"LINGAYEN (Capital)",
            "province_code":"0155",
-           "municipality_code":"015522"
+           "municipality_code":"015522",
+           "zip_code":"2401"
         },
         {
            "name":"MABINI",
            "province_code":"0155",
-           "municipality_code":"015523"
+           "municipality_code":"015523",
+           "zip_code":"2409"
         },
         {
            "name":"MALASIQUI",
            "province_code":"0155",
-           "municipality_code":"015524"
+           "municipality_code":"015524",
+           "zip_code":"2421"
         },
         {
            "name":"MANAOAG",
            "province_code":"0155",
-           "municipality_code":"015525"
+           "municipality_code":"015525",
+           "zip_code":"2430"
         },
         {
            "name":"MANGALDAN",
            "province_code":"0155",
-           "municipality_code":"015526"
+           "municipality_code":"015526",
+           "zip_code":"2432"
         },
         {
            "name":"MANGATAREM",
            "province_code":"0155",
-           "municipality_code":"015527"
+           "municipality_code":"015527",
+           "zip_code":"2413"
         },
         {
            "name":"MAPANDAN",
            "province_code":"0155",
-           "municipality_code":"015528"
+           "municipality_code":"015528",
+           "zip_code":"2429"
         },
         {
            "name":"NATIVIDAD",
            "province_code":"0155",
-           "municipality_code":"015529"
+           "municipality_code":"015529",
+           "zip_code":"2446"
         },
         {
            "name":"POZORRUBIO",
            "province_code":"0155",
-           "municipality_code":"015530"
+           "municipality_code":"015530",
+           "zip_code":"2435"
         },
         {
            "name":"ROSALES",
            "province_code":"0155",
-           "municipality_code":"015531"
+           "municipality_code":"015531",
+           "zip_code":"2441"
         },
         {
            "name":"SAN CARLOS CITY",
            "province_code":"0155",
-           "municipality_code":"015532"
+           "municipality_code":"015532",
+           "zip_code":"2420"
         },
         {
            "name":"SAN FABIAN",
            "province_code":"0155",
-           "municipality_code":"015533"
+           "municipality_code":"015533",
+           "zip_code":"2433"
         },
         {
            "name":"SAN JACINTO",
            "province_code":"0155",
-           "municipality_code":"015534"
+           "municipality_code":"015534",
+           "zip_code":"2431"
         },
         {
            "name":"SAN MANUEL",
            "province_code":"0155",
-           "municipality_code":"015535"
+           "municipality_code":"015535",
+           "zip_code":"2438"
         },
         {
            "name":"SAN NICOLAS",
            "province_code":"0155",
-           "municipality_code":"015536"
+           "municipality_code":"015536",
+           "zip_code":"2447"
         },
         {
            "name":"SAN QUINTIN",
            "province_code":"0155",
-           "municipality_code":"015537"
+           "municipality_code":"015537",
+           "zip_code":"2444"
         },
         {
            "name":"SANTA BARBARA",
            "province_code":"0155",
-           "municipality_code":"015538"
+           "municipality_code":"015538",
+           "zip_code":"2419"
         },
         {
            "name":"SANTA MARIA",
            "province_code":"0155",
-           "municipality_code":"015539"
+           "municipality_code":"015539",
+           "zip_code":"2440"
         },
         {
            "name":"SANTO TOMAS",
            "province_code":"0155",
-           "municipality_code":"015540"
+           "municipality_code":"015540",
+           "zip_code":"2426"
         },
         {
            "name":"SISON",
            "province_code":"0155",
-           "municipality_code":"015541"
+           "municipality_code":"015541",
+           "zip_code":"2434"
         },
         {
            "name":"SUAL",
            "province_code":"0155",
-           "municipality_code":"015542"
+           "municipality_code":"015542",
+           "zip_code":"2403"
         },
         {
            "name":"TAYUG",
            "province_code":"0155",
-           "municipality_code":"015543"
+           "municipality_code":"015543",
+           "zip_code":"2445"
         },
         {
            "name":"UMINGAN",
            "province_code":"0155",
-           "municipality_code":"015544"
+           "municipality_code":"015544",
+           "zip_code":"2443"
         },
         {
            "name":"URBIZTONDO",
            "province_code":"0155",
-           "municipality_code":"015545"
+           "municipality_code":"015545",
+           "zip_code":"2414"
         },
         {
            "name":"CITY OF URDANETA",
            "province_code":"0155",
-           "municipality_code":"015546"
+           "municipality_code":"015546",
+           "zip_code":"2428"
         },
         {
            "name":"VILLASIS",
            "province_code":"0155",
-           "municipality_code":"015547"
+           "municipality_code":"015547",
+           "zip_code":"2427"
         },
         {
            "name":"LAOAC",
            "province_code":"0155",
-           "municipality_code":"015548"
+           "municipality_code":"015548",
+           "zip_code":"2437"
         },
         {
            "name":"BASCO (Capital)",
            "province_code":"0209",
-           "municipality_code":"020901"
+           "municipality_code":"020901",
+           "zip_code":"3900"
         },
         {
            "name":"ITBAYAT",
            "province_code":"0209",
-           "municipality_code":"020902"
+           "municipality_code":"020902",
+           "zip_code":"3905"
         },
         {
            "name":"IVANA",
            "province_code":"0209",
-           "municipality_code":"020903"
+           "municipality_code":"020903",
+           "zip_code":"3902"
         },
         {
            "name":"MAHATAO",
            "province_code":"0209",
-           "municipality_code":"020904"
+           "municipality_code":"020904",
+           "zip_code":"3901"
         },
         {
            "name":"SABTANG",
            "province_code":"0209",
-           "municipality_code":"020905"
+           "municipality_code":"020905",
+           "zip_code":"3904"
         },
         {
            "name":"UYUGAN",
            "province_code":"0209",
-           "municipality_code":"020906"
+           "municipality_code":"020906",
+           "zip_code":"3903"
         },
         {
            "name":"ABULUG",
            "province_code":"0215",
-           "municipality_code":"021501"
+           "municipality_code":"021501",
+           "zip_code":"3517"
         },
         {
            "name":"ALCALA",
            "province_code":"0215",
-           "municipality_code":"021502"
+           "municipality_code":"021502",
+           "zip_code":"3507"
         },
         {
            "name":"ALLACAPAN",
            "province_code":"0215",
-           "municipality_code":"021503"
+           "municipality_code":"021503",
+           "zip_code":"3523"
         },
         {
            "name":"AMULUNG",
            "province_code":"0215",
-           "municipality_code":"021504"
+           "municipality_code":"021504",
+           "zip_code":"3505"
         },
         {
            "name":"APARRI",
            "province_code":"0215",
-           "municipality_code":"021505"
+           "municipality_code":"021505",
+           "zip_code":"3515"
         },
         {
            "name":"BAGGAO",
            "province_code":"0215",
-           "municipality_code":"021506"
+           "municipality_code":"021506",
+           "zip_code":"3506"
         },
         {
            "name":"BALLESTEROS",
            "province_code":"0215",
-           "municipality_code":"021507"
+           "municipality_code":"021507",
+           "zip_code":"3516"
         },
         {
            "name":"BUGUEY",
            "province_code":"0215",
-           "municipality_code":"021508"
+           "municipality_code":"021508",
+           "zip_code":"3511"
         },
         {
            "name":"CALAYAN",
            "province_code":"0215",
-           "municipality_code":"021509"
+           "municipality_code":"021509",
+           "zip_code":"3520"
         },
         {
            "name":"CAMALANIUGAN",
            "province_code":"0215",
-           "municipality_code":"021510"
+           "municipality_code":"021510",
+           "zip_code":"3510"
         },
         {
            "name":"CLAVERIA",
            "province_code":"0215",
-           "municipality_code":"021511"
+           "municipality_code":"021511",
+           "zip_code":"3519"
         },
         {
            "name":"ENRILE",
            "province_code":"0215",
-           "municipality_code":"021512"
+           "municipality_code":"021512",
+           "zip_code":"3501"
         },
         {
            "name":"GATTARAN",
            "province_code":"0215",
-           "municipality_code":"021513"
+           "municipality_code":"021513",
+           "zip_code":"3508"
         },
         {
            "name":"GONZAGA",
            "province_code":"0215",
-           "municipality_code":"021514"
+           "municipality_code":"021514",
+           "zip_code":"3513"
         },
         {
            "name":"IGUIG",
            "province_code":"0215",
-           "municipality_code":"021515"
+           "municipality_code":"021515",
+           "zip_code":"3504"
         },
         {
            "name":"LAL-LO",
            "province_code":"0215",
-           "municipality_code":"021516"
+           "municipality_code":"021516",
+           "zip_code":"3509"
         },
         {
            "name":"LASAM",
            "province_code":"0215",
-           "municipality_code":"021517"
+           "municipality_code":"021517",
+           "zip_code":"3524"
         },
         {
            "name":"PAMPLONA",
            "province_code":"0215",
-           "municipality_code":"021518"
+           "municipality_code":"021518",
+           "zip_code":"3522"
         },
         {
            "name":"PIAT",
            "province_code":"0215",
-           "municipality_code":"021520"
+           "municipality_code":"021520",
+           "zip_code":"3527"
         },
         {
            "name":"RIZAL",
            "province_code":"0215",
-           "municipality_code":"021521"
+           "municipality_code":"021521",
+           "zip_code":"3526"
         },
         {
            "name":"SANCHEZ-MIRA",
            "province_code":"0215",
-           "municipality_code":"021522"
+           "municipality_code":"021522",
+           "zip_code":"3518"
         },
         {
            "name":"SANTA ANA",
            "province_code":"0215",
-           "municipality_code":"021523"
+           "municipality_code":"021523",
+           "zip_code":"3514"
         },
         {
            "name":"SANTA PRAXEDES",
            "province_code":"0215",
-           "municipality_code":"021524"
+           "municipality_code":"021524",
+           "zip_code":"3521"
         },
         {
            "name":"SANTA TERESITA",
            "province_code":"0215",
-           "municipality_code":"021525"
+           "municipality_code":"021525",
+           "zip_code":"3512"
         },
         {
            "name":"SOLANA",
            "province_code":"0215",
-           "municipality_code":"021527"
+           "municipality_code":"021527",
+           "zip_code":"3503"
         },
         {
            "name":"TUAO",
            "province_code":"0215",
-           "municipality_code":"021528"
+           "municipality_code":"021528",
+           "zip_code":"3528"
         },
         {
            "name":"TUGUEGARAO CITY (Capital)",
            "province_code":"0215",
-           "municipality_code":"021529"
+           "municipality_code":"021529",
+           "zip_code":"3500"
         },
         {
            "name":"ALICIA",
            "province_code":"0231",
-           "municipality_code":"023101"
+           "municipality_code":"023101",
+           "zip_code":"3306"
         },
         {
            "name":"ANGADANAN",
            "province_code":"0231",
-           "municipality_code":"023102"
+           "municipality_code":"023102",
+           "zip_code":"3307"
         },
         {
            "name":"AURORA",
            "province_code":"0231",
-           "municipality_code":"023103"
+           "municipality_code":"023103",
+           "zip_code":"3316"
         },
         {
            "name":"BENITO SOLIVEN",
            "province_code":"0231",
-           "municipality_code":"023104"
+           "municipality_code":"023104",
+           "zip_code":"3331"
         },
         {
            "name":"BURGOS",
            "province_code":"0231",
-           "municipality_code":"023105"
+           "municipality_code":"023105",
+           "zip_code":"3322"
         },
         {
            "name":"CABAGAN",
            "province_code":"0231",
-           "municipality_code":"023106"
+           "municipality_code":"023106",
+           "zip_code":"3328"
         },
         {
            "name":"CABATUAN",
            "province_code":"0231",
-           "municipality_code":"023107"
+           "municipality_code":"023107",
+           "zip_code":"3315"
         },
         {
            "name":"CITY OF CAUAYAN",
            "province_code":"0231",
-           "municipality_code":"023108"
+           "municipality_code":"023108",
+           "zip_code":"3305"
         },
         {
            "name":"CORDON",
            "province_code":"0231",
-           "municipality_code":"023109"
+           "municipality_code":"023109",
+           "zip_code":"3312"
         },
         {
            "name":"DINAPIGUE",
            "province_code":"0231",
-           "municipality_code":"023110"
+           "municipality_code":"023110",
+           "zip_code":"3336"
         },
         {
            "name":"DIVILACAN",
            "province_code":"0231",
-           "municipality_code":"023111"
+           "municipality_code":"023111",
+           "zip_code":"3335"
         },
         {
            "name":"ECHAGUE",
            "province_code":"0231",
-           "municipality_code":"023112"
+           "municipality_code":"023112",
+           "zip_code":"3309"
         },
         {
            "name":"GAMU",
            "province_code":"0231",
-           "municipality_code":"023113"
+           "municipality_code":"023113",
+           "zip_code":"3301"
         },
         {
            "name":"ILAGAN CITY (Capital)",
            "province_code":"0231",
-           "municipality_code":"023114"
+           "municipality_code":"023114",
+           "zip_code":"3300"
         },
         {
            "name":"JONES",
            "province_code":"0231",
-           "municipality_code":"023115"
+           "municipality_code":"023115",
+           "zip_code":"3313"
         },
         {
            "name":"LUNA",
            "province_code":"0231",
-           "municipality_code":"023116"
+           "municipality_code":"023116",
+           "zip_code":"3304"
         },
         {
            "name":"MACONACON",
            "province_code":"0231",
-           "municipality_code":"023117"
+           "municipality_code":"023117",
+           "zip_code":"3333"
         },
         {
            "name":"DELFIN ALBANO (MAGSAYSAY)",
            "province_code":"0231",
-           "municipality_code":"023118"
+           "municipality_code":"023118",
+           "zip_code":"3326"
         },
         {
            "name":"MALLIG",
            "province_code":"0231",
-           "municipality_code":"023119"
+           "municipality_code":"023119",
+           "zip_code":"3323"
         },
         {
            "name":"NAGUILIAN",
            "province_code":"0231",
-           "municipality_code":"023120"
+           "municipality_code":"023120",
+           "zip_code":"3302"
         },
         {
            "name":"PALANAN",
            "province_code":"0231",
-           "municipality_code":"023121"
+           "municipality_code":"023121",
+           "zip_code":"3334"
         },
         {
            "name":"QUEZON",
            "province_code":"0231",
-           "municipality_code":"023122"
+           "municipality_code":"023122",
+           "zip_code":"3324"
         },
         {
            "name":"QUIRINO",
            "province_code":"0231",
-           "municipality_code":"023123"
+           "municipality_code":"023123",
+           "zip_code":"3321"
         },
         {
            "name":"RAMON",
            "province_code":"0231",
-           "municipality_code":"023124"
+           "municipality_code":"023124",
+           "zip_code":"3319"
         },
         {
            "name":"REINA MERCEDES",
            "province_code":"0231",
-           "municipality_code":"023125"
+           "municipality_code":"023125",
+           "zip_code":"3303"
         },
         {
            "name":"ROXAS",
            "province_code":"0231",
-           "municipality_code":"023126"
+           "municipality_code":"023126",
+           "zip_code":"3320"
         },
         {
            "name":"SAN AGUSTIN",
            "province_code":"0231",
-           "municipality_code":"023127"
+           "municipality_code":"023127",
+           "zip_code":"3314"
         },
         {
            "name":"SAN GUILLERMO",
            "province_code":"0231",
-           "municipality_code":"023128"
+           "municipality_code":"023128",
+           "zip_code":"3308"
         },
         {
            "name":"SAN ISIDRO",
            "province_code":"0231",
-           "municipality_code":"023129"
+           "municipality_code":"023129",
+           "zip_code":"3310"
         },
         {
            "name":"SAN MANUEL",
            "province_code":"0231",
-           "municipality_code":"023130"
+           "municipality_code":"023130",
+           "zip_code":"3317"
         },
         {
            "name":"SAN MARIANO",
            "province_code":"0231",
-           "municipality_code":"023131"
+           "municipality_code":"023131",
+           "zip_code":"3332"
         },
         {
            "name":"SAN MATEO",
            "province_code":"0231",
-           "municipality_code":"023132"
+           "municipality_code":"023132",
+           "zip_code":"3318"
         },
         {
            "name":"SAN PABLO",
            "province_code":"0231",
-           "municipality_code":"023133"
+           "municipality_code":"023133",
+           "zip_code":"3329"
         },
         {
            "name":"SANTA MARIA",
            "province_code":"0231",
-           "municipality_code":"023134"
+           "municipality_code":"023134",
+           "zip_code":"3330"
         },
         {
            "name":"CITY OF SANTIAGO",
            "province_code":"0231",
-           "municipality_code":"023135"
+           "municipality_code":"023135",
+           "zip_code":"3311"
         },
         {
            "name":"SANTO TOMAS",
            "province_code":"0231",
-           "municipality_code":"023136"
+           "municipality_code":"023136",
+           "zip_code":"3327"
         },
         {
            "name":"TUMAUINI",
            "province_code":"0231",
-           "municipality_code":"023137"
+           "municipality_code":"023137",
+           "zip_code":"3325"
         },
         {
            "name":"AMBAGUIO",
            "province_code":"0250",
-           "municipality_code":"025001"
+           "municipality_code":"025001",
+           "zip_code":"3701"
         },
         {
            "name":"ARITAO",
            "province_code":"0250",
-           "municipality_code":"025002"
+           "municipality_code":"025002",
+           "zip_code":"3704"
         },
         {
            "name":"BAGABAG",
            "province_code":"0250",
-           "municipality_code":"025003"
+           "municipality_code":"025003",
+           "zip_code":"3711"
         },
         {
            "name":"BAMBANG",
            "province_code":"0250",
-           "municipality_code":"025004"
+           "municipality_code":"025004",
+           "zip_code":"3702"
         },
         {
            "name":"BAYOMBONG (Capital)",
            "province_code":"0250",
-           "municipality_code":"025005"
+           "municipality_code":"025005",
+           "zip_code":"3700"
         },
         {
            "name":"DIADI",
            "province_code":"0250",
-           "municipality_code":"025006"
+           "municipality_code":"025006",
+           "zip_code":"3712"
         },
         {
            "name":"DUPAX DEL NORTE",
            "province_code":"0250",
-           "municipality_code":"025007"
+           "municipality_code":"025007",
+           "zip_code":"3706"
         },
         {
            "name":"DUPAX DEL SUR",
            "province_code":"0250",
-           "municipality_code":"025008"
+           "municipality_code":"025008",
+           "zip_code":"3707"
         },
         {
            "name":"KASIBU",
            "province_code":"0250",
-           "municipality_code":"025009"
+           "municipality_code":"025009",
+           "zip_code":"3703"
         },
         {
            "name":"KAYAPA",
            "province_code":"0250",
-           "municipality_code":"025010"
+           "municipality_code":"025010",
+           "zip_code":"3708"
         },
         {
            "name":"QUEZON",
            "province_code":"0250",
-           "municipality_code":"025011"
+           "municipality_code":"025011",
+           "zip_code":"3713"
         },
         {
            "name":"SANTA FE",
            "province_code":"0250",
-           "municipality_code":"025012"
+           "municipality_code":"025012",
+           "zip_code":"3705"
         },
         {
            "name":"SOLANO",
            "province_code":"0250",
-           "municipality_code":"025013"
+           "municipality_code":"025013",
+           "zip_code":"3709"
         },
         {
            "name":"VILLAVERDE",
            "province_code":"0250",
-           "municipality_code":"025014"
+           "municipality_code":"025014",
+           "zip_code":"3710"
         },
         {
            "name":"ALFONSO CASTANEDA",
            "province_code":"0250",
-           "municipality_code":"025015"
+           "municipality_code":"025015",
+           "zip_code":"3714"
         },
         {
            "name":"AGLIPAY",
            "province_code":"0257",
-           "municipality_code":"025701"
+           "municipality_code":"025701",
+           "zip_code":"3403"
         },
         {
            "name":"CABARROGUIS (Capital)",
            "province_code":"0257",
-           "municipality_code":"025702"
+           "municipality_code":"025702",
+           "zip_code":"3400"
         },
         {
            "name":"DIFFUN",
            "province_code":"0257",
-           "municipality_code":"025703"
+           "municipality_code":"025703",
+           "zip_code":"3401"
         },
         {
            "name":"MADDELA",
            "province_code":"0257",
-           "municipality_code":"025704"
+           "municipality_code":"025704",
+           "zip_code":"3404"
         },
         {
            "name":"SAGUDAY",
            "province_code":"0257",
-           "municipality_code":"025705"
+           "municipality_code":"025705",
+           "zip_code":"3402"
         },
         {
            "name":"NAGTIPUNAN",
            "province_code":"0257",
-           "municipality_code":"025706"
+           "municipality_code":"025706",
+           "zip_code":"3405"
         },
         {
            "name":"ABUCAY",
            "province_code":"0308",
-           "municipality_code":"030801"
+           "municipality_code":"030801",
+           "zip_code":"2114"
         },
         {
            "name":"BAGAC",
            "province_code":"0308",
-           "municipality_code":"030802"
+           "municipality_code":"030802",
+           "zip_code":"2107"
         },
         {
            "name":"CITY OF BALANGA (Capital)",
            "province_code":"0308",
-           "municipality_code":"030803"
+           "municipality_code":"030803",
+           "zip_code":"2100"
         },
         {
            "name":"DINALUPIHAN",
            "province_code":"0308",
-           "municipality_code":"030804"
+           "municipality_code":"030804",
+           "zip_code":"2110"
         },
         {
            "name":"HERMOSA",
            "province_code":"0308",
-           "municipality_code":"030805"
+           "municipality_code":"030805",
+           "zip_code":"2111"
         },
         {
            "name":"LIMAY",
            "province_code":"0308",
-           "municipality_code":"030806"
+           "municipality_code":"030806",
+           "zip_code":"2103"
         },
         {
            "name":"MARIVELES",
            "province_code":"0308",
-           "municipality_code":"030807"
+           "municipality_code":"030807",
+           "zip_code":"2105"
         },
         {
            "name":"MORONG",
            "province_code":"0308",
-           "municipality_code":"030808"
+           "municipality_code":"030808",
+           "zip_code":"2108"
         },
         {
            "name":"ORANI",
            "province_code":"0308",
-           "municipality_code":"030809"
+           "municipality_code":"030809",
+           "zip_code":"2112"
         },
         {
            "name":"ORION",
            "province_code":"0308",
-           "municipality_code":"030810"
+           "municipality_code":"030810",
+           "zip_code":"2102"
         },
         {
            "name":"PILAR",
            "province_code":"0308",
-           "municipality_code":"030811"
+           "municipality_code":"030811",
+           "zip_code":"2101"
         },
         {
            "name":"SAMAL",
            "province_code":"0308",
-           "municipality_code":"030812"
+           "municipality_code":"030812",
+           "zip_code":"2113"
         },
         {
            "name":"ANGAT",
            "province_code":"0314",
-           "municipality_code":"031401"
+           "municipality_code":"031401",
+           "zip_code":"3012"
         },
         {
            "name":"BALAGTAS (BIGAA)",
            "province_code":"0314",
-           "municipality_code":"031402"
+           "municipality_code":"031402",
+           "zip_code":"3016"
         },
         {
            "name":"BALIUAG",
            "province_code":"0314",
-           "municipality_code":"031403"
+           "municipality_code":"031403",
+           "zip_code":"3006"
         },
         {
            "name":"BOCAUE",
            "province_code":"0314",
-           "municipality_code":"031404"
+           "municipality_code":"031404",
+           "zip_code":"3018"
         },
         {
            "name":"BULACAN",
            "province_code":"0314",
-           "municipality_code":"031405"
+           "municipality_code":"031405",
+           "zip_code":"3017"
         },
         {
            "name":"BUSTOS",
            "province_code":"0314",
-           "municipality_code":"031406"
+           "municipality_code":"031406",
+           "zip_code":"3007"
         },
         {
            "name":"CALUMPIT",
            "province_code":"0314",
-           "municipality_code":"031407"
+           "municipality_code":"031407",
+           "zip_code":"3003"
         },
         {
            "name":"GUIGUINTO",
            "province_code":"0314",
-           "municipality_code":"031408"
+           "municipality_code":"031408",
+           "zip_code":"3015"
         },
         {
            "name":"HAGONOY",
            "province_code":"0314",
-           "municipality_code":"031409"
+           "municipality_code":"031409",
+           "zip_code":"3002"
         },
         {
            "name":"CITY OF MALOLOS (Capital)",
            "province_code":"0314",
-           "municipality_code":"031410"
+           "municipality_code":"031410",
+           "zip_code":"3000"
         },
         {
            "name":"MARILAO",
            "province_code":"0314",
-           "municipality_code":"031411"
+           "municipality_code":"031411",
+           "zip_code":"3019"
         },
         {
            "name":"CITY OF MEYCAUAYAN",
            "province_code":"0314",
-           "municipality_code":"031412"
+           "municipality_code":"031412",
+           "zip_code":"3020"
         },
         {
            "name":"NORZAGARAY",
            "province_code":"0314",
-           "municipality_code":"031413"
+           "municipality_code":"031413",
+           "zip_code":"3013"
         },
         {
            "name":"OBANDO",
            "province_code":"0314",
-           "municipality_code":"031414"
+           "municipality_code":"031414",
+           "zip_code":"3021"
         },
         {
            "name":"PANDI",
            "province_code":"0314",
-           "municipality_code":"031415"
+           "municipality_code":"031415",
+           "zip_code":"3014"
         },
         {
            "name":"PAOMBONG",
            "province_code":"0314",
-           "municipality_code":"031416"
+           "municipality_code":"031416",
+           "zip_code":"3001"
         },
         {
            "name":"PLARIDEL",
            "province_code":"0314",
-           "municipality_code":"031417"
+           "municipality_code":"031417",
+           "zip_code":"3004"
         },
         {
            "name":"PULILAN",
            "province_code":"0314",
-           "municipality_code":"031418"
+           "municipality_code":"031418",
+           "zip_code":"3005"
         },
         {
            "name":"SAN ILDEFONSO",
            "province_code":"0314",
-           "municipality_code":"031419"
+           "municipality_code":"031419",
+           "zip_code":"3010"
         },
         {
            "name":"CITY OF SAN JOSE DEL MONTE",
            "province_code":"0314",
-           "municipality_code":"031420"
+           "municipality_code":"031420",
+           "zip_code":"3023"
         },
         {
            "name":"SAN MIGUEL",
            "province_code":"0314",
-           "municipality_code":"031421"
+           "municipality_code":"031421",
+           "zip_code":"3011"
         },
         {
            "name":"SAN RAFAEL",
            "province_code":"0314",
-           "municipality_code":"031422"
+           "municipality_code":"031422",
+           "zip_code":"3008"
         },
         {
            "name":"SANTA MARIA",
            "province_code":"0314",
-           "municipality_code":"031423"
+           "municipality_code":"031423",
+           "zip_code":"3022"
         },
         {
            "name":"ALIAGA",
            "province_code":"0349",
-           "municipality_code":"034901"
+           "municipality_code":"034901",
+           "zip_code":"3111"
         },
         {
            "name":"BONGABON",
            "province_code":"0349",
-           "municipality_code":"034902"
+           "municipality_code":"034902",
+           "zip_code":"3128"
         },
         {
            "name":"CABANATUAN CITY",
            "province_code":"0349",
-           "municipality_code":"034903"
+           "municipality_code":"034903",
+           "zip_code":"3100"
         },
         {
            "name":"CABIAO",
            "province_code":"0349",
-           "municipality_code":"034904"
+           "municipality_code":"034904",
+           "zip_code":"3107"
         },
         {
            "name":"CARRANGLAN",
            "province_code":"0349",
-           "municipality_code":"034905"
+           "municipality_code":"034905",
+           "zip_code":"3123"
         },
         {
            "name":"CUYAPO",
            "province_code":"0349",
-           "municipality_code":"034906"
+           "municipality_code":"034906",
+           "zip_code":"3117"
         },
         {
            "name":"GABALDON (BITULOK & SABANI)",
            "province_code":"0349",
-           "municipality_code":"034907"
+           "municipality_code":"034907",
+           "zip_code":"3131"
         },
         {
            "name":"CITY OF GAPAN",
            "province_code":"0349",
-           "municipality_code":"034908"
+           "municipality_code":"034908",
+           "zip_code":"3105"
         },
         {
            "name":"GENERAL MAMERTO NATIVIDAD",
            "province_code":"0349",
-           "municipality_code":"034909"
+           "municipality_code":"034909",
+           "zip_code":"3125"
         },
         {
            "name":"GENERAL TINIO (PAPAYA)",
            "province_code":"0349",
-           "municipality_code":"034910"
+           "municipality_code":"034910",
+           "zip_code":"3104"
         },
         {
            "name":"GUIMBA",
            "province_code":"0349",
-           "municipality_code":"034911"
+           "municipality_code":"034911",
+           "zip_code":"3115"
         },
         {
            "name":"JAEN",
            "province_code":"0349",
-           "municipality_code":"034912"
+           "municipality_code":"034912",
+           "zip_code":"3109"
         },
         {
            "name":"LAUR",
            "province_code":"0349",
-           "municipality_code":"034913"
+           "municipality_code":"034913",
+           "zip_code":"3129"
         },
         {
            "name":"LICAB",
            "province_code":"0349",
-           "municipality_code":"034914"
+           "municipality_code":"034914",
+           "zip_code":"3112"
         },
         {
            "name":"LLANERA",
            "province_code":"0349",
-           "municipality_code":"034915"
+           "municipality_code":"034915",
+           "zip_code":"3126"
         },
         {
            "name":"LUPAO",
            "province_code":"0349",
-           "municipality_code":"034916"
+           "municipality_code":"034916",
+           "zip_code":"3122"
         },
         {
            "name":"NAMPICUAN",
            "province_code":"0349",
-           "municipality_code":"034918"
+           "municipality_code":"034918",
+           "zip_code":"3116"
         },
         {
            "name":"PALAYAN CITY (Capital)",
            "province_code":"0349",
-           "municipality_code":"034919"
+           "municipality_code":"034919",
+           "zip_code":"3132"
         },
         {
            "name":"PANTABANGAN",
            "province_code":"0349",
-           "municipality_code":"034920"
+           "municipality_code":"034920",
+           "zip_code":"3124"
         },
         {
            "name":"QUEZON",
            "province_code":"0349",
-           "municipality_code":"034922"
+           "municipality_code":"034922",
+           "zip_code":"3113"
         },
         {
            "name":"RIZAL",
            "province_code":"0349",
-           "municipality_code":"034923"
+           "municipality_code":"034923",
+           "zip_code":"3127"
         },
         {
            "name":"SAN ANTONIO",
            "province_code":"0349",
-           "municipality_code":"034924"
+           "municipality_code":"034924",
+           "zip_code":"3108"
         },
         {
            "name":"SAN ISIDRO",
            "province_code":"0349",
-           "municipality_code":"034925"
+           "municipality_code":"034925",
+           "zip_code":"3106"
         },
         {
            "name":"SAN JOSE CITY",
            "province_code":"0349",
-           "municipality_code":"034926"
+           "municipality_code":"034926",
+           "zip_code":"3121"
         },
         {
            "name":"SAN LEONARDO",
            "province_code":"0349",
-           "municipality_code":"034927"
+           "municipality_code":"034927",
+           "zip_code":"3102"
         },
         {
            "name":"SANTA ROSA",
            "province_code":"0349",
-           "municipality_code":"034928"
+           "municipality_code":"034928",
+           "zip_code":"3101"
         },
         {
            "name":"SANTO DOMINGO",
            "province_code":"0349",
-           "municipality_code":"034929"
+           "municipality_code":"034929",
+           "zip_code":"3133"
         },
         {
            "name":"TALAVERA",
            "province_code":"0349",
-           "municipality_code":"034930"
+           "municipality_code":"034930",
+           "zip_code":"3114"
         },
         {
            "name":"TALUGTUG",
            "province_code":"0349",
-           "municipality_code":"034931"
+           "municipality_code":"034931",
+           "zip_code":"3118"
         },
         {
            "name":"ZARAGOZA",
            "province_code":"0349",
-           "municipality_code":"034932"
+           "municipality_code":"034932",
+           "zip_code":"3110"
         },
         {
            "name":"ANGELES CITY",
            "province_code":"0354",
-           "municipality_code":"035401"
+           "municipality_code":"035401",
+           "zip_code":"2009"
         },
         {
            "name":"APALIT",
            "province_code":"0354",
-           "municipality_code":"035402"
+           "municipality_code":"035402",
+           "zip_code":"2016"
         },
         {
            "name":"ARAYAT",
            "province_code":"0354",
-           "municipality_code":"035403"
+           "municipality_code":"035403",
+           "zip_code":"2012"
         },
         {
            "name":"BACOLOR",
            "province_code":"0354",
-           "municipality_code":"035404"
+           "municipality_code":"035404",
+           "zip_code":"2001"
         },
         {
            "name":"CANDABA",
            "province_code":"0354",
-           "municipality_code":"035405"
+           "municipality_code":"035405",
+           "zip_code":"2013"
         },
         {
            "name":"FLORIDABLANCA",
            "province_code":"0354",
-           "municipality_code":"035406"
+           "municipality_code":"035406",
+           "zip_code":"2006"
         },
         {
            "name":"GUAGUA",
            "province_code":"0354",
-           "municipality_code":"035407"
+           "municipality_code":"035407",
+           "zip_code":"2003"
         },
         {
            "name":"LUBAO",
            "province_code":"0354",
-           "municipality_code":"035408"
+           "municipality_code":"035408",
+           "zip_code":"2005"
         },
         {
            "name":"MABALACAT CITY",
            "province_code":"0354",
-           "municipality_code":"035409"
+           "municipality_code":"035409",
+           "zip_code":"2010"
         },
         {
            "name":"MACABEBE",
            "province_code":"0354",
-           "municipality_code":"035410"
+           "municipality_code":"035410",
+           "zip_code":"2018"
         },
         {
            "name":"MAGALANG",
            "province_code":"0354",
-           "municipality_code":"035411"
+           "municipality_code":"035411",
+           "zip_code":"2011"
         },
         {
            "name":"MASANTOL",
            "province_code":"0354",
-           "municipality_code":"035412"
+           "municipality_code":"035412",
+           "zip_code":"2017"
         },
         {
            "name":"MEXICO",
            "province_code":"0354",
-           "municipality_code":"035413"
+           "municipality_code":"035413",
+           "zip_code":"2021"
         },
         {
            "name":"MINALIN",
            "province_code":"0354",
-           "municipality_code":"035414"
+           "municipality_code":"035414",
+           "zip_code":"2019"
         },
         {
            "name":"PORAC",
            "province_code":"0354",
-           "municipality_code":"035415"
+           "municipality_code":"035415",
+           "zip_code":"2008"
         },
         {
            "name":"CITY OF SAN FERNANDO (Capital)",
            "province_code":"0354",
-           "municipality_code":"035416"
+           "municipality_code":"035416",
+           "zip_code":"2000"
         },
         {
            "name":"SAN LUIS",
            "province_code":"0354",
-           "municipality_code":"035417"
+           "municipality_code":"035417",
+           "zip_code":"2014"
         },
         {
            "name":"SAN SIMON",
            "province_code":"0354",
-           "municipality_code":"035418"
+           "municipality_code":"035418",
+           "zip_code":"2015"
         },
         {
            "name":"SANTA ANA",
            "province_code":"0354",
-           "municipality_code":"035419"
+           "municipality_code":"035419",
+           "zip_code":"2022"
         },
         {
            "name":"SANTA RITA",
            "province_code":"0354",
-           "municipality_code":"035420"
+           "municipality_code":"035420",
+           "zip_code":"2002"
         },
         {
            "name":"SANTO TOMAS",
            "province_code":"0354",
-           "municipality_code":"035421"
+           "municipality_code":"035421",
+           "zip_code":"2020"
         },
         {
            "name":"SASMUAN (Sexmoan)",
            "province_code":"0354",
-           "municipality_code":"035422"
+           "municipality_code":"035422",
+           "zip_code":"2004"
         },
         {
            "name":"ANAO",
            "province_code":"0369",
-           "municipality_code":"036901"
+           "municipality_code":"036901",
+           "zip_code":"2310"
         },
         {
            "name":"BAMBAN",
            "province_code":"0369",
-           "municipality_code":"036902"
+           "municipality_code":"036902",
+           "zip_code":"2317"
         },
         {
            "name":"CAMILING",
            "province_code":"0369",
-           "municipality_code":"036903"
+           "municipality_code":"036903",
+           "zip_code":"2306"
         },
         {
            "name":"CAPAS",
            "province_code":"0369",
-           "municipality_code":"036904"
+           "municipality_code":"036904",
+           "zip_code":"2315"
         },
         {
            "name":"CONCEPCION",
            "province_code":"0369",
-           "municipality_code":"036905"
+           "municipality_code":"036905",
+           "zip_code":"2316"
         },
         {
            "name":"GERONA",
            "province_code":"0369",
-           "municipality_code":"036906"
+           "municipality_code":"036906",
+           "zip_code":"2302"
         },
         {
            "name":"LA PAZ",
            "province_code":"0369",
-           "municipality_code":"036907"
+           "municipality_code":"036907",
+           "zip_code":"2314"
         },
         {
            "name":"MAYANTOC",
            "province_code":"0369",
-           "municipality_code":"036908"
+           "municipality_code":"036908",
+           "zip_code":"2304"
         },
         {
            "name":"MONCADA",
            "province_code":"0369",
-           "municipality_code":"036909"
+           "municipality_code":"036909",
+           "zip_code":"2308"
         },
         {
            "name":"PANIQUI",
            "province_code":"0369",
-           "municipality_code":"036910"
+           "municipality_code":"036910",
+           "zip_code":"2307"
         },
         {
            "name":"PURA",
            "province_code":"0369",
-           "municipality_code":"036911"
+           "municipality_code":"036911",
+           "zip_code":"2312"
         },
         {
            "name":"RAMOS",
            "province_code":"0369",
-           "municipality_code":"036912"
+           "municipality_code":"036912",
+           "zip_code":"2311"
         },
         {
            "name":"SAN CLEMENTE",
            "province_code":"0369",
-           "municipality_code":"036913"
+           "municipality_code":"036913",
+           "zip_code":"2305"
         },
         {
            "name":"SAN MANUEL",
            "province_code":"0369",
-           "municipality_code":"036914"
+           "municipality_code":"036914",
+           "zip_code":"2309"
         },
         {
            "name":"SANTA IGNACIA",
            "province_code":"0369",
-           "municipality_code":"036915"
+           "municipality_code":"036915",
+           "zip_code":"2303"
         },
         {
            "name":"CITY OF TARLAC (Capital)",
            "province_code":"0369",
-           "municipality_code":"036916"
+           "municipality_code":"036916",
+           "zip_code":"2300"
         },
         {
            "name":"VICTORIA",
            "province_code":"0369",
-           "municipality_code":"036917"
+           "municipality_code":"036917",
+           "zip_code":"2313"
         },
         {
            "name":"SAN JOSE",
            "province_code":"0369",
-           "municipality_code":"036918"
+           "municipality_code":"036918",
+           "zip_code":"2318"
         },
         {
            "name":"BOTOLAN",
            "province_code":"0371",
-           "municipality_code":"037101"
+           "municipality_code":"037101",
+           "zip_code":"2202"
         },
         {
            "name":"CABANGAN",
            "province_code":"0371",
-           "municipality_code":"037102"
+           "municipality_code":"037102",
+           "zip_code":"2203"
         },
         {
            "name":"CANDELARIA",
            "province_code":"0371",
-           "municipality_code":"037103"
+           "municipality_code":"037103",
+           "zip_code":"2212"
         },
         {
            "name":"CASTILLEJOS",
            "province_code":"0371",
-           "municipality_code":"037104"
+           "municipality_code":"037104",
+           "zip_code":"2208"
         },
         {
            "name":"IBA (Capital)",
            "province_code":"0371",
-           "municipality_code":"037105"
+           "municipality_code":"037105",
+           "zip_code":"2201"
         },
         {
            "name":"MASINLOC",
            "province_code":"0371",
-           "municipality_code":"037106"
+           "municipality_code":"037106",
+           "zip_code":"2211"
         },
         {
            "name":"OLONGAPO CITY",
            "province_code":"0371",
-           "municipality_code":"037107"
+           "municipality_code":"037107",
+           "zip_code":"2200"
         },
         {
            "name":"PALAUIG",
            "province_code":"0371",
-           "municipality_code":"037108"
+           "municipality_code":"037108",
+           "zip_code":"2210"
         },
         {
            "name":"SAN ANTONIO",
            "province_code":"0371",
-           "municipality_code":"037109"
+           "municipality_code":"037109",
+           "zip_code":"2206"
         },
         {
            "name":"SAN FELIPE",
            "province_code":"0371",
-           "municipality_code":"037110"
+           "municipality_code":"037110",
+           "zip_code":"2204"
         },
         {
            "name":"SAN MARCELINO",
            "province_code":"0371",
-           "municipality_code":"037111"
+           "municipality_code":"037111",
+           "zip_code":"2207"
         },
         {
            "name":"SAN NARCISO",
            "province_code":"0371",
-           "municipality_code":"037112"
+           "municipality_code":"037112",
+           "zip_code":"2205"
         },
         {
            "name":"SANTA CRUZ",
            "province_code":"0371",
-           "municipality_code":"037113"
+           "municipality_code":"037113",
+           "zip_code":"2213"
         },
         {
            "name":"SUBIC",
            "province_code":"0371",
-           "municipality_code":"037114"
+           "municipality_code":"037114",
+           "zip_code":"2209"
         },
         {
            "name":"BALER (Capital)",
            "province_code":"0377",
-           "municipality_code":"037701"
+           "municipality_code":"037701",
+           "zip_code":"3200"
         },
         {
            "name":"CASIGURAN",
            "province_code":"0377",
-           "municipality_code":"037702"
+           "municipality_code":"037702",
+           "zip_code":"3204"
         },
         {
            "name":"DILASAG",
            "province_code":"0377",
-           "municipality_code":"037703"
+           "municipality_code":"037703",
+           "zip_code":"3205"
         },
         {
            "name":"DINALUNGAN",
            "province_code":"0377",
-           "municipality_code":"037704"
+           "municipality_code":"037704",
+           "zip_code":"3206"
         },
         {
            "name":"DINGALAN",
            "province_code":"0377",
-           "municipality_code":"037705"
+           "municipality_code":"037705",
+           "zip_code":"3207"
         },
         {
            "name":"DIPACULAO",
            "province_code":"0377",
-           "municipality_code":"037706"
+           "municipality_code":"037706",
+           "zip_code":"3203"
         },
         {
            "name":"MARIA AURORA",
            "province_code":"0377",
-           "municipality_code":"037707"
+           "municipality_code":"037707",
+           "zip_code":"3202"
         },
         {
            "name":"SAN LUIS",
            "province_code":"0377",
-           "municipality_code":"037708"
+           "municipality_code":"037708",
+           "zip_code":"3201"
         },
         {
            "name":"AGONCILLO",
            "province_code":"0410",
-           "municipality_code":"041001"
+           "municipality_code":"041001",
+           "zip_code":"4211"
         },
         {
            "name":"ALITAGTAG",
            "province_code":"0410",
-           "municipality_code":"041002"
+           "municipality_code":"041002",
+           "zip_code":"4205"
         },
         {
            "name":"BALAYAN",
            "province_code":"0410",
-           "municipality_code":"041003"
+           "municipality_code":"041003",
+           "zip_code":"4213"
         },
         {
            "name":"BALETE",
            "province_code":"0410",
-           "municipality_code":"041004"
+           "municipality_code":"041004",
+           "zip_code":"4219"
         },
         {
            "name":"BATANGAS CITY (Capital)",
            "province_code":"0410",
-           "municipality_code":"041005"
+           "municipality_code":"041005",
+           "zip_code":"4200"
         },
         {
            "name":"BAUAN",
            "province_code":"0410",
-           "municipality_code":"041006"
+           "municipality_code":"041006",
+           "zip_code":"4201"
         },
         {
            "name":"CALACA",
            "province_code":"0410",
-           "municipality_code":"041007"
+           "municipality_code":"041007",
+           "zip_code":"4212"
         },
         {
            "name":"CALATAGAN",
            "province_code":"0410",
-           "municipality_code":"041008"
+           "municipality_code":"041008",
+           "zip_code":"4215"
         },
         {
            "name":"CUENCA",
            "province_code":"0410",
-           "municipality_code":"041009"
+           "municipality_code":"041009",
+           "zip_code":"4222"
         },
         {
            "name":"IBAAN",
            "province_code":"0410",
-           "municipality_code":"041010"
+           "municipality_code":"041010",
+           "zip_code":"4230"
         },
         {
            "name":"LAUREL",
            "province_code":"0410",
-           "municipality_code":"041011"
+           "municipality_code":"041011",
+           "zip_code":"4221"
         },
         {
            "name":"LEMERY",
            "province_code":"0410",
-           "municipality_code":"041012"
+           "municipality_code":"041012",
+           "zip_code":"4209"
         },
         {
            "name":"LIAN",
            "province_code":"0410",
-           "municipality_code":"041013"
+           "municipality_code":"041013",
+           "zip_code":"4216"
         },
         {
            "name":"LIPA CITY",
            "province_code":"0410",
-           "municipality_code":"041014"
+           "municipality_code":"041014",
+           "zip_code":"4217"
         },
         {
            "name":"LOBO",
            "province_code":"0410",
-           "municipality_code":"041015"
+           "municipality_code":"041015",
+           "zip_code":"4229"
         },
         {
            "name":"MABINI",
            "province_code":"0410",
-           "municipality_code":"041016"
+           "municipality_code":"041016",
+           "zip_code":"4202"
         },
         {
            "name":"MALVAR",
            "province_code":"0410",
-           "municipality_code":"041017"
+           "municipality_code":"041017",
+           "zip_code":"4233"
         },
         {
            "name":"MATAASNAKAHOY",
            "province_code":"0410",
-           "municipality_code":"041018"
+           "municipality_code":"041018",
+           "zip_code":"4223"
         },
         {
            "name":"NASUGBU",
            "province_code":"0410",
-           "municipality_code":"041019"
+           "municipality_code":"041019",
+           "zip_code":"4231"
         },
         {
            "name":"PADRE GARCIA",
            "province_code":"0410",
-           "municipality_code":"041020"
+           "municipality_code":"041020",
+           "zip_code":"4224"
         },
         {
            "name":"ROSARIO",
            "province_code":"0410",
-           "municipality_code":"041021"
+           "municipality_code":"041021",
+           "zip_code":"4225"
         },
         {
            "name":"SAN JOSE",
            "province_code":"0410",
-           "municipality_code":"041022"
+           "municipality_code":"041022",
+           "zip_code":"4227"
         },
         {
            "name":"SAN JUAN",
            "province_code":"0410",
-           "municipality_code":"041023"
+           "municipality_code":"041023",
+           "zip_code":"4226"
         },
         {
            "name":"SAN LUIS",
            "province_code":"0410",
-           "municipality_code":"041024"
+           "municipality_code":"041024",
+           "zip_code":"4210"
         },
         {
            "name":"SAN NICOLAS",
            "province_code":"0410",
-           "municipality_code":"041025"
+           "municipality_code":"041025",
+           "zip_code":"4207"
         },
         {
            "name":"SAN PASCUAL",
            "province_code":"0410",
-           "municipality_code":"041026"
+           "municipality_code":"041026",
+           "zip_code":"4204"
         },
         {
            "name":"SANTA TERESITA",
            "province_code":"0410",
-           "municipality_code":"041027"
+           "municipality_code":"041027",
+           "zip_code":"4206"
         },
         {
            "name":"SANTO TOMAS",
            "province_code":"0410",
-           "municipality_code":"041028"
+           "municipality_code":"041028",
+           "zip_code":"4234"
         },
         {
            "name":"TAAL",
            "province_code":"0410",
-           "municipality_code":"041029"
+           "municipality_code":"041029",
+           "zip_code":"4208"
         },
         {
            "name":"TALISAY",
            "province_code":"0410",
-           "municipality_code":"041030"
+           "municipality_code":"041030",
+           "zip_code":"4220"
         },
         {
            "name":"CITY OF TANAUAN",
            "province_code":"0410",
-           "municipality_code":"041031"
+           "municipality_code":"041031",
+           "zip_code":"4232"
         },
         {
            "name":"TAYSAN",
            "province_code":"0410",
-           "municipality_code":"041032"
+           "municipality_code":"041032",
+           "zip_code":"4228"
         },
         {
            "name":"TINGLOY",
            "province_code":"0410",
-           "municipality_code":"041033"
+           "municipality_code":"041033",
+           "zip_code":"4203"
         },
         {
            "name":"TUY",
            "province_code":"0410",
-           "municipality_code":"041034"
+           "municipality_code":"041034",
+           "zip_code":"4214"
         },
         {
            "name":"ALFONSO",
            "province_code":"0421",
-           "municipality_code":"042101"
+           "municipality_code":"042101",
+           "zip_code":"4123"
         },
         {
            "name":"AMADEO",
            "province_code":"0421",
-           "municipality_code":"042102"
+           "municipality_code":"042102",
+           "zip_code":"4119"
         },
         {
            "name":"BACOOR CITY",
            "province_code":"0421",
-           "municipality_code":"042103"
+           "municipality_code":"042103",
+           "zip_code":"4102"
         },
         {
            "name":"CARMONA",
            "province_code":"0421",
-           "municipality_code":"042104"
+           "municipality_code":"042104",
+           "zip_code":"4116"
         },
         {
            "name":"CAVITE CITY",
            "province_code":"0421",
-           "municipality_code":"042105"
+           "municipality_code":"042105",
+           "zip_code":"4100"
         },
         {
            "name":"GENERAL EMILIO AGUINALDO",
            "province_code":"0421",
-           "municipality_code":"042107"
+           "municipality_code":"042107",
+           "zip_code":"4124"
         },
         {
            "name":"GENERAL TRIAS",
            "province_code":"0421",
-           "municipality_code":"042108"
+           "municipality_code":"042108",
+           "zip_code":"4107"
         },
         {
            "name":"IMUS CITY",
            "province_code":"0421",
-           "municipality_code":"042109"
+           "municipality_code":"042109",
+           "zip_code":"4103"
         },
         {
            "name":"INDANG",
            "province_code":"0421",
-           "municipality_code":"042110"
+           "municipality_code":"042110",
+           "zip_code":"4122"
         },
         {
            "name":"KAWIT",
            "province_code":"0421",
-           "municipality_code":"042111"
+           "municipality_code":"042111",
+           "zip_code":"4104"
         },
         {
            "name":"MAGALLANES",
            "province_code":"0421",
-           "municipality_code":"042112"
+           "municipality_code":"042112",
+           "zip_code":"4113"
         },
         {
            "name":"MARAGONDON",
            "province_code":"0421",
-           "municipality_code":"042113"
+           "municipality_code":"042113",
+           "zip_code":"4112"
         },
         {
            "name":"NAIC",
            "province_code":"0421",
-           "municipality_code":"042115"
+           "municipality_code":"042115",
+           "zip_code":"4110"
         },
         {
            "name":"NOVELETA",
            "province_code":"0421",
-           "municipality_code":"042116"
+           "municipality_code":"042116",
+           "zip_code":"4105"
         },
         {
            "name":"ROSARIO",
            "province_code":"0421",
-           "municipality_code":"042117"
+           "municipality_code":"042117",
+           "zip_code":"4106"
         },
         {
            "name":"SILANG",
            "province_code":"0421",
-           "municipality_code":"042118"
+           "municipality_code":"042118",
+           "zip_code":"4118"
         },
         {
            "name":"TAGAYTAY CITY",
            "province_code":"0421",
-           "municipality_code":"042119"
+           "municipality_code":"042119",
+           "zip_code":"4120"
         },
         {
            "name":"TANZA",
            "province_code":"0421",
-           "municipality_code":"042120"
+           "municipality_code":"042120",
+           "zip_code":"4108"
         },
         {
            "name":"TERNATE",
            "province_code":"0421",
-           "municipality_code":"042121"
+           "municipality_code":"042121",
+           "zip_code":"4111"
         },
         {
            "name":"TRECE MARTIRES CITY (Capital)",
            "province_code":"0421",
-           "municipality_code":"042122"
+           "municipality_code":"042122",
+           "zip_code":"4109"
         },
         {
            "name":"GEN. MARIANO ALVAREZ",
            "province_code":"0421",
-           "municipality_code":"042123"
+           "municipality_code":"042123",
+           "zip_code":"4117"
         },
         {
            "name":"ALAMINOS",
            "province_code":"0434",
-           "municipality_code":"043401"
+           "municipality_code":"043401",
+           "zip_code":"4001"
         },
         {
            "name":"BAY",
            "province_code":"0434",
-           "municipality_code":"043402"
+           "municipality_code":"043402",
+           "zip_code":"4033"
         },
         {
            "name":"CABUYAO CITY",
            "province_code":"0434",
-           "municipality_code":"043404"
+           "municipality_code":"043404",
+           "zip_code":"4025"
         },
         {
            "name":"CITY OF CALAMBA",
            "province_code":"0434",
-           "municipality_code":"043405"
+           "municipality_code":"043405",
+           "zip_code":"4027"
         },
         {
            "name":"CALAUAN",
            "province_code":"0434",
-           "municipality_code":"043406"
+           "municipality_code":"043406",
+           "zip_code":"4012"
         },
         {
            "name":"CAVINTI",
            "province_code":"0434",
-           "municipality_code":"043407"
+           "municipality_code":"043407",
+           "zip_code":"4013"
         },
         {
            "name":"FAMY",
            "province_code":"0434",
-           "municipality_code":"043408"
+           "municipality_code":"043408",
+           "zip_code":"4021"
         },
         {
            "name":"KALAYAAN",
            "province_code":"0434",
-           "municipality_code":"043409"
+           "municipality_code":"043409",
+           "zip_code":"4015"
         },
         {
            "name":"LILIW",
            "province_code":"0434",
-           "municipality_code":"043410"
+           "municipality_code":"043410",
+           "zip_code":"4004"
         },
         {
            "name":"LUISIANA",
            "province_code":"0434",
-           "municipality_code":"043412"
+           "municipality_code":"043412",
+           "zip_code":"4032"
         },
         {
            "name":"LUMBAN",
            "province_code":"0434",
-           "municipality_code":"043413"
+           "municipality_code":"043413",
+           "zip_code":"4014"
         },
         {
            "name":"MABITAC",
            "province_code":"0434",
-           "municipality_code":"043414"
+           "municipality_code":"043414",
+           "zip_code":"4020"
         },
         {
            "name":"MAGDALENA",
            "province_code":"0434",
-           "municipality_code":"043415"
+           "municipality_code":"043415",
+           "zip_code":"4007"
         },
         {
            "name":"MAJAYJAY",
            "province_code":"0434",
-           "municipality_code":"043416"
+           "municipality_code":"043416",
+           "zip_code":"4005"
         },
         {
            "name":"NAGCARLAN",
            "province_code":"0434",
-           "municipality_code":"043417"
+           "municipality_code":"043417",
+           "zip_code":"4002"
         },
         {
            "name":"PAETE",
            "province_code":"0434",
-           "municipality_code":"043418"
+           "municipality_code":"043418",
+           "zip_code":"4016"
         },
         {
            "name":"PAGSANJAN",
            "province_code":"0434",
-           "municipality_code":"043419"
+           "municipality_code":"043419",
+           "zip_code":"4008"
         },
         {
            "name":"PAKIL",
            "province_code":"0434",
-           "municipality_code":"043420"
+           "municipality_code":"043420",
+           "zip_code":"4017"
         },
         {
            "name":"PANGIL",
            "province_code":"0434",
-           "municipality_code":"043421"
+           "municipality_code":"043421",
+           "zip_code":"4018"
         },
         {
            "name":"PILA",
            "province_code":"0434",
-           "municipality_code":"043422"
+           "municipality_code":"043422",
+           "zip_code":"4010"
         },
         {
            "name":"RIZAL",
            "province_code":"0434",
-           "municipality_code":"043423"
+           "municipality_code":"043423",
+           "zip_code":"4003"
         },
         {
            "name":"SAN PABLO CITY",
            "province_code":"0434",
-           "municipality_code":"043424"
+           "municipality_code":"043424",
+           "zip_code":"4000"
         },
         {
            "name":"CITY OF SAN PEDRO",
            "province_code":"0434",
-           "municipality_code":"043425"
+           "municipality_code":"043425",
+           "zip_code":"4023"
         },
         {
            "name":"SANTA CRUZ (Capital)",
            "province_code":"0434",
-           "municipality_code":"043426"
+           "municipality_code":"043426",
+           "zip_code":"4009"
         },
         {
            "name":"SANTA MARIA",
            "province_code":"0434",
-           "municipality_code":"043427"
+           "municipality_code":"043427",
+           "zip_code":"4022"
         },
         {
            "name":"CITY OF SANTA ROSA",
            "province_code":"0434",
-           "municipality_code":"043428"
+           "municipality_code":"043428",
+           "zip_code":"4026"
         },
         {
            "name":"SINILOAN",
            "province_code":"0434",
-           "municipality_code":"043429"
+           "municipality_code":"043429",
+           "zip_code":"4019"
         },
         {
            "name":"VICTORIA",
            "province_code":"0434",
-           "municipality_code":"043430"
+           "municipality_code":"043430",
+           "zip_code":"4011"
         },
         {
            "name":"AGDANGAN",
            "province_code":"0456",
-           "municipality_code":"045601"
+           "municipality_code":"045601",
+           "zip_code":"4304"
         },
         {
            "name":"ALABAT",
            "province_code":"0456",
-           "municipality_code":"045602"
+           "municipality_code":"045602",
+           "zip_code":"4333"
         },
         {
            "name":"ATIMONAN",
            "province_code":"0456",
-           "municipality_code":"045603"
+           "municipality_code":"045603",
+           "zip_code":"4331"
         },
         {
            "name":"BUENAVISTA",
            "province_code":"0456",
-           "municipality_code":"045605"
+           "municipality_code":"045605",
+           "zip_code":"4320"
         },
         {
            "name":"BURDEOS",
            "province_code":"0456",
-           "municipality_code":"045606"
+           "municipality_code":"045606",
+           "zip_code":"4340"
         },
         {
            "name":"CALAUAG",
            "province_code":"0456",
-           "municipality_code":"045607"
+           "municipality_code":"045607",
+           "zip_code":"4318"
         },
         {
            "name":"CANDELARIA",
            "province_code":"0456",
-           "municipality_code":"045608"
+           "municipality_code":"045608",
+           "zip_code":"4323"
         },
         {
            "name":"CATANAUAN",
            "province_code":"0456",
-           "municipality_code":"045610"
+           "municipality_code":"045610",
+           "zip_code":"4311"
         },
         {
            "name":"DOLORES",
            "province_code":"0456",
-           "municipality_code":"045615"
+           "municipality_code":"045615",
+           "zip_code":"4326"
         },
         {
            "name":"GENERAL LUNA",
            "province_code":"0456",
-           "municipality_code":"045616"
+           "municipality_code":"045616",
+           "zip_code":"4310"
         },
         {
            "name":"GENERAL NAKAR",
            "province_code":"0456",
-           "municipality_code":"045617"
+           "municipality_code":"045617",
+           "zip_code":"4338"
         },
         {
            "name":"GUINAYANGAN",
            "province_code":"0456",
-           "municipality_code":"045618"
+           "municipality_code":"045618",
+           "zip_code":"4319"
         },
         {
            "name":"GUMACA",
            "province_code":"0456",
-           "municipality_code":"045619"
+           "municipality_code":"045619",
+           "zip_code":"4307"
         },
         {
            "name":"INFANTA",
            "province_code":"0456",
-           "municipality_code":"045620"
+           "municipality_code":"045620",
+           "zip_code":"4336"
         },
         {
            "name":"JOMALIG",
            "province_code":"0456",
-           "municipality_code":"045621"
+           "municipality_code":"045621",
+           "zip_code":"4342"
         },
         {
            "name":"LOPEZ",
            "province_code":"0456",
-           "municipality_code":"045622"
+           "municipality_code":"045622",
+           "zip_code":"4316"
         },
         {
            "name":"LUCBAN",
            "province_code":"0456",
-           "municipality_code":"045623"
+           "municipality_code":"045623",
+           "zip_code":"4328"
         },
         {
            "name":"LUCENA CITY (Capital)",
            "province_code":"0456",
-           "municipality_code":"045624"
+           "municipality_code":"045624",
+           "zip_code":"4301"
         },
         {
            "name":"MACALELON",
            "province_code":"0456",
-           "municipality_code":"045625"
+           "municipality_code":"045625",
+           "zip_code":"4309"
         },
         {
            "name":"MAUBAN",
            "province_code":"0456",
-           "municipality_code":"045627"
+           "municipality_code":"045627",
+           "zip_code":"4330"
         },
         {
            "name":"MULANAY",
            "province_code":"0456",
-           "municipality_code":"045628"
+           "municipality_code":"045628",
+           "zip_code":"4312"
         },
         {
            "name":"PADRE BURGOS",
            "province_code":"0456",
-           "municipality_code":"045629"
+           "municipality_code":"045629",
+           "zip_code":"4303"
         },
         {
            "name":"PAGBILAO",
            "province_code":"0456",
-           "municipality_code":"045630"
+           "municipality_code":"045630",
+           "zip_code":"4302"
         },
         {
            "name":"PANUKULAN",
            "province_code":"0456",
-           "municipality_code":"045631"
+           "municipality_code":"045631",
+           "zip_code":"4337"
         },
         {
            "name":"PATNANUNGAN",
            "province_code":"0456",
-           "municipality_code":"045632"
+           "municipality_code":"045632",
+           "zip_code":"4341"
         },
         {
            "name":"PEREZ",
            "province_code":"0456",
-           "municipality_code":"045633"
+           "municipality_code":"045633",
+           "zip_code":"4334"
         },
         {
            "name":"PITOGO",
            "province_code":"0456",
-           "municipality_code":"045634"
+           "municipality_code":"045634",
+           "zip_code":"4308"
         },
         {
            "name":"PLARIDEL",
            "province_code":"0456",
-           "municipality_code":"045635"
+           "municipality_code":"045635",
+           "zip_code":"4306"
         },
         {
            "name":"POLILLO",
            "province_code":"0456",
-           "municipality_code":"045636"
+           "municipality_code":"045636",
+           "zip_code":"4339"
         },
         {
            "name":"QUEZON",
            "province_code":"0456",
-           "municipality_code":"045637"
+           "municipality_code":"045637",
+           "zip_code":"4300"
         },
         {
            "name":"REAL",
            "province_code":"0456",
-           "municipality_code":"045638"
+           "municipality_code":"045638",
+           "zip_code":"4335"
         },
         {
            "name":"SAMPALOC",
            "province_code":"0456",
-           "municipality_code":"045639"
+           "municipality_code":"045639",
+           "zip_code":"4329"
         },
         {
            "name":"SAN ANDRES",
            "province_code":"0456",
-           "municipality_code":"045640"
+           "municipality_code":"045640",
+           "zip_code":"4314"
         },
         {
            "name":"SAN ANTONIO",
            "province_code":"0456",
-           "municipality_code":"045641"
+           "municipality_code":"045641",
+           "zip_code":"4324"
         },
         {
            "name":"SAN FRANCISCO (AURORA)",
            "province_code":"0456",
-           "municipality_code":"045642"
+           "municipality_code":"045642",
+           "zip_code":"4315"
         },
         {
            "name":"SAN NARCISO",
            "province_code":"0456",
-           "municipality_code":"045644"
+           "municipality_code":"045644",
+           "zip_code":"4313"
         },
         {
            "name":"SARIAYA",
            "province_code":"0456",
-           "municipality_code":"045645"
+           "municipality_code":"045645",
+           "zip_code":"4322"
         },
         {
            "name":"TAGKAWAYAN",
            "province_code":"0456",
-           "municipality_code":"045646"
+           "municipality_code":"045646",
+           "zip_code":"4312"
         },
         {
            "name":"CITY OF TAYABAS",
            "province_code":"0456",
-           "municipality_code":"045647"
+           "municipality_code":"045647",
+           "zip_code":"4327"
         },
         {
            "name":"TIAONG",
            "province_code":"0456",
-           "municipality_code":"045648"
+           "municipality_code":"045648",
+           "zip_code":"4325"
         },
         {
            "name":"UNISAN",
            "province_code":"0456",
-           "municipality_code":"045649"
+           "municipality_code":"045649",
+           "zip_code":"4305"
         },
         {
            "name":"ANGONO",
            "province_code":"0458",
-           "municipality_code":"045801"
+           "municipality_code":"045801",
+           "zip_code":"1930"
         },
         {
            "name":"CITY OF ANTIPOLO",
            "province_code":"0458",
-           "municipality_code":"045802"
+           "municipality_code":"045802",
+           "zip_code":"1870"
         },
         {
            "name":"BARAS",
            "province_code":"0458",
-           "municipality_code":"045803"
+           "municipality_code":"045803",
+           "zip_code":"1970"
         },
         {
            "name":"BINANGONAN",
            "province_code":"0458",
-           "municipality_code":"045804"
+           "municipality_code":"045804",
+           "zip_code":"1940"
         },
         {
            "name":"CAINTA",
            "province_code":"0458",
-           "municipality_code":"045805"
+           "municipality_code":"045805",
+           "zip_code":"1900"
         },
         {
            "name":"CARDONA",
            "province_code":"0458",
-           "municipality_code":"045806"
+           "municipality_code":"045806",
+           "zip_code":"1950"
         },
         {
            "name":"JALA-JALA",
            "province_code":"0458",
-           "municipality_code":"045807"
+           "municipality_code":"045807",
+           "zip_code":"1990"
         },
         {
            "name":"RODRIGUEZ (MONTALBAN)",
            "province_code":"0458",
-           "municipality_code":"045808"
+           "municipality_code":"045808",
+           "zip_code":"1860"
         },
         {
            "name":"MORONG",
            "province_code":"0458",
-           "municipality_code":"045809"
+           "municipality_code":"045809",
+           "zip_code":"1960"
         },
         {
            "name":"PILILLA",
            "province_code":"0458",
-           "municipality_code":"045810"
+           "municipality_code":"045810",
+           "zip_code":"1910"
         },
         {
            "name":"SAN MATEO",
            "province_code":"0458",
-           "municipality_code":"045811"
+           "municipality_code":"045811",
+           "zip_code":"1850"
         },
         {
            "name":"TANAY",
            "province_code":"0458",
-           "municipality_code":"045812"
+           "municipality_code":"045812",
+           "zip_code":"1980"
         },
         {
            "name":"TAYTAY",
            "province_code":"0458",
-           "municipality_code":"045813"
+           "municipality_code":"045813",
+           "zip_code":"1920"
         },
         {
            "name":"TERESA",
            "province_code":"0458",
-           "municipality_code":"045814"
+           "municipality_code":"045814",
+           "zip_code":"1880"
         },
         {
            "name":"BOAC (Capital)",
            "province_code":"1740",
-           "municipality_code":"174001"
+           "municipality_code":"174001",
+           "zip_code":"4900"
         },
         {
            "name":"BUENAVISTA",
            "province_code":"1740",
-           "municipality_code":"174002"
+           "municipality_code":"174002",
+           "zip_code":"4904"
         },
         {
            "name":"GASAN",
            "province_code":"1740",
-           "municipality_code":"174003"
+           "municipality_code":"174003",
+           "zip_code":"4905"
         },
         {
            "name":"MOGPOG",
            "province_code":"1740",
-           "municipality_code":"174004"
+           "municipality_code":"174004",
+           "zip_code":"4901"
         },
         {
            "name":"SANTA CRUZ",
            "province_code":"1740",
-           "municipality_code":"174005"
+           "municipality_code":"174005",
+           "zip_code":"4902"
         },
         {
            "name":"TORRIJOS",
            "province_code":"1740",
-           "municipality_code":"174006"
+           "municipality_code":"174006",
+           "zip_code":"4903"
         },
         {
            "name":"ABRA DE ILOG",
            "province_code":"1751",
-           "municipality_code":"175101"
+           "municipality_code":"175101",
+           "zip_code":"4900"
         },
         {
            "name":"CALINTAAN",
            "province_code":"1751",
-           "municipality_code":"175102"
+           "municipality_code":"175102",
+           "zip_code":"5108"
         },
         {
            "name":"LOOC",
            "province_code":"1751",
-           "municipality_code":"175103"
+           "municipality_code":"175103",
+           "zip_code":"5111"
         },
         {
            "name":"LUBANG",
            "province_code":"1751",
-           "municipality_code":"175104"
+           "municipality_code":"175104",
+           "zip_code":"5109"
         },
         {
            "name":"MAGSAYSAY",
            "province_code":"1751",
-           "municipality_code":"175105"
+           "municipality_code":"175105",
+           "zip_code":"5101"
         },
         {
            "name":"MAMBURAO (Capital)",
            "province_code":"1751",
-           "municipality_code":"175106"
+           "municipality_code":"175106",
+           "zip_code":"5106"
         },
         {
            "name":"PALUAN",
            "province_code":"1751",
-           "municipality_code":"175107"
+           "municipality_code":"175107",
+           "zip_code":"5107"
         },
         {
            "name":"RIZAL",
            "province_code":"1751",
-           "municipality_code":"175108"
+           "municipality_code":"175108",
+           "zip_code":"5103"
         },
         {
            "name":"SABLAYAN",
            "province_code":"1751",
-           "municipality_code":"175109"
+           "municipality_code":"175109",
+           "zip_code":"5104"
         },
         {
            "name":"SAN JOSE",
            "province_code":"1751",
-           "municipality_code":"175110"
+           "municipality_code":"175110",
+           "zip_code":"5100"
         },
         {
            "name":"SANTA CRUZ",
            "province_code":"1751",
-           "municipality_code":"175111"
+           "municipality_code":"175111",
+           "zip_code":"5105"
         },
         {
            "name":"BACO",
            "province_code":"1752",
-           "municipality_code":"175201"
+           "municipality_code":"175201",
+           "zip_code":"5201"
         },
         {
            "name":"BANSUD",
            "province_code":"1752",
-           "municipality_code":"175202"
+           "municipality_code":"175202",
+           "zip_code":"5210"
         },
         {
            "name":"BONGABONG",
            "province_code":"1752",
-           "municipality_code":"175203"
+           "municipality_code":"175203",
+           "zip_code":"5211"
         },
         {
            "name":"BULALACAO (SAN PEDRO)",
            "province_code":"1752",
-           "municipality_code":"175204"
+           "municipality_code":"175204",
+           "zip_code":"5214"
         },
         {
            "name":"CITY OF CALAPAN (Capital)",
            "province_code":"1752",
-           "municipality_code":"175205"
+           "municipality_code":"175205",
+           "zip_code":"5200"
         },
         {
            "name":"GLORIA",
            "province_code":"1752",
-           "municipality_code":"175206"
+           "municipality_code":"175206",
+           "zip_code":"5209"
         },
         {
            "name":"MANSALAY",
            "province_code":"1752",
-           "municipality_code":"175207"
+           "municipality_code":"175207",
+           "zip_code":"5213"
         },
         {
            "name":"NAUJAN",
            "province_code":"1752",
-           "municipality_code":"175208"
+           "municipality_code":"175208",
+           "zip_code":"5204"
         },
         {
            "name":"PINAMALAYAN",
            "province_code":"1752",
-           "municipality_code":"175209"
+           "municipality_code":"175209",
+           "zip_code":"5208"
         },
         {
            "name":"POLA",
            "province_code":"1752",
-           "municipality_code":"175210"
+           "municipality_code":"175210",
+           "zip_code":"5206"
         },
         {
            "name":"PUERTO GALERA",
            "province_code":"1752",
-           "municipality_code":"175211"
+           "municipality_code":"175211",
+           "zip_code":"5203"
         },
         {
            "name":"ROXAS",
            "province_code":"1752",
-           "municipality_code":"175212"
+           "municipality_code":"175212",
+           "zip_code":"5212"
         },
         {
            "name":"SAN TEODORO",
            "province_code":"1752",
-           "municipality_code":"175213"
+           "municipality_code":"175213",
+           "zip_code":"5202"
         },
         {
            "name":"SOCORRO",
            "province_code":"1752",
-           "municipality_code":"175214"
+           "municipality_code":"175214",
+           "zip_code":"5207"
         },
         {
            "name":"VICTORIA",
            "province_code":"1752",
-           "municipality_code":"175215"
+           "municipality_code":"175215",
+           "zip_code":"5205"
         },
         {
            "name":"ABORLAN",
            "province_code":"1753",
-           "municipality_code":"175301"
+           "municipality_code":"175301",
+           "zip_code":"5302"
         },
         {
            "name":"AGUTAYA",
            "province_code":"1753",
-           "municipality_code":"175302"
+           "municipality_code":"175302",
+           "zip_code":"5320"
         },
         {
            "name":"ARACELI",
            "province_code":"1753",
-           "municipality_code":"175303"
+           "municipality_code":"175303",
+           "zip_code":"5311"
         },
         {
            "name":"BALABAC",
            "province_code":"1753",
-           "municipality_code":"175304"
+           "municipality_code":"175304",
+           "zip_code":"5307"
         },
         {
            "name":"BATARAZA",
            "province_code":"1753",
-           "municipality_code":"175305"
+           "municipality_code":"175305",
+           "zip_code":"5306"
         },
         {
            "name":"BROOKE\u0027S POINT",
            "province_code":"1753",
-           "municipality_code":"175306"
+           "municipality_code":"175306",
+           "zip_code":"5305"
         },
         {
            "name":"BUSUANGA",
            "province_code":"1753",
-           "municipality_code":"175307"
+           "municipality_code":"175307",
+           "zip_code":"5317"
         },
         {
            "name":"CAGAYANCILLO",
            "province_code":"1753",
-           "municipality_code":"175308"
+           "municipality_code":"175308",
+           "zip_code":"5321"
         },
         {
            "name":"CORON",
            "province_code":"1753",
-           "municipality_code":"175309"
+           "municipality_code":"175309",
+           "zip_code":"5316"
         },
         {
            "name":"CUYO",
            "province_code":"1753",
-           "municipality_code":"175310"
+           "municipality_code":"175310",
+           "zip_code":"5318"
         },
         {
            "name":"DUMARAN",
            "province_code":"1753",
-           "municipality_code":"175311"
+           "municipality_code":"175311",
+           "zip_code":"5310"
         },
         {
            "name":"EL NIDO (BACUIT)",
            "province_code":"1753",
-           "municipality_code":"175312"
+           "municipality_code":"175312",
+           "zip_code":"5313"
         },
         {
            "name":"LINAPACAN",
            "province_code":"1753",
-           "municipality_code":"175313"
+           "municipality_code":"175313",
+           "zip_code":"5314"
         },
         {
            "name":"MAGSAYSAY",
            "province_code":"1753",
-           "municipality_code":"175314"
+           "municipality_code":"175314",
+           "zip_code":"5319"
         },
         {
            "name":"NARRA",
            "province_code":"1753",
-           "municipality_code":"175315"
+           "municipality_code":"175315",
+           "zip_code":"5303"
         },
         {
            "name":"PUERTO PRINCESA CITY (Capital)",
            "province_code":"1753",
-           "municipality_code":"175316"
+           "municipality_code":"175316",
+           "zip_code":"5300"
         },
         {
            "name":"QUEZON",
            "province_code":"1753",
-           "municipality_code":"175317"
+           "municipality_code":"175317",
+           "zip_code":"5304"
         },
         {
            "name":"ROXAS",
            "province_code":"1753",
-           "municipality_code":"175318"
+           "municipality_code":"175318",
+           "zip_code":"5308"
         },
         {
            "name":"SAN VICENTE",
            "province_code":"1753",
-           "municipality_code":"175319"
+           "municipality_code":"175319",
+           "zip_code":"5309"
         },
         {
            "name":"TAYTAY",
            "province_code":"1753",
-           "municipality_code":"175320"
+           "municipality_code":"175320",
+           "zip_code":"5312"
         },
         {
            "name":"KALAYAAN",
            "province_code":"1753",
-           "municipality_code":"175321"
+           "municipality_code":"175321",
+           "zip_code":"5322"
         },
         {
            "name":"CULION",
            "province_code":"1753",
-           "municipality_code":"175322"
+           "municipality_code":"175322",
+           "zip_code":"5315"
         },
         {
            "name":"RIZAL (MARCOS)",
            "province_code":"1753",
-           "municipality_code":"175323"
+           "municipality_code":"175323",
+           "zip_code":"5323"
         },
         {
            "name":"ALCANTARA",
            "province_code":"1759",
-           "municipality_code":"175901"
+           "municipality_code":"175901",
+           "zip_code":"5509"
         },
         {
            "name":"BANTON",
            "province_code":"1759",
-           "municipality_code":"175902"
+           "municipality_code":"175902",
+           "zip_code":"5515"
         },
         {
            "name":"CAJIDIOCAN",
            "province_code":"1759",
-           "municipality_code":"175903"
+           "municipality_code":"175903",
+           "zip_code":"5512"
         },
         {
            "name":"CALATRAVA",
            "province_code":"1759",
-           "municipality_code":"175904"
+           "municipality_code":"175904",
+           "zip_code":"5503"
         },
         {
            "name":"CONCEPCION",
            "province_code":"1759",
-           "municipality_code":"175905"
+           "municipality_code":"175905",
+           "zip_code":"5516"
         },
         {
            "name":"CORCUERA",
            "province_code":"1759",
-           "municipality_code":"175906"
+           "municipality_code":"175906",
+           "zip_code":"5514"
         },
         {
            "name":"LOOC",
            "province_code":"1759",
-           "municipality_code":"175907"
+           "municipality_code":"175907",
+           "zip_code":"5507"
         },
         {
            "name":"MAGDIWANG",
            "province_code":"1759",
-           "municipality_code":"175908"
+           "municipality_code":"175908",
+           "zip_code":"5511"
         },
         {
            "name":"ODIONGAN",
            "province_code":"1759",
-           "municipality_code":"175909"
+           "municipality_code":"175909",
+           "zip_code":"5505"
         },
         {
            "name":"ROMBLON (Capital)",
            "province_code":"1759",
-           "municipality_code":"175910"
+           "municipality_code":"175910",
+           "zip_code":"5500"
         },
         {
            "name":"SAN AGUSTIN",
            "province_code":"1759",
-           "municipality_code":"175911"
+           "municipality_code":"175911",
+           "zip_code":"5501"
         },
         {
            "name":"SAN ANDRES",
            "province_code":"1759",
-           "municipality_code":"175912"
+           "municipality_code":"175912",
+           "zip_code":"5504"
         },
         {
            "name":"SAN FERNANDO",
            "province_code":"1759",
-           "municipality_code":"175913"
+           "municipality_code":"175913",
+           "zip_code":"5513"
         },
         {
            "name":"SAN JOSE",
            "province_code":"1759",
-           "municipality_code":"175914"
+           "municipality_code":"175914",
+           "zip_code":"5510"
         },
         {
            "name":"SANTA FE",
            "province_code":"1759",
-           "municipality_code":"175915"
+           "municipality_code":"175915",
+           "zip_code":"5508"
         },
         {
            "name":"FERROL",
            "province_code":"1759",
-           "municipality_code":"175916"
+           "municipality_code":"175916",
+           "zip_code":"5506"
         },
         {
            "name":"SANTA MARIA (IMELDA)",
            "province_code":"1759",
-           "municipality_code":"175917"
+           "municipality_code":"175917",
+           "zip_code":"5502"
         },
         {
            "name":"BACACAY",
            "province_code":"0505",
-           "municipality_code":"050501"
+           "municipality_code":"050501",
+           "zip_code":"4509"
         },
         {
            "name":"CAMALIG",
            "province_code":"0505",
-           "municipality_code":"050502"
+           "municipality_code":"050502",
+           "zip_code":"4502"
         },
         {
            "name":"DARAGA (LOCSIN)",
            "province_code":"0505",
-           "municipality_code":"050503"
+           "municipality_code":"050503",
+           "zip_code":"4501"
         },
         {
            "name":"GUINOBATAN",
            "province_code":"0505",
-           "municipality_code":"050504"
+           "municipality_code":"050504",
+           "zip_code":"4503"
         },
         {
            "name":"JOVELLAR",
            "province_code":"0505",
-           "municipality_code":"050505"
+           "municipality_code":"050505",
+           "zip_code":"4515"
         },
         {
            "name":"LEGAZPI CITY (Capital)",
            "province_code":"0505",
-           "municipality_code":"050506"
+           "municipality_code":"050506",
+           "zip_code":"4500"
         },
         {
            "name":"LIBON",
            "province_code":"0505",
-           "municipality_code":"050507"
+           "municipality_code":"050507",
+           "zip_code":"4507"
         },
         {
            "name":"CITY OF LIGAO",
            "province_code":"0505",
-           "municipality_code":"050508"
+           "municipality_code":"050508",
+           "zip_code":"4504"
         },
         {
            "name":"MALILIPOT",
            "province_code":"0505",
-           "municipality_code":"050509"
+           "municipality_code":"050509",
+           "zip_code":"4510"
         },
         {
            "name":"MALINAO",
            "province_code":"0505",
-           "municipality_code":"050510"
+           "municipality_code":"050510",
+           "zip_code":"4512"
         },
         {
            "name":"MANITO",
            "province_code":"0505",
-           "municipality_code":"050511"
+           "municipality_code":"050511",
+           "zip_code":"4514"
         },
         {
            "name":"OAS",
            "province_code":"0505",
-           "municipality_code":"050512"
+           "municipality_code":"050512",
+           "zip_code":"4505"
         },
         {
            "name":"PIO DURAN",
            "province_code":"0505",
-           "municipality_code":"050513"
+           "municipality_code":"050513",
+           "zip_code":"4516"
         },
         {
            "name":"POLANGUI",
            "province_code":"0505",
-           "municipality_code":"050514"
+           "municipality_code":"050514",
+           "zip_code":"4506"
         },
         {
            "name":"RAPU-RAPU",
            "province_code":"0505",
-           "municipality_code":"050515"
+           "municipality_code":"050515",
+           "zip_code":"4517"
         },
         {
            "name":"SANTO DOMINGO (LIBOG)",
            "province_code":"0505",
-           "municipality_code":"050516"
+           "municipality_code":"050516",
+           "zip_code":"4508"
         },
         {
            "name":"CITY OF TABACO",
            "province_code":"0505",
-           "municipality_code":"050517"
+           "municipality_code":"050517",
+           "zip_code":"4511"
         },
         {
            "name":"TIWI",
            "province_code":"0505",
-           "municipality_code":"050518"
+           "municipality_code":"050518",
+           "zip_code":"4513"
         },
         {
            "name":"BASUD",
            "province_code":"0516",
-           "municipality_code":"051601"
+           "municipality_code":"051601",
+           "zip_code":"4608"
         },
         {
            "name":"CAPALONGA",
            "province_code":"0516",
-           "municipality_code":"051602"
+           "municipality_code":"051602",
+           "zip_code":"4607"
         },
         {
            "name":"DAET (Capital)",
            "province_code":"0516",
-           "municipality_code":"051603"
+           "municipality_code":"051603",
+           "zip_code":"4600"
         },
         {
            "name":"SAN LORENZO RUIZ (IMELDA)",
            "province_code":"0516",
-           "municipality_code":"051604"
+           "municipality_code":"051604",
+           "zip_code":"4610"
         },
         {
            "name":"JOSE PANGANIBAN",
            "province_code":"0516",
-           "municipality_code":"051605"
+           "municipality_code":"051605",
+           "zip_code":"4606"
         },
         {
            "name":"LABO",
            "province_code":"0516",
-           "municipality_code":"051606"
+           "municipality_code":"051606",
+           "zip_code":"4604"
         },
         {
            "name":"MERCEDES",
            "province_code":"0516",
-           "municipality_code":"051607"
+           "municipality_code":"051607",
+           "zip_code":"4601"
         },
         {
            "name":"PARACALE",
            "province_code":"0516",
-           "municipality_code":"051608"
+           "municipality_code":"051608",
+           "zip_code":"4605"
         },
         {
            "name":"SAN VICENTE",
            "province_code":"0516",
-           "municipality_code":"051609"
+           "municipality_code":"051609",
+           "zip_code":"4609"
         },
         {
            "name":"SANTA ELENA",
            "province_code":"0516",
-           "municipality_code":"051610"
+           "municipality_code":"051610",
+           "zip_code":"4611"
         },
         {
            "name":"TALISAY",
            "province_code":"0516",
-           "municipality_code":"051611"
+           "municipality_code":"051611",
+           "zip_code":"4602"
         },
         {
            "name":"VINZONS",
            "province_code":"0516",
-           "municipality_code":"051612"
+           "municipality_code":"051612",
+           "zip_code":"4603"
         },
         {
            "name":"BAAO",
            "province_code":"0517",
-           "municipality_code":"051701"
+           "municipality_code":"051701",
+           "zip_code":"4432"
         },
         {
            "name":"BALATAN",
            "province_code":"0517",
-           "municipality_code":"051702"
+           "municipality_code":"051702",
+           "zip_code":"4436"
         },
         {
            "name":"BATO",
            "province_code":"0517",
-           "municipality_code":"051703"
+           "municipality_code":"051703",
+           "zip_code":"4435"
         },
         {
            "name":"BOMBON",
            "province_code":"0517",
-           "municipality_code":"051704"
+           "municipality_code":"051704",
+           "zip_code":"4404"
         },
         {
            "name":"BUHI",
            "province_code":"0517",
-           "municipality_code":"051705"
+           "municipality_code":"051705",
+           "zip_code":"4433"
         },
         {
            "name":"BULA",
            "province_code":"0517",
-           "municipality_code":"051706"
+           "municipality_code":"051706",
+           "zip_code":"4430"
         },
         {
            "name":"CABUSAO",
            "province_code":"0517",
-           "municipality_code":"051707"
+           "municipality_code":"051707",
+           "zip_code":"4406"
         },
         {
            "name":"CALABANGA",
            "province_code":"0517",
-           "municipality_code":"051708"
+           "municipality_code":"051708",
+           "zip_code":"4405"
         },
         {
            "name":"CAMALIGAN",
            "province_code":"0517",
-           "municipality_code":"051709"
+           "municipality_code":"051709",
+           "zip_code":"4401"
         },
         {
            "name":"CANAMAN",
            "province_code":"0517",
-           "municipality_code":"051710"
+           "municipality_code":"051710",
+           "zip_code":"4402"
         },
         {
            "name":"CARAMOAN",
            "province_code":"0517",
-           "municipality_code":"051711"
+           "municipality_code":"051711",
+           "zip_code":"4429"
         },
         {
            "name":"DEL GALLEGO",
            "province_code":"0517",
-           "municipality_code":"051712"
+           "municipality_code":"051712",
+           "zip_code":"4411"
         },
         {
            "name":"GAINZA",
            "province_code":"0517",
-           "municipality_code":"051713"
+           "municipality_code":"051713",
+           "zip_code":"4412"
         },
         {
            "name":"GARCHITORENA",
            "province_code":"0517",
-           "municipality_code":"051714"
+           "municipality_code":"051714",
+           "zip_code":"4428"
         },
         {
            "name":"GOA",
            "province_code":"0517",
-           "municipality_code":"051715"
+           "municipality_code":"051715",
+           "zip_code":"4422"
         },
         {
            "name":"IRIGA CITY",
            "province_code":"0517",
-           "municipality_code":"051716"
+           "municipality_code":"051716",
+           "zip_code":"4431"
         },
         {
            "name":"LAGONOY",
            "province_code":"0517",
-           "municipality_code":"051717"
+           "municipality_code":"051717",
+           "zip_code":"4425"
         },
         {
            "name":"LIBMANAN",
            "province_code":"0517",
-           "municipality_code":"051718"
+           "municipality_code":"051718",
+           "zip_code":"4407"
         },
         {
            "name":"LUPI",
            "province_code":"0517",
-           "municipality_code":"051719"
+           "municipality_code":"051719",
+           "zip_code":"4409"
         },
         {
            "name":"MAGARAO",
            "province_code":"0517",
-           "municipality_code":"051720"
+           "municipality_code":"051720",
+           "zip_code":"4403"
         },
         {
            "name":"MILAOR",
            "province_code":"0517",
-           "municipality_code":"051721"
+           "municipality_code":"051721",
+           "zip_code":"4413"
         },
         {
            "name":"MINALABAC",
            "province_code":"0517",
-           "municipality_code":"051722"
+           "municipality_code":"051722",
+           "zip_code":"4415"
         },
         {
            "name":"NABUA",
            "province_code":"0517",
-           "municipality_code":"051723"
+           "municipality_code":"051723",
+           "zip_code":"4434"
         },
         {
            "name":"NAGA CITY",
            "province_code":"0517",
-           "municipality_code":"051724"
+           "municipality_code":"051724",
+           "zip_code":"4400"
         },
         {
            "name":"OCAMPO",
            "province_code":"0517",
-           "municipality_code":"051725"
+           "municipality_code":"051725",
+           "zip_code":"4419"
         },
         {
            "name":"PAMPLONA",
            "province_code":"0517",
-           "municipality_code":"051726"
+           "municipality_code":"051726",
+           "zip_code":"4416"
         },
         {
            "name":"PASACAO",
            "province_code":"0517",
-           "municipality_code":"051727"
+           "municipality_code":"051727",
+           "zip_code":"4417"
         },
         {
            "name":"PILI (Capital)",
            "province_code":"0517",
-           "municipality_code":"051728"
+           "municipality_code":"051728",
+           "zip_code":"4418"
         },
         {
            "name":"PRESENTACION (PARUBCAN)",
            "province_code":"0517",
-           "municipality_code":"051729"
+           "municipality_code":"051729",
+           "zip_code":"4424"
         },
         {
            "name":"RAGAY",
            "province_code":"0517",
-           "municipality_code":"051730"
+           "municipality_code":"051730",
+           "zip_code":"4410"
         },
         {
            "name":"SAN FERNANDO",
            "province_code":"0517",
-           "municipality_code":"051732"
+           "municipality_code":"051732",
+           "zip_code":"4415"
         },
         {
            "name":"SAN JOSE",
            "province_code":"0517",
-           "municipality_code":"051733"
+           "municipality_code":"051733",
+           "zip_code":"4423"
         },
         {
            "name":"SIPOCOT",
            "province_code":"0517",
-           "municipality_code":"051734"
+           "municipality_code":"051734",
+           "zip_code":"4408"
         },
         {
            "name":"SIRUMA",
            "province_code":"0517",
-           "municipality_code":"051735"
+           "municipality_code":"051735",
+           "zip_code":"4427"
         },
         {
            "name":"TIGAON",
            "province_code":"0517",
-           "municipality_code":"051736"
+           "municipality_code":"051736",
+           "zip_code":"4420"
         },
         {
            "name":"TINAMBAC",
            "province_code":"0517",
-           "municipality_code":"051737"
+           "municipality_code":"051737",
+           "zip_code":"4426"
         },
         {
            "name":"BAGAMANOC",
            "province_code":"0520",
-           "municipality_code":"052001"
+           "municipality_code":"052001",
+           "zip_code":"4807"
         },
         {
            "name":"BARAS",
            "province_code":"0520",
-           "municipality_code":"052002"
+           "municipality_code":"052002",
+           "zip_code":"4803"
         },
         {
            "name":"BATO",
            "province_code":"0520",
-           "municipality_code":"052003"
+           "municipality_code":"052003",
+           "zip_code":"4801"
         },
         {
            "name":"CARAMORAN",
            "province_code":"0520",
-           "municipality_code":"052004"
+           "municipality_code":"052004",
+           "zip_code":"4808"
         },
         {
            "name":"GIGMOTO",
            "province_code":"0520",
-           "municipality_code":"052005"
+           "municipality_code":"052005",
+           "zip_code":"4804"
         },
         {
            "name":"PANDAN",
            "province_code":"0520",
-           "municipality_code":"052006"
+           "municipality_code":"052006",
+           "zip_code":"4809"
         },
         {
            "name":"PANGANIBAN (PAYO)",
            "province_code":"0520",
-           "municipality_code":"052007"
+           "municipality_code":"052007",
+           "zip_code":"4806"
         },
         {
            "name":"SAN ANDRES (CALOLBON)",
            "province_code":"0520",
-           "municipality_code":"052008"
+           "municipality_code":"052008",
+           "zip_code":"4810"
         },
         {
            "name":"SAN MIGUEL",
            "province_code":"0520",
-           "municipality_code":"052009"
+           "municipality_code":"052009",
+           "zip_code":"4802"
         },
         {
            "name":"VIGA",
            "province_code":"0520",
-           "municipality_code":"052010"
+           "municipality_code":"052010",
+           "zip_code":"4805"
         },
         {
            "name":"VIRAC (Capital)",
            "province_code":"0520",
-           "municipality_code":"052011"
+           "municipality_code":"052011",
+           "zip_code":"4800"
         },
         {
            "name":"AROROY",
            "province_code":"0541",
-           "municipality_code":"054101"
+           "municipality_code":"054101",
+           "zip_code":"5414"
         },
         {
            "name":"BALENO",
            "province_code":"0541",
-           "municipality_code":"054102"
+           "municipality_code":"054102",
+           "zip_code":"5413"
         },
         {
            "name":"BALUD",
            "province_code":"0541",
-           "municipality_code":"054103"
+           "municipality_code":"054103",
+           "zip_code":"5412"
         },
         {
            "name":"BATUAN",
            "province_code":"0541",
-           "municipality_code":"054104"
+           "municipality_code":"054104",
+           "zip_code":"5415"
         },
         {
            "name":"CATAINGAN",
            "province_code":"0541",
-           "municipality_code":"054105"
+           "municipality_code":"054105",
+           "zip_code":"5405"
         },
         {
            "name":"CAWAYAN",
            "province_code":"0541",
-           "municipality_code":"054106"
+           "municipality_code":"054106",
+           "zip_code":"5409"
         },
         {
            "name":"CLAVERIA",
            "province_code":"0541",
-           "municipality_code":"054107"
+           "municipality_code":"054107",
+           "zip_code":"5419"
         },
         {
            "name":"DIMASALANG",
            "province_code":"0541",
-           "municipality_code":"054108"
+           "municipality_code":"054108",
+           "zip_code":"5403"
         },
         {
            "name":"ESPERANZA",
            "province_code":"0541",
-           "municipality_code":"054109"
+           "municipality_code":"054109",
+           "zip_code":"5407"
         },
         {
            "name":"MANDAON",
            "province_code":"0541",
-           "municipality_code":"054110"
+           "municipality_code":"054110",
+           "zip_code":"5411"
         },
         {
            "name":"CITY OF MASBATE (Capital)",
            "province_code":"0541",
-           "municipality_code":"054111"
+           "municipality_code":"054111",
+           "zip_code":"5400"
         },
         {
            "name":"MILAGROS",
            "province_code":"0541",
-           "municipality_code":"054112"
+           "municipality_code":"054112",
+           "zip_code":"5410"
         },
         {
            "name":"MOBO",
            "province_code":"0541",
-           "municipality_code":"054113"
+           "municipality_code":"054113",
+           "zip_code":"5401"
         },
         {
            "name":"MONREAL",
            "province_code":"0541",
-           "municipality_code":"054114"
+           "municipality_code":"054114",
+           "zip_code":"5418"
         },
         {
            "name":"PALANAS",
            "province_code":"0541",
-           "municipality_code":"054115"
+           "municipality_code":"054115",
+           "zip_code":"5404"
         },
         {
            "name":"PIO V. CORPUZ (LIMBUHAN)",
            "province_code":"0541",
-           "municipality_code":"054116"
+           "municipality_code":"054116",
+           "zip_code":"5406"
         },
         {
            "name":"PLACER",
            "province_code":"0541",
-           "municipality_code":"054117"
+           "municipality_code":"054117",
+           "zip_code":"5408"
         },
         {
            "name":"SAN FERNANDO",
            "province_code":"0541",
-           "municipality_code":"054118"
+           "municipality_code":"054118",
+           "zip_code":"5416"
         },
         {
            "name":"SAN JACINTO",
            "province_code":"0541",
-           "municipality_code":"054119"
+           "municipality_code":"054119",
+           "zip_code":"5417"
         },
         {
            "name":"SAN PASCUAL",
            "province_code":"0541",
-           "municipality_code":"054120"
+           "municipality_code":"054120",
+           "zip_code":"5420"
         },
         {
            "name":"USON",
            "province_code":"0541",
-           "municipality_code":"054121"
+           "municipality_code":"054121",
+           "zip_code":"5402"
         },
         {
            "name":"BARCELONA",
            "province_code":"0562",
-           "municipality_code":"056202"
+           "municipality_code":"056202",
+           "zip_code":"4712"
         },
         {
            "name":"BULAN",
            "province_code":"0562",
-           "municipality_code":"056203"
+           "municipality_code":"056203",
+           "zip_code":"4706"
         },
         {
            "name":"BULUSAN",
            "province_code":"0562",
-           "municipality_code":"056204"
+           "municipality_code":"056204",
+           "zip_code":"4704"
         },
         {
            "name":"CASIGURAN",
            "province_code":"0562",
-           "municipality_code":"056205"
+           "municipality_code":"056205",
+           "zip_code":"4702"
         },
         {
            "name":"CASTILLA",
            "province_code":"0562",
-           "municipality_code":"056206"
+           "municipality_code":"056206",
+           "zip_code":"4713"
         },
         {
            "name":"DONSOL",
            "province_code":"0562",
-           "municipality_code":"056207"
+           "municipality_code":"056207",
+           "zip_code":"4715"
         },
         {
            "name":"GUBAT",
            "province_code":"0562",
-           "municipality_code":"056208"
+           "municipality_code":"056208",
+           "zip_code":"4710"
         },
         {
            "name":"IROSIN",
            "province_code":"0562",
-           "municipality_code":"056209"
+           "municipality_code":"056209",
+           "zip_code":"4707"
         },
         {
            "name":"JUBAN",
            "province_code":"0562",
-           "municipality_code":"056210"
+           "municipality_code":"056210",
+           "zip_code":"4703"
         },
         {
            "name":"MAGALLANES",
            "province_code":"0562",
-           "municipality_code":"056211"
+           "municipality_code":"056211",
+           "zip_code":"4705"
         },
         {
            "name":"MATNOG",
            "province_code":"0562",
-           "municipality_code":"056212"
+           "municipality_code":"056212",
+           "zip_code":"4708"
         },
         {
            "name":"PILAR",
            "province_code":"0562",
-           "municipality_code":"056213"
+           "municipality_code":"056213",
+           "zip_code":"4714"
         },
         {
            "name":"PRIETO DIAZ",
            "province_code":"0562",
-           "municipality_code":"056214"
+           "municipality_code":"056214",
+           "zip_code":"4711"
         },
         {
            "name":"SANTA MAGDALENA",
            "province_code":"0562",
-           "municipality_code":"056215"
+           "municipality_code":"056215",
+           "zip_code":"4709"
         },
         {
            "name":"CITY OF SORSOGON (Capital)",
            "province_code":"0562",
-           "municipality_code":"056216"
+           "municipality_code":"056216",
+           "zip_code":"4700"
         },
         {
            "name":"ALTAVAS",
            "province_code":"0604",
-           "municipality_code":"060401"
+           "municipality_code":"060401",
+           "zip_code":"5616"
         },
         {
            "name":"BALETE",
            "province_code":"0604",
-           "municipality_code":"060402"
+           "municipality_code":"060402",
+           "zip_code":"5614"
         },
         {
            "name":"BANGA",
            "province_code":"0604",
-           "municipality_code":"060403"
+           "municipality_code":"060403",
+           "zip_code":"5601"
         },
         {
            "name":"BATAN",
            "province_code":"0604",
-           "municipality_code":"060404"
+           "municipality_code":"060404",
+           "zip_code":"5615"
         },
         {
            "name":"BURUANGA",
            "province_code":"0604",
-           "municipality_code":"060405"
+           "municipality_code":"060405",
+           "zip_code":"5609"
         },
         {
            "name":"IBAJAY",
            "province_code":"0604",
-           "municipality_code":"060406"
+           "municipality_code":"060406",
+           "zip_code":"5613"
         },
         {
            "name":"KALIBO (Capital)",
            "province_code":"0604",
-           "municipality_code":"060407"
+           "municipality_code":"060407",
+           "zip_code":"5600"
         },
         {
            "name":"LEZO",
            "province_code":"0604",
-           "municipality_code":"060408"
+           "municipality_code":"060408",
+           "zip_code":"5605"
         },
         {
            "name":"LIBACAO",
            "province_code":"0604",
-           "municipality_code":"060409"
+           "municipality_code":"060409",
+           "zip_code":"5602"
         },
         {
            "name":"MADALAG",
            "province_code":"0604",
-           "municipality_code":"060410"
+           "municipality_code":"060410",
+           "zip_code":"5603"
         },
         {
            "name":"MAKATO",
            "province_code":"0604",
-           "municipality_code":"060411"
+           "municipality_code":"060411",
+           "zip_code":"5611"
         },
         {
            "name":"MALAY",
            "province_code":"0604",
-           "municipality_code":"060412"
+           "municipality_code":"060412",
+           "zip_code":"5608"
         },
         {
            "name":"MALINAO",
            "province_code":"0604",
-           "municipality_code":"060413"
+           "municipality_code":"060413",
+           "zip_code":"5606"
         },
         {
            "name":"NABAS",
            "province_code":"0604",
-           "municipality_code":"060414"
+           "municipality_code":"060414",
+           "zip_code":"5607"
         },
         {
            "name":"NEW WASHINGTON",
            "province_code":"0604",
-           "municipality_code":"060415"
+           "municipality_code":"060415",
+           "zip_code":"5610"
         },
         {
            "name":"NUMANCIA",
            "province_code":"0604",
-           "municipality_code":"060416"
+           "municipality_code":"060416",
+           "zip_code":"5604"
         },
         {
            "name":"TANGALAN",
            "province_code":"0604",
-           "municipality_code":"060417"
+           "municipality_code":"060417",
+           "zip_code":"5612"
         },
         {
            "name":"ANINI-Y",
            "province_code":"0606",
-           "municipality_code":"060601"
+           "municipality_code":"060601",
+           "zip_code":"5717"
         },
         {
            "name":"BARBAZA",
            "province_code":"0606",
-           "municipality_code":"060602"
+           "municipality_code":"060602",
+           "zip_code":"5706"
         },
         {
            "name":"BELISON",
            "province_code":"0606",
-           "municipality_code":"060603"
+           "municipality_code":"060603",
+           "zip_code":"5701"
         },
         {
            "name":"BUGASONG",
            "province_code":"0606",
-           "municipality_code":"060604"
+           "municipality_code":"060604",
+           "zip_code":"5704"
         },
         {
            "name":"CALUYA",
            "province_code":"0606",
-           "municipality_code":"060605"
+           "municipality_code":"060605",
+           "zip_code":"5711"
         },
         {
            "name":"CULASI",
            "province_code":"0606",
-           "municipality_code":"060606"
+           "municipality_code":"060606",
+           "zip_code":"5708"
         },
         {
            "name":"TOBIAS FORNIER (DAO)",
            "province_code":"0606",
-           "municipality_code":"060607"
+           "municipality_code":"060607",
+           "zip_code":"5716"
         },
         {
            "name":"HAMTIC",
            "province_code":"0606",
-           "municipality_code":"060608"
+           "municipality_code":"060608",
+           "zip_code":"5715"
         },
         {
            "name":"LAUA-AN",
            "province_code":"0606",
-           "municipality_code":"060609"
+           "municipality_code":"060609",
+           "zip_code":"5705"
         },
         {
            "name":"LIBERTAD",
            "province_code":"0606",
-           "municipality_code":"060610"
+           "municipality_code":"060610",
+           "zip_code":"5710"
         },
         {
            "name":"PANDAN",
            "province_code":"0606",
-           "municipality_code":"060611"
+           "municipality_code":"060611",
+           "zip_code":"5712"
         },
         {
            "name":"PATNONGON",
            "province_code":"0606",
-           "municipality_code":"060612"
+           "municipality_code":"060612",
+           "zip_code":"5702"
         },
         {
            "name":"SAN JOSE (Capital)",
            "province_code":"0606",
-           "municipality_code":"060613"
+           "municipality_code":"060613",
+           "zip_code":"5700"
         },
         {
            "name":"SAN REMIGIO",
            "province_code":"0606",
-           "municipality_code":"060614"
+           "municipality_code":"060614",
+           "zip_code":"5714"
         },
         {
            "name":"SEBASTE",
            "province_code":"0606",
-           "municipality_code":"060615"
+           "municipality_code":"060615",
+           "zip_code":"5709"
         },
         {
            "name":"SIBALOM",
            "province_code":"0606",
-           "municipality_code":"060616"
+           "municipality_code":"060616",
+           "zip_code":"5713"
         },
         {
            "name":"TIBIAO",
            "province_code":"0606",
-           "municipality_code":"060617"
+           "municipality_code":"060617",
+           "zip_code":"5707"
         },
         {
            "name":"VALDERRAMA",
            "province_code":"0606",
-           "municipality_code":"060618"
+           "municipality_code":"060618",
+           "zip_code":"5703"
         },
         {
            "name":"CUARTERO",
            "province_code":"0619",
-           "municipality_code":"061901"
+           "municipality_code":"061901",
+           "zip_code":"5811"
         },
         {
            "name":"DAO",
            "province_code":"0619",
-           "municipality_code":"061902"
+           "municipality_code":"061902",
+           "zip_code":"5810"
         },
         {
            "name":"DUMALAG",
            "province_code":"0619",
-           "municipality_code":"061903"
+           "municipality_code":"061903",
+           "zip_code":"5813"
         },
         {
            "name":"DUMARAO",
            "province_code":"0619",
-           "municipality_code":"061904"
+           "municipality_code":"061904",
+           "zip_code":"5812"
         },
         {
            "name":"IVISAN",
            "province_code":"0619",
-           "municipality_code":"061905"
+           "municipality_code":"061905",
+           "zip_code":"5805"
         },
         {
            "name":"JAMINDAN",
            "province_code":"0619",
-           "municipality_code":"061906"
+           "municipality_code":"061906",
+           "zip_code":"5808"
         },
         {
            "name":"MA-AYON",
            "province_code":"0619",
-           "municipality_code":"061907"
+           "municipality_code":"061907",
+           "zip_code":"5809"
         },
         {
            "name":"MAMBUSAO",
            "province_code":"0619",
-           "municipality_code":"061908"
+           "municipality_code":"061908",
+           "zip_code":"5807"
         },
         {
            "name":"PANAY",
            "province_code":"0619",
-           "municipality_code":"061909"
+           "municipality_code":"061909",
+           "zip_code":"5801"
         },
         {
            "name":"PANITAN",
            "province_code":"0619",
-           "municipality_code":"061910"
+           "municipality_code":"061910",
+           "zip_code":"5815"
         },
         {
            "name":"PILAR",
            "province_code":"0619",
-           "municipality_code":"061911"
+           "municipality_code":"061911",
+           "zip_code":"5804"
         },
         {
            "name":"PONTEVEDRA",
            "province_code":"0619",
-           "municipality_code":"061912"
+           "municipality_code":"061912",
+           "zip_code":"5802"
         },
         {
            "name":"PRESIDENT ROXAS",
            "province_code":"0619",
-           "municipality_code":"061913"
+           "municipality_code":"061913",
+           "zip_code":"5803"
         },
         {
            "name":"ROXAS CITY (Capital)",
            "province_code":"0619",
-           "municipality_code":"061914"
+           "municipality_code":"061914",
+           "zip_code":"5800"
         },
         {
            "name":"SAPI-AN",
            "province_code":"0619",
-           "municipality_code":"061915"
+           "municipality_code":"061915",
+           "zip_code":"5806"
         },
         {
            "name":"SIGMA",
            "province_code":"0619",
-           "municipality_code":"061916"
+           "municipality_code":"061916",
+           "zip_code":"5816"
         },
         {
            "name":"TAPAZ",
            "province_code":"0619",
-           "municipality_code":"061917"
+           "municipality_code":"061917",
+           "zip_code":"5814"
         },
         {
            "name":"AJUY",
            "province_code":"0630",
-           "municipality_code":"063001"
+           "municipality_code":"063001",
+           "zip_code":"5012"
         },
         {
            "name":"ALIMODIAN",
            "province_code":"0630",
-           "municipality_code":"063002"
+           "municipality_code":"063002",
+           "zip_code":"5028"
         },
         {
            "name":"ANILAO",
            "province_code":"0630",
-           "municipality_code":"063003"
+           "municipality_code":"063003",
+           "zip_code":"5009"
         },
         {
            "name":"BADIANGAN",
            "province_code":"0630",
-           "municipality_code":"063004"
+           "municipality_code":"063004",
+           "zip_code":"503"
         },
         {
            "name":"BALASAN",
            "province_code":"0630",
-           "municipality_code":"063005"
+           "municipality_code":"063005",
+           "zip_code":"5018"
         },
         {
            "name":"BANATE",
            "province_code":"0630",
-           "municipality_code":"063006"
+           "municipality_code":"063006",
+           "zip_code":"5010"
         },
         {
            "name":"BAROTAC NUEVO",
            "province_code":"0630",
-           "municipality_code":"063007"
+           "municipality_code":"063007",
+           "zip_code":"5007"
         },
         {
            "name":"BAROTAC VIEJO",
            "province_code":"0630",
-           "municipality_code":"063008"
+           "municipality_code":"063008",
+           "zip_code":"5011"
         },
         {
            "name":"BATAD",
            "province_code":"0630",
-           "municipality_code":"063009"
+           "municipality_code":"063009",
+           "zip_code":"5016"
         },
         {
            "name":"BINGAWAN",
            "province_code":"0630",
-           "municipality_code":"063010"
+           "municipality_code":"063010",
+           "zip_code":"5041"
         },
         {
            "name":"CABATUAN",
            "province_code":"0630",
-           "municipality_code":"063012"
+           "municipality_code":"063012",
+           "zip_code":"5031"
         },
         {
            "name":"CALINOG",
            "province_code":"0630",
-           "municipality_code":"063013"
+           "municipality_code":"063013",
+           "zip_code":"5040"
         },
         {
            "name":"CARLES",
            "province_code":"0630",
-           "municipality_code":"063014"
+           "municipality_code":"063014",
+           "zip_code":"5019"
         },
         {
            "name":"CONCEPCION",
            "province_code":"0630",
-           "municipality_code":"063015"
+           "municipality_code":"063015",
+           "zip_code":"5013"
         },
         {
            "name":"DINGLE",
            "province_code":"0630",
-           "municipality_code":"063016"
+           "municipality_code":"063016",
+           "zip_code":"5035"
         },
         {
            "name":"DUMANGAS",
            "province_code":"0630",
-           "municipality_code":"063018"
+           "municipality_code":"063018",
+           "zip_code":"5006"
         },
         {
            "name":"ESTANCIA",
            "province_code":"0630",
-           "municipality_code":"063019"
+           "municipality_code":"063019",
+           "zip_code":"5017"
         },
         {
            "name":"GUIMBAL",
            "province_code":"0630",
-           "municipality_code":"063020"
+           "municipality_code":"063020",
+           "zip_code":"5022"
         },
         {
            "name":"IGBARAS",
            "province_code":"0630",
-           "municipality_code":"063021"
+           "municipality_code":"063021",
+           "zip_code":"5029"
         },
         {
            "name":"ILOILO CITY (Capital)",
            "province_code":"0630",
-           "municipality_code":"063022"
+           "municipality_code":"063022",
+           "zip_code":"5000"
         },
         {
            "name":"JANIUAY",
            "province_code":"0630",
-           "municipality_code":"063023"
+           "municipality_code":"063023",
+           "zip_code":"5034"
         },
         {
            "name":"LAMBUNAO",
            "province_code":"0630",
-           "municipality_code":"063025"
+           "municipality_code":"063025",
+           "zip_code":"5042"
         },
         {
            "name":"LEGANES",
            "province_code":"0630",
-           "municipality_code":"063026"
+           "municipality_code":"063026",
+           "zip_code":"5003"
         },
         {
            "name":"LEMERY",
            "province_code":"0630",
-           "municipality_code":"063027"
+           "municipality_code":"063027",
+           "zip_code":"5043"
         },
         {
            "name":"LEON",
            "province_code":"0630",
-           "municipality_code":"063028"
+           "municipality_code":"063028",
+           "zip_code":"5026"
         },
         {
            "name":"MAASIN",
            "province_code":"0630",
-           "municipality_code":"063029"
+           "municipality_code":"063029",
+           "zip_code":"5030"
         },
         {
            "name":"MIAGAO",
            "province_code":"0630",
-           "municipality_code":"063030"
+           "municipality_code":"063030",
+           "zip_code":"5023"
         },
         {
            "name":"MINA",
            "province_code":"0630",
-           "municipality_code":"063031"
+           "municipality_code":"063031",
+           "zip_code":"5032"
         },
         {
            "name":"NEW LUCENA",
            "province_code":"0630",
-           "municipality_code":"063032"
+           "municipality_code":"063032",
+           "zip_code":"5005"
         },
         {
            "name":"OTON",
            "province_code":"0630",
-           "municipality_code":"063034"
+           "municipality_code":"063034",
+           "zip_code":"5020"
         },
         {
            "name":"CITY OF PASSI",
            "province_code":"0630",
-           "municipality_code":"063035"
+           "municipality_code":"063035",
+           "zip_code":"5037"
         },
         {
            "name":"PAVIA",
            "province_code":"0630",
-           "municipality_code":"063036"
+           "municipality_code":"063036",
+           "zip_code":"5001"
         },
         {
            "name":"POTOTAN",
            "province_code":"0630",
-           "municipality_code":"063037"
+           "municipality_code":"063037",
+           "zip_code":"5008"
         },
         {
            "name":"SAN DIONISIO",
            "province_code":"0630",
-           "municipality_code":"063038"
+           "municipality_code":"063038",
+           "zip_code":"5015"
         },
         {
            "name":"SAN ENRIQUE",
            "province_code":"0630",
-           "municipality_code":"063039"
+           "municipality_code":"063039",
+           "zip_code":"5036"
         },
         {
            "name":"SAN JOAQUIN",
            "province_code":"0630",
-           "municipality_code":"063040"
+           "municipality_code":"063040",
+           "zip_code":"5024"
         },
         {
            "name":"SAN MIGUEL",
            "province_code":"0630",
-           "municipality_code":"063041"
+           "municipality_code":"063041",
+           "zip_code":"5025"
         },
         {
            "name":"SAN RAFAEL",
            "province_code":"0630",
-           "municipality_code":"063042"
+           "municipality_code":"063042",
+           "zip_code":"5039"
         },
         {
            "name":"SANTA BARBARA",
            "province_code":"0630",
-           "municipality_code":"063043"
+           "municipality_code":"063043",
+           "zip_code":"5002"
         },
         {
            "name":"SARA",
            "province_code":"0630",
-           "municipality_code":"063044"
+           "municipality_code":"063044",
+           "zip_code":"5014"
         },
         {
            "name":"TIGBAUAN",
            "province_code":"0630",
-           "municipality_code":"063045"
+           "municipality_code":"063045",
+           "zip_code":"5021"
         },
         {
            "name":"TUBUNGAN",
            "province_code":"0630",
-           "municipality_code":"063046"
+           "municipality_code":"063046",
+           "zip_code":"5027"
         },
         {
            "name":"ZARRAGA",
            "province_code":"0630",
-           "municipality_code":"063047"
+           "municipality_code":"063047",
+           "zip_code":"5004"
         },
         {
            "name":"BACOLOD CITY (Capital)",
            "province_code":"0645",
-           "municipality_code":"064501"
+           "municipality_code":"064501",
+           "zip_code":"6100"
         },
         {
            "name":"BAGO CITY",
            "province_code":"0645",
-           "municipality_code":"064502"
+           "municipality_code":"064502",
+           "zip_code":"6101"
         },
         {
            "name":"BINALBAGAN",
            "province_code":"0645",
-           "municipality_code":"064503"
+           "municipality_code":"064503",
+           "zip_code":"6107"
         },
         {
            "name":"CADIZ CITY",
            "province_code":"0645",
-           "municipality_code":"064504"
+           "municipality_code":"064504",
+           "zip_code":"6121"
         },
         {
            "name":"CALATRAVA",
            "province_code":"0645",
-           "municipality_code":"064505"
+           "municipality_code":"064505",
+           "zip_code":"6126"
         },
         {
            "name":"CANDONI",
            "province_code":"0645",
-           "municipality_code":"064506"
+           "municipality_code":"064506",
+           "zip_code":"6110"
         },
         {
            "name":"CAUAYAN",
            "province_code":"0645",
-           "municipality_code":"064507"
+           "municipality_code":"064507",
+           "zip_code":"6112"
         },
         {
            "name":"ENRIQUE B. MAGALONA (SARAVIA)",
            "province_code":"0645",
-           "municipality_code":"064508"
+           "municipality_code":"064508",
+           "zip_code":"6118"
         },
         {
            "name":"CITY OF ESCALANTE",
            "province_code":"0645",
-           "municipality_code":"064509"
+           "municipality_code":"064509",
+           "zip_code":"6124"
         },
         {
            "name":"CITY OF HIMAMAYLAN",
            "province_code":"0645",
-           "municipality_code":"064510"
+           "municipality_code":"064510",
+           "zip_code":"6108"
         },
         {
            "name":"HINIGARAN",
            "province_code":"0645",
-           "municipality_code":"064511"
+           "municipality_code":"064511",
+           "zip_code":"6106"
         },
         {
            "name":"HINOBA-AN (ASIA)",
            "province_code":"0645",
-           "municipality_code":"064512"
+           "municipality_code":"064512",
+           "zip_code":"6114"
         },
         {
            "name":"ILOG",
            "province_code":"0645",
-           "municipality_code":"064513"
+           "municipality_code":"064513",
+           "zip_code":"6109"
         },
         {
            "name":"ISABELA",
            "province_code":"0645",
-           "municipality_code":"064514"
+           "municipality_code":"064514",
+           "zip_code":"6128"
         },
         {
            "name":"CITY OF KABANKALAN",
            "province_code":"0645",
-           "municipality_code":"064515"
+           "municipality_code":"064515",
+           "zip_code":"6111"
         },
         {
            "name":"LA CARLOTA CITY",
            "province_code":"0645",
-           "municipality_code":"064516"
+           "municipality_code":"064516",
+           "zip_code":"6130"
         },
         {
            "name":"LA CASTELLANA",
            "province_code":"0645",
-           "municipality_code":"064517"
+           "municipality_code":"064517",
+           "zip_code":"6131"
         },
         {
            "name":"MANAPLA",
            "province_code":"0645",
-           "municipality_code":"064518"
+           "municipality_code":"064518",
+           "zip_code":"6120"
         },
         {
            "name":"MOISES PADILLA (MAGALLON)",
            "province_code":"0645",
-           "municipality_code":"064519"
+           "municipality_code":"064519",
+           "zip_code":"6132"
         },
         {
            "name":"MURCIA",
            "province_code":"0645",
-           "municipality_code":"064520"
+           "municipality_code":"064520",
+           "zip_code":"6129"
         },
         {
            "name":"PONTEVEDRA",
            "province_code":"0645",
-           "municipality_code":"064521"
+           "municipality_code":"064521",
+           "zip_code":"6105"
         },
         {
            "name":"PULUPANDAN",
            "province_code":"0645",
-           "municipality_code":"064522"
+           "municipality_code":"064522",
+           "zip_code":"6102"
         },
         {
            "name":"SAGAY CITY",
            "province_code":"0645",
-           "municipality_code":"064523"
+           "municipality_code":"064523",
+           "zip_code":"6122"
         },
         {
            "name":"SAN CARLOS CITY",
            "province_code":"0645",
-           "municipality_code":"064524"
+           "municipality_code":"064524",
+           "zip_code":"6127"
         },
         {
            "name":"SAN ENRIQUE",
            "province_code":"0645",
-           "municipality_code":"064525"
+           "municipality_code":"064525",
+           "zip_code":"6104"
         },
         {
            "name":"SILAY CITY",
            "province_code":"0645",
-           "municipality_code":"064526"
+           "municipality_code":"064526",
+           "zip_code":"6116"
         },
         {
            "name":"CITY OF SIPALAY",
            "province_code":"0645",
-           "municipality_code":"064527"
+           "municipality_code":"064527",
+           "zip_code":"6113"
         },
         {
            "name":"CITY OF TALISAY",
            "province_code":"0645",
-           "municipality_code":"064528"
+           "municipality_code":"064528",
+           "zip_code":"6115"
         },
         {
            "name":"TOBOSO",
            "province_code":"0645",
-           "municipality_code":"064529"
+           "municipality_code":"064529",
+           "zip_code":"6125"
         },
         {
            "name":"VALLADOLID",
            "province_code":"0645",
-           "municipality_code":"064530"
+           "municipality_code":"064530",
+           "zip_code":"6103"
         },
         {
            "name":"CITY OF VICTORIAS",
            "province_code":"0645",
-           "municipality_code":"064531"
+           "municipality_code":"064531",
+           "zip_code":"6119"
         },
         {
            "name":"SALVADOR BENEDICTO",
            "province_code":"0645",
-           "municipality_code":"064532"
+           "municipality_code":"064532",
+           "zip_code":"6117"
         },
         {
            "name":"BUENAVISTA",
            "province_code":"0679",
-           "municipality_code":"067901"
+           "municipality_code":"067901",
+           "zip_code":"5044"
         },
         {
            "name":"JORDAN (Capital)",
            "province_code":"0679",
-           "municipality_code":"067902"
+           "municipality_code":"067902",
+           "zip_code":"5045"
         },
         {
            "name":"NUEVA VALENCIA",
            "province_code":"0679",
-           "municipality_code":"067903"
+           "municipality_code":"067903",
+           "zip_code":"5046"
         },
         {
            "name":"SAN LORENZO",
            "province_code":"0679",
-           "municipality_code":"067904"
+           "municipality_code":"067904",
+           "zip_code":"5047"
         },
         {
            "name":"SIBUNAG",
            "province_code":"0679",
-           "municipality_code":"067905"
+           "municipality_code":"067905",
+           "zip_code":"5048"
         },
         {
            "name":"ALBURQUERQUE",
            "province_code":"0712",
-           "municipality_code":"071201"
+           "municipality_code":"071201",
+           "zip_code":"6302"
         },
         {
            "name":"ALICIA",
            "province_code":"0712",
-           "municipality_code":"071202"
+           "municipality_code":"071202",
+           "zip_code":"6314"
         },
         {
            "name":"ANDA",
            "province_code":"0712",
-           "municipality_code":"071203"
+           "municipality_code":"071203",
+           "zip_code":"6311"
         },
         {
            "name":"ANTEQUERA",
            "province_code":"0712",
-           "municipality_code":"071204"
+           "municipality_code":"071204",
+           "zip_code":"6335"
         },
         {
            "name":"BACLAYON",
            "province_code":"0712",
-           "municipality_code":"071205"
+           "municipality_code":"071205",
+           "zip_code":"6301"
         },
         {
            "name":"BALILIHAN",
            "province_code":"0712",
-           "municipality_code":"071206"
+           "municipality_code":"071206",
+           "zip_code":"6342"
         },
         {
            "name":"BATUAN",
            "province_code":"0712",
-           "municipality_code":"071207"
+           "municipality_code":"071207",
+           "zip_code":"6318"
         },
         {
            "name":"BILAR",
            "province_code":"0712",
-           "municipality_code":"071208"
+           "municipality_code":"071208",
+           "zip_code":"6317"
         },
         {
            "name":"BUENAVISTA",
            "province_code":"0712",
-           "municipality_code":"071209"
+           "municipality_code":"071209",
+           "zip_code":"6333"
         },
         {
            "name":"CALAPE",
            "province_code":"0712",
-           "municipality_code":"071210"
+           "municipality_code":"071210",
+           "zip_code":"6328"
         },
         {
            "name":"CANDIJAY",
            "province_code":"0712",
-           "municipality_code":"071211"
+           "municipality_code":"071211",
+           "zip_code":"6312"
         },
         {
            "name":"CARMEN",
            "province_code":"0712",
-           "municipality_code":"071212"
+           "municipality_code":"071212",
+           "zip_code":"6319"
         },
         {
            "name":"CATIGBIAN",
            "province_code":"0712",
-           "municipality_code":"071213"
+           "municipality_code":"071213",
+           "zip_code":"6343"
         },
         {
            "name":"CLARIN",
            "province_code":"0712",
-           "municipality_code":"071214"
+           "municipality_code":"071214",
+           "zip_code":"6330"
         },
         {
            "name":"CORELLA",
            "province_code":"0712",
-           "municipality_code":"071215"
+           "municipality_code":"071215",
+           "zip_code":"6337"
         },
         {
            "name":"CORTES",
            "province_code":"0712",
-           "municipality_code":"071216"
+           "municipality_code":"071216",
+           "zip_code":"6341"
         },
         {
            "name":"DAGOHOY",
            "province_code":"0712",
-           "municipality_code":"071217"
+           "municipality_code":"071217",
+           "zip_code":"6322"
         },
         {
            "name":"DANAO",
            "province_code":"0712",
-           "municipality_code":"071218"
+           "municipality_code":"071218",
+           "zip_code":"6344"
         },
         {
            "name":"DAUIS",
            "province_code":"0712",
-           "municipality_code":"071219"
+           "municipality_code":"071219",
+           "zip_code":"6339"
         },
         {
            "name":"DIMIAO",
            "province_code":"0712",
-           "municipality_code":"071220"
+           "municipality_code":"071220",
+           "zip_code":"6305"
         },
         {
            "name":"DUERO",
            "province_code":"0712",
-           "municipality_code":"071221"
+           "municipality_code":"071221",
+           "zip_code":"6309"
         },
         {
            "name":"GARCIA HERNANDEZ",
            "province_code":"0712",
-           "municipality_code":"071222"
+           "municipality_code":"071222",
+           "zip_code":"6307"
         },
         {
            "name":"GUINDULMAN",
            "province_code":"0712",
-           "municipality_code":"071223"
+           "municipality_code":"071223",
+           "zip_code":"6310"
         },
         {
            "name":"INABANGA",
            "province_code":"0712",
-           "municipality_code":"071224"
+           "municipality_code":"071224",
+           "zip_code":"6332"
         },
         {
            "name":"JAGNA",
            "province_code":"0712",
-           "municipality_code":"071225"
+           "municipality_code":"071225",
+           "zip_code":"6308"
         },
         {
            "name":"JETAFE",
            "province_code":"0712",
-           "municipality_code":"071226"
+           "municipality_code":"071226",
+           "zip_code":"6334"
         },
         {
            "name":"LILA",
            "province_code":"0712",
-           "municipality_code":"071227"
+           "municipality_code":"071227",
+           "zip_code":"6304"
         },
         {
            "name":"LOAY",
            "province_code":"0712",
-           "municipality_code":"071228"
+           "municipality_code":"071228",
+           "zip_code":"6303"
         },
         {
            "name":"LOBOC",
            "province_code":"0712",
-           "municipality_code":"071229"
+           "municipality_code":"071229",
+           "zip_code":"6316"
         },
         {
            "name":"LOON",
            "province_code":"0712",
-           "municipality_code":"071230"
+           "municipality_code":"071230",
+           "zip_code":"6327"
         },
         {
            "name":"MABINI",
            "province_code":"0712",
-           "municipality_code":"071231"
+           "municipality_code":"071231",
+           "zip_code":"6313"
         },
         {
            "name":"MARIBOJOC",
            "province_code":"0712",
-           "municipality_code":"071232"
+           "municipality_code":"071232",
+           "zip_code":"6336"
         },
         {
            "name":"PANGLAO",
            "province_code":"0712",
-           "municipality_code":"071233"
+           "municipality_code":"071233",
+           "zip_code":"6340"
         },
         {
            "name":"PILAR",
            "province_code":"0712",
-           "municipality_code":"071234"
+           "municipality_code":"071234",
+           "zip_code":"6321"
         },
         {
            "name":"PRES. CARLOS P. GARCIA (PITOGO)",
            "province_code":"0712",
-           "municipality_code":"071235"
+           "municipality_code":"071235",
+           "zip_code":"6346"
         },
         {
            "name":"SAGBAYAN (BORJA)",
            "province_code":"0712",
-           "municipality_code":"071236"
+           "municipality_code":"071236",
+           "zip_code":"6331"
         },
         {
            "name":"SAN ISIDRO",
            "province_code":"0712",
-           "municipality_code":"071237"
+           "municipality_code":"071237",
+           "zip_code":"6345"
         },
         {
            "name":"SAN MIGUEL",
            "province_code":"0712",
-           "municipality_code":"071238"
+           "municipality_code":"071238",
+           "zip_code":"6323"
         },
         {
            "name":"SEVILLA",
            "province_code":"0712",
-           "municipality_code":"071239"
+           "municipality_code":"071239",
+           "zip_code":"6347"
         },
         {
            "name":"SIERRA BULLONES",
            "province_code":"0712",
-           "municipality_code":"071240"
+           "municipality_code":"071240",
+           "zip_code":"6320"
         },
         {
            "name":"SIKATUNA",
            "province_code":"0712",
-           "municipality_code":"071241"
+           "municipality_code":"071241",
+           "zip_code":"6338"
         },
         {
            "name":"TAGBILARAN CITY (Capital)",
            "province_code":"0712",
-           "municipality_code":"071242"
+           "municipality_code":"071242",
+           "zip_code":"6300"
         },
         {
            "name":"TALIBON",
            "province_code":"0712",
-           "municipality_code":"071243"
+           "municipality_code":"071243",
+           "zip_code":"6325"
         },
         {
            "name":"TRINIDAD",
            "province_code":"0712",
-           "municipality_code":"071244"
+           "municipality_code":"071244",
+           "zip_code":"6324"
         },
         {
            "name":"TUBIGON",
            "province_code":"0712",
-           "municipality_code":"071245"
+           "municipality_code":"071245",
+           "zip_code":"6329"
         },
         {
            "name":"UBAY",
            "province_code":"0712",
-           "municipality_code":"071246"
+           "municipality_code":"071246",
+           "zip_code":"6315"
         },
         {
            "name":"VALENCIA",
            "province_code":"0712",
-           "municipality_code":"071247"
+           "municipality_code":"071247",
+           "zip_code":"6306"
         },
         {
            "name":"BIEN UNIDO",
            "province_code":"0712",
-           "municipality_code":"071248"
+           "municipality_code":"071248",
+           "zip_code":"6326"
         },
         {
            "name":"ALCANTARA",
            "province_code":"0722",
-           "municipality_code":"072201"
+           "municipality_code":"072201",
+           "zip_code":"6033"
         },
         {
            "name":"ALCOY",
            "province_code":"0722",
-           "municipality_code":"072202"
+           "municipality_code":"072202",
+           "zip_code":"6023"
         },
         {
            "name":"ALEGRIA",
            "province_code":"0722",
-           "municipality_code":"072203"
+           "municipality_code":"072203",
+           "zip_code":"6030"
         },
         {
            "name":"ALOGUINSAN",
            "province_code":"0722",
-           "municipality_code":"072204"
+           "municipality_code":"072204",
+           "zip_code":"6040"
         },
         {
            "name":"ARGAO",
            "province_code":"0722",
-           "municipality_code":"072205"
+           "municipality_code":"072205",
+           "zip_code":"6021"
         },
         {
            "name":"ASTURIAS",
            "province_code":"0722",
-           "municipality_code":"072206"
+           "municipality_code":"072206",
+           "zip_code":"6042"
         },
         {
            "name":"BADIAN",
            "province_code":"0722",
-           "municipality_code":"072207"
+           "municipality_code":"072207",
+           "zip_code":"6031"
         },
         {
            "name":"BALAMBAN",
            "province_code":"0722",
-           "municipality_code":"072208"
+           "municipality_code":"072208",
+           "zip_code":"6041"
         },
         {
            "name":"BANTAYAN",
            "province_code":"0722",
-           "municipality_code":"072209"
+           "municipality_code":"072209",
+           "zip_code":"6052"
         },
         {
            "name":"BARILI",
            "province_code":"0722",
-           "municipality_code":"072210"
+           "municipality_code":"072210",
+           "zip_code":"6036"
         },
         {
            "name":"CITY OF BOGO",
            "province_code":"0722",
-           "municipality_code":"072211"
+           "municipality_code":"072211",
+           "zip_code":"6010"
         },
         {
            "name":"BOLJOON",
            "province_code":"0722",
-           "municipality_code":"072212"
+           "municipality_code":"072212",
+           "zip_code":"6024"
         },
         {
            "name":"BORBON",
            "province_code":"0722",
-           "municipality_code":"072213"
+           "municipality_code":"072213",
+           "zip_code":"6008"
         },
         {
            "name":"CITY OF CARCAR",
            "province_code":"0722",
-           "municipality_code":"072214"
+           "municipality_code":"072214",
+           "zip_code":"6019"
         },
         {
            "name":"CARMEN",
            "province_code":"0722",
-           "municipality_code":"072215"
+           "municipality_code":"072215",
+           "zip_code":"6005"
         },
         {
            "name":"CATMON",
            "province_code":"0722",
-           "municipality_code":"072216"
+           "municipality_code":"072216",
+           "zip_code":"6006"
         },
         {
            "name":"CEBU CITY (Capital)",
            "province_code":"0722",
-           "municipality_code":"072217"
+           "municipality_code":"072217",
+           "zip_code":"6000"
         },
         {
            "name":"COMPOSTELA",
            "province_code":"0722",
-           "municipality_code":"072218"
+           "municipality_code":"072218",
+           "zip_code":"6003"
         },
         {
            "name":"CONSOLACION",
            "province_code":"0722",
-           "municipality_code":"072219"
+           "municipality_code":"072219",
+           "zip_code":"6001"
         },
         {
            "name":"CORDOVA",
            "province_code":"0722",
-           "municipality_code":"072220"
+           "municipality_code":"072220",
+           "zip_code":"6017"
         },
         {
            "name":"DAANBANTAYAN",
            "province_code":"0722",
-           "municipality_code":"072221"
+           "municipality_code":"072221",
+           "zip_code":"6013"
         },
         {
            "name":"DALAGUETE",
            "province_code":"0722",
-           "municipality_code":"072222"
+           "municipality_code":"072222",
+           "zip_code":"6022"
         },
         {
            "name":"DANAO CITY",
            "province_code":"0722",
-           "municipality_code":"072223"
+           "municipality_code":"072223",
+           "zip_code":"6004"
         },
         {
            "name":"DUMANJUG",
            "province_code":"0722",
-           "municipality_code":"072224"
+           "municipality_code":"072224",
+           "zip_code":"6035"
         },
         {
            "name":"GINATILAN",
            "province_code":"0722",
-           "municipality_code":"072225"
+           "municipality_code":"072225",
+           "zip_code":"6028"
         },
         {
            "name":"LAPU-LAPU CITY (OPON)",
            "province_code":"0722",
-           "municipality_code":"072226"
+           "municipality_code":"072226",
+           "zip_code":"6015"
         },
         {
            "name":"LILOAN",
            "province_code":"0722",
-           "municipality_code":"072227"
+           "municipality_code":"072227",
+           "zip_code":"6002"
         },
         {
            "name":"MADRIDEJOS",
            "province_code":"0722",
-           "municipality_code":"072228"
+           "municipality_code":"072228",
+           "zip_code":"6053"
         },
         {
            "name":"MALABUYOC",
            "province_code":"0722",
-           "municipality_code":"072229"
+           "municipality_code":"072229",
+           "zip_code":"6029"
         },
         {
            "name":"MANDAUE CITY",
            "province_code":"0722",
-           "municipality_code":"072230"
+           "municipality_code":"072230",
+           "zip_code":"6014"
         },
         {
            "name":"MEDELLIN",
            "province_code":"0722",
-           "municipality_code":"072231"
+           "municipality_code":"072231",
+           "zip_code":"6012"
         },
         {
            "name":"MINGLANILLA",
            "province_code":"0722",
-           "municipality_code":"072232"
+           "municipality_code":"072232",
+           "zip_code":"6046"
         },
         {
            "name":"MOALBOAL",
            "province_code":"0722",
-           "municipality_code":"072233"
+           "municipality_code":"072233",
+           "zip_code":"6032"
         },
         {
            "name":"CITY OF NAGA",
            "province_code":"0722",
-           "municipality_code":"072234"
+           "municipality_code":"072234",
+           "zip_code":"6037"
         },
         {
            "name":"OSLOB",
            "province_code":"0722",
-           "municipality_code":"072235"
+           "municipality_code":"072235",
+           "zip_code":"6025"
         },
         {
            "name":"PILAR",
            "province_code":"0722",
-           "municipality_code":"072236"
+           "municipality_code":"072236",
+           "zip_code":"6048"
         },
         {
            "name":"PINAMUNGAHAN",
            "province_code":"0722",
-           "municipality_code":"072237"
+           "municipality_code":"072237",
+           "zip_code":"6039"
         },
         {
            "name":"PORO",
            "province_code":"0722",
-           "municipality_code":"072238"
+           "municipality_code":"072238",
+           "zip_code":"6049"
         },
         {
            "name":"RONDA",
            "province_code":"0722",
-           "municipality_code":"072239"
+           "municipality_code":"072239",
+           "zip_code":"6034"
         },
         {
            "name":"SAMBOAN",
            "province_code":"0722",
-           "municipality_code":"072240"
+           "municipality_code":"072240",
+           "zip_code":"6027"
         },
         {
            "name":"SAN FERNANDO",
            "province_code":"0722",
-           "municipality_code":"072241"
+           "municipality_code":"072241",
+           "zip_code":"6018"
         },
         {
            "name":"SAN FRANCISCO",
            "province_code":"0722",
-           "municipality_code":"072242"
+           "municipality_code":"072242",
+           "zip_code":"6050"
         },
         {
            "name":"SAN REMIGIO",
            "province_code":"0722",
-           "municipality_code":"072243"
+           "municipality_code":"072243",
+           "zip_code":"6011"
         },
         {
            "name":"SANTA FE",
            "province_code":"0722",
-           "municipality_code":"072244"
+           "municipality_code":"072244",
+           "zip_code":"6047"
         },
         {
            "name":"SANTANDER",
            "province_code":"0722",
-           "municipality_code":"072245"
+           "municipality_code":"072245",
+           "zip_code":"6026"
         },
         {
            "name":"SIBONGA",
            "province_code":"0722",
-           "municipality_code":"072246"
+           "municipality_code":"072246",
+           "zip_code":"6020"
         },
         {
            "name":"SOGOD",
            "province_code":"0722",
-           "municipality_code":"072247"
+           "municipality_code":"072247",
+           "zip_code":"6007"
         },
         {
            "name":"TABOGON",
            "province_code":"0722",
-           "municipality_code":"072248"
+           "municipality_code":"072248",
+           "zip_code":"6009"
         },
         {
            "name":"TABUELAN",
            "province_code":"0722",
-           "municipality_code":"072249"
+           "municipality_code":"072249",
+           "zip_code":"6044"
         },
         {
            "name":"CITY OF TALISAY",
            "province_code":"0722",
-           "municipality_code":"072250"
+           "municipality_code":"072250",
+           "zip_code":"6045"
         },
         {
            "name":"TOLEDO CITY",
            "province_code":"0722",
-           "municipality_code":"072251"
+           "municipality_code":"072251",
+           "zip_code":"6038"
         },
         {
            "name":"TUBURAN",
            "province_code":"0722",
-           "municipality_code":"072252"
+           "municipality_code":"072252",
+           "zip_code":"6043"
         },
         {
            "name":"TUDELA",
            "province_code":"0722",
-           "municipality_code":"072253"
+           "municipality_code":"072253",
+           "zip_code":"6051"
         },
         {
            "name":"AMLAN (AYUQUITAN)",
            "province_code":"0746",
-           "municipality_code":"074601"
+           "municipality_code":"074601",
+           "zip_code":"6203"
         },
         {
            "name":"AYUNGON",
            "province_code":"0746",
-           "municipality_code":"074602"
+           "municipality_code":"074602",
+           "zip_code":"6210"
         },
         {
            "name":"BACONG",
            "province_code":"0746",
-           "municipality_code":"074603"
+           "municipality_code":"074603",
+           "zip_code":"6216"
         },
         {
            "name":"BAIS CITY",
            "province_code":"0746",
-           "municipality_code":"074604"
+           "municipality_code":"074604",
+           "zip_code":"6206"
         },
         {
            "name":"BASAY",
            "province_code":"0746",
-           "municipality_code":"074605"
+           "municipality_code":"074605",
+           "zip_code":"6222"
         },
         {
            "name":"CITY OF BAYAWAN (TULONG)",
            "province_code":"0746",
-           "municipality_code":"074606"
+           "municipality_code":"074606",
+           "zip_code":"6221"
         },
         {
            "name":"BINDOY (PAYABON)",
            "province_code":"0746",
-           "municipality_code":"074607"
+           "municipality_code":"074607",
+           "zip_code":"6209"
         },
         {
            "name":"CANLAON CITY",
            "province_code":"0746",
-           "municipality_code":"074608"
+           "municipality_code":"074608",
+           "zip_code":"6223"
         },
         {
            "name":"DAUIN",
            "province_code":"0746",
-           "municipality_code":"074609"
+           "municipality_code":"074609",
+           "zip_code":"6217"
         },
         {
            "name":"DUMAGUETE CITY (Capital)",
            "province_code":"0746",
-           "municipality_code":"074610"
+           "municipality_code":"074610",
+           "zip_code":"6200"
         },
         {
            "name":"CITY OF GUIHULNGAN",
            "province_code":"0746",
-           "municipality_code":"074611"
+           "municipality_code":"074611",
+           "zip_code":"6214"
         },
         {
            "name":"JIMALALUD",
            "province_code":"0746",
-           "municipality_code":"074612"
+           "municipality_code":"074612",
+           "zip_code":"6212"
         },
         {
            "name":"LA LIBERTAD",
            "province_code":"0746",
-           "municipality_code":"074613"
+           "municipality_code":"074613",
+           "zip_code":"6213"
         },
         {
            "name":"MABINAY",
            "province_code":"0746",
-           "municipality_code":"074614"
+           "municipality_code":"074614",
+           "zip_code":"6207"
         },
         {
            "name":"MANJUYOD",
            "province_code":"0746",
-           "municipality_code":"074615"
+           "municipality_code":"074615",
+           "zip_code":"6208"
         },
         {
            "name":"PAMPLONA",
            "province_code":"0746",
-           "municipality_code":"074616"
+           "municipality_code":"074616",
+           "zip_code":"6205"
         },
         {
            "name":"SAN JOSE",
            "province_code":"0746",
-           "municipality_code":"074617"
+           "municipality_code":"074617",
+           "zip_code":"6202"
         },
         {
            "name":"SANTA CATALINA",
            "province_code":"0746",
-           "municipality_code":"074618"
+           "municipality_code":"074618",
+           "zip_code":"6220"
         },
         {
            "name":"SIATON",
            "province_code":"0746",
-           "municipality_code":"074619"
+           "municipality_code":"074619",
+           "zip_code":"6219"
         },
         {
            "name":"SIBULAN",
            "province_code":"0746",
-           "municipality_code":"074620"
+           "municipality_code":"074620",
+           "zip_code":"6201"
         },
         {
            "name":"CITY OF TANJAY",
            "province_code":"0746",
-           "municipality_code":"074621"
+           "municipality_code":"074621",
+           "zip_code":"6204"
         },
         {
            "name":"TAYASAN",
            "province_code":"0746",
-           "municipality_code":"074622"
+           "municipality_code":"074622",
+           "zip_code":"6211"
         },
         {
            "name":"VALENCIA (LUZURRIAGA)",
            "province_code":"0746",
-           "municipality_code":"074623"
+           "municipality_code":"074623",
+           "zip_code":"6215"
         },
         {
            "name":"VALLEHERMOSO",
            "province_code":"0746",
-           "municipality_code":"074624"
+           "municipality_code":"074624",
+           "zip_code":"6224"
         },
         {
            "name":"ZAMBOANGUITA",
            "province_code":"0746",
-           "municipality_code":"074625"
+           "municipality_code":"074625",
+           "zip_code":"6218"
         },
         {
            "name":"ENRIQUE VILLANUEVA",
            "province_code":"0761",
-           "municipality_code":"076101"
+           "municipality_code":"076101",
+           "zip_code":"6230"
         },
         {
            "name":"LARENA",
            "province_code":"0761",
-           "municipality_code":"076102"
+           "municipality_code":"076102",
+           "zip_code":"6226"
         },
         {
            "name":"LAZI",
            "province_code":"0761",
-           "municipality_code":"076103"
+           "municipality_code":"076103",
+           "zip_code":"6228"
         },
         {
            "name":"MARIA",
            "province_code":"0761",
-           "municipality_code":"076104"
+           "municipality_code":"076104",
+           "zip_code":"6229"
         },
         {
            "name":"SAN JUAN",
            "province_code":"0761",
-           "municipality_code":"076105"
+           "municipality_code":"076105",
+           "zip_code":"6227"
         },
         {
            "name":"SIQUIJOR (Capital)",
            "province_code":"0761",
-           "municipality_code":"076106"
+           "municipality_code":"076106",
+           "zip_code":"6225"
         },
         {
            "name":"ARTECHE",
            "province_code":"0826",
-           "municipality_code":"082601"
+           "municipality_code":"082601",
+           "zip_code":"6822"
         },
         {
            "name":"BALANGIGA",
            "province_code":"0826",
-           "municipality_code":"082602"
+           "municipality_code":"082602",
+           "zip_code":"6812"
         },
         {
            "name":"BALANGKAYAN",
            "province_code":"0826",
-           "municipality_code":"082603"
+           "municipality_code":"082603",
+           "zip_code":"6801"
         },
         {
            "name":"CITY OF BORONGAN (Capital)",
            "province_code":"0826",
-           "municipality_code":"082604"
+           "municipality_code":"082604",
+           "zip_code":"6800"
         },
         {
            "name":"CAN-AVID",
            "province_code":"0826",
-           "municipality_code":"082605"
+           "municipality_code":"082605",
+           "zip_code":"6806"
         },
         {
            "name":"DOLORES",
            "province_code":"0826",
-           "municipality_code":"082606"
+           "municipality_code":"082606",
+           "zip_code":"6817"
         },
         {
            "name":"GENERAL MACARTHUR",
            "province_code":"0826",
-           "municipality_code":"082607"
+           "municipality_code":"082607",
+           "zip_code":"6805"
         },
         {
            "name":"GIPORLOS",
            "province_code":"0826",
-           "municipality_code":"082608"
+           "municipality_code":"082608",
+           "zip_code":"6811"
         },
         {
            "name":"GUIUAN",
            "province_code":"0826",
-           "municipality_code":"082609"
+           "municipality_code":"082609",
+           "zip_code":"6809"
         },
         {
            "name":"HERNANI",
            "province_code":"0826",
-           "municipality_code":"082610"
+           "municipality_code":"082610",
+           "zip_code":"6804"
         },
         {
            "name":"JIPAPAD",
            "province_code":"0826",
-           "municipality_code":"082611"
+           "municipality_code":"082611",
+           "zip_code":"6819"
         },
         {
            "name":"LAWAAN",
            "province_code":"0826",
-           "municipality_code":"082612"
+           "municipality_code":"082612",
+           "zip_code":"6813"
         },
         {
            "name":"LLORENTE",
            "province_code":"0826",
-           "municipality_code":"082613"
+           "municipality_code":"082613",
+           "zip_code":"6803"
         },
         {
            "name":"MASLOG",
            "province_code":"0826",
-           "municipality_code":"082614"
+           "municipality_code":"082614",
+           "zip_code":"6820"
         },
         {
            "name":"MAYDOLONG",
            "province_code":"0826",
-           "municipality_code":"082615"
+           "municipality_code":"082615",
+           "zip_code":"6802"
         },
         {
            "name":"MERCEDES",
            "province_code":"0826",
-           "municipality_code":"082616"
+           "municipality_code":"082616",
+           "zip_code":"6808"
         },
         {
            "name":"ORAS",
            "province_code":"0826",
-           "municipality_code":"082617"
+           "municipality_code":"082617",
+           "zip_code":"6818"
         },
         {
            "name":"QUINAPONDAN",
            "province_code":"0826",
-           "municipality_code":"082618"
+           "municipality_code":"082618",
+           "zip_code":"6810"
         },
         {
            "name":"SALCEDO",
            "province_code":"0826",
-           "municipality_code":"082619"
+           "municipality_code":"082619",
+           "zip_code":"6807"
         },
         {
            "name":"SAN JULIAN",
            "province_code":"0826",
-           "municipality_code":"082620"
+           "municipality_code":"082620",
+           "zip_code":"6814"
         },
         {
            "name":"SAN POLICARPO",
            "province_code":"0826",
-           "municipality_code":"082621"
+           "municipality_code":"082621",
+           "zip_code":"6821"
         },
         {
            "name":"SULAT",
            "province_code":"0826",
-           "municipality_code":"082622"
+           "municipality_code":"082622",
+           "zip_code":"6815"
         },
         {
            "name":"TAFT",
            "province_code":"0826",
-           "municipality_code":"082623"
+           "municipality_code":"082623",
+           "zip_code":"6816"
         },
         {
            "name":"ABUYOG",
            "province_code":"0837",
-           "municipality_code":"083701"
+           "municipality_code":"083701",
+           "zip_code":"6510"
         },
         {
            "name":"ALANGALANG",
            "province_code":"0837",
-           "municipality_code":"083702"
+           "municipality_code":"083702",
+           "zip_code":"6517"
         },
         {
            "name":"ALBUERA",
            "province_code":"0837",
-           "municipality_code":"083703"
+           "municipality_code":"083703",
+           "zip_code":"6542"
         },
         {
            "name":"BABATNGON",
            "province_code":"0837",
-           "municipality_code":"083705"
+           "municipality_code":"083705",
+           "zip_code":"6520"
         },
         {
            "name":"BARUGO",
            "province_code":"0837",
-           "municipality_code":"083706"
+           "municipality_code":"083706",
+           "zip_code":"6519"
         },
         {
            "name":"BATO",
            "province_code":"0837",
-           "municipality_code":"083707"
+           "municipality_code":"083707",
+           "zip_code":"6525"
         },
         {
            "name":"CITY OF BAYBAY",
            "province_code":"0837",
-           "municipality_code":"083708"
+           "municipality_code":"083708",
+           "zip_code":"6521"
         },
         {
            "name":"BURAUEN",
            "province_code":"0837",
-           "municipality_code":"083710"
+           "municipality_code":"083710",
+           "zip_code":"6516"
         },
         {
            "name":"CALUBIAN",
            "province_code":"0837",
-           "municipality_code":"083713"
+           "municipality_code":"083713",
+           "zip_code":"6534"
         },
         {
            "name":"CAPOOCAN",
            "province_code":"0837",
-           "municipality_code":"083714"
+           "municipality_code":"083714",
+           "zip_code":"6530"
         },
         {
            "name":"CARIGARA",
            "province_code":"0837",
-           "municipality_code":"083715"
+           "municipality_code":"083715",
+           "zip_code":"6529"
         },
         {
            "name":"DAGAMI",
            "province_code":"0837",
-           "municipality_code":"083717"
+           "municipality_code":"083717",
+           "zip_code":"6515"
         },
         {
            "name":"DULAG",
            "province_code":"0837",
-           "municipality_code":"083718"
+           "municipality_code":"083718",
+           "zip_code":"6505"
         },
         {
            "name":"HILONGOS",
            "province_code":"0837",
-           "municipality_code":"083719"
+           "municipality_code":"083719",
+           "zip_code":"6524"
         },
         {
            "name":"HINDANG",
            "province_code":"0837",
-           "municipality_code":"083720"
+           "municipality_code":"083720",
+           "zip_code":"6523"
         },
         {
            "name":"INOPACAN",
            "province_code":"0837",
-           "municipality_code":"083721"
+           "municipality_code":"083721",
+           "zip_code":"6522"
         },
         {
            "name":"ISABEL",
            "province_code":"0837",
-           "municipality_code":"083722"
+           "municipality_code":"083722",
+           "zip_code":"6539"
         },
         {
            "name":"JARO",
            "province_code":"0837",
-           "municipality_code":"083723"
+           "municipality_code":"083723",
+           "zip_code":"6527"
         },
         {
            "name":"JAVIER (BUGHO)",
            "province_code":"0837",
-           "municipality_code":"083724"
+           "municipality_code":"083724",
+           "zip_code":"6511"
         },
         {
            "name":"JULITA",
            "province_code":"0837",
-           "municipality_code":"083725"
+           "municipality_code":"083725",
+           "zip_code":"6506"
         },
         {
            "name":"KANANGA",
            "province_code":"0837",
-           "municipality_code":"083726"
+           "municipality_code":"083726",
+           "zip_code":"6531"
         },
         {
            "name":"LA PAZ",
            "province_code":"0837",
-           "municipality_code":"083728"
+           "municipality_code":"083728",
+           "zip_code":"6508"
         },
         {
            "name":"LEYTE",
            "province_code":"0837",
-           "municipality_code":"083729"
+           "municipality_code":"083729",
+           "zip_code":"6533"
         },
         {
            "name":"MACARTHUR",
            "province_code":"0837",
-           "municipality_code":"083730"
+           "municipality_code":"083730",
+           "zip_code":"6509"
         },
         {
            "name":"MAHAPLAG",
            "province_code":"0837",
-           "municipality_code":"083731"
+           "municipality_code":"083731",
+           "zip_code":"6512"
         },
         {
            "name":"MATAG-OB",
            "province_code":"0837",
-           "municipality_code":"083733"
+           "municipality_code":"083733",
+           "zip_code":"6532"
         },
         {
            "name":"MATALOM",
            "province_code":"0837",
-           "municipality_code":"083734"
+           "municipality_code":"083734",
+           "zip_code":"6526"
         },
         {
            "name":"MAYORGA",
            "province_code":"0837",
-           "municipality_code":"083735"
+           "municipality_code":"083735",
+           "zip_code":"6507"
         },
         {
            "name":"MERIDA",
            "province_code":"0837",
-           "municipality_code":"083736"
+           "municipality_code":"083736",
+           "zip_code":"6540"
         },
         {
            "name":"ORMOC CITY",
            "province_code":"0837",
-           "municipality_code":"083738"
+           "municipality_code":"083738",
+           "zip_code":"6541"
         },
         {
            "name":"PALO",
            "province_code":"0837",
-           "municipality_code":"083739"
+           "municipality_code":"083739",
+           "zip_code":"6501"
         },
         {
            "name":"PALOMPON",
            "province_code":"0837",
-           "municipality_code":"083740"
+           "municipality_code":"083740",
+           "zip_code":"6538"
         },
         {
            "name":"PASTRANA",
            "province_code":"0837",
-           "municipality_code":"083741"
+           "municipality_code":"083741",
+           "zip_code":"6514"
         },
         {
            "name":"SAN ISIDRO",
            "province_code":"0837",
-           "municipality_code":"083742"
+           "municipality_code":"083742",
+           "zip_code":"6535"
         },
         {
            "name":"SAN MIGUEL",
            "province_code":"0837",
-           "municipality_code":"083743"
+           "municipality_code":"083743",
+           "zip_code":"6518"
         },
         {
            "name":"SANTA FE",
            "province_code":"0837",
-           "municipality_code":"083744"
+           "municipality_code":"083744",
+           "zip_code":"6513"
         },
         {
            "name":"TABANGO",
            "province_code":"0837",
-           "municipality_code":"083745"
+           "municipality_code":"083745",
+           "zip_code":"6536"
         },
         {
            "name":"TABONTABON",
            "province_code":"0837",
-           "municipality_code":"083746"
+           "municipality_code":"083746",
+           "zip_code":"6504"
         },
         {
            "name":"TACLOBAN CITY (Capital)",
            "province_code":"0837",
-           "municipality_code":"083747"
+           "municipality_code":"083747",
+           "zip_code":"6500"
         },
         {
            "name":"TANAUAN",
            "province_code":"0837",
-           "municipality_code":"083748"
+           "municipality_code":"083748",
+           "zip_code":"6502"
         },
         {
            "name":"TOLOSA",
            "province_code":"0837",
-           "municipality_code":"083749"
+           "municipality_code":"083749",
+           "zip_code":"6503"
         },
         {
            "name":"TUNGA",
            "province_code":"0837",
-           "municipality_code":"083750"
+           "municipality_code":"083750",
+           "zip_code":"6528"
         },
         {
            "name":"VILLABA",
            "province_code":"0837",
-           "municipality_code":"083751"
+           "municipality_code":"083751",
+           "zip_code":"6537"
         },
         {
            "name":"ALLEN",
            "province_code":"0848",
-           "municipality_code":"084801"
+           "municipality_code":"084801",
+           "zip_code":"6405"
         },
         {
            "name":"BIRI",
            "province_code":"0848",
-           "municipality_code":"084802"
+           "municipality_code":"084802",
+           "zip_code":"6410"
         },
         {
            "name":"BOBON",
            "province_code":"0848",
-           "municipality_code":"084803"
+           "municipality_code":"084803",
+           "zip_code":"6401"
         },
         {
            "name":"CAPUL",
            "province_code":"0848",
-           "municipality_code":"084804"
+           "municipality_code":"084804",
+           "zip_code":"6408"
         },
         {
            "name":"CATARMAN (Capital)",
            "province_code":"0848",
-           "municipality_code":"084805"
+           "municipality_code":"084805",
+           "zip_code":"6400"
         },
         {
            "name":"CATUBIG",
            "province_code":"0848",
-           "municipality_code":"084806"
+           "municipality_code":"084806",
+           "zip_code":"6418"
         },
         {
            "name":"GAMAY",
            "province_code":"0848",
-           "municipality_code":"084807"
+           "municipality_code":"084807",
+           "zip_code":"6422"
         },
         {
            "name":"LAOANG",
            "province_code":"0848",
-           "municipality_code":"084808"
+           "municipality_code":"084808",
+           "zip_code":"6411"
         },
         {
            "name":"LAPINIG",
            "province_code":"0848",
-           "municipality_code":"084809"
+           "municipality_code":"084809",
+           "zip_code":"6423"
         },
         {
            "name":"LAS NAVAS",
            "province_code":"0848",
-           "municipality_code":"084810"
+           "municipality_code":"084810",
+           "zip_code":"6420"
         },
         {
            "name":"LAVEZARES",
            "province_code":"0848",
-           "municipality_code":"084811"
+           "municipality_code":"084811",
+           "zip_code":"6404"
         },
         {
            "name":"MAPANAS",
            "province_code":"0848",
-           "municipality_code":"084812"
+           "municipality_code":"084812",
+           "zip_code":"6412"
         },
         {
            "name":"MONDRAGON",
            "province_code":"0848",
-           "municipality_code":"084813"
+           "municipality_code":"084813",
+           "zip_code":"6417"
         },
         {
            "name":"PALAPAG",
            "province_code":"0848",
-           "municipality_code":"084814"
+           "municipality_code":"084814",
+           "zip_code":"6421"
         },
         {
            "name":"PAMBUJAN",
            "province_code":"0848",
-           "municipality_code":"084815"
+           "municipality_code":"084815",
+           "zip_code":"6413"
         },
         {
            "name":"ROSARIO",
            "province_code":"0848",
-           "municipality_code":"084816"
+           "municipality_code":"084816",
+           "zip_code":"6416"
         },
         {
            "name":"SAN ANTONIO",
            "province_code":"0848",
-           "municipality_code":"084817"
+           "municipality_code":"084817",
+           "zip_code":"6407"
         },
         {
            "name":"SAN ISIDRO",
            "province_code":"0848",
-           "municipality_code":"084818"
+           "municipality_code":"084818",
+           "zip_code":"6409"
         },
         {
            "name":"SAN JOSE",
            "province_code":"0848",
-           "municipality_code":"084819"
+           "municipality_code":"084819",
+           "zip_code":"6402"
         },
         {
            "name":"SAN ROQUE",
            "province_code":"0848",
-           "municipality_code":"084820"
+           "municipality_code":"084820",
+           "zip_code":"6415"
         },
         {
            "name":"SAN VICENTE",
            "province_code":"0848",
-           "municipality_code":"084821"
+           "municipality_code":"084821",
+           "zip_code":"6419"
         },
         {
            "name":"SILVINO LOBOS",
            "province_code":"0848",
-           "municipality_code":"084822"
+           "municipality_code":"084822",
+           "zip_code":"6414"
         },
         {
            "name":"VICTORIA",
            "province_code":"0848",
-           "municipality_code":"084823"
+           "municipality_code":"084823",
+           "zip_code":"6406"
         },
         {
            "name":"LOPE DE VEGA",
            "province_code":"0848",
-           "municipality_code":"084824"
+           "municipality_code":"084824",
+           "zip_code":"6403"
         },
         {
            "name":"ALMAGRO",
            "province_code":"0860",
-           "municipality_code":"086001"
+           "municipality_code":"086001",
+           "zip_code":"6724"
         },
         {
            "name":"BASEY",
            "province_code":"0860",
-           "municipality_code":"086002"
+           "municipality_code":"086002",
+           "zip_code":"6720"
         },
         {
            "name":"CALBAYOG CITY",
            "province_code":"0860",
-           "municipality_code":"086003"
+           "municipality_code":"086003",
+           "zip_code":"6710"
         },
         {
            "name":"CALBIGA",
            "province_code":"0860",
-           "municipality_code":"086004"
+           "municipality_code":"086004",
+           "zip_code":"6715"
         },
         {
            "name":"CITY OF CATBALOGAN (Capital)",
            "province_code":"0860",
-           "municipality_code":"086005"
+           "municipality_code":"086005",
+           "zip_code":"6700"
         },
         {
            "name":"DARAM",
            "province_code":"0860",
-           "municipality_code":"086006"
+           "municipality_code":"086006",
+           "zip_code":"6722"
         },
         {
            "name":"GANDARA",
            "province_code":"0860",
-           "municipality_code":"086007"
+           "municipality_code":"086007",
+           "zip_code":"6706"
         },
         {
            "name":"HINABANGAN",
            "province_code":"0860",
-           "municipality_code":"086008"
+           "municipality_code":"086008",
+           "zip_code":"6713"
         },
         {
            "name":"JIABONG",
            "province_code":"0860",
-           "municipality_code":"086009"
+           "municipality_code":"086009",
+           "zip_code":"6701"
         },
         {
            "name":"MARABUT",
            "province_code":"0860",
-           "municipality_code":"086010"
+           "municipality_code":"086010",
+           "zip_code":"6721"
         },
         {
            "name":"MATUGUINAO",
            "province_code":"0860",
-           "municipality_code":"086011"
+           "municipality_code":"086011",
+           "zip_code":"6708"
         },
         {
            "name":"MOTIONG",
            "province_code":"0860",
-           "municipality_code":"086012"
+           "municipality_code":"086012",
+           "zip_code":"6702"
         },
         {
            "name":"PINABACDAO",
            "province_code":"0860",
-           "municipality_code":"086013"
+           "municipality_code":"086013",
+           "zip_code":"6716"
         },
         {
            "name":"SAN JOSE DE BUAN",
            "province_code":"0860",
-           "municipality_code":"086014"
+           "municipality_code":"086014",
+           "zip_code":"6723"
         },
         {
            "name":"SAN SEBASTIAN",
            "province_code":"0860",
-           "municipality_code":"086015"
+           "municipality_code":"086015",
+           "zip_code":"6714"
         },
         {
            "name":"SANTA MARGARITA",
            "province_code":"0860",
-           "municipality_code":"086016"
+           "municipality_code":"086016",
+           "zip_code":"6709"
         },
         {
            "name":"SANTA RITA",
            "province_code":"0860",
-           "municipality_code":"086017"
+           "municipality_code":"086017",
+           "zip_code":"6718"
         },
         {
            "name":"TALALORA",
            "province_code":"0860",
-           "municipality_code":"086019"
+           "municipality_code":"086019",
+           "zip_code":"6719"
         },
         {
            "name":"TARANGNAN",
            "province_code":"0860",
-           "municipality_code":"086020"
+           "municipality_code":"086020",
+           "zip_code":"6704"
         },
         {
            "name":"VILLAREAL",
            "province_code":"0860",
-           "municipality_code":"086021"
+           "municipality_code":"086021",
+           "zip_code":"6717"
         },
         {
            "name":"PARANAS (WRIGHT)",
            "province_code":"0860",
-           "municipality_code":"086022"
+           "municipality_code":"086022",
+           "zip_code":"6703"
         },
         {
            "name":"ZUMARRAGA",
            "province_code":"0860",
-           "municipality_code":"086023"
+           "municipality_code":"086023",
+           "zip_code":"6725"
         },
         {
            "name":"TAGAPUL-AN",
            "province_code":"0860",
-           "municipality_code":"086024"
+           "municipality_code":"086024",
+           "zip_code":"6712"
         },
         {
            "name":"SAN JORGE",
            "province_code":"0860",
-           "municipality_code":"086025"
+           "municipality_code":"086025",
+           "zip_code":"6707"
         },
         {
            "name":"PAGSANGHAN",
            "province_code":"0860",
-           "municipality_code":"086026"
+           "municipality_code":"086026",
+           "zip_code":"6705"
         },
         {
            "name":"ANAHAWAN",
            "province_code":"0864",
-           "municipality_code":"086401"
+           "municipality_code":"086401",
+           "zip_code":"6610"
         },
         {
            "name":"BONTOC",
            "province_code":"0864",
-           "municipality_code":"086402"
+           "municipality_code":"086402",
+           "zip_code":"6604"
         },
         {
            "name":"HINUNANGAN",
            "province_code":"0864",
-           "municipality_code":"086403"
+           "municipality_code":"086403",
+           "zip_code":"6608"
         },
         {
            "name":"HINUNDAYAN",
            "province_code":"0864",
-           "municipality_code":"086404"
+           "municipality_code":"086404",
+           "zip_code":"6609"
         },
         {
            "name":"LIBAGON",
            "province_code":"0864",
-           "municipality_code":"086405"
+           "municipality_code":"086405",
+           "zip_code":"6615"
         },
         {
            "name":"LILOAN",
            "province_code":"0864",
-           "municipality_code":"086406"
+           "municipality_code":"086406",
+           "zip_code":"6612"
         },
         {
            "name":"CITY OF MAASIN (Capital)",
            "province_code":"0864",
-           "municipality_code":"086407"
+           "municipality_code":"086407",
+           "zip_code":"6600"
         },
         {
            "name":"MACROHON",
            "province_code":"0864",
-           "municipality_code":"086408"
+           "municipality_code":"086408",
+           "zip_code":"6601"
         },
         {
            "name":"MALITBOG",
            "province_code":"0864",
-           "municipality_code":"086409"
+           "municipality_code":"086409",
+           "zip_code":"6603"
         },
         {
            "name":"PADRE BURGOS",
            "province_code":"0864",
-           "municipality_code":"086410"
+           "municipality_code":"086410",
+           "zip_code":"6602"
         },
         {
            "name":"PINTUYAN",
            "province_code":"0864",
-           "municipality_code":"086411"
+           "municipality_code":"086411",
+           "zip_code":"6614"
         },
         {
            "name":"SAINT BERNARD",
            "province_code":"0864",
-           "municipality_code":"086412"
+           "municipality_code":"086412",
+           "zip_code":"6616"
         },
         {
            "name":"SAN FRANCISCO",
            "province_code":"0864",
-           "municipality_code":"086413"
+           "municipality_code":"086413",
+           "zip_code":"6613"
         },
         {
            "name":"SAN JUAN (CABALIAN)",
            "province_code":"0864",
-           "municipality_code":"086414"
+           "municipality_code":"086414",
+           "zip_code":"6611"
         },
         {
            "name":"SAN RICARDO",
            "province_code":"0864",
-           "municipality_code":"086415"
+           "municipality_code":"086415",
+           "zip_code":"6617"
         },
         {
            "name":"SILAGO",
            "province_code":"0864",
-           "municipality_code":"086416"
+           "municipality_code":"086416",
+           "zip_code":"6607"
         },
         {
            "name":"SOGOD",
            "province_code":"0864",
-           "municipality_code":"086417"
+           "municipality_code":"086417",
+           "zip_code":"6606"
         },
         {
            "name":"TOMAS OPPUS",
            "province_code":"0864",
-           "municipality_code":"086418"
+           "municipality_code":"086418",
+           "zip_code":"6605"
         },
         {
            "name":"LIMASAWA",
            "province_code":"0864",
-           "municipality_code":"086419"
+           "municipality_code":"086419",
+           "zip_code":"6618"
         },
         {
            "name":"ALMERIA",
            "province_code":"0878",
-           "municipality_code":"087801"
+           "municipality_code":"087801",
+           "zip_code":"6544"
         },
         {
            "name":"BILIRAN",
            "province_code":"0878",
-           "municipality_code":"087802"
+           "municipality_code":"087802",
+           "zip_code":"6549"
         },
         {
            "name":"CABUCGAYAN",
            "province_code":"0878",
-           "municipality_code":"087803"
+           "municipality_code":"087803",
+           "zip_code":"6550"
         },
         {
            "name":"CAIBIRAN",
            "province_code":"0878",
-           "municipality_code":"087804"
+           "municipality_code":"087804",
+           "zip_code":"6548"
         },
         {
            "name":"CULABA",
            "province_code":"0878",
-           "municipality_code":"087805"
+           "municipality_code":"087805",
+           "zip_code":"6547"
         },
         {
            "name":"KAWAYAN",
            "province_code":"0878",
-           "municipality_code":"087806"
+           "municipality_code":"087806",
+           "zip_code":"6545"
         },
         {
            "name":"MARIPIPI",
            "province_code":"0878",
-           "municipality_code":"087807"
+           "municipality_code":"087807",
+           "zip_code":"6546"
         },
         {
            "name":"NAVAL (Capital)",
            "province_code":"0878",
-           "municipality_code":"087808"
+           "municipality_code":"087808",
+           "zip_code":"6543"
         },
         {
            "name":"DAPITAN CITY",
            "province_code":"0972",
-           "municipality_code":"097201"
+           "municipality_code":"097201",
+           "zip_code":"7101"
         },
         {
            "name":"DIPOLOG CITY (Capital)",
            "province_code":"0972",
-           "municipality_code":"097202"
+           "municipality_code":"097202",
+           "zip_code":"7100"
         },
         {
            "name":"KATIPUNAN",
            "province_code":"0972",
-           "municipality_code":"097203"
+           "municipality_code":"097203",
+           "zip_code":"7109"
         },
         {
            "name":"LA LIBERTAD",
            "province_code":"0972",
-           "municipality_code":"097204"
+           "municipality_code":"097204",
+           "zip_code":"7119"
         },
         {
            "name":"LABASON",
            "province_code":"0972",
-           "municipality_code":"097205"
+           "municipality_code":"097205",
+           "zip_code":"7117"
         },
         {
            "name":"LILOY",
            "province_code":"0972",
-           "municipality_code":"097206"
+           "municipality_code":"097206",
+           "zip_code":"7115"
         },
         {
            "name":"MANUKAN",
            "province_code":"0972",
-           "municipality_code":"097207"
+           "municipality_code":"097207",
+           "zip_code":"7110"
         },
         {
            "name":"MUTIA",
            "province_code":"0972",
-           "municipality_code":"097208"
+           "municipality_code":"097208",
+           "zip_code":"7107"
         },
         {
            "name":"POLANCO",
            "province_code":"0972",
-           "municipality_code":"097210"
+           "municipality_code":"097210",
+           "zip_code":"7106"
         },
         {
            "name":"PRES. MANUEL A. ROXAS",
            "province_code":"0972",
-           "municipality_code":"097211"
+           "municipality_code":"097211",
+           "zip_code":"7102"
         },
         {
            "name":"RIZAL",
            "province_code":"0972",
-           "municipality_code":"097212"
+           "municipality_code":"097212",
+           "zip_code":"7104"
         },
         {
            "name":"SALUG",
            "province_code":"0972",
-           "municipality_code":"097213"
+           "municipality_code":"097213",
+           "zip_code":"7114"
         },
         {
            "name":"SIAYAN",
            "province_code":"0972",
-           "municipality_code":"097215"
+           "municipality_code":"097215",
+           "zip_code":"7113"
         },
         {
            "name":"SIBUCO",
            "province_code":"0972",
-           "municipality_code":"097216"
+           "municipality_code":"097216",
+           "zip_code":"7122"
         },
         {
            "name":"SIBUTAD",
            "province_code":"0972",
-           "municipality_code":"097217"
+           "municipality_code":"097217",
+           "zip_code":"7103"
         },
         {
            "name":"SINDANGAN",
            "province_code":"0972",
-           "municipality_code":"097218"
+           "municipality_code":"097218",
+           "zip_code":"7112"
         },
         {
            "name":"SIOCON",
            "province_code":"0972",
-           "municipality_code":"097219"
+           "municipality_code":"097219",
+           "zip_code":"7120"
         },
         {
            "name":"SIRAWAI",
            "province_code":"0972",
-           "municipality_code":"097220"
+           "municipality_code":"097220",
+           "zip_code":"7121"
         },
         {
            "name":"TAMPILISAN",
            "province_code":"0972",
-           "municipality_code":"097221"
+           "municipality_code":"097221",
+           "zip_code":"7116"
         },
         {
            "name":"JOSE DALMAN (PONOT)",
            "province_code":"0972",
-           "municipality_code":"097222"
+           "municipality_code":"097222",
+           "zip_code":"7111"
         },
         {
            "name":"GUTALAC",
            "province_code":"0972",
-           "municipality_code":"097223"
+           "municipality_code":"097223",
+           "zip_code":"7118"
         },
         {
            "name":"BALIGUIAN",
            "province_code":"0972",
-           "municipality_code":"097224"
+           "municipality_code":"097224",
+           "zip_code":"7123"
         },
         {
            "name":"GODOD",
            "province_code":"0972",
-           "municipality_code":"097225"
+           "municipality_code":"097225",
+           "zip_code":"7114"
         },
         {
            "name":"BACUNGAN (Leon T. Postigo)",
            "province_code":"0972",
-           "municipality_code":"097226"
+           "municipality_code":"097226",
+           "zip_code":"7125"
         },
         {
            "name":"KALAWIT",
            "province_code":"0972",
-           "municipality_code":"097227"
+           "municipality_code":"097227",
+           "zip_code":"7124"
         },
         {
            "name":"AURORA",
            "province_code":"0973",
-           "municipality_code":"097302"
+           "municipality_code":"097302",
+           "zip_code":"7020"
         },
         {
            "name":"BAYOG",
            "province_code":"0973",
-           "municipality_code":"097303"
+           "municipality_code":"097303",
+           "zip_code":"7011"
         },
         {
            "name":"DIMATALING",
            "province_code":"0973",
-           "municipality_code":"097305"
+           "municipality_code":"097305",
+           "zip_code":"7032"
         },
         {
            "name":"DINAS",
            "province_code":"0973",
-           "municipality_code":"097306"
+           "municipality_code":"097306",
+           "zip_code":"7030"
         },
         {
            "name":"DUMALINAO",
            "province_code":"0973",
-           "municipality_code":"097307"
+           "municipality_code":"097307",
+           "zip_code":"7015"
         },
         {
            "name":"DUMINGAG",
            "province_code":"0973",
-           "municipality_code":"097308"
+           "municipality_code":"097308",
+           "zip_code":"7028"
         },
         {
            "name":"KUMALARANG",
            "province_code":"0973",
-           "municipality_code":"097311"
+           "municipality_code":"097311",
+           "zip_code":"7013"
         },
         {
            "name":"LABANGAN",
            "province_code":"0973",
-           "municipality_code":"097312"
+           "municipality_code":"097312",
+           "zip_code":"7017"
         },
         {
            "name":"LAPUYAN",
            "province_code":"0973",
-           "municipality_code":"097313"
+           "municipality_code":"097313",
+           "zip_code":"7037"
         },
         {
            "name":"MAHAYAG",
            "province_code":"0973",
-           "municipality_code":"097315"
+           "municipality_code":"097315",
+           "zip_code":"7026"
         },
         {
            "name":"MARGOSATUBIG",
            "province_code":"0973",
-           "municipality_code":"097317"
+           "municipality_code":"097317",
+           "zip_code":"7035"
         },
         {
            "name":"MIDSALIP",
            "province_code":"0973",
-           "municipality_code":"097318"
+           "municipality_code":"097318",
+           "zip_code":"7021"
         },
         {
            "name":"MOLAVE",
            "province_code":"0973",
-           "municipality_code":"097319"
+           "municipality_code":"097319",
+           "zip_code":"7023"
         },
         {
            "name":"PAGADIAN CITY (Capital)",
            "province_code":"0973",
-           "municipality_code":"097322"
+           "municipality_code":"097322",
+           "zip_code":"7016"
         },
         {
            "name":"RAMON MAGSAYSAY (LIARGO)",
            "province_code":"0973",
-           "municipality_code":"097323"
+           "municipality_code":"097323",
+           "zip_code":"7024"
         },
         {
            "name":"SAN MIGUEL",
            "province_code":"0973",
-           "municipality_code":"097324"
+           "municipality_code":"097324",
+           "zip_code":"7029"
         },
         {
            "name":"SAN PABLO",
            "province_code":"0973",
-           "municipality_code":"097325"
+           "municipality_code":"097325",
+           "zip_code":"7031"
         },
         {
            "name":"TABINA",
            "province_code":"0973",
-           "municipality_code":"097327"
+           "municipality_code":"097327",
+           "zip_code":"7034"
         },
         {
            "name":"TAMBULIG",
            "province_code":"0973",
-           "municipality_code":"097328"
+           "municipality_code":"097328",
+           "zip_code":"7025"
         },
         {
            "name":"TUKURAN",
            "province_code":"0973",
-           "municipality_code":"097330"
+           "municipality_code":"097330",
+           "zip_code":"7019"
         },
         {
            "name":"ZAMBOANGA CITY",
            "province_code":"0973",
-           "municipality_code":"097332"
+           "municipality_code":"097332",
+           "zip_code":"7000"
         },
         {
            "name":"LAKEWOOD",
            "province_code":"0973",
-           "municipality_code":"097333"
+           "municipality_code":"097333",
+           "zip_code":"7014"
         },
         {
            "name":"JOSEFINA",
            "province_code":"0973",
-           "municipality_code":"097337"
+           "municipality_code":"097337",
+           "zip_code":"7027"
         },
         {
            "name":"PITOGO",
            "province_code":"0973",
-           "municipality_code":"097338"
+           "municipality_code":"097338",
+           "zip_code":"7033"
         },
         {
            "name":"SOMINOT (DON MARIANO MARCOS)",
            "province_code":"0973",
-           "municipality_code":"097340"
+           "municipality_code":"097340",
+           "zip_code":"7022"
         },
         {
            "name":"VINCENZO A. SAGUN",
            "province_code":"0973",
-           "municipality_code":"097341"
+           "municipality_code":"097341",
+           "zip_code":"7036"
         },
         {
            "name":"GUIPOS",
            "province_code":"0973",
-           "municipality_code":"097343"
+           "municipality_code":"097343",
+           "zip_code":"7042"
         },
         {
            "name":"TIGBAO",
            "province_code":"0973",
-           "municipality_code":"097344"
+           "municipality_code":"097344",
+           "zip_code":"7043"
         },
         {
            "name":"ALICIA",
            "province_code":"0983",
-           "municipality_code":"098301"
+           "municipality_code":"098301",
+           "zip_code":"7040"
         },
         {
            "name":"BUUG",
            "province_code":"0983",
-           "municipality_code":"098302"
+           "municipality_code":"098302",
+           "zip_code":"7009"
         },
         {
            "name":"DIPLAHAN",
            "province_code":"0983",
-           "municipality_code":"098303"
+           "municipality_code":"098303",
+           "zip_code":"7039"
         },
         {
            "name":"IMELDA",
            "province_code":"0983",
-           "municipality_code":"098304"
+           "municipality_code":"098304",
+           "zip_code":"7007"
         },
         {
            "name":"IPIL (Capital)",
            "province_code":"0983",
-           "municipality_code":"098305"
+           "municipality_code":"098305",
+           "zip_code":"7001"
         },
         {
            "name":"KABASALAN",
            "province_code":"0983",
-           "municipality_code":"098306"
+           "municipality_code":"098306",
+           "zip_code":"7005"
         },
         {
            "name":"MABUHAY",
            "province_code":"0983",
-           "municipality_code":"098307"
+           "municipality_code":"098307",
+           "zip_code":"7010"
         },
         {
            "name":"MALANGAS",
            "province_code":"0983",
-           "municipality_code":"098308"
+           "municipality_code":"098308",
+           "zip_code":"7038"
         },
         {
            "name":"NAGA",
            "province_code":"0983",
-           "municipality_code":"098309"
+           "municipality_code":"098309",
+           "zip_code":"7004"
         },
         {
            "name":"OLUTANGA",
            "province_code":"0983",
-           "municipality_code":"098310"
+           "municipality_code":"098310",
+           "zip_code":"7041"
         },
         {
            "name":"PAYAO",
            "province_code":"0983",
-           "municipality_code":"098311"
+           "municipality_code":"098311",
+           "zip_code":"7008"
         },
         {
            "name":"ROSELLER LIM",
            "province_code":"0983",
-           "municipality_code":"098312"
+           "municipality_code":"098312",
+           "zip_code":"7002"
         },
         {
            "name":"SIAY",
            "province_code":"0983",
-           "municipality_code":"098313"
+           "municipality_code":"098313",
+           "zip_code":"7006"
         },
         {
            "name":"TALUSAN",
            "province_code":"0983",
-           "municipality_code":"098314"
+           "municipality_code":"098314",
+           "zip_code":"7012"
         },
         {
            "name":"TITAY",
            "province_code":"0983",
-           "municipality_code":"098315"
+           "municipality_code":"098315",
+           "zip_code":"7003"
         },
         {
            "name":"TUNGAWAN",
            "province_code":"0983",
-           "municipality_code":"098316"
+           "municipality_code":"098316",
+           "zip_code":"7018"
         },
         {
            "name":"CITY OF ISABELA",
            "province_code":"0997",
-           "municipality_code":"099701"
+           "municipality_code":"099701",
+           "zip_code":"7300"
         },
         {
            "name":"BAUNGON",
            "province_code":"1013",
-           "municipality_code":"101301"
+           "municipality_code":"101301",
+           "zip_code":"8707"
         },
         {
            "name":"DAMULOG",
            "province_code":"1013",
-           "municipality_code":"101302"
+           "municipality_code":"101302",
+           "zip_code":"8721"
         },
         {
            "name":"DANGCAGAN",
            "province_code":"1013",
-           "municipality_code":"101303"
+           "municipality_code":"101303",
+           "zip_code":"8719"
         },
         {
            "name":"DON CARLOS",
            "province_code":"1013",
-           "municipality_code":"101304"
+           "municipality_code":"101304",
+           "zip_code":"8712"
         },
         {
            "name":"IMPASUG-ONG",
            "province_code":"1013",
-           "municipality_code":"101305"
+           "municipality_code":"101305",
+           "zip_code":"8702"
         },
         {
            "name":"KADINGILAN",
            "province_code":"1013",
-           "municipality_code":"101306"
+           "municipality_code":"101306",
+           "zip_code":"8713"
         },
         {
            "name":"KALILANGAN",
            "province_code":"1013",
-           "municipality_code":"101307"
+           "municipality_code":"101307",
+           "zip_code":"8718"
         },
         {
            "name":"KIBAWE",
            "province_code":"1013",
-           "municipality_code":"101308"
+           "municipality_code":"101308",
+           "zip_code":"8720"
         },
         {
            "name":"KITAOTAO",
            "province_code":"1013",
-           "municipality_code":"101309"
+           "municipality_code":"101309",
+           "zip_code":"8716"
         },
         {
            "name":"LANTAPAN",
            "province_code":"1013",
-           "municipality_code":"101310"
+           "municipality_code":"101310",
+           "zip_code":"8722"
         },
         {
            "name":"LIBONA",
            "province_code":"1013",
-           "municipality_code":"101311"
+           "municipality_code":"101311",
+           "zip_code":"8706"
         },
         {
            "name":"CITY OF MALAYBALAY (Capital)",
            "province_code":"1013",
-           "municipality_code":"101312"
+           "municipality_code":"101312",
+           "zip_code":"8700"
         },
         {
            "name":"MALITBOG",
            "province_code":"1013",
-           "municipality_code":"101313"
+           "municipality_code":"101313",
+           "zip_code":"8704"
         },
         {
            "name":"MANOLO FORTICH",
            "province_code":"1013",
-           "municipality_code":"101314"
+           "municipality_code":"101314",
+           "zip_code":"8703"
         },
         {
            "name":"MARAMAG",
            "province_code":"1013",
-           "municipality_code":"101315"
+           "municipality_code":"101315",
+           "zip_code":"8714"
         },
         {
            "name":"PANGANTUCAN",
            "province_code":"1013",
-           "municipality_code":"101316"
+           "municipality_code":"101316",
+           "zip_code":"8717"
         },
         {
            "name":"QUEZON",
            "province_code":"1013",
-           "municipality_code":"101317"
+           "municipality_code":"101317",
+           "zip_code":"8715"
         },
         {
            "name":"SAN FERNANDO",
            "province_code":"1013",
-           "municipality_code":"101318"
+           "municipality_code":"101318",
+           "zip_code":"8711"
         },
         {
            "name":"SUMILAO",
            "province_code":"1013",
-           "municipality_code":"101319"
+           "municipality_code":"101319",
+           "zip_code":"8701"
         },
         {
            "name":"TALAKAG",
            "province_code":"1013",
-           "municipality_code":"101320"
+           "municipality_code":"101320",
+           "zip_code":"8708"
         },
         {
            "name":"CITY OF VALENCIA",
            "province_code":"1013",
-           "municipality_code":"101321"
+           "municipality_code":"101321",
+           "zip_code":"8709"
         },
         {
            "name":"CABANGLASAN",
            "province_code":"1013",
-           "municipality_code":"101322"
+           "municipality_code":"101322",
+           "zip_code":"8723"
         },
         {
            "name":"CATARMAN",
            "province_code":"1018",
-           "municipality_code":"101801"
+           "municipality_code":"101801",
+           "zip_code":"9104"
         },
         {
            "name":"GUINSILIBAN",
            "province_code":"1018",
-           "municipality_code":"101802"
+           "municipality_code":"101802",
+           "zip_code":"9102"
         },
         {
            "name":"MAHINOG",
            "province_code":"1018",
-           "municipality_code":"101803"
+           "municipality_code":"101803",
+           "zip_code":"9101"
         },
         {
            "name":"MAMBAJAO (Capital)",
            "province_code":"1018",
-           "municipality_code":"101804"
+           "municipality_code":"101804",
+           "zip_code":"9100"
         },
         {
            "name":"SAGAY",
            "province_code":"1018",
-           "municipality_code":"101805"
+           "municipality_code":"101805",
+           "zip_code":"9103"
         },
         {
            "name":"BACOLOD",
            "province_code":"1035",
-           "municipality_code":"103501"
+           "municipality_code":"103501",
+           "zip_code":"9205"
         },
         {
            "name":"BALOI",
            "province_code":"1035",
-           "municipality_code":"103502"
+           "municipality_code":"103502",
+           "zip_code":"9217"
         },
         {
            "name":"BAROY",
            "province_code":"1035",
-           "municipality_code":"103503"
+           "municipality_code":"103503",
+           "zip_code":"9210"
         },
         {
            "name":"ILIGAN CITY",
            "province_code":"1035",
-           "municipality_code":"103504"
+           "municipality_code":"103504",
+           "zip_code":"9200"
         },
         {
            "name":"KAPATAGAN",
            "province_code":"1035",
-           "municipality_code":"103505"
+           "municipality_code":"103505",
+           "zip_code":"9214"
         },
         {
            "name":"SULTAN NAGA DIMAPORO (KAROMATAN)",
            "province_code":"1035",
-           "municipality_code":"103506"
+           "municipality_code":"103506",
+           "zip_code":"9215"
         },
         {
            "name":"KAUSWAGAN",
            "province_code":"1035",
-           "municipality_code":"103507"
+           "municipality_code":"103507",
+           "zip_code":"9202"
         },
         {
            "name":"KOLAMBUGAN",
            "province_code":"1035",
-           "municipality_code":"103508"
+           "municipality_code":"103508",
+           "zip_code":"9207"
         },
         {
            "name":"LALA",
            "province_code":"1035",
-           "municipality_code":"103509"
+           "municipality_code":"103509",
+           "zip_code":"9211"
         },
         {
            "name":"LINAMON",
            "province_code":"1035",
-           "municipality_code":"103510"
+           "municipality_code":"103510",
+           "zip_code":"9201"
         },
         {
            "name":"MAGSAYSAY",
            "province_code":"1035",
-           "municipality_code":"103511"
+           "municipality_code":"103511",
+           "zip_code":"9221"
         },
         {
            "name":"MAIGO",
            "province_code":"1035",
-           "municipality_code":"103512"
+           "municipality_code":"103512",
+           "zip_code":"9206"
         },
         {
            "name":"MATUNGAO",
            "province_code":"1035",
-           "municipality_code":"103513"
+           "municipality_code":"103513",
+           "zip_code":"9203"
         },
         {
            "name":"MUNAI",
            "province_code":"1035",
-           "municipality_code":"103514"
+           "municipality_code":"103514",
+           "zip_code":"9219"
         },
         {
            "name":"NUNUNGAN",
            "province_code":"1035",
-           "municipality_code":"103515"
+           "municipality_code":"103515",
+           "zip_code":"9216"
         },
         {
            "name":"PANTAO RAGAT",
            "province_code":"1035",
-           "municipality_code":"103516"
+           "municipality_code":"103516",
+           "zip_code":"9208"
         },
         {
            "name":"POONA PIAGAPO",
            "province_code":"1035",
-           "municipality_code":"103517"
+           "municipality_code":"103517",
+           "zip_code":"9204"
         },
         {
            "name":"SALVADOR",
            "province_code":"1035",
-           "municipality_code":"103518"
+           "municipality_code":"103518",
+           "zip_code":"9212"
         },
         {
            "name":"SAPAD",
            "province_code":"1035",
-           "municipality_code":"103519"
+           "municipality_code":"103519",
+           "zip_code":"9213"
         },
         {
            "name":"TAGOLOAN",
            "province_code":"1035",
-           "municipality_code":"103520"
+           "municipality_code":"103520",
+           "zip_code":"9222"
         },
         {
            "name":"TANGCAL",
            "province_code":"1035",
-           "municipality_code":"103521"
+           "municipality_code":"103521",
+           "zip_code":"9220"
         },
         {
            "name":"TUBOD (Capital)",
            "province_code":"1035",
-           "municipality_code":"103522"
+           "municipality_code":"103522",
+           "zip_code":"9209"
         },
         {
            "name":"PANTAR",
            "province_code":"1035",
-           "municipality_code":"103523"
+           "municipality_code":"103523",
+           "zip_code":"9218"
         },
         {
            "name":"ALORAN",
            "province_code":"1042",
-           "municipality_code":"104201"
+           "municipality_code":"104201",
+           "zip_code":"7206"
         },
         {
            "name":"BALIANGAO",
            "province_code":"1042",
-           "municipality_code":"104202"
+           "municipality_code":"104202",
+           "zip_code":"7211"
         },
         {
            "name":"BONIFACIO",
            "province_code":"1042",
-           "municipality_code":"104203"
+           "municipality_code":"104203",
+           "zip_code":"7215"
         },
         {
            "name":"CALAMBA",
            "province_code":"1042",
-           "municipality_code":"104204"
+           "municipality_code":"104204",
+           "zip_code":"7210"
         },
         {
            "name":"CLARIN",
            "province_code":"1042",
-           "municipality_code":"104205"
+           "municipality_code":"104205",
+           "zip_code":"7201"
         },
         {
            "name":"CONCEPCION",
            "province_code":"1042",
-           "municipality_code":"104206"
+           "municipality_code":"104206",
+           "zip_code":"7213"
         },
         {
            "name":"JIMENEZ",
            "province_code":"1042",
-           "municipality_code":"104207"
+           "municipality_code":"104207",
+           "zip_code":"7204"
         },
         {
            "name":"LOPEZ JAENA",
            "province_code":"1042",
-           "municipality_code":"104208"
+           "municipality_code":"104208",
+           "zip_code":"7208"
         },
         {
            "name":"OROQUIETA CITY (Capital)",
            "province_code":"1042",
-           "municipality_code":"104209"
+           "municipality_code":"104209",
+           "zip_code":"7207"
         },
         {
            "name":"OZAMIS CITY",
            "province_code":"1042",
-           "municipality_code":"104210"
+           "municipality_code":"104210",
+           "zip_code":"7200"
         },
         {
            "name":"PANAON",
            "province_code":"1042",
-           "municipality_code":"104211"
+           "municipality_code":"104211",
+           "zip_code":"7205"
         },
         {
            "name":"PLARIDEL",
            "province_code":"1042",
-           "municipality_code":"104212"
+           "municipality_code":"104212",
+           "zip_code":"7209"
         },
         {
            "name":"SAPANG DALAGA",
            "province_code":"1042",
-           "municipality_code":"104213"
+           "municipality_code":"104213",
+           "zip_code":"7212"
         },
         {
            "name":"SINACABAN",
            "province_code":"1042",
-           "municipality_code":"104214"
+           "municipality_code":"104214",
+           "zip_code":"7203"
         },
         {
            "name":"TANGUB CITY",
            "province_code":"1042",
-           "municipality_code":"104215"
+           "municipality_code":"104215",
+           "zip_code":"7214"
         },
         {
            "name":"TUDELA",
            "province_code":"1042",
-           "municipality_code":"104216"
+           "municipality_code":"104216",
+           "zip_code":"7202"
         },
         {
            "name":"DON VICTORIANO CHIONGBIAN (DON MARIANO MARCOS)",
            "province_code":"1042",
-           "municipality_code":"104217"
+           "municipality_code":"104217",
+           "zip_code":"7200"
         },
         {
            "name":"ALUBIJID",
            "province_code":"1043",
-           "municipality_code":"104301"
+           "municipality_code":"104301",
+           "zip_code":"9018"
         },
         {
            "name":"BALINGASAG",
            "province_code":"1043",
-           "municipality_code":"104302"
+           "municipality_code":"104302",
+           "zip_code":"9005"
         },
         {
            "name":"BALINGOAN",
            "province_code":"1043",
-           "municipality_code":"104303"
+           "municipality_code":"104303",
+           "zip_code":"9011"
         },
         {
            "name":"BINUANGAN",
            "province_code":"1043",
-           "municipality_code":"104304"
+           "municipality_code":"104304",
+           "zip_code":"9008"
         },
         {
            "name":"CAGAYAN DE ORO CITY (Capital)",
            "province_code":"1043",
-           "municipality_code":"104305"
+           "municipality_code":"104305",
+           "zip_code":"9000"
         },
         {
            "name":"CLAVERIA",
            "province_code":"1043",
-           "municipality_code":"104306"
+           "municipality_code":"104306",
+           "zip_code":"9004"
         },
         {
            "name":"CITY OF EL SALVADOR",
            "province_code":"1043",
-           "municipality_code":"104307"
+           "municipality_code":"104307",
+           "zip_code":"9017"
         },
         {
            "name":"GINGOOG CITY",
            "province_code":"1043",
-           "municipality_code":"104308"
+           "municipality_code":"104308",
+           "zip_code":"9014"
         },
         {
            "name":"GITAGUM",
            "province_code":"1043",
-           "municipality_code":"104309"
+           "municipality_code":"104309",
+           "zip_code":"9020"
         },
         {
            "name":"INITAO",
            "province_code":"1043",
-           "municipality_code":"104310"
+           "municipality_code":"104310",
+           "zip_code":"9022"
         },
         {
            "name":"JASAAN",
            "province_code":"1043",
-           "municipality_code":"104311"
+           "municipality_code":"104311",
+           "zip_code":"9003"
         },
         {
            "name":"KINOGUITAN",
            "province_code":"1043",
-           "municipality_code":"104312"
+           "municipality_code":"104312",
+           "zip_code":"9010"
         },
         {
            "name":"LAGONGLONG",
            "province_code":"1043",
-           "municipality_code":"104313"
+           "municipality_code":"104313",
+           "zip_code":"9006"
         },
         {
            "name":"LAGUINDINGAN",
            "province_code":"1043",
-           "municipality_code":"104314"
+           "municipality_code":"104314",
+           "zip_code":"9019"
         },
         {
            "name":"LIBERTAD",
            "province_code":"1043",
-           "municipality_code":"104315"
+           "municipality_code":"104315",
+           "zip_code":"9021"
         },
         {
            "name":"LUGAIT",
            "province_code":"1043",
-           "municipality_code":"104316"
+           "municipality_code":"104316",
+           "zip_code":"9025"
         },
         {
            "name":"MAGSAYSAY (LINUGOS)",
            "province_code":"1043",
-           "municipality_code":"104317"
+           "municipality_code":"104317",
+           "zip_code":"9015"
         },
         {
            "name":"MANTICAO",
            "province_code":"1043",
-           "municipality_code":"104318"
+           "municipality_code":"104318",
+           "zip_code":"9024"
         },
         {
            "name":"MEDINA",
            "province_code":"1043",
-           "municipality_code":"104319"
+           "municipality_code":"104319",
+           "zip_code":"9013"
         },
         {
            "name":"NAAWAN",
            "province_code":"1043",
-           "municipality_code":"104320"
+           "municipality_code":"104320",
+           "zip_code":"9023"
         },
         {
            "name":"OPOL",
            "province_code":"1043",
-           "municipality_code":"104321"
+           "municipality_code":"104321",
+           "zip_code":"9016"
         },
         {
            "name":"SALAY",
            "province_code":"1043",
-           "municipality_code":"104322"
+           "municipality_code":"104322",
+           "zip_code":"9007"
         },
         {
            "name":"SUGBONGCOGON",
            "province_code":"1043",
-           "municipality_code":"104323"
+           "municipality_code":"104323",
+           "zip_code":"9009"
         },
         {
            "name":"TAGOLOAN",
            "province_code":"1043",
-           "municipality_code":"104324"
+           "municipality_code":"104324",
+           "zip_code":"9001"
         },
         {
            "name":"TALISAYAN",
            "province_code":"1043",
-           "municipality_code":"104325"
+           "municipality_code":"104325",
+           "zip_code":"9012"
         },
         {
            "name":"VILLANUEVA",
            "province_code":"1043",
-           "municipality_code":"104326"
+           "municipality_code":"104326",
+           "zip_code":"9002"
         },
         {
            "name":"ASUNCION (SAUG)",
            "province_code":"1123",
-           "municipality_code":"112301"
+           "municipality_code":"112301",
+           "zip_code":"8102"
         },
         {
            "name":"CARMEN",
            "province_code":"1123",
-           "municipality_code":"112303"
+           "municipality_code":"112303",
+           "zip_code":"8101"
         },
         {
            "name":"KAPALONG",
            "province_code":"1123",
-           "municipality_code":"112305"
+           "municipality_code":"112305",
+           "zip_code":"8113"
         },
         {
            "name":"NEW CORELLA",
            "province_code":"1123",
-           "municipality_code":"112314"
+           "municipality_code":"112314",
+           "zip_code":"8104"
         },
         {
            "name":"CITY OF PANABO",
            "province_code":"1123",
-           "municipality_code":"112315"
+           "municipality_code":"112315",
+           "zip_code":"8105"
         },
         {
            "name":"ISLAND GARDEN CITY OF SAMAL",
            "province_code":"1123",
-           "municipality_code":"112317"
+           "municipality_code":"112317",
+           "zip_code":"8119"
         },
         {
            "name":"SANTO TOMAS",
            "province_code":"1123",
-           "municipality_code":"112318"
+           "municipality_code":"112318",
+           "zip_code":"8112"
         },
         {
            "name":"CITY OF TAGUM (Capital)",
            "province_code":"1123",
-           "municipality_code":"112319"
+           "municipality_code":"112319",
+           "zip_code":"8100"
         },
         {
            "name":"TALAINGOD",
            "province_code":"1123",
-           "municipality_code":"112322"
+           "municipality_code":"112322",
+           "zip_code":"8100"
         },
         {
            "name":"BRAULIO E. DUJALI",
            "province_code":"1123",
-           "municipality_code":"112323"
+           "municipality_code":"112323",
+           "zip_code":"8100"
         },
         {
            "name":"SAN ISIDRO",
            "province_code":"1123",
-           "municipality_code":"112324"
+           "municipality_code":"112324",
+           "zip_code":"8209"
         },
         {
            "name":"BANSALAN",
            "province_code":"1124",
-           "municipality_code":"112401"
+           "municipality_code":"112401",
+           "zip_code":"8005"
         },
         {
            "name":"DAVAO CITY",
            "province_code":"1124",
-           "municipality_code":"112402"
+           "municipality_code":"112402",
+           "zip_code":"8000"
         },
         {
            "name":"CITY OF DIGOS (Capital)",
            "province_code":"1124",
-           "municipality_code":"112403"
+           "municipality_code":"112403",
+           "zip_code":"8002"
         },
         {
            "name":"HAGONOY",
            "province_code":"1124",
-           "municipality_code":"112404"
+           "municipality_code":"112404",
+           "zip_code":"8006"
         },
         {
            "name":"KIBLAWAN",
            "province_code":"1124",
-           "municipality_code":"112406"
+           "municipality_code":"112406",
+           "zip_code":"8008"
         },
         {
            "name":"MAGSAYSAY",
            "province_code":"1124",
-           "municipality_code":"112407"
+           "municipality_code":"112407",
+           "zip_code":"8004"
         },
         {
            "name":"MALALAG",
            "province_code":"1124",
-           "municipality_code":"112408"
+           "municipality_code":"112408",
+           "zip_code":"8010"
         },
         {
            "name":"MATANAO",
            "province_code":"1124",
-           "municipality_code":"112410"
+           "municipality_code":"112410",
+           "zip_code":"8003"
         },
         {
            "name":"PADADA",
            "province_code":"1124",
-           "municipality_code":"112411"
+           "municipality_code":"112411",
+           "zip_code":"8007"
         },
         {
            "name":"SANTA CRUZ",
            "province_code":"1124",
-           "municipality_code":"112412"
+           "municipality_code":"112412",
+           "zip_code":"8001"
         },
         {
            "name":"SULOP",
            "province_code":"1124",
-           "municipality_code":"112414"
+           "municipality_code":"112414",
+           "zip_code":"8009"
         },
         {
            "name":"BAGANGA",
            "province_code":"1125",
-           "municipality_code":"112501"
+           "municipality_code":"112501",
+           "zip_code":"8204"
         },
         {
            "name":"BANAYBANAY",
            "province_code":"1125",
-           "municipality_code":"112502"
+           "municipality_code":"112502",
+           "zip_code":"8208"
         },
         {
            "name":"BOSTON",
            "province_code":"1125",
-           "municipality_code":"112503"
+           "municipality_code":"112503",
+           "zip_code":"8206"
         },
         {
            "name":"CARAGA",
            "province_code":"1125",
-           "municipality_code":"112504"
+           "municipality_code":"112504",
+           "zip_code":"8203"
         },
         {
            "name":"CATEEL",
            "province_code":"1125",
-           "municipality_code":"112505"
+           "municipality_code":"112505",
+           "zip_code":"8205"
         },
         {
            "name":"GOVERNOR GENEROSO",
            "province_code":"1125",
-           "municipality_code":"112506"
+           "municipality_code":"112506",
+           "zip_code":"8210"
         },
         {
            "name":"LUPON",
            "province_code":"1125",
-           "municipality_code":"112507"
+           "municipality_code":"112507",
+           "zip_code":"8207"
         },
         {
            "name":"MANAY",
            "province_code":"1125",
-           "municipality_code":"112508"
+           "municipality_code":"112508",
+           "zip_code":"8202"
         },
         {
            "name":"CITY OF MATI (Capital)",
            "province_code":"1125",
-           "municipality_code":"112509"
+           "municipality_code":"112509",
+           "zip_code":"8200"
         },
         {
            "name":"SAN ISIDRO",
            "province_code":"1125",
-           "municipality_code":"112510"
+           "municipality_code":"112510",
+           "zip_code":"8209"
         },
         {
            "name":"TARRAGONA",
            "province_code":"1125",
-           "municipality_code":"112511"
+           "municipality_code":"112511",
+           "zip_code":"8201"
         },
         {
            "name":"COMPOSTELA",
            "province_code":"1182",
-           "municipality_code":"118201"
+           "municipality_code":"118201",
+           "zip_code":"8803"
         },
         {
            "name":"LAAK (SAN VICENTE)",
            "province_code":"1182",
-           "municipality_code":"118202"
+           "municipality_code":"118202",
+           "zip_code":"8810"
         },
         {
            "name":"MACO",
            "province_code":"1182",
-           "municipality_code":"118204"
+           "municipality_code":"118204",
+           "zip_code":"8806"
         },
         {
            "name":"MARAGUSAN (SAN MARIANO)",
            "province_code":"1182",
-           "municipality_code":"118205"
+           "municipality_code":"118205",
+           "zip_code":"8808"
         },
         {
            "name":"MAWAB",
            "province_code":"1182",
-           "municipality_code":"118206"
+           "municipality_code":"118206",
+           "zip_code":"8802"
         },
         {
            "name":"MONKAYO",
            "province_code":"1182",
-           "municipality_code":"118207"
+           "municipality_code":"118207",
+           "zip_code":"8805"
         },
         {
            "name":"MONTEVISTA",
            "province_code":"1182",
-           "municipality_code":"118208"
+           "municipality_code":"118208",
+           "zip_code":"8801"
         },
         {
            "name":"NABUNTURAN (Capital)",
            "province_code":"1182",
-           "municipality_code":"118209"
+           "municipality_code":"118209",
+           "zip_code":"8800"
         },
         {
            "name":"NEW BATAAN",
            "province_code":"1182",
-           "municipality_code":"118210"
+           "municipality_code":"118210",
+           "zip_code":"8804"
         },
         {
            "name":"PANTUKAN",
            "province_code":"1182",
-           "municipality_code":"118211"
+           "municipality_code":"118211",
+           "zip_code":"8809"
         },
         {
            "name":"DON MARCELINO",
            "province_code":"1186",
-           "municipality_code":"118601"
+           "municipality_code":"118601",
+           "zip_code":"8013"
         },
         {
            "name":"JOSE ABAD SANTOS (TRINIDAD)",
            "province_code":"1186",
-           "municipality_code":"118602"
+           "municipality_code":"118602",
+           "zip_code":"8014"
         },
         {
            "name":"MALITA",
            "province_code":"1186",
-           "municipality_code":"118603"
+           "municipality_code":"118603",
+           "zip_code":"8012"
         },
         {
            "name":"SANTA MARIA",
            "province_code":"1186",
-           "municipality_code":"118604"
+           "municipality_code":"118604",
+           "zip_code":"8011"
         },
         {
            "name":"SARANGANI",
            "province_code":"1186",
-           "municipality_code":"118605"
+           "municipality_code":"118605",
+           "zip_code":"8015"
         },
         {
            "name":"ALAMADA",
            "province_code":"1247",
-           "municipality_code":"124701"
+           "municipality_code":"124701",
+           "zip_code":"9413"
         },
         {
            "name":"CARMEN",
            "province_code":"1247",
-           "municipality_code":"124702"
+           "municipality_code":"124702",
+           "zip_code":"9408"
         },
         {
            "name":"KABACAN",
            "province_code":"1247",
-           "municipality_code":"124703"
+           "municipality_code":"124703",
+           "zip_code":"9407"
         },
         {
            "name":"CITY OF KIDAPAWAN (Capital)",
            "province_code":"1247",
-           "municipality_code":"124704"
+           "municipality_code":"124704",
+           "zip_code":"9400"
         },
         {
            "name":"LIBUNGAN",
            "province_code":"1247",
-           "municipality_code":"124705"
+           "municipality_code":"124705",
+           "zip_code":"9411"
         },
         {
            "name":"MAGPET",
            "province_code":"1247",
-           "municipality_code":"124706"
+           "municipality_code":"124706",
+           "zip_code":"9404"
         },
         {
            "name":"MAKILALA",
            "province_code":"1247",
-           "municipality_code":"124707"
+           "municipality_code":"124707",
+           "zip_code":"9401"
         },
         {
            "name":"MATALAM",
            "province_code":"1247",
-           "municipality_code":"124708"
+           "municipality_code":"124708",
+           "zip_code":"9406"
         },
         {
            "name":"MIDSAYAP",
            "province_code":"1247",
-           "municipality_code":"124709"
+           "municipality_code":"124709",
+           "zip_code":"9410"
         },
         {
            "name":"M\u0027LANG",
            "province_code":"1247",
-           "municipality_code":"124710"
+           "municipality_code":"124710",
+           "zip_code":"9402"
         },
         {
            "name":"PIGKAWAYAN",
            "province_code":"1247",
-           "municipality_code":"124711"
+           "municipality_code":"124711",
+           "zip_code":"9412"
         },
         {
            "name":"PIKIT",
            "province_code":"1247",
-           "municipality_code":"124712"
+           "municipality_code":"124712",
+           "zip_code":"9409"
         },
         {
            "name":"PRESIDENT ROXAS",
            "province_code":"1247",
-           "municipality_code":"124713"
+           "municipality_code":"124713",
+           "zip_code":"9405"
         },
         {
            "name":"TULUNAN",
            "province_code":"1247",
-           "municipality_code":"124714"
+           "municipality_code":"124714",
+           "zip_code":"9403"
         },
         {
            "name":"ANTIPAS",
            "province_code":"1247",
-           "municipality_code":"124715"
+           "municipality_code":"124715",
+           "zip_code":"9414"
         },
         {
            "name":"BANISILAN",
            "province_code":"1247",
-           "municipality_code":"124716"
+           "municipality_code":"124716",
+           "zip_code":"9416"
         },
         {
            "name":"ALEOSAN",
            "province_code":"1247",
-           "municipality_code":"124717"
+           "municipality_code":"124717",
+           "zip_code":"9415"
         },
         {
            "name":"ARAKAN",
            "province_code":"1247",
-           "municipality_code":"124718"
+           "municipality_code":"124718",
+           "zip_code":"9417"
         },
         {
            "name":"BANGA",
            "province_code":"1263",
-           "municipality_code":"126302"
+           "municipality_code":"126302",
+           "zip_code":"9511"
         },
         {
            "name":"GENERAL SANTOS CITY (DADIANGAS)",
            "province_code":"1263",
-           "municipality_code":"126303"
+           "municipality_code":"126303",
+           "zip_code":"9500"
         },
         {
            "name":"CITY OF KORONADAL (Capital)",
            "province_code":"1263",
-           "municipality_code":"126306"
+           "municipality_code":"126306",
+           "zip_code":"9506"
         },
         {
            "name":"NORALA",
            "province_code":"1263",
-           "municipality_code":"126311"
+           "municipality_code":"126311",
+           "zip_code":"9508"
         },
         {
            "name":"POLOMOLOK",
            "province_code":"1263",
-           "municipality_code":"126312"
+           "municipality_code":"126312",
+           "zip_code":"9504"
         },
         {
            "name":"SURALLAH",
            "province_code":"1263",
-           "municipality_code":"126313"
+           "municipality_code":"126313",
+           "zip_code":"9512"
         },
         {
            "name":"TAMPAKAN",
            "province_code":"1263",
-           "municipality_code":"126314"
+           "municipality_code":"126314",
+           "zip_code":"9507"
         },
         {
            "name":"TANTANGAN",
            "province_code":"1263",
-           "municipality_code":"126315"
+           "municipality_code":"126315",
+           "zip_code":"9510"
         },
         {
            "name":"T\u0027BOLI",
            "province_code":"1263",
-           "municipality_code":"126316"
+           "municipality_code":"126316",
+           "zip_code":"9513"
         },
         {
            "name":"TUPI",
            "province_code":"1263",
-           "municipality_code":"126317"
+           "municipality_code":"126317",
+           "zip_code":"9505"
         },
         {
            "name":"LAKE SEBU",
            "province_code":"1263",
-           "municipality_code":"126319"
+           "municipality_code":"126319",
+           "zip_code":"9514"
         },
         {
            "name":"BAGUMBAYAN",
            "province_code":"1265",
-           "municipality_code":"126501"
+           "municipality_code":"126501",
+           "zip_code":"9810"
         },
         {
            "name":"COLUMBIO",
            "province_code":"1265",
-           "municipality_code":"126502"
+           "municipality_code":"126502",
+           "zip_code":"9801"
         },
         {
            "name":"ESPERANZA",
            "province_code":"1265",
-           "municipality_code":"126503"
+           "municipality_code":"126503",
+           "zip_code":"9806"
         },
         {
            "name":"ISULAN (Capital)",
            "province_code":"1265",
-           "municipality_code":"126504"
+           "municipality_code":"126504",
+           "zip_code":"9805"
         },
         {
            "name":"KALAMANSIG",
            "province_code":"1265",
-           "municipality_code":"126505"
+           "municipality_code":"126505",
+           "zip_code":"9808"
         },
         {
            "name":"LEBAK",
            "province_code":"1265",
-           "municipality_code":"126506"
+           "municipality_code":"126506",
+           "zip_code":"9807"
         },
         {
            "name":"LUTAYAN",
            "province_code":"1265",
-           "municipality_code":"126507"
+           "municipality_code":"126507",
+           "zip_code":"9803"
         },
         {
            "name":"LAMBAYONG (MARIANO MARCOS)",
            "province_code":"1265",
-           "municipality_code":"126508"
+           "municipality_code":"126508",
+           "zip_code":"9802"
         },
         {
            "name":"PALIMBANG",
            "province_code":"1265",
-           "municipality_code":"126509"
+           "municipality_code":"126509",
+           "zip_code":"9809"
         },
         {
            "name":"PRESIDENT QUIRINO",
            "province_code":"1265",
-           "municipality_code":"126510"
+           "municipality_code":"126510",
+           "zip_code":"9804"
         },
         {
            "name":"CITY OF TACURONG",
            "province_code":"1265",
-           "municipality_code":"126511"
+           "municipality_code":"126511",
+           "zip_code":"9800"
         },
         {
            "name":"SEN. NINOY AQUINO",
            "province_code":"1265",
-           "municipality_code":"126512"
+           "municipality_code":"126512",
+           "zip_code":"9811"
         },
         {
            "name":"ALABEL (Capital)",
            "province_code":"1280",
-           "municipality_code":"128001"
+           "municipality_code":"128001",
+           "zip_code":"9501"
         },
         {
            "name":"GLAN",
            "province_code":"1280",
-           "municipality_code":"128002"
+           "municipality_code":"128002",
+           "zip_code":"9517"
         },
         {
            "name":"KIAMBA",
            "province_code":"1280",
-           "municipality_code":"128003"
+           "municipality_code":"128003",
+           "zip_code":"9514"
         },
         {
            "name":"MAASIM",
            "province_code":"1280",
-           "municipality_code":"128004"
+           "municipality_code":"128004",
+           "zip_code":"9502"
         },
         {
            "name":"MAITUM",
            "province_code":"1280",
-           "municipality_code":"128005"
+           "municipality_code":"128005",
+           "zip_code":"9515"
         },
         {
            "name":"MALAPATAN",
            "province_code":"1280",
-           "municipality_code":"128006"
+           "municipality_code":"128006",
+           "zip_code":"9516"
         },
         {
            "name":"MALUNGON",
            "province_code":"1280",
-           "municipality_code":"128007"
+           "municipality_code":"128007",
+           "zip_code":"9503"
         },
         {
            "name":"COTABATO CITY",
            "province_code":"1298",
-           "municipality_code":"129804"
+           "municipality_code":"129804",
+           "zip_code":"9600"
         },
         {
            "name":"TONDO I \/ II",
            "province_code":"1339",
-           "municipality_code":"133901"
+           "municipality_code":"133901",
+           "zip_code":"1012"
         },
         {
            "name":"BINONDO",
            "province_code":"1339",
-           "municipality_code":"133902"
+           "municipality_code":"133902",
+           "zip_code":"1006"
         },
         {
            "name":"QUIAPO",
            "province_code":"1339",
-           "municipality_code":"133903"
+           "municipality_code":"133903",
+           "zip_code":"1001"
         },
         {
            "name":"SAN NICOLAS",
            "province_code":"1339",
-           "municipality_code":"133904"
+           "municipality_code":"133904",
+           "zip_code":"1010"
         },
         {
            "name":"SANTA CRUZ",
            "province_code":"1339",
-           "municipality_code":"133905"
+           "municipality_code":"133905",
+           "zip_code":"1003"
         },
         {
            "name":"SAMPALOC",
            "province_code":"1339",
-           "municipality_code":"133906"
+           "municipality_code":"133906",
+           "zip_code":"1015"
         },
         {
            "name":"SAN MIGUEL",
            "province_code":"1339",
-           "municipality_code":"133907"
+           "municipality_code":"133907",
+           "zip_code":"1005"
         },
         {
            "name":"ERMITA",
            "province_code":"1339",
-           "municipality_code":"133908"
+           "municipality_code":"133908",
+           "zip_code":"1000"
         },
         {
            "name":"INTRAMUROS",
            "province_code":"1339",
-           "municipality_code":"133909"
+           "municipality_code":"133909",
+           "zip_code":"1002"
         },
         {
            "name":"MALATE",
            "province_code":"1339",
-           "municipality_code":"133910"
+           "municipality_code":"133910",
+           "zip_code":"1004"
         },
         {
            "name":"PACO",
            "province_code":"1339",
-           "municipality_code":"133911"
+           "municipality_code":"133911",
+           "zip_code":"1007"
         },
         {
            "name":"PANDACAN",
            "province_code":"1339",
-           "municipality_code":"133912"
+           "municipality_code":"133912",
+           "zip_code":"1011"
         },
         {
            "name":"PORT AREA",
            "province_code":"1339",
-           "municipality_code":"133913"
+           "municipality_code":"133913",
+           "zip_code":"1018"
         },
         {
            "name":"SANTA ANA",
            "province_code":"1339",
-           "municipality_code":"133914"
+           "municipality_code":"133914",
+           "zip_code":"1009"
         },
         {
            "name":"CITY OF MANDALUYONG",
            "province_code":"1374",
-           "municipality_code":"137401"
+           "municipality_code":"137401",
+           "zip_code":"1550"
         },
         {
            "name":"CITY OF MARIKINA",
            "province_code":"1374",
-           "municipality_code":"137402"
+           "municipality_code":"137402",
+           "zip_code":"1800"
         },
         {
            "name":"CITY OF PASIG",
            "province_code":"1374",
-           "municipality_code":"137403"
+           "municipality_code":"137403",
+           "zip_code":"1600"
         },
         {
            "name":"QUEZON CITY",
            "province_code":"1374",
-           "municipality_code":"137404"
+           "municipality_code":"137404",
+           "zip_code":"1800"
         },
         {
            "name":"CITY OF SAN JUAN",
            "province_code":"1374",
-           "municipality_code":"137405"
+           "municipality_code":"137405",
+           "zip_code":"1500"
         },
         {
            "name":"CALOOCAN CITY",
            "province_code":"1375",
-           "municipality_code":"137501"
+           "municipality_code":"137501",
+           "zip_code":"1421"
         },
         {
            "name":"CITY OF MALABON",
            "province_code":"1375",
-           "municipality_code":"137502"
+           "municipality_code":"137502",
+           "zip_code":"1477"
         },
         {
            "name":"CITY OF NAVOTAS",
            "province_code":"1375",
-           "municipality_code":"137503"
+           "municipality_code":"137503",
+           "zip_code":"1485"
         },
         {
            "name":"CITY OF VALENZUELA",
            "province_code":"1375",
-           "municipality_code":"137504"
+           "municipality_code":"137504",
+           "zip_code":"1440"
         },
         {
            "name":"CITY OF MAKATI",
            "province_code":"1376",
-           "municipality_code":"137602"
+           "municipality_code":"137602",
+           "zip_code":"1224"
         },
         {
            "name":"CITY OF MUNTINLUPA",
            "province_code":"1376",
-           "municipality_code":"137603"
+           "municipality_code":"137603",
+           "zip_code":"1770"
         },
         {
            "name":"PASAY CITY",
            "province_code":"1376",
-           "municipality_code":"137605"
+           "municipality_code":"137605",
+           "zip_code":"1300"
         },
         {
            "name":"PATEROS",
            "province_code":"1376",
-           "municipality_code":"137606"
+           "municipality_code":"137606",
+           "zip_code":"1620"
         },
         {
            "name":"TAGUIG CITY",
            "province_code":"1376",
-           "municipality_code":"137607"
+           "municipality_code":"137607",
+           "zip_code":"1630"
         },
         {
            "name":"BANGUED (Capital)",
            "province_code":"1401",
-           "municipality_code":"140101"
+           "municipality_code":"140101",
+           "zip_code":"2800"
         },
         {
            "name":"BOLINEY",
            "province_code":"1401",
-           "municipality_code":"140102"
+           "municipality_code":"140102",
+           "zip_code":"2815"
         },
         {
            "name":"BUCAY",
            "province_code":"1401",
-           "municipality_code":"140103"
+           "municipality_code":"140103",
+           "zip_code":"2805"
         },
         {
            "name":"BUCLOC",
            "province_code":"1401",
-           "municipality_code":"140104"
+           "municipality_code":"140104",
+           "zip_code":"2817"
         },
         {
            "name":"DAGUIOMAN",
            "province_code":"1401",
-           "municipality_code":"140105"
+           "municipality_code":"140105",
+           "zip_code":"2816"
         },
         {
            "name":"DANGLAS",
            "province_code":"1401",
-           "municipality_code":"140106"
+           "municipality_code":"140106",
+           "zip_code":"2825"
         },
         {
            "name":"DOLORES",
            "province_code":"1401",
-           "municipality_code":"140107"
+           "municipality_code":"140107",
+           "zip_code":"2801"
         },
         {
            "name":"LA PAZ",
            "province_code":"1401",
-           "municipality_code":"140108"
+           "municipality_code":"140108",
+           "zip_code":"2826"
         },
         {
            "name":"LACUB",
            "province_code":"1401",
-           "municipality_code":"140109"
+           "municipality_code":"140109",
+           "zip_code":"2821"
         },
         {
            "name":"LAGANGILANG",
            "province_code":"1401",
-           "municipality_code":"140110"
+           "municipality_code":"140110",
+           "zip_code":"2802"
         },
         {
            "name":"LAGAYAN",
            "province_code":"1401",
-           "municipality_code":"140111"
+           "municipality_code":"140111",
+           "zip_code":"2824"
         },
         {
            "name":"LANGIDEN",
            "province_code":"1401",
-           "municipality_code":"140112"
+           "municipality_code":"140112",
+           "zip_code":"2807"
         },
         {
            "name":"LICUAN-BAAY (LICUAN)",
            "province_code":"1401",
-           "municipality_code":"140113"
+           "municipality_code":"140113",
+           "zip_code":"2819"
         },
         {
            "name":"LUBA",
            "province_code":"1401",
-           "municipality_code":"140114"
+           "municipality_code":"140114",
+           "zip_code":"2813"
         },
         {
            "name":"MALIBCONG",
            "province_code":"1401",
-           "municipality_code":"140115"
+           "municipality_code":"140115",
+           "zip_code":"2820"
         },
         {
            "name":"MANABO",
            "province_code":"1401",
-           "municipality_code":"140116"
+           "municipality_code":"140116",
+           "zip_code":"2810"
         },
         {
            "name":"PIDIGAN",
            "province_code":"1401",
-           "municipality_code":"140118"
+           "municipality_code":"140118",
+           "zip_code":"2806"
         },
         {
            "name":"PILAR",
            "province_code":"1401",
-           "municipality_code":"140119"
+           "municipality_code":"140119",
+           "zip_code":"2812"
         },
         {
            "name":"SALLAPADAN",
            "province_code":"1401",
-           "municipality_code":"140120"
+           "municipality_code":"140120",
+           "zip_code":"2818"
         },
         {
            "name":"SAN ISIDRO",
            "province_code":"1401",
-           "municipality_code":"140121"
+           "municipality_code":"140121",
+           "zip_code":"2809"
         },
         {
            "name":"SAN JUAN",
            "province_code":"1401",
-           "municipality_code":"140122"
+           "municipality_code":"140122",
+           "zip_code":"2823"
         },
         {
            "name":"SAN QUINTIN",
            "province_code":"1401",
-           "municipality_code":"140123"
+           "municipality_code":"140123",
+           "zip_code":"2808"
         },
         {
            "name":"TAYUM",
            "province_code":"1401",
-           "municipality_code":"140124"
+           "municipality_code":"140124",
+           "zip_code":"2803"
         },
         {
            "name":"TINEG",
            "province_code":"1401",
-           "municipality_code":"140125"
+           "municipality_code":"140125",
+           "zip_code":"2822"
         },
         {
            "name":"TUBO",
            "province_code":"1401",
-           "municipality_code":"140126"
+           "municipality_code":"140126",
+           "zip_code":"2814"
         },
         {
            "name":"VILLAVICIOSA",
            "province_code":"1401",
-           "municipality_code":"140127"
+           "municipality_code":"140127",
+           "zip_code":"2811"
         },
         {
            "name":"ATOK",
            "province_code":"1411",
-           "municipality_code":"141101"
+           "municipality_code":"141101",
+           "zip_code":"2612"
         },
         {
            "name":"BAGUIO CITY",
            "province_code":"1411",
-           "municipality_code":"141102"
+           "municipality_code":"141102",
+           "zip_code":"2600"
         },
         {
            "name":"BAKUN",
            "province_code":"1411",
-           "municipality_code":"141103"
+           "municipality_code":"141103",
+           "zip_code":"2610"
         },
         {
            "name":"BOKOD",
            "province_code":"1411",
-           "municipality_code":"141104"
+           "municipality_code":"141104",
+           "zip_code":"2605"
         },
         {
            "name":"BUGUIAS",
            "province_code":"1411",
-           "municipality_code":"141105"
+           "municipality_code":"141105",
+           "zip_code":"2607"
         },
         {
            "name":"ITOGON",
            "province_code":"1411",
-           "municipality_code":"141106"
+           "municipality_code":"141106",
+           "zip_code":"2604"
         },
         {
            "name":"KABAYAN",
            "province_code":"1411",
-           "municipality_code":"141107"
+           "municipality_code":"141107",
+           "zip_code":"2606"
         },
         {
            "name":"KAPANGAN",
            "province_code":"1411",
-           "municipality_code":"141108"
+           "municipality_code":"141108",
+           "zip_code":"2613"
         },
         {
            "name":"KIBUNGAN",
            "province_code":"1411",
-           "municipality_code":"141109"
+           "municipality_code":"141109",
+           "zip_code":"2611"
         },
         {
            "name":"LA TRINIDAD (Capital)",
            "province_code":"1411",
-           "municipality_code":"141110"
+           "municipality_code":"141110",
+           "zip_code":"2601"
         },
         {
            "name":"MANKAYAN",
            "province_code":"1411",
-           "municipality_code":"141111"
+           "municipality_code":"141111",
+           "zip_code":"2608"
         },
         {
            "name":"SABLAN",
            "province_code":"1411",
-           "municipality_code":"141112"
+           "municipality_code":"141112",
+           "zip_code":"2614"
         },
         {
            "name":"TUBA",
            "province_code":"1411",
-           "municipality_code":"141113"
+           "municipality_code":"141113",
+           "zip_code":"2603"
         },
         {
            "name":"TUBLAY",
            "province_code":"1411",
-           "municipality_code":"141114"
+           "municipality_code":"141114",
+           "zip_code":"2615"
         },
         {
            "name":"BANAUE",
            "province_code":"1427",
-           "municipality_code":"142701"
+           "municipality_code":"142701",
+           "zip_code":"3601"
         },
         {
            "name":"HUNGDUAN",
            "province_code":"1427",
-           "municipality_code":"142702"
+           "municipality_code":"142702",
+           "zip_code":"3603"
         },
         {
            "name":"KIANGAN",
            "province_code":"1427",
-           "municipality_code":"142703"
+           "municipality_code":"142703",
+           "zip_code":"3604"
         },
         {
            "name":"LAGAWE (Capital)",
            "province_code":"1427",
-           "municipality_code":"142704"
+           "municipality_code":"142704",
+           "zip_code":"3600"
         },
         {
            "name":"LAMUT",
            "province_code":"1427",
-           "municipality_code":"142705"
+           "municipality_code":"142705",
+           "zip_code":"3605"
         },
         {
            "name":"MAYOYAO",
            "province_code":"1427",
-           "municipality_code":"142706"
+           "municipality_code":"142706",
+           "zip_code":"3602"
         },
         {
            "name":"ALFONSO LISTA (POTIA)",
            "province_code":"1427",
-           "municipality_code":"142707"
+           "municipality_code":"142707",
+           "zip_code":"3608"
         },
         {
            "name":"AGUINALDO",
            "province_code":"1427",
-           "municipality_code":"142708"
+           "municipality_code":"142708",
+           "zip_code":"3606"
         },
         {
            "name":"HINGYON",
            "province_code":"1427",
-           "municipality_code":"142709"
+           "municipality_code":"142709",
+           "zip_code":"3607"
         },
         {
            "name":"TINOC",
            "province_code":"1427",
-           "municipality_code":"142710"
+           "municipality_code":"142710",
+           "zip_code":"3609"
         },
         {
            "name":"ASIPULO",
            "province_code":"1427",
-           "municipality_code":"142711"
+           "municipality_code":"142711",
+           "zip_code":"3610"
         },
         {
            "name":"BALBALAN",
            "province_code":"1432",
-           "municipality_code":"143201"
+           "municipality_code":"143201",
+           "zip_code":"3801"
         },
         {
            "name":"LUBUAGAN",
            "province_code":"1432",
-           "municipality_code":"143206"
+           "municipality_code":"143206",
+           "zip_code":"3802"
         },
         {
            "name":"PASIL",
            "province_code":"1432",
-           "municipality_code":"143208"
+           "municipality_code":"143208",
+           "zip_code":"3803"
         },
         {
            "name":"PINUKPUK",
            "province_code":"1432",
-           "municipality_code":"143209"
+           "municipality_code":"143209",
+           "zip_code":"3806"
         },
         {
            "name":"RIZAL (LIWAN)",
            "province_code":"1432",
-           "municipality_code":"143211"
+           "municipality_code":"143211",
+           "zip_code":"3808"
         },
         {
            "name":"CITY OF TABUK (Capital)",
            "province_code":"1432",
-           "municipality_code":"143213"
+           "municipality_code":"143213",
+           "zip_code":"3800"
         },
         {
            "name":"TANUDAN",
            "province_code":"1432",
-           "municipality_code":"143214"
+           "municipality_code":"143214",
+           "zip_code":"3805"
         },
         {
            "name":"TINGLAYAN",
            "province_code":"1432",
-           "municipality_code":"143215"
+           "municipality_code":"143215",
+           "zip_code":"3804"
         },
         {
            "name":"BARLIG",
            "province_code":"1444",
-           "municipality_code":"144401"
+           "municipality_code":"144401",
+           "zip_code":"2623"
         },
         {
            "name":"BAUKO",
            "province_code":"1444",
-           "municipality_code":"144402"
+           "municipality_code":"144402",
+           "zip_code":"2621"
         },
         {
            "name":"BESAO",
            "province_code":"1444",
-           "municipality_code":"144403"
+           "municipality_code":"144403",
+           "zip_code":"2618"
         },
         {
            "name":"BONTOC (Capital)",
            "province_code":"1444",
-           "municipality_code":"144404"
+           "municipality_code":"144404",
+           "zip_code":"2616"
         },
         {
            "name":"NATONIN",
            "province_code":"1444",
-           "municipality_code":"144405"
+           "municipality_code":"144405",
+           "zip_code":"2624"
         },
         {
            "name":"PARACELIS",
            "province_code":"1444",
-           "municipality_code":"144406"
+           "municipality_code":"144406",
+           "zip_code":"2625"
         },
         {
            "name":"SABANGAN",
            "province_code":"1444",
-           "municipality_code":"144407"
+           "municipality_code":"144407",
+           "zip_code":"2622"
         },
         {
            "name":"SADANGA",
            "province_code":"1444",
-           "municipality_code":"144408"
+           "municipality_code":"144408",
+           "zip_code":"2617"
         },
         {
            "name":"SAGADA",
            "province_code":"1444",
-           "municipality_code":"144409"
+           "municipality_code":"144409",
+           "zip_code":"2619"
         },
         {
            "name":"TADIAN",
            "province_code":"1444",
-           "municipality_code":"144410"
+           "municipality_code":"144410",
+           "zip_code":"2620"
         },
         {
            "name":"CALANASAN (BAYAG)",
            "province_code":"1481",
-           "municipality_code":"148101"
+           "municipality_code":"148101",
+           "zip_code":"3814"
         },
         {
            "name":"CONNER",
            "province_code":"1481",
-           "municipality_code":"148102"
+           "municipality_code":"148102",
+           "zip_code":"3807"
         },
         {
            "name":"FLORA",
            "province_code":"1481",
-           "municipality_code":"148103"
+           "municipality_code":"148103",
+           "zip_code":"3810"
         },
         {
            "name":"KABUGAO (Capital)",
            "province_code":"1481",
-           "municipality_code":"148104"
+           "municipality_code":"148104",
+           "zip_code":"3809"
         },
         {
            "name":"LUNA",
            "province_code":"1481",
-           "municipality_code":"148105"
+           "municipality_code":"148105",
+           "zip_code":"3813"
         },
         {
            "name":"PUDTOL",
            "province_code":"1481",
-           "municipality_code":"148106"
+           "municipality_code":"148106",
+           "zip_code":"3812"
         },
         {
            "name":"SANTA MARCELA",
            "province_code":"1481",
-           "municipality_code":"148107"
+           "municipality_code":"148107",
+           "zip_code":"3811"
         },
         {
            "name":"CITY OF LAMITAN",
            "province_code":"1507",
-           "municipality_code":"150702"
+           "municipality_code":"150702",
+           "zip_code":"7302"
         },
         {
            "name":"LANTAWAN",
            "province_code":"1507",
-           "municipality_code":"150703"
+           "municipality_code":"150703",
+           "zip_code":"7301"
         },
         {
            "name":"MALUSO",
            "province_code":"1507",
-           "municipality_code":"150704"
+           "municipality_code":"150704",
+           "zip_code":"7303"
         },
         {
            "name":"SUMISIP",
            "province_code":"1507",
-           "municipality_code":"150705"
+           "municipality_code":"150705",
+           "zip_code":"7305"
         },
         {
            "name":"TIPO-TIPO",
            "province_code":"1507",
-           "municipality_code":"150706"
+           "municipality_code":"150706",
+           "zip_code":"7304"
         },
         {
            "name":"TUBURAN",
            "province_code":"1507",
-           "municipality_code":"150707"
+           "municipality_code":"150707",
+           "zip_code":"7306"
         },
         {
            "name":"AKBAR",
            "province_code":"1507",
-           "municipality_code":"150708"
+           "municipality_code":"150708",
+           "zip_code":"7306"
         },
         {
            "name":"AL-BARKA",
            "province_code":"1507",
-           "municipality_code":"150709"
+           "municipality_code":"150709",
+           "zip_code":"7304"
         },
         {
            "name":"HADJI MOHAMMAD AJUL",
            "province_code":"1507",
-           "municipality_code":"150710"
+           "municipality_code":"150710",
+           "zip_code":"7306"
         },
         {
            "name":"UNGKAYA PUKAN",
            "province_code":"1507",
-           "municipality_code":"150711"
+           "municipality_code":"150711",
+           "zip_code":"7304"
         },
         {
            "name":"HADJI MUHTAMAD",
            "province_code":"1507",
-           "municipality_code":"150712"
+           "municipality_code":"150712",
+           "zip_code":"7301"
         },
         {
            "name":"TABUAN-LASA",
            "province_code":"1507",
-           "municipality_code":"150713"
+           "municipality_code":"150713",
+           "zip_code":"7312"
         },
         {
            "name":"BACOLOD-KALAWI (BACOLOD GRANDE)",
            "province_code":"1536",
-           "municipality_code":"153601"
+           "municipality_code":"153601",
+           "zip_code":"9316"
         },
         {
            "name":"BALABAGAN",
            "province_code":"1536",
-           "municipality_code":"153602"
+           "municipality_code":"153602",
+           "zip_code":"9302"
         },
         {
            "name":"BALINDONG (WATU)",
            "province_code":"1536",
-           "municipality_code":"153603"
+           "municipality_code":"153603",
+           "zip_code":"9318"
         },
         {
            "name":"BAYANG",
            "province_code":"1536",
-           "municipality_code":"153604"
+           "municipality_code":"153604",
+           "zip_code":"9309"
         },
         {
            "name":"BINIDAYAN",
            "province_code":"1536",
-           "municipality_code":"153605"
+           "municipality_code":"153605",
+           "zip_code":"9310"
         },
         {
            "name":"BUBONG",
            "province_code":"1536",
-           "municipality_code":"153606"
+           "municipality_code":"153606",
+           "zip_code":"9708"
         },
         {
            "name":"BUTIG",
            "province_code":"1536",
-           "municipality_code":"153607"
+           "municipality_code":"153607",
+           "zip_code":"9305"
         },
         {
            "name":"GANASSI",
            "province_code":"1536",
-           "municipality_code":"153609"
+           "municipality_code":"153609",
+           "zip_code":"9311"
         },
         {
            "name":"KAPAI",
            "province_code":"1536",
-           "municipality_code":"153610"
+           "municipality_code":"153610",
+           "zip_code":"9709"
         },
         {
            "name":"LUMBA-BAYABAO (MAGUING)",
            "province_code":"1536",
-           "municipality_code":"153611"
+           "municipality_code":"153611",
+           "zip_code":"9703"
         },
         {
            "name":"LUMBATAN",
            "province_code":"1536",
-           "municipality_code":"153612"
+           "municipality_code":"153612",
+           "zip_code":"9307"
         },
         {
            "name":"MADALUM",
            "province_code":"1536",
-           "municipality_code":"153613"
+           "municipality_code":"153613",
+           "zip_code":"9315"
         },
         {
            "name":"MADAMBA",
            "province_code":"1536",
-           "municipality_code":"153614"
+           "municipality_code":"153614",
+           "zip_code":"9314"
         },
         {
            "name":"MALABANG",
            "province_code":"1536",
-           "municipality_code":"153615"
+           "municipality_code":"153615",
+           "zip_code":"9300"
         },
         {
            "name":"MARANTAO",
            "province_code":"1536",
-           "municipality_code":"153616"
+           "municipality_code":"153616",
+           "zip_code":"9711"
         },
         {
            "name":"MARAWI CITY (Capital)",
            "province_code":"1536",
-           "municipality_code":"153617"
+           "municipality_code":"153617",
+           "zip_code":"9700"
         },
         {
            "name":"MASIU",
            "province_code":"1536",
-           "municipality_code":"153618"
+           "municipality_code":"153618",
+           "zip_code":"9706"
         },
         {
            "name":"MULONDO",
            "province_code":"1536",
-           "municipality_code":"153619"
+           "municipality_code":"153619",
+           "zip_code":"9702"
         },
         {
            "name":"PAGAYAWAN (TATARIKAN)",
            "province_code":"1536",
-           "municipality_code":"153620"
+           "municipality_code":"153620",
+           "zip_code":"9312"
         },
         {
            "name":"PIAGAPO",
            "province_code":"1536",
-           "municipality_code":"153621"
+           "municipality_code":"153621",
+           "zip_code":"9710"
         },
         {
            "name":"POONA BAYABAO (GATA)",
            "province_code":"1536",
-           "municipality_code":"153622"
+           "municipality_code":"153622",
+           "zip_code":"9705"
         },
         {
            "name":"PUALAS",
            "province_code":"1536",
-           "municipality_code":"153623"
+           "municipality_code":"153623",
+           "zip_code":"9313"
         },
         {
            "name":"DITSAAN-RAMAIN",
            "province_code":"1536",
-           "municipality_code":"153624"
+           "municipality_code":"153624",
+           "zip_code":"9713"
         },
         {
            "name":"SAGUIARAN",
            "province_code":"1536",
-           "municipality_code":"153625"
+           "municipality_code":"153625",
+           "zip_code":"9701"
         },
         {
            "name":"TAMPARAN",
            "province_code":"1536",
-           "municipality_code":"153626"
+           "municipality_code":"153626",
+           "zip_code":"9704"
         },
         {
            "name":"TARAKA",
            "province_code":"1536",
-           "municipality_code":"153627"
+           "municipality_code":"153627",
+           "zip_code":"9712"
         },
         {
            "name":"TUBARAN",
            "province_code":"1536",
-           "municipality_code":"153628"
+           "municipality_code":"153628",
+           "zip_code":"9304"
         },
         {
            "name":"TUGAYA",
            "province_code":"1536",
-           "municipality_code":"153629"
+           "municipality_code":"153629",
+           "zip_code":"9317"
         },
         {
            "name":"WAO",
            "province_code":"1536",
-           "municipality_code":"153630"
+           "municipality_code":"153630",
+           "zip_code":"9716"
         },
         {
            "name":"MAROGONG",
            "province_code":"1536",
-           "municipality_code":"153631"
+           "municipality_code":"153631",
+           "zip_code":"9303"
         },
         {
            "name":"CALANOGAS",
            "province_code":"1536",
-           "municipality_code":"153632"
+           "municipality_code":"153632",
+           "zip_code":"9319"
         },
         {
            "name":"BUADIPOSO-BUNTONG",
            "province_code":"1536",
-           "municipality_code":"153633"
+           "municipality_code":"153633",
+           "zip_code":"9714"
         },
         {
            "name":"MAGUING",
            "province_code":"1536",
-           "municipality_code":"153634"
+           "municipality_code":"153634",
+           "zip_code":"9715"
         },
         {
            "name":"PICONG (SULTAN GUMANDER)",
            "province_code":"1536",
-           "municipality_code":"153635"
+           "municipality_code":"153635",
+           "zip_code":"9301"
         },
         {
            "name":"LUMBAYANAGUE",
            "province_code":"1536",
-           "municipality_code":"153636"
+           "municipality_code":"153636",
+           "zip_code":"9306"
         },
         {
            "name":"BUMBARAN",
            "province_code":"1536",
-           "municipality_code":"153637"
+           "municipality_code":"153637",
+           "zip_code":"9320"
         },
         {
            "name":"TAGOLOAN II",
            "province_code":"1536",
-           "municipality_code":"153638"
+           "municipality_code":"153638",
+           "zip_code":"9321"
         },
         {
            "name":"KAPATAGAN",
            "province_code":"1536",
-           "municipality_code":"153639"
+           "municipality_code":"153639",
+           "zip_code":"9700"
         },
         {
            "name":"SULTAN DUMALONDONG",
            "province_code":"1536",
-           "municipality_code":"153640"
+           "municipality_code":"153640",
+           "zip_code":"9706"
         },
         {
            "name":"LUMBACA-UNAYAN",
            "province_code":"1536",
-           "municipality_code":"153641"
+           "municipality_code":"153641",
+           "zip_code":"9308"
         },
         {
            "name":"AMPATUAN",
            "province_code":"1538",
-           "municipality_code":"153801"
+           "municipality_code":"153801",
+           "zip_code":"9609"
         },
         {
            "name":"BULDON",
            "province_code":"1538",
-           "municipality_code":"153802"
+           "municipality_code":"153802",
+           "zip_code":"9615"
         },
         {
            "name":"BULUAN",
            "province_code":"1538",
-           "municipality_code":"153803"
+           "municipality_code":"153803",
+           "zip_code":"9616"
         },
         {
            "name":"DATU PAGLAS",
            "province_code":"1538",
-           "municipality_code":"153805"
+           "municipality_code":"153805",
+           "zip_code":"9617"
         },
         {
            "name":"DATU PIANG",
            "province_code":"1538",
-           "municipality_code":"153806"
+           "municipality_code":"153806",
+           "zip_code":"9607"
         },
         {
            "name":"DATU ODIN SINSUAT (DINAIG)",
            "province_code":"1538",
-           "municipality_code":"153807"
+           "municipality_code":"153807",
+           "zip_code":"9601"
         },
         {
            "name":"SHARIFF AGUAK (MAGANOY) (Capital)",
            "province_code":"1538",
-           "municipality_code":"153808"
+           "municipality_code":"153808",
+           "zip_code":"9608"
         },
         {
            "name":"MATANOG",
            "province_code":"1538",
-           "municipality_code":"153809"
+           "municipality_code":"153809",
+           "zip_code":"9613"
         },
         {
            "name":"PAGALUNGAN",
            "province_code":"1538",
-           "municipality_code":"153810"
+           "municipality_code":"153810",
+           "zip_code":"9610"
         },
         {
            "name":"PARANG",
            "province_code":"1538",
-           "municipality_code":"153811"
+           "municipality_code":"153811",
+           "zip_code":"9604"
         },
         {
            "name":"SULTAN KUDARAT (NULING)",
            "province_code":"1538",
-           "municipality_code":"153812"
+           "municipality_code":"153812",
+           "zip_code":"9605"
         },
         {
            "name":"SULTAN SA BARONGIS (LAMBAYONG)",
            "province_code":"1538",
-           "municipality_code":"153813"
+           "municipality_code":"153813",
+           "zip_code":"9611"
         },
         {
            "name":"KABUNTALAN (TUMBAO)",
            "province_code":"1538",
-           "municipality_code":"153814"
+           "municipality_code":"153814",
+           "zip_code":"9606"
         },
         {
            "name":"UPI",
            "province_code":"1538",
-           "municipality_code":"153815"
+           "municipality_code":"153815",
+           "zip_code":"9602"
         },
         {
            "name":"TALAYAN",
            "province_code":"1538",
-           "municipality_code":"153816"
+           "municipality_code":"153816",
+           "zip_code":"9612"
         },
         {
            "name":"SOUTH UPI",
            "province_code":"1538",
-           "municipality_code":"153817"
+           "municipality_code":"153817",
+           "zip_code":"9603"
         },
         {
            "name":"BARIRA",
            "province_code":"1538",
-           "municipality_code":"153818"
+           "municipality_code":"153818",
+           "zip_code":"9614"
         },
         {
            "name":"GEN. S. K. PENDATUN",
            "province_code":"1538",
-           "municipality_code":"153819"
+           "municipality_code":"153819",
+           "zip_code":"9618"
         },
         {
            "name":"MAMASAPANO",
            "province_code":"1538",
-           "municipality_code":"153820"
+           "municipality_code":"153820",
+           "zip_code":"9629"
         },
         {
            "name":"TALITAY",
            "province_code":"1538",
-           "municipality_code":"153821"
+           "municipality_code":"153821",
+           "zip_code":"9637"
         },
         {
            "name":"PAGAGAWAN",
            "province_code":"1538",
-           "municipality_code":"153822"
+           "municipality_code":"153822",
+           "zip_code":"9631"
         },
         {
            "name":"PAGLAT",
            "province_code":"1538",
-           "municipality_code":"153823"
+           "municipality_code":"153823",
+           "zip_code":"9632"
         },
         {
            "name":"SULTAN MASTURA",
            "province_code":"1538",
-           "municipality_code":"153824"
+           "municipality_code":"153824",
+           "zip_code":"9636"
         },
         {
            "name":"GUINDULUNGAN",
            "province_code":"1538",
-           "municipality_code":"153825"
+           "municipality_code":"153825",
+           "zip_code":"9628"
         },
         {
            "name":"DATU SAUDI-AMPATUAN",
            "province_code":"1538",
-           "municipality_code":"153826"
+           "municipality_code":"153826",
+           "zip_code":"9626"
         },
         {
            "name":"DATU UNSAY",
            "province_code":"1538",
-           "municipality_code":"153827"
+           "municipality_code":"153827",
+           "zip_code":"9627"
         },
         {
            "name":"DATU ABDULLAH SANGKI",
            "province_code":"1538",
-           "municipality_code":"153828"
+           "municipality_code":"153828",
+           "zip_code":"9621"
         },
         {
            "name":"RAJAH BUAYAN",
            "province_code":"1538",
-           "municipality_code":"153829"
+           "municipality_code":"153829",
+           "zip_code":"9634"
         },
         {
            "name":"DATU BLAH T. SINSUAT",
            "province_code":"1538",
-           "municipality_code":"153830"
+           "municipality_code":"153830",
+           "zip_code":"9623"
         },
         {
            "name":"DATU ANGGAL MIDTIMBANG",
            "province_code":"1538",
-           "municipality_code":"153831"
+           "municipality_code":"153831",
+           "zip_code":"9622"
         },
         {
            "name":"MANGUDADATU",
            "province_code":"1538",
-           "municipality_code":"153832"
+           "municipality_code":"153832",
+           "zip_code":"9620"
         },
         {
            "name":"PANDAG",
            "province_code":"1538",
-           "municipality_code":"153833"
+           "municipality_code":"153833",
+           "zip_code":"9633"
         },
         {
            "name":"NORTHERN KABUNTALAN",
            "province_code":"1538",
-           "municipality_code":"153834"
+           "municipality_code":"153834",
+           "zip_code":"9630"
         },
         {
            "name":"DATU HOFFER AMPATUAN",
            "province_code":"1538",
-           "municipality_code":"153835"
+           "municipality_code":"153835",
+           "zip_code":"9624"
         },
         {
            "name":"DATU SALIBO",
            "province_code":"1538",
-           "municipality_code":"153836"
+           "municipality_code":"153836",
+           "zip_code":"9625"
         },
         {
            "name":"SHARIFF SAYDONA MUSTAPHA",
            "province_code":"1538",
-           "municipality_code":"153837"
+           "municipality_code":"153837",
+           "zip_code":"9635"
         },
         {
            "name":"INDANAN",
            "province_code":"1566",
-           "municipality_code":"156601"
+           "municipality_code":"156601",
+           "zip_code":"7407"
         },
         {
            "name":"JOLO (Capital)",
            "province_code":"1566",
-           "municipality_code":"156602"
+           "municipality_code":"156602",
+           "zip_code":"7400"
         },
         {
            "name":"KALINGALAN CALUANG",
            "province_code":"1566",
-           "municipality_code":"156603"
+           "municipality_code":"156603",
+           "zip_code":"7416"
         },
         {
            "name":"LUUK",
            "province_code":"1566",
-           "municipality_code":"156604"
+           "municipality_code":"156604",
+           "zip_code":"7404"
         },
         {
            "name":"MAIMBUNG",
            "province_code":"1566",
-           "municipality_code":"156605"
+           "municipality_code":"156605",
+           "zip_code":"7409"
         },
         {
            "name":"HADJI PANGLIMA TAHIL (MARUNGGAS)",
            "province_code":"1566",
-           "municipality_code":"156606"
+           "municipality_code":"156606",
+           "zip_code":"7413"
         },
         {
            "name":"OLD PANAMAO",
            "province_code":"1566",
-           "municipality_code":"156607"
+           "municipality_code":"156607",
+           "zip_code":"7402"
         },
         {
            "name":"PANGUTARAN",
            "province_code":"1566",
-           "municipality_code":"156608"
+           "municipality_code":"156608",
+           "zip_code":"7414"
         },
         {
            "name":"PARANG",
            "province_code":"1566",
-           "municipality_code":"156609"
+           "municipality_code":"156609",
+           "zip_code":"7408"
         },
         {
            "name":"PATA",
            "province_code":"1566",
-           "municipality_code":"156610"
+           "municipality_code":"156610",
+           "zip_code":"7405"
         },
         {
            "name":"PATIKUL",
            "province_code":"1566",
-           "municipality_code":"156611"
+           "municipality_code":"156611",
+           "zip_code":"7401"
         },
         {
            "name":"SIASI",
            "province_code":"1566",
-           "municipality_code":"156612"
+           "municipality_code":"156612",
+           "zip_code":"7412"
         },
         {
            "name":"TALIPAO",
            "province_code":"1566",
-           "municipality_code":"156613"
+           "municipality_code":"156613",
+           "zip_code":"7403"
         },
         {
            "name":"TAPUL",
            "province_code":"1566",
-           "municipality_code":"156614"
+           "municipality_code":"156614",
+           "zip_code":"7410"
         },
         {
            "name":"TONGKIL",
            "province_code":"1566",
-           "municipality_code":"156615"
+           "municipality_code":"156615",
+           "zip_code":"7406"
         },
         {
            "name":"PANGLIMA ESTINO (NEW PANAMAO)",
            "province_code":"1566",
-           "municipality_code":"156616"
+           "municipality_code":"156616",
+           "zip_code":"7415"
         },
         {
            "name":"LUGUS",
            "province_code":"1566",
-           "municipality_code":"156617"
+           "municipality_code":"156617",
+           "zip_code":"7411"
         },
         {
            "name":"PANDAMI",
            "province_code":"1566",
-           "municipality_code":"156618"
+           "municipality_code":"156618",
+           "zip_code":"7400"
         },
         {
            "name":"OMAR",
            "province_code":"1566",
-           "municipality_code":"156619"
+           "municipality_code":"156619",
+           "zip_code":"7404"
         },
         {
            "name":"PANGLIMA SUGALA (BALIMBING)",
            "province_code":"1570",
-           "municipality_code":"157001"
+           "municipality_code":"157001",
+           "zip_code":"7501"
         },
         {
            "name":"BONGAO (Capital)",
            "province_code":"1570",
-           "municipality_code":"157002"
+           "municipality_code":"157002",
+           "zip_code":"7500"
         },
         {
            "name":"MAPUN (CAGAYAN DE TAWI-TAWI)",
            "province_code":"1570",
-           "municipality_code":"157003"
+           "municipality_code":"157003",
+           "zip_code":"7508"
         },
         {
            "name":"SIMUNUL",
            "province_code":"1570",
-           "municipality_code":"157004"
+           "municipality_code":"157004",
+           "zip_code":"7505"
         },
         {
            "name":"SITANGKAI",
            "province_code":"1570",
-           "municipality_code":"157005"
+           "municipality_code":"157005",
+           "zip_code":"7506"
         },
         {
            "name":"SOUTH UBIAN",
            "province_code":"1570",
-           "municipality_code":"157006"
+           "municipality_code":"157006",
+           "zip_code":"7504"
         },
         {
            "name":"TANDUBAS",
            "province_code":"1570",
-           "municipality_code":"157007"
+           "municipality_code":"157007",
+           "zip_code":"7502"
         },
         {
            "name":"TURTLE ISLANDS",
            "province_code":"1570",
-           "municipality_code":"157008"
+           "municipality_code":"157008",
+           "zip_code":"7507"
         },
         {
            "name":"LANGUYAN",
            "province_code":"1570",
-           "municipality_code":"157009"
+           "municipality_code":"157009",
+           "zip_code":"7509"
         },
         {
            "name":"SAPA-SAPA",
            "province_code":"1570",
-           "municipality_code":"157010"
+           "municipality_code":"157010",
+           "zip_code":"7503"
         },
         {
            "name":"SIBUTU",
            "province_code":"1570",
-           "municipality_code":"157011"
+           "municipality_code":"157011",
+           "zip_code":"7510"
         },
         {
            "name":"BUENAVISTA",
            "province_code":"1602",
-           "municipality_code":"160201"
+           "municipality_code":"160201",
+           "zip_code":"8601"
         },
         {
            "name":"BUTUAN CITY (Capital)",
            "province_code":"1602",
-           "municipality_code":"160202"
+           "municipality_code":"160202",
+           "zip_code":"8600"
         },
         {
            "name":"CITY OF CABADBARAN",
            "province_code":"1602",
-           "municipality_code":"160203"
+           "municipality_code":"160203",
+           "zip_code":"8605"
         },
         {
            "name":"CARMEN",
            "province_code":"1602",
-           "municipality_code":"160204"
+           "municipality_code":"160204",
+           "zip_code":"8603"
         },
         {
            "name":"JABONGA",
            "province_code":"1602",
-           "municipality_code":"160205"
+           "municipality_code":"160205",
+           "zip_code":"8607"
         },
         {
            "name":"KITCHARAO",
            "province_code":"1602",
-           "municipality_code":"160206"
+           "municipality_code":"160206",
+           "zip_code":"8609"
         },
         {
            "name":"LAS NIEVES",
            "province_code":"1602",
-           "municipality_code":"160207"
+           "municipality_code":"160207",
+           "zip_code":"8610"
         },
         {
            "name":"MAGALLANES",
            "province_code":"1602",
-           "municipality_code":"160208"
+           "municipality_code":"160208",
+           "zip_code":"8604"
         },
         {
            "name":"NASIPIT",
            "province_code":"1602",
-           "municipality_code":"160209"
+           "municipality_code":"160209",
+           "zip_code":"8602"
         },
         {
            "name":"SANTIAGO",
            "province_code":"1602",
-           "municipality_code":"160210"
+           "municipality_code":"160210",
+           "zip_code":"8608"
         },
         {
            "name":"TUBAY",
            "province_code":"1602",
-           "municipality_code":"160211"
+           "municipality_code":"160211",
+           "zip_code":"8606"
         },
         {
            "name":"REMEDIOS T. ROMUALDEZ",
            "province_code":"1602",
-           "municipality_code":"160212"
+           "municipality_code":"160212",
+           "zip_code":"8611"
         },
         {
            "name":"CITY OF BAYUGAN",
            "province_code":"1603",
-           "municipality_code":"160301"
+           "municipality_code":"160301",
+           "zip_code":"8502"
         },
         {
            "name":"BUNAWAN",
            "province_code":"1603",
-           "municipality_code":"160302"
+           "municipality_code":"160302",
+           "zip_code":"8506"
         },
         {
            "name":"ESPERANZA",
            "province_code":"1603",
-           "municipality_code":"160303"
+           "municipality_code":"160303",
+           "zip_code":"8513"
         },
         {
            "name":"LA PAZ",
            "province_code":"1603",
-           "municipality_code":"160304"
+           "municipality_code":"160304",
+           "zip_code":"8508"
         },
         {
            "name":"LORETO",
            "province_code":"1603",
-           "municipality_code":"160305"
+           "municipality_code":"160305",
+           "zip_code":"8507"
         },
         {
            "name":"PROSPERIDAD (Capital)",
            "province_code":"1603",
-           "municipality_code":"160306"
+           "municipality_code":"160306",
+           "zip_code":"8500"
         },
         {
            "name":"ROSARIO",
            "province_code":"1603",
-           "municipality_code":"160307"
+           "municipality_code":"160307",
+           "zip_code":"8504"
         },
         {
            "name":"SAN FRANCISCO",
            "province_code":"1603",
-           "municipality_code":"160308"
+           "municipality_code":"160308",
+           "zip_code":"8501"
         },
         {
            "name":"SAN LUIS",
            "province_code":"1603",
-           "municipality_code":"160309"
+           "municipality_code":"160309",
+           "zip_code":"8511"
         },
         {
            "name":"SANTA JOSEFA",
            "province_code":"1603",
-           "municipality_code":"160310"
+           "municipality_code":"160310",
+           "zip_code":"8512"
         },
         {
            "name":"TALACOGON",
            "province_code":"1603",
-           "municipality_code":"160311"
+           "municipality_code":"160311",
+           "zip_code":"8510"
         },
         {
            "name":"TRENTO",
            "province_code":"1603",
-           "municipality_code":"160312"
+           "municipality_code":"160312",
+           "zip_code":"8505"
         },
         {
            "name":"VERUELA",
            "province_code":"1603",
-           "municipality_code":"160313"
+           "municipality_code":"160313",
+           "zip_code":"8509"
         },
         {
            "name":"SIBAGAT",
            "province_code":"1603",
-           "municipality_code":"160314"
+           "municipality_code":"160314",
+           "zip_code":"8503"
         },
         {
            "name":"ALEGRIA",
            "province_code":"1667",
-           "municipality_code":"166701"
+           "municipality_code":"166701",
+           "zip_code":"8425"
         },
         {
            "name":"BACUAG",
            "province_code":"1667",
-           "municipality_code":"166702"
+           "municipality_code":"166702",
+           "zip_code":"8408"
         },
         {
            "name":"BURGOS",
            "province_code":"1667",
-           "municipality_code":"166704"
+           "municipality_code":"166704",
+           "zip_code":"8424"
         },
         {
            "name":"CLAVER",
            "province_code":"1667",
-           "municipality_code":"166706"
+           "municipality_code":"166706",
+           "zip_code":"8410"
         },
         {
            "name":"DAPA",
            "province_code":"1667",
-           "municipality_code":"166707"
+           "municipality_code":"166707",
+           "zip_code":"8417"
         },
         {
            "name":"DEL CARMEN",
            "province_code":"1667",
-           "municipality_code":"166708"
+           "municipality_code":"166708",
+           "zip_code":"8418"
         },
         {
            "name":"GENERAL LUNA",
            "province_code":"1667",
-           "municipality_code":"166710"
+           "municipality_code":"166710",
+           "zip_code":"8419"
         },
         {
            "name":"GIGAQUIT",
            "province_code":"1667",
-           "municipality_code":"166711"
+           "municipality_code":"166711",
+           "zip_code":"8409"
         },
         {
            "name":"MAINIT",
            "province_code":"1667",
-           "municipality_code":"166714"
+           "municipality_code":"166714",
+           "zip_code":"8407"
         },
         {
            "name":"MALIMONO",
            "province_code":"1667",
-           "municipality_code":"166715"
+           "municipality_code":"166715",
+           "zip_code":"8402"
         },
         {
            "name":"PILAR",
            "province_code":"1667",
-           "municipality_code":"166716"
+           "municipality_code":"166716",
+           "zip_code":"8420"
         },
         {
            "name":"PLACER",
            "province_code":"1667",
-           "municipality_code":"166717"
+           "municipality_code":"166717",
+           "zip_code":"8405"
         },
         {
            "name":"SAN BENITO",
            "province_code":"1667",
-           "municipality_code":"166718"
+           "municipality_code":"166718",
+           "zip_code":"8423"
         },
         {
            "name":"SAN FRANCISCO (ANAO-AON)",
            "province_code":"1667",
-           "municipality_code":"166719"
+           "municipality_code":"166719",
+           "zip_code":"8401"
         },
         {
            "name":"SAN ISIDRO",
            "province_code":"1667",
-           "municipality_code":"166720"
+           "municipality_code":"166720",
+           "zip_code":"8421"
         },
         {
            "name":"SANTA MONICA (SAPAO)",
            "province_code":"1667",
-           "municipality_code":"166721"
+           "municipality_code":"166721",
+           "zip_code":"8422"
         },
         {
            "name":"SISON",
            "province_code":"1667",
-           "municipality_code":"166722"
+           "municipality_code":"166722",
+           "zip_code":"8404"
         },
         {
            "name":"SOCORRO",
            "province_code":"1667",
-           "municipality_code":"166723"
+           "municipality_code":"166723",
+           "zip_code":"8416"
         },
         {
            "name":"SURIGAO CITY (Capital)",
            "province_code":"1667",
-           "municipality_code":"166724"
+           "municipality_code":"166724",
+           "zip_code":"8400"
         },
         {
            "name":"TAGANA-AN",
            "province_code":"1667",
-           "municipality_code":"166725"
+           "municipality_code":"166725",
+           "zip_code":"8403"
         },
         {
            "name":"TUBOD",
            "province_code":"1667",
-           "municipality_code":"166727"
+           "municipality_code":"166727",
+           "zip_code":"8406"
         },
         {
            "name":"BAROBO",
            "province_code":"1668",
-           "municipality_code":"166801"
+           "municipality_code":"166801",
+           "zip_code":"8309"
         },
         {
            "name":"BAYABAS",
            "province_code":"1668",
-           "municipality_code":"166802"
+           "municipality_code":"166802",
+           "zip_code":"8303"
         },
         {
            "name":"CITY OF BISLIG",
            "province_code":"1668",
-           "municipality_code":"166803"
+           "municipality_code":"166803",
+           "zip_code":"8311"
         },
         {
            "name":"CAGWAIT",
            "province_code":"1668",
-           "municipality_code":"166804"
+           "municipality_code":"166804",
+           "zip_code":"8304"
         },
         {
            "name":"CANTILAN",
            "province_code":"1668",
-           "municipality_code":"166805"
+           "municipality_code":"166805",
+           "zip_code":"8317"
         },
         {
            "name":"CARMEN",
            "province_code":"1668",
-           "municipality_code":"166806"
+           "municipality_code":"166806",
+           "zip_code":"8315"
         },
         {
            "name":"CARRASCAL",
            "province_code":"1668",
-           "municipality_code":"166807"
+           "municipality_code":"166807",
+           "zip_code":"8318"
         },
         {
            "name":"CORTES",
            "province_code":"1668",
-           "municipality_code":"166808"
+           "municipality_code":"166808",
+           "zip_code":"8313"
         },
         {
            "name":"HINATUAN",
            "province_code":"1668",
-           "municipality_code":"166809"
+           "municipality_code":"166809",
+           "zip_code":"8310"
         },
         {
            "name":"LANUZA",
            "province_code":"1668",
-           "municipality_code":"166810"
+           "municipality_code":"166810",
+           "zip_code":"8314"
         },
         {
            "name":"LIANGA",
            "province_code":"1668",
-           "municipality_code":"166811"
+           "municipality_code":"166811",
+           "zip_code":"8307"
         },
         {
            "name":"LINGIG",
            "province_code":"1668",
-           "municipality_code":"166812"
+           "municipality_code":"166812",
+           "zip_code":"8312"
         },
         {
            "name":"MADRID",
            "province_code":"1668",
-           "municipality_code":"166813"
+           "municipality_code":"166813",
+           "zip_code":"8316"
         },
         {
            "name":"MARIHATAG",
            "province_code":"1668",
-           "municipality_code":"166814"
+           "municipality_code":"166814",
+           "zip_code":"8306"
         },
         {
            "name":"SAN AGUSTIN",
            "province_code":"1668",
-           "municipality_code":"166815"
+           "municipality_code":"166815",
+           "zip_code":"8305"
         },
         {
            "name":"SAN MIGUEL",
            "province_code":"1668",
-           "municipality_code":"166816"
+           "municipality_code":"166816",
+           "zip_code":"8301"
         },
         {
            "name":"TAGBINA",
            "province_code":"1668",
-           "municipality_code":"166817"
+           "municipality_code":"166817",
+           "zip_code":"8308"
         },
         {
            "name":"TAGO",
            "province_code":"1668",
-           "municipality_code":"166818"
+           "municipality_code":"166818",
+           "zip_code":"8302"
         },
         {
            "name":"CITY OF TANDAG (Capital)",
            "province_code":"1668",
-           "municipality_code":"166819"
+           "municipality_code":"166819",
+           "zip_code":"8300"
         },
         {
            "name":"BASILISA (RIZAL)",
            "province_code":"1685",
-           "municipality_code":"168501"
+           "municipality_code":"168501",
+           "zip_code":"8413"
         },
         {
            "name":"CAGDIANAO",
            "province_code":"1685",
-           "municipality_code":"168502"
+           "municipality_code":"168502",
+           "zip_code":"8411"
         },
         {
            "name":"DINAGAT",
            "province_code":"1685",
-           "municipality_code":"168503"
+           "municipality_code":"168503",
+           "zip_code":"8412"
         },
         {
            "name":"LIBJO (ALBOR)",
            "province_code":"1685",
-           "municipality_code":"168504"
+           "municipality_code":"168504",
+           "zip_code":"8414"
         },
         {
            "name":"LORETO",
            "province_code":"1685",
-           "municipality_code":"168505"
+           "municipality_code":"168505",
+           "zip_code":"8415"
         },
         {
            "name":"SAN JOSE (Capital)",
            "province_code":"1685",
-           "municipality_code":"168506"
+           "municipality_code":"168506",
+           "zip_code":"8427"
         },
         {
            "name":"TUBAJON",
            "province_code":"1685",
-           "municipality_code":"168507"
+           "municipality_code":"168507",
+           "zip_code":"8426"
         }
      ]';
 
