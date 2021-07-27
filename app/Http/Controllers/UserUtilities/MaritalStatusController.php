@@ -2,33 +2,27 @@
 
 namespace App\Http\Controllers\UserUtilities;
 
+use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\MaritalStatusRequest;
 use App\Models\UserUtilities\MaritalStatus;
+use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\Utilities\Responses\IResponseService;
-use App\Enums\SuccessMessages;
+use Illuminate\Http\JsonResponse;
 
 class MaritalStatusController extends Controller
 {
 
-    private IEncryptionService $encryptionService;
     private IMaritalStatusRepository $maritalStatusRepository;
     private IUserProfileService $userProfileService;
     private IResponseService $responseService;
-    
+
     public function __construct(IMaritalStatusRepository $maritalStatusRepository,
-                                IEncryptionService $encryptionService,
                                 IUserProfileService $userProfileService,
                                 IResponseService $responseService)
     {
         $this->maritalStatusRepository = $maritalStatusRepository;
-        $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
         $this->responseService = $responseService;
     }
@@ -49,7 +43,7 @@ class MaritalStatusController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request $request
+     * @param MaritalStatusRequest $request
      * @return JsonResponse
      */
     public function store(MaritalStatusRequest $request): JsonResponse
@@ -65,7 +59,7 @@ class MaritalStatusController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Model  $marital_status
+     * @param MaritalStatus $marital_status
      * @return JsonResponse
      */
     public function show(MaritalStatus $marital_status): JsonResponse
@@ -77,8 +71,8 @@ class MaritalStatusController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  MaritalStatusRequest  $request
-     * @param  Model  $marital_status
+     * @param MaritalStatusRequest $request
+     * @param MaritalStatus $marital_status
      * @return JsonResponse
      */
     public function update(MaritalStatusRequest $request, MaritalStatus $marital_status): JsonResponse
@@ -94,12 +88,12 @@ class MaritalStatusController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Model  $marital_status
+     * @param MaritalStatus $marital_status
      * @return JsonResponse
      */
     public function destroy(MaritalStatus $marital_status): JsonResponse
     {
-        $deleteRecord = $this->maritalStatusRepository->delete($marital_status);
+        $this->maritalStatusRepository->delete($marital_status);
 
         return $this->responseService->successResponse(null, SuccessMessages::recordDeleted);
     }
