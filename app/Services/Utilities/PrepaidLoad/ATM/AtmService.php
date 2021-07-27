@@ -41,7 +41,7 @@ class AtmService implements IAtmService
         $this->id = config('services.load.atm.id');
         $this->uid = config('services.load.atm.uid');
         $this->password = config('services.load.atm.password');
-        $this->keyPassword = config('services.load.atm.key_password');
+        $this->keyPassword = config('services.load.atm.key_password', '');
 
         $this->baseUrl = config('services.load.atm.url');
         $this->productsUrl = config('services.load.atm.products_url');
