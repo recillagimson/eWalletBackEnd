@@ -18,6 +18,8 @@ class IdType extends Model
         'type',
         'description',
         'swirecommended',
+        'is_ekyc',
+        'is_full_name',
         'status',
         'user_created',
         'user_updated'

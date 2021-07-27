@@ -9,6 +9,7 @@ use App\Repositories\Tier\ITierApprovalCommentRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\KYCService\IKYCService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -23,13 +24,15 @@ class VerificationService implements IVerificationService
     public ILogHistoryService $logHistoryService;
     public IIdTypeRepository $iIdTypeRepository;
     public ITierApprovalCommentRepository $tierApprovalComment;
+    private IKYCService $kycService;
 
     public function __construct(IUserPhotoRepository $userPhotoRepository,
                                 IUserDetailRepository $userDetailRepository,
                                 IUserSelfiePhotoRepository $userSelfiePhotoRepository,
                                 ILogHistoryService $logHistoryService,
                                 IIdTypeRepository $iIdTypeRepository,
-                                ITierApprovalCommentRepository $iTierApprovalCommentRepository)
+                                ITierApprovalCommentRepository $iTierApprovalCommentRepository,
+                                IKYCService $kycService)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -37,6 +40,7 @@ class VerificationService implements IVerificationService
         $this->logHistoryService = $logHistoryService;
         $this->iIdTypeRepository = $iIdTypeRepository;
         $this->iTierApprovalCommentRepository = $iTierApprovalCommentRepository;
+        $this->kycService = $kycService;
     }
 
     public function createSelfieVerification(array $data, ?string $userAccountId = null)
@@ -109,6 +113,9 @@ class VerificationService implements IVerificationService
             ];
             $record = $this->userPhotoRepository->create($params);
 
+            $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
+            $extractData = $this->extractData($eKYC);
+
             if(isset($data['remarks'])) {
                 $this->iTierApprovalCommentRepository->create([
                     'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
@@ -119,6 +126,7 @@ class VerificationService implements IVerificationService
             }
 
             // Collect created record
+            $record->ekyc = $extractData;
             array_push($recordsCreated, $record);
 
             $idType = $this->iIdTypeRepository->get($data['id_type_id']);
@@ -130,6 +138,55 @@ class VerificationService implements IVerificationService
 
         return $recordsCreated;
     }
+
+    private function extractData($response) {
+        $data = [];
+        if($response && isset($response['result']) && isset($response['result']['0']) && $response['result']['0']->details) {
+            $response_data = $response['result']['0']->details;
+
+            foreach($response_data as $key => $entry) {
+
+                // CHECK IF key value is necessary field
+                if(in_array($key, eKYC::returnableFields)) {
+                    if($entry && $entry->value) {
+                        $data[$key] = $entry->value;
+                    }
+                }
+            }
+            return $data;
+        }
+        return $response;
+    }
+
+    private function getHVResponse($idPhoto, $idTypeId) {
+        // CHECK ID TYPE FOR EKYC
+        $idType = $this->iIdTypeRepository->get($idTypeId);
+        // Check if DL
+        if($idType && $idType->is_ekyc == 1) {
+            switch($idTypeId) {
+                case eKYC::DL: {
+                    return $this->kycService->initOCR(['id_photo' => $idPhoto], 'phl_dl');
+                    break;
+                }
+                case eKYC::PRC: {
+                    return $this->kycService->initOCR(['id_photo' => $idPhoto], 'prc');
+                    break;
+                }
+                case eKYC::Passport: {
+                    return $this->kycService->initOCR(['id_photo' => $idPhoto], 'passport');
+                    break;
+                }
+                default: {
+                    return $this->kycService->initOCR(['id_photo' => $idPhoto]);
+                    break;
+                }
+            }
+        }
+        return [
+            'message' => 'for manual KYC'
+        ];
+    }
+
     // Get file extension name
     public function getFileExtensionName(UploadedFile $file) {
         return $file->getClientOriginalExtension();
@@ -169,6 +226,7 @@ class VerificationService implements IVerificationService
         // USER ID PHOTOS
         foreach($userIdPhotos as $photo) {
             $photo_instance = $this->userPhotoRepository->get($photo);
+
             $this->userPhotoRepository->update($photo_instance, [
                 'tier_approval_id' => $tierApprovalStatus,
                 'status' => $is_farmer ? 'APPROVED' : "PENDING",

@@ -31,13 +31,13 @@ class ManualIDUploadRequest extends FormRequest
             "id_type_id" => 'required|exists:id_types,id'
         ];
         
-        $inputs = request()->input();
-        if(isset($inputs['id_type_id'])) {
-            $id_type = IdType::findOrFail($inputs['id_type_id']);
-            if($id_type->is_primary == 1) {
-                $required_fields['id_number'] = 'required';
-            }
-        }
+        // $inputs = request()->input();
+        // if(isset($inputs['id_type_id'])) {
+        //     $id_type = IdType::findOrFail($inputs['id_type_id']);
+        //     if($id_type->is_primary == 1) {
+        //         $required_fields['id_number'] = 'required';
+        //     }
+        // }
 
         return $required_fields;
     }

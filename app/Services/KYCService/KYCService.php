@@ -52,15 +52,21 @@ class KYCService implements IKYCService
         return $this->curlService->curlPost($url, $data, $headers);
     }
 
-    public function initOCR(array $attr) {
+    public function initOCR(array $attr, $idType = '') {
         $url = env('KYC_APP_OCR_URL');
+        if($idType == 'passport') {
+            $url = env('KYC_APP_OCR_URL_PASSPORT');
+        }
         $headers = $this->getAuthorizationHeaders();
-
         $headers[4] = "transactionId: " . (string)Str::uuid();
-
         $id = new \CURLFILE($attr['id_photo']->getPathname());
-
+        
         $data = array('id' => $id);
+        if($idType) {
+            // $headers[5] = "cardType: " . $idType; 
+            $data['cardType'] = $idType;
+        }
+
         return $this->curlService->curlPost($url, $data, $headers);
     }
 
@@ -86,6 +92,60 @@ class KYCService implements IKYCService
         $reponse = $this->curlService->curlPost($url, $data, $headers);
         unlink($tempImage);
         return $reponse;
+    }
+
+    public function checkIDExpiration(array $attr, $idType = 'phl_dl') {
+        
+        $initOCR = $this->initOCR([
+            'id_photo' => $attr['id_photo']
+        ], $idType);
+        
+        if($initOCR && isset($initOCR['result'])  && isset($initOCR['result']['0']) && $initOCR['result']['0']->details && $initOCR['result']['0']->details->doe) {
+            // GET DATE OF EXPIRATION
+            $doe = $initOCR['result']['0']->details->doe;
+            $expDate = Carbon::parse($doe->value);
+            $now = Carbon::now();
+
+            // NOT Expired
+            if($expDate->greaterThan($now)) {
+                return [
+                    'message' => 'ID not expired',
+                    'data' => $doe
+                ];
+            } else {
+                return [
+                    'message' => 'ID expired',
+                    'data' => $doe
+                ];
+            }
+        }
+
+        return $initOCR;
+        
+    }
+
+    public function matchOCR(array $attr) {
+        if(isset($attr['manual_input']) && isset($attr['ocr_response'])) {
+            if(isset($attr['manual_input']['full_name']) && isset($attr['ocr_response']['full_name'])) {
+                if($attr['ocr_response']['full_name'] == $attr['manual_input']['full_name']) {
+                    return [
+                        'message' => 'OCR and Input data match'
+                    ];
+                }
+            }
+
+            if(isset($attr['manual_input']['first_name']) && isset($attr['ocr_response']['first_name']) && isset($attr['manual_input']['last_name']) && isset($attr['ocr_response']['last_name'])) {
+                if($attr['ocr_response']['first_name'] == $attr['manual_input']['first_name'] && $attr['ocr_response']['last_name'] == $attr['manual_input']['last_name']) {
+                    return [
+                        'message' => 'OCR and Input data match'
+                    ];
+                }
+            }
+        }
+
+        return [
+            'message' => 'OCR and Input data not match'
+        ];
     }
 
 }

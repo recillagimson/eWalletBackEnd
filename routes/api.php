@@ -112,9 +112,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Merchat Verification of Selfie
     Route::middleware(['require.user.token'])->post('/merchant/selfie/verification', [MerchantController::class, 'selfieVerification']);
 
-    Route::prefix('ekyc')->group(function() {
+    Route::middleware(['decrypt.request'])->prefix('ekyc')->group(function() {
         Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
         Route::post('ocr', [KYCController::class, 'initOCR'])->name('ocr');
+        Route::post('expiration/check', [KYCController::class, 'checkIDExpiration'])->name('expiration.check');
+        Route::post('ocr/match', [KYCController::class, 'matchOCR'])->name('ocr.match');
     });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
