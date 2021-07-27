@@ -8,7 +8,6 @@ use App\Enums\TpaProviders;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class UBPService implements IUBPService
@@ -145,7 +144,7 @@ class UBPService implements IUBPService
             ]
         ];
 
-        Log::info('Fund Transfer Payload ' . $provider . ':', $data);
+        //Log::info('Fund Transfer Payload ' . $provider . ':', $data);
         $json = json_encode($data);
 
         $transferUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetTransferUrl : $this->instaPayTransferUrl;
@@ -215,7 +214,8 @@ class UBPService implements IUBPService
         return $this->apiService->post($url, $data, $headers);
     }
 
-    public function verifyPendingDirectTransaction(string $senderRefId) {
+    public function verifyPendingDirectTransaction(string $senderRefId): Response
+    {
         $token = $this->getToken();
         $headers = $this->defaultHeaders;
         $headers['Authorization'] = 'Bearer ' . $token->access_token;
