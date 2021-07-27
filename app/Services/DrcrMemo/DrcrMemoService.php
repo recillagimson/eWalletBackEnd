@@ -2,26 +2,28 @@
 
 namespace App\Services\DrcrMemo;
 
-use Carbon\Carbon;
 use App\Enums\Currencies;
 use App\Enums\DrcrStatus;
-use App\Models\UserAccount;
-use App\Enums\SuccessMessages;
-use App\Exports\DRCR\DRCRReport;
-use App\Enums\TransactionStatuses;
 use App\Enums\ReferenceNumberTypes;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Enums\SuccessMessages;
 use App\Enums\TransactionCategoryIds;
-use App\Traits\LogHistory\LogHistory;
-use Illuminate\Support\Facades\Storage;
-use App\Traits\Errors\WithDrcrMemoErrors;
-use App\Services\Utilities\PDF\IPDFService;
+use App\Enums\TransactionStatuses;
+use App\Exports\DRCR\DRCRReport;
+use App\Models\UserAccount;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
-use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\PDF\IPDFService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Traits\Errors\WithDrcrMemoErrors;
+use App\Traits\LogHistory\LogHistory;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DrcrMemoService implements IDrcrMemoService
 {
@@ -34,14 +36,14 @@ class DrcrMemoService implements IDrcrMemoService
     private IUserTransactionHistoryRepository $userTransHistory;
     private IPDFService $pdfService;
     private IResponseService $responseService;
-    
-    
+
+
     public function __construct(IDrcrMemoRepository $drcrMemoRepository,
-    IReferenceNumberService $referenceNumberService,
-    IUserAccountRepository $userAccountRepository,
-    IUserBalanceInfoRepository $userBalanceRepository,
-    IUserTransactionHistoryRepository $userTransHistory, 
-    IPDFService $pdfService, IResponseService $responseService)
+                                IReferenceNumberService $referenceNumberService,
+                                IUserAccountRepository $userAccountRepository,
+                                IUserBalanceInfoRepository $userBalanceRepository,
+                                IUserTransactionHistoryRepository $userTransHistory,
+                                IPDFService $pdfService, IResponseService $responseService)
     {
         $this->pdfService = $pdfService;
         $this->drcrMemoRepository = $drcrMemoRepository;
@@ -124,9 +126,9 @@ class DrcrMemoService implements IDrcrMemoService
         $status = $data['status'];
         $remarks = $data['remarks'];
         $isEnough = $this->checkAmount($data, $drcrMemo->user_account_id);
-        
-        if ($status !== DrcrStatus::Approve && $status !== DrcrStatus::Decline && $status !== DrcrStatus::Pending) return $this->invalidStatus1();   
-        if(empty($remarks) && $status == DrcrStatus::Decline) return $this->isEmpty();
+
+        if ($status !== DrcrStatus::Approve && $status !== DrcrStatus::Decline && $status !== DrcrStatus::Pending) return $this->invalidStatus1();
+        if (empty($remarks) && $status == DrcrStatus::Decline) return $this->isEmpty();
         if ($this->userTransHistory->isExisting($drcrMemo->id)) return $this->isExisting();
 
         if ($status == DrcrStatus::Approve) {
@@ -138,7 +140,7 @@ class DrcrMemoService implements IDrcrMemoService
                 $this->creditMemo($drcrMemo->user_account_id, $drcrMemo->amount);
             }
         }
-     
+
        $drcr = $this->drcrMemoRepository->updateDrcr($user, $data);
        $drcr1 = (object) $this->drcrMemoRepository->updateDrcr($user, $data);
 
@@ -236,28 +238,33 @@ class DrcrMemoService implements IDrcrMemoService
             $filter_by = $params['filter_by'];
             $filter_value = $params['filter_value'];
         }
-        
+
         $data = $this->drcrMemoRepository->reportData($from, $to, $filter_by, $filter_value);
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
         if($params['type'] == 'PDF') {
-            Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::MPDF);
-            $temp_url = $this->s3TempUrl($fileName);
-            // $data = $this->processData($data);
-            // $records = [
-            //     'records' => $data
-            // ];
-            // ini_set("pcre.backtrack_limit", "5000000");
-            // $file = $this->pdfService->generatePDFNoUserPassword($records, 'reports.log_histories.log_histories', true);
-            // $url = $this->storeToS3($currentUser, $file['file_name'], $fileName);
-            // unlink($file['file_name']);
-            // $temp_url = $this->s3TempUrl($url);
-            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
-        } 
+            try {
+                Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::MPDF);
+                $temp_url = $this->s3TempUrl($fileName);
+                // $data = $this->processData($data);
+                // $records = [
+                //     'records' => $data
+                // ];
+                // ini_set("pcre.backtrack_limit", "5000000");
+                // $file = $this->pdfService->generatePDFNoUserPassword($records, 'reports.log_histories.log_histories', true);
+                // $url = $this->storeToS3($currentUser, $file['file_name'], $fileName);
+                // unlink($file['file_name']);
+                // $temp_url = $this->s3TempUrl($url);
+                return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+            } catch (Exception $e) {
+                Log::error('Error in exporting PDF', $e->getTrace());
+            }
+
+        }
         else if($params['type'] == 'CSV') {
             Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
-        } 
+        }
         else if($params['type'] == 'API')  {
             return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
         }
