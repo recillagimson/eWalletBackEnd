@@ -150,6 +150,7 @@ class DrcrMemoController extends Controller
     public function report(DRCRReportRequest $request)
     {
         try {
+            Log::debug('Report Request Parameters:', $request->all());
             return $this->drcrMemoService->report($request->all(), request()->user()->id);
         } catch (Exception $e) {
             Log::error('Error in exporting PDF', $e->getTrace());
