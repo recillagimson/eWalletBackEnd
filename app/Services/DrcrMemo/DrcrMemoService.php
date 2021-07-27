@@ -20,8 +20,6 @@ use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\Errors\WithDrcrMemoErrors;
 use App\Traits\LogHistory\LogHistory;
 use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -242,23 +240,18 @@ class DrcrMemoService implements IDrcrMemoService
         $data = $this->drcrMemoRepository->reportData($from, $to, $filter_by, $filter_value);
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
         if($params['type'] == 'PDF') {
-            try {
-                Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::MPDF);
-                $temp_url = $this->s3TempUrl($fileName);
-                // $data = $this->processData($data);
-                // $records = [
-                //     'records' => $data
-                // ];
-                // ini_set("pcre.backtrack_limit", "5000000");
-                // $file = $this->pdfService->generatePDFNoUserPassword($records, 'reports.log_histories.log_histories', true);
-                // $url = $this->storeToS3($currentUser, $file['file_name'], $fileName);
-                // unlink($file['file_name']);
-                // $temp_url = $this->s3TempUrl($url);
-                return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
-            } catch (Exception $e) {
-                Log::error('Error in exporting PDF', $e->getTrace());
-            }
-
+            Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::MPDF);
+            $temp_url = $this->s3TempUrl($fileName);
+            // $data = $this->processData($data);
+            // $records = [
+            //     'records' => $data
+            // ];
+            // ini_set("pcre.backtrack_limit", "5000000");
+            // $file = $this->pdfService->generatePDFNoUserPassword($records, 'reports.log_histories.log_histories', true);
+            // $url = $this->storeToS3($currentUser, $file['file_name'], $fileName);
+            // unlink($file['file_name']);
+            // $temp_url = $this->s3TempUrl($url);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         }
         else if($params['type'] == 'CSV') {
             Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
