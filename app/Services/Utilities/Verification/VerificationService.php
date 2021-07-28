@@ -121,7 +121,7 @@ class VerificationService implements IVerificationService
             $record = $this->userPhotoRepository->create($params);
 
             $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
-            $extractData = $this->extractData($eKYC);
+            $extractData = $this->extractData($eKYC, $idType->type);
 
             if(isset($data['remarks'])) {
                 $this->iTierApprovalCommentRepository->create([
@@ -145,21 +145,63 @@ class VerificationService implements IVerificationService
         return $recordsCreated;
     }
 
-    private function extractData($response) {
+    private function extractData($response, $idType) {
         $data = [];
         if($response && isset($response['result']) && isset($response['result']['0']) && $response['result']['0']->details) {
             $response_data = $response['result']['0']->details;
 
+            $templateResponse = [
+                'full_name' => 'N/A',
+                'first_name' => 'N/A',
+                'last_name' => 'N/A',
+                'middle_name' => 'N/A',
+                'id_type' => $idType,
+                'id_number' => 'N/A',
+                'expiration_date' => 'N/A',
+            ];
+
             foreach($response_data as $key => $entry) {
+
 
                 // CHECK IF key value is necessary field
                 if(in_array($key, eKYC::returnableFields)) {
-                    if($entry && $entry->value) {
-                        $data[$key] = $entry->value;
+
+                    // CHECK IF LAST NAME
+                    if(in_array($key, eKYC::lastNameKey)) {
+                        $templateResponse['last_name'] = $entry->value;
                     }
+
+                    // CHECK IF FIRST NAME
+                    if(in_array($key, eKYC::idNumberKey)) {
+                        $templateResponse['id_number'] = $entry->value;
+                    }
+
+                    // CHECK IF MIDDLE NAME
+                    if(in_array($key, eKYC::middleNameKey)) {
+                        $templateResponse['middle_name'] = $entry->value;
+                    }
+
+                    // CHECK IF FULL NAME
+                    if(in_array($key, eKYC::fullNameKey)) {
+                        $templateResponse['full_name'] = $entry->value;
+                    }
+
+                    // CHECK IF FULL NAME
+                    if(in_array($key, eKYC::idNumberKey)) {
+                        $templateResponse['id_number'] = $entry->value;
+                    }
+
+                    // CHECK IF DOE
+                    if(in_array($key, eKYC::expirationDateKey)) {
+                        $templateResponse['expiration_date'] = $entry->value;
+                    }
+
+                    // if($entry && $entry->value) {
+                    //     $data[$key] = $entry->value;
+                    // }
                 }
             }
-            return $data;
+            return $templateResponse;
         }
         return $response;
     }
