@@ -20,6 +20,7 @@ class IdType extends Model
         'swirecommended',
         'is_ekyc',
         'is_full_name',
+        'is_with_expiration',
         'status',
         'user_created',
         'user_updated'
