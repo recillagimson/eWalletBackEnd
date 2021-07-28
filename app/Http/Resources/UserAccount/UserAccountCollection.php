@@ -46,7 +46,8 @@ class UserAccountCollection extends JsonResource
                 "guardian_name" => $this->profile->guardian_name,
                 "guardian_mobile_number" => $this->profile->guardian_mobile_number,
                 "is_accept_parental_consent" => $this->profile->is_accept_parental_consent,
-                "contact_no" => $this->profile->contact_no
+                "contact_no" => $this->profile->contact_no,
+                "country_id" => $this->profile->country_id
             ]
         ];
     }
