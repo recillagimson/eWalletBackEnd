@@ -91,6 +91,13 @@ class VerificationService implements IVerificationService
 
     public function create(array $data) {
 
+        $idType = $this->iIdTypeRepository->get($data['id_type_id']);
+        if(!$idType) {
+            throw ValidationException::withMessages([
+                'id_type_not_found' => 'Id Type not found'
+            ]);
+        }
+
         $recordsCreated = [];
         // PROCESS IDS
         foreach($data['id_photos'] as $idPhoto) {
@@ -129,7 +136,6 @@ class VerificationService implements IVerificationService
             $record->ekyc = $extractData;
             array_push($recordsCreated, $record);
 
-            $idType = $this->iIdTypeRepository->get($data['id_type_id']);
             $audit_remarks = request()->user()->account_number . "  has uploaded " . $idType->type . ", " . $idType->description;
             $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadIdPhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
         }
