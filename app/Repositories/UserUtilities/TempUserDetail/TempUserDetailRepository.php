@@ -26,7 +26,10 @@ class TempUserDetailRepository extends Repository implements ITempUserDetailRepo
     }
 
     public function getAllPaginated($perPage = 10) {
-        $result = $this->model->orderBy('created_at', 'DESC')->paginate($perPage);
+        $result = $this->model->with([
+            'user:id,account_number,tier_id', 
+            'latestTierApproval:id,user_account_id,status,approved_by,approved_date'
+        ])->orderBy('created_at', 'DESC')->paginate($perPage);
         
         return $result;
     }
