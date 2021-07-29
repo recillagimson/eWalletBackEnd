@@ -150,6 +150,7 @@ class VerificationService implements IVerificationService
 
     private function extractData($response, $idType) {
         $data = [];
+        \Log::info(json_encode($response));
         if($response && isset($response['result']) && isset($response['result']['0']) && $response['result']['0']->details) {
             $response_data = $response['result']['0']->details;
 
