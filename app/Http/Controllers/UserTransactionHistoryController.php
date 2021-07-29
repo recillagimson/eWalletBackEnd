@@ -30,12 +30,12 @@ class UserTransactionHistoryController extends Controller
     }
 
     public function index() {
-        $records = $this->userTransactionHistory->getByAuthUser();
+        $records = $this->userTransactionHistory->getByAuthUserViaViews();
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     public function show(string $id) {
-        $record = $this->userTransactionHistory->findTransactionWithRelation($id);
+        $record = $this->userTransactionHistory->findTransactionWithRelationViaView($id);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
