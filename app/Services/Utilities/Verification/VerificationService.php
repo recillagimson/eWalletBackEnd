@@ -108,20 +108,23 @@ class VerificationService implements IVerificationService
             // Put file to storage
             $path = $this->saveFile($idPhoto, $idPhotoName, 'id_photo');
             // Save record to DB
+
+            // Init eKYC OCR
+            $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
+            $extractData = $this->extractData($eKYC, $idType->type);
+            
             $params = [
                 'user_account_id' => $data['user_account_id'],
                 'id_type_id' => $data['id_type_id'],
                 'photo_location' => $path,
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
-                'id_number' => $data['id_number'],
+                'id_number' => isset($extractData['id_number']) && $extractData['id_number'] != 'N/A' ? $extractData['id_number'] : $data['id_number'],
                 'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
                 'remarks' => isset($data['remarks']) ? $data['remarks'] : ""
             ];
             $record = $this->userPhotoRepository->create($params);
 
-            $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
-            $extractData = $this->extractData($eKYC, $idType->type);
 
             if(isset($data['remarks'])) {
                 $this->iTierApprovalCommentRepository->create([
@@ -172,8 +175,8 @@ class VerificationService implements IVerificationService
                     }
 
                     // CHECK IF FIRST NAME
-                    if(in_array($key, eKYC::idNumberKey)) {
-                        $templateResponse['id_number'] = $entry->value;
+                    if(in_array($key, eKYC::firstNameKey)) {
+                        $templateResponse['first_name'] = $entry->value;
                     }
 
                     // CHECK IF MIDDLE NAME
@@ -186,7 +189,7 @@ class VerificationService implements IVerificationService
                         $templateResponse['full_name'] = $entry->value;
                     }
 
-                    // CHECK IF FULL NAME
+                    // CHECK IF ID Number
                     if(in_array($key, eKYC::idNumberKey)) {
                         $templateResponse['id_number'] = $entry->value;
                     }
@@ -200,6 +203,11 @@ class VerificationService implements IVerificationService
                     //     $data[$key] = $entry->value;
                     // }
                 }
+            }
+
+            // CHECK CONFLICT FOR FULL NAME and FIRST NAME
+            if($templateResponse['last_name'] != 'N/A') {
+                $templateResponse['full_name'] = 'N/A';
             }
             return $templateResponse;
         }
