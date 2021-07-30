@@ -209,6 +209,8 @@ class VerificationService implements IVerificationService
             // CHECK CONFLICT FOR FULL NAME and FIRST NAME
             if($templateResponse['last_name'] != 'N/A') {
                 $templateResponse['full_name'] = 'N/A';
+            } else {
+                $templateResponse['first_name'] = 'N/A';
             }
             return $templateResponse;
         }
