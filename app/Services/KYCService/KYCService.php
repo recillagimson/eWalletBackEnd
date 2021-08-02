@@ -166,12 +166,15 @@ class KYCService implements IKYCService
             // CHECK IF FULLNAME
             if($params['ocr_response'] && isset($params['ocr_response']['last_name']) && $params['ocr_response']['last_name'] == '') {
                 // Build full name
+                $last_name = $params['last_name'];
+                $first_name = $params['first_name'];
+                $middle_name = isset($params['middle_name']) ? $params['middle_name'] : '';
                 // Last Name, First Name Middle Name
-                $full_name_LFM = strtolower($params['last_name'] . ", " . $params['first_name'] . " " . $params['middle_name']);
+                $full_name_LFM = strtolower($last_name . ", " . $first_name . " " . $middle_name);
                 // First Name Middle Name Last Name
-                $full_name_FML = strtolower($params['first_name'] . ", " . $params['middle_name'] . " " . $params['last_name']);
+                $full_name_FML = strtolower($first_name . ", " . $middle_name . " " . $last_name);
                 // LAST NAME FIRST NAME MI
-                $full_name_FMNi = strtolower($params['last_name'] . " " . $params['first_name'] . ", " . substr($params['middle_name'], 0, 1));
+                $full_name_FMNi = strtolower($last_name . " " . $first_name . ", " . substr($middle_name, 0, 1));
 
                 // FULL NAME MATCH TO KNOW PATTERNS
                 if($full_name_FML == strtolower($params['ocr_response']['full_name']) || $full_name_LFM == strtolower($params['ocr_response']['full_name']) || $full_name_FMNi == strtolower($params['ocr_response']['full_name'])) {
@@ -183,7 +186,7 @@ class KYCService implements IKYCService
                 $ocr_respose = $params['ocr_response'];
                 $last_name = strtolower($params['last_name']);
                 $first_name = strtolower($params['first_name']);
-                $middle_name = strtolower($params['middle_name']);
+                $middle_name = isset($params['middle_name']) ? strtolower($params['middle_name']) : '';
                 if(strtolower($ocr_respose['first_name']) == $first_name && strtolower($ocr_respose['middle_name']) == $middle_name && strtolower($ocr_respose['last_name']) == $last_name) {
                     return true;
                 }
