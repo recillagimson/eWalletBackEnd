@@ -44,7 +44,6 @@ class KYCController extends Controller
     }
 
     public function matchOCR(MatchOCRRequest $request) {
-        $response =  $this->kycService->matchOCR($request->all());
-        return $this->responseService->successResponse($response, SuccessMessages::success);
+        return $this->kycService->matchOCR($request->all());
     }
 }

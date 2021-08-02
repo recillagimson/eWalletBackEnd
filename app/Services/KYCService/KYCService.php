@@ -2,6 +2,7 @@
 
 namespace App\Services\KYCService;
 
+use App\Enums\SuccessMessages;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use Illuminate\Http\File;
@@ -9,19 +10,24 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\CurlService\ICurlService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Traits\Errors\WithKYCErrors;
 use Carbon\Carbon;
 
 class KYCService implements IKYCService
 {   
+    use WithKYCErrors;
     private ICurlService $curlService;
     private IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     private IUserAccountRepository $userAccountRepository;
+    private IResponseService $responseService;
 
-    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository)
+    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService)
     {
         $this->curlService = $curlService;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
         $this->userAccountRepository = $userAccountRepository;
+        $this->responseService = $responseService;
     }
 
     private function getAuthorizationHeaders(): array
@@ -128,24 +134,31 @@ class KYCService implements IKYCService
         if(isset($attr['manual_input']) && isset($attr['ocr_response'])) {
             if(isset($attr['manual_input']['full_name']) && isset($attr['ocr_response']['full_name'])) {
                 if($attr['ocr_response']['full_name'] == $attr['manual_input']['full_name']) {
-                    return [
+                    // return [
+                    //     'message' => 'OCR and Input data match'
+                    // ];
+                    return $this->responseService->successResponse([
                         'message' => 'OCR and Input data match'
-                    ];
+                    ], SuccessMessages::success);
                 }
             }
 
             if(isset($attr['manual_input']['first_name']) && isset($attr['ocr_response']['first_name']) && isset($attr['manual_input']['last_name']) && isset($attr['ocr_response']['last_name'])) {
                 if($attr['ocr_response']['first_name'] == $attr['manual_input']['first_name'] && $attr['ocr_response']['last_name'] == $attr['manual_input']['last_name']) {
-                    return [
+                    // return [
+                    //     'message' => 'OCR and Input data match'
+                    // ];
+                    return $this->responseService->successResponse([
                         'message' => 'OCR and Input data match'
-                    ];
+                    ], SuccessMessages::success);
                 }
             }
         }
 
-        return [
-            'message' => 'OCR and Input data not match'
-        ];
+        return $this->OCRmatchOCR();
+        // return [
+        //     'message' => 'OCR and Input data not match'
+        // ];
     }
 
     public function isEKYCValidated(array $params) {
