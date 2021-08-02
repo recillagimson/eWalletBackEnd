@@ -26,6 +26,8 @@ use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Transactions\PayBillsHelpers;
 use Illuminate\Validation\ValidationException;
 use App\Services\Utilities\CSV\ICSVService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 use Carbon\Carbon;
 
 class PayBillsService implements IPayBillsService
@@ -46,9 +48,10 @@ class PayBillsService implements IPayBillsService
     private INotificationService $notificationService;
     private ICSVService $csvService;
     private ILogHistoryRepository $logHistory;
+    private IEmailService $emailService;
+    private ISmsService $smsService;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService,
-                                ICSVService $csvService, ILogHistoryRepository $logHistory){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService, ICSVService $csvService, ILogHistoryRepository $logHistory, IEmailService $emailService, ISmsService $smsService){
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
@@ -62,6 +65,8 @@ class PayBillsService implements IPayBillsService
         $this->notificationService = $notificationService;
         $this->csvService = $csvService;
         $this->logHistory = $logHistory;
+        $this->emailService = $emailService;
+        $this->smsService = $smsService;
     }
 
     
@@ -150,7 +155,7 @@ class PayBillsService implements IPayBillsService
         $response = $this->bayadCenterService->createPayment($billerCode, $data, $user);
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
-        $outPayBills = $this->saveTransaction($user, $billerCode, $response);
+        $outPayBills = $this->saveTransaction($user, $billerCode, $response, $response);
        
         // For automatic validation of incoming pending status
         $this->processPending($user);

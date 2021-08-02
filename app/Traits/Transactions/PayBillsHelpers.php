@@ -26,11 +26,12 @@ use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
 
+
 use function GuzzleHttp\json_encode;
 
 trait PayBillsHelpers
 {
-    use WithUserErrors, WithTpaErrors;
+    use WithUserErrors, WithTpaErrors, UserHelpers;
 
     private IBayadCenterService $bayadCenterService;
 
@@ -67,11 +68,25 @@ trait PayBillsHelpers
      * @param array $response
      * @return mixed
      */
-    private function saveTransaction(UserAccount $user, string $billerCode, $response)
+    private function saveTransaction(UserAccount $user, string $billerCode, $response, $data)
     {
         $this->subtractUserBalance($user, $billerCode, $response);
-      //$this->notificationService->payBillsNotification();
-        return $this->outPayBills($user, $billerCode, $response);
+        $serviceFee = $this->getServiceFee($user);
+        $outPayBills = $this->outPayBills($user, $billerCode, $response);
+
+        $userDetail  = $this->userDetailRepository->getByUserId($user->id);
+        $fillRequest['serviceFee'] = $response['data']['otherCharges'] + $serviceFee;
+        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($user->id), 2);
+        $fillRequest['amount'] = $response['data']['amount'];
+        $fillRequest['refNo'] = $outPayBills->reference_number;
+        $fillRequest['biller'] = $outPayBills->billers_name;
+
+        $usernameField = $this->getUsernameFieldByAvailability($user);
+        $username = $this->getUsernameByField($user, $usernameField);
+        $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
+        $notifService->payBillsNotification($username, $fillRequest, $userDetail->first_name);
+
+        return $outPayBills;
     }
 
 
