@@ -11,6 +11,7 @@ use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Models\UserAccount;
 use App\Repositories\LogHistory\ILogHistoryRepository;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -50,8 +51,9 @@ class PayBillsService implements IPayBillsService
     private ILogHistoryRepository $logHistory;
     private IEmailService $emailService;
     private ISmsService $smsService;
+    private INotificationRepository $notificationRepository;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService, ICSVService $csvService, ILogHistoryRepository $logHistory, IEmailService $emailService, ISmsService $smsService){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService, ICSVService $csvService, ILogHistoryRepository $logHistory, IEmailService $emailService, ISmsService $smsService, INotificationRepository $notificationRepository){
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
@@ -67,6 +69,7 @@ class PayBillsService implements IPayBillsService
         $this->logHistory = $logHistory;
         $this->emailService = $emailService;
         $this->smsService = $smsService;
+        $this->notificationRepository = $notificationRepository;
     }
 
     

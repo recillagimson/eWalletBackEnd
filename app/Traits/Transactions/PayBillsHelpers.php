@@ -86,6 +86,10 @@ trait PayBillsHelpers
         $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
         $notifService->payBillsNotification($username, $fillRequest, $userDetail->first_name);
 
+        $description = 'Hi Squidee! Your payment of P' . $fillRequest['amount'] . ' to ' . $fillRequest['biller'] . ' with fee ' . $fillRequest['serviceFee'] . '. has been successfully processed on ' . date('Y-m-d H:i:s') . ' with Ref No. ' . $fillRequest['refNo'] . '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
+        $title = 'SquidPay - Pay Bills Notification';
+        $this->insertNotification($user, $title, $description);
+
         return $outPayBills;
     }
 
@@ -169,6 +173,17 @@ trait PayBillsHelpers
             'biller_reference_number' => $response['data']['billerReference'],
             'user_created' => $user->id,
             'user_updated' => ''
+        ]);
+    }
+
+    private function insertNotification(UserAccount $user, $title, $description)
+    {
+        $this->notificationRepository->create([
+            'title' => $title,
+            'status' => '1',
+            'description' => $description,
+            'user_account_id' => $user->id,
+            'user_created' => $user->id
         ]);
     }
 
