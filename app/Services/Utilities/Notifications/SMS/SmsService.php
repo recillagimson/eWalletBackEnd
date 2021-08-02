@@ -97,7 +97,7 @@ class SmsService implements ISmsService
 
     public function payBillsNotification(string $to, array $fillRequest, string $biller)
     {
-        $content = 'Hi Squidee! You have paid P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' to ' . $biller . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using our Pay Bills service.';
+        $content = 'Hi Squidee! Your payment of P' . $fillRequest['amount'] . ' to ' . $fillRequest['biller'] . ' with fee ' . $fillRequest['serviceFee'] . '. has been successfully processed on ' . date('Y-m-d H:i:s') . ' with Ref No. ' . $fillRequest['refNo'] . '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
         $this->sendMessages($to, $content);
     }
 
