@@ -33,9 +33,9 @@ class TempUserDetailService implements ITempUserDetailService
         $this->userDetail = $userDetail;
     }
 
-    public function getAllPaginated($perPage = 10)
+    public function getAllPaginated($attributes, $perPage = 10)
     {
-        $result = $this->tempUserDetail->getAllPaginated($perPage);
+        $result = $this->tempUserDetail->getAllPaginated($attributes, $perPage);
         
         return $result;
     }

@@ -33,7 +33,7 @@ class UserAccountController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $records = $this->userAccountService->getAllPaginated();
+        $records = $this->userAccountService->getAllPaginated($request->all());
         $records = new UserAccountListCollection($records);
 
         return $this->responseService->successResponse($records->toArray($request), SuccessMessages::success);
