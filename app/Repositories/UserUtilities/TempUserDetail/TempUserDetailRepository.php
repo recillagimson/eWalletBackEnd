@@ -25,20 +25,12 @@ class TempUserDetailRepository extends Repository implements ITempUserDetailRepo
         return $result;
     }
 
-    public function getAllPaginated($attributes, $perPage = 10) {
-        $result = $this->model;
-
-        if (isset($attributes['filter_by']) && isset($attributes['filter_value'])) {
-            $result = $result->where($attributes['filter_by'], 'LIKE', "%" . $attributes['filter_value'] . "%");
-        }
-
-        if (isset($attributes['from']) && isset($attributes['to'])) {
-            $result = $result->whereBetween('created_at', [$attributes['from'], $attributes['to']]);
-        }
-
-        return $result->with([
+    public function getAllPaginated($perPage = 10) {
+        $result = $this->model->with([
             'user:id,account_number,tier_id', 
         ])->orderBy('created_at', 'DESC')->paginate($perPage);
+        
+        return $result;
     }
 
     public function getLatestByUserId($id) {
