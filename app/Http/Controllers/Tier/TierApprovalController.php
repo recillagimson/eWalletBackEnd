@@ -42,7 +42,6 @@ class TierApprovalController extends Controller
     {
         $params = $request->all();
         $records = $this->iTierApprovalRepository->list($params);
-        dd($records->toArray());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
