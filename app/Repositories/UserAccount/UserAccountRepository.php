@@ -25,13 +25,21 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getAdminUserBaseQuery()->get();
     }
 
-    public function getAllUsersPaginated($perPage)
+    public function getAllUsersPaginated($attributes, $perPage)
     {
-        $result = $this->model->with(['profile', 'tier', 'tierApprovals' => function($q) {
+        $result = $this->model;
+
+        if (isset($attributes['filter_by']) && isset($attributes['filter_value'])) {
+            $result = $result->where($attributes['filter_by'], 'LIKE', "%" . $attributes['filter_value'] . "%");
+        }
+
+        if (isset($attributes['from']) && isset($attributes['to'])) {
+            $result = $result->whereBetween('created_at', [$attributes['from'], $attributes['to']]);
+        }
+
+        return $result->with(['profile', 'tier', 'tierApprovals' => function($q) {
             return $q->where('status', '!=', 'DECLINED');
         }])->orderBy('created_at', 'DESC')->paginate($perPage);
-        
-        return $result;
     }
 
     public function findById($id)

@@ -126,9 +126,9 @@ class UserAccountService implements IUserAccountService
         $user->delete();
     }
 
-    public function getAllPaginated($perPage = 10) {
+    public function getAllPaginated(array $attributes, $perPage = 10) {
 
-        return $this->users->getAllUsersPaginated($perPage);
+        return $this->users->getAllUsersPaginated($attributes, $perPage);
     }
 
     public function findById(string $id) {
