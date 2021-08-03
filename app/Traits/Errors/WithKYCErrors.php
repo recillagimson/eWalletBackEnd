@@ -19,7 +19,7 @@ trait WithKYCErrors
 
     public function OCRmatchOCR() {
         throw ValidationException::withMessages([
-            'ocr_match_failed' => 'OCR matching failed'
+            ErrorCodes::ocrMismatch => 'OCR matching failed'
         ]);
     }
 }
