@@ -29,8 +29,12 @@ class UserTransactionHistoryController extends Controller
         $this->pdfService = $pdfService;
     }
 
-    public function index() {
-        $records = $this->userTransactionHistory->getByAuthUserViaViews();
+    public function index(Request $request) {
+        $status = 'ALL';
+        if($request->has('status')) {
+            $status = $request->status;
+        }
+        $records = $this->userTransactionHistory->getByAuthUserViaViews($status);
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 

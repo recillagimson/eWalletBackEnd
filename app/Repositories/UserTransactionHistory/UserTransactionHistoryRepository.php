@@ -97,9 +97,16 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return false;
     }
 
-    public function getByAuthUserViaViews() {
+    public function getByAuthUserViaViews(string $status) {
+        if($status == 'ALL') {
+            return UserTransactionHistoryView::with(['transaction_category'])
+                ->where('user_account_id', request()->user()->id)
+                ->orderBy('transaction_date', 'DESC')
+                ->paginate();
+        }
         return UserTransactionHistoryView::with(['transaction_category'])
             ->where('user_account_id', request()->user()->id)
+            ->where('status', $status)
             ->orderBy('transaction_date', 'DESC')
             ->paginate();
     }
