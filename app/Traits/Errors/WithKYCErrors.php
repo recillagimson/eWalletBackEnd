@@ -18,8 +18,7 @@ trait WithKYCErrors
     */
 
     public function OCRmatchOCR() {
-        throw ValidationException::withMessages([
-            ErrorCodes::ocrMismatch => 'OCR matching failed'
-        ]);
+        $this->validationErrorMessage(ErrorCodes::ocrMismatch,
+            'OCR matching failed.');
     }
 }
