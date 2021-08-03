@@ -19,9 +19,9 @@ class TempUserDetailController extends Controller
         $this->responseService = $responseService;
     }
 
-    public function index(Request $request): JsonResponse 
+    public function index(): JsonResponse 
     {
-        $records = $this->tempUserDetail->getAllPaginated($request->all());
+        $records = $this->tempUserDetail->getAllPaginated();
 
         return $this->responseService->successResponse($records->toArray() , SuccessMessages::success);
     }
