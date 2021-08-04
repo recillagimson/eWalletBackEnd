@@ -16,7 +16,7 @@ interface IUserAccountRepository extends IRepository
 
     public function getAdminUsersByName(string $lastName, string $firstName): Collection;
 
-    public function getAllUsersPaginated($perPage);
+    public function getAllUsersPaginated($attributes, $perPage);
     
     public function findById(string $id);
 
