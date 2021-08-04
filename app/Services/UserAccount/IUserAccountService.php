@@ -19,7 +19,7 @@ interface IUserAccountService
 
     public function deleteAdminUser(string $id);
 
-    public function getAllPaginated($perPage = 10);
+    public function getAllPaginated($request, $perPage = 10);
 
     public function findById(string $id);
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\CustomerFilterRequest;
 use App\Http\Requests\User\UpdateEmailRequest;
 use App\Http\Requests\User\UpdateMobileRequest;
 use App\Http\Requests\UserRole\SetUserRoleRequest;
@@ -33,7 +34,7 @@ class UserAccountController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $records = $this->userAccountService->getAllPaginated();
+        $records = $this->userAccountService->getAllPaginated($request);
         $records = new UserAccountListCollection($records);
 
         return $this->responseService->successResponse($records->toArray($request), SuccessMessages::success);
