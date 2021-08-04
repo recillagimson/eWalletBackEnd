@@ -102,15 +102,15 @@ class UserProfileController extends Controller
                 }
 
                 // Trigger auto check
-                $ekyc_auto_check == false;
-                //$ekyc_auto_check = $this->kycService->isEKYCValidated($request->all());
+                //$ekyc_auto_check == false;
+               // $ekyc_auto_check = $this->kycService->isEKYCValidated($request->all());
 
 
-                if($ekyc_auto_check) {
-                    $this->userAccountRepository->update(request()->user(), [
-                        'tier_id' => AccountTiers::tier2
-                    ]);
-                }
+                //if($ekyc_auto_check) {
+                  //  $this->userAccountRepository->update(request()->user(), [
+                     //   'tier_id' => AccountTiers::tier2
+                   // ]);
+               // }
 
                 // CREATE APPROVAL RECORD FOR ADMIN
                 // TU-MMDDYYY-RANDON
@@ -118,7 +118,8 @@ class UserProfileController extends Controller
                 $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
                     'user_account_id' => request()->user()->id,
                     'request_tier_id' => AccountTiers::tier2,
-                    'status' => $ekyc_auto_check ? 'APPROVED' : 'PENDING',
+                    //'status' => $ekyc_auto_check ? 'APPROVED' : 'PENDING',
+                    'status' =>  'PENDING',
                     'user_created' => request()->user()->id,
                     'user_updated' => request()->user()->id,
                     'transaction_number' => $generatedTransactionNumber
