@@ -102,13 +102,15 @@ class UserProfileController extends Controller
                 }
 
                 // Trigger auto check
+                $ekyc_auto_check == false;
                 //$ekyc_auto_check = $this->kycService->isEKYCValidated($request->all());
 
-               // if($ekyc_auto_check) {
-                //    $this->userAccountRepository->update(request()->user(), [
-                  //      'tier_id' => AccountTiers::tier2
-                 //   ]);
-               // }
+
+                if($ekyc_auto_check) {
+                    $this->userAccountRepository->update(request()->user(), [
+                        'tier_id' => AccountTiers::tier2
+                    ]);
+                }
 
                 // CREATE APPROVAL RECORD FOR ADMIN
                 // TU-MMDDYYY-RANDON
