@@ -45,6 +45,8 @@ return [
             'balance_url' => env('ATM_PREPAID_BALANCE_URL'),
             'topup_url' => env('ATM_PREPAID_TOPUP_URL'),
             'topup_inquiry_url' => env('ATM_PREPAID_TOPUP_INQUIRY_URL'),
+            'topup_epin_url' => env('ATM_PREPAID_EPIN_URL'),
+            'topup_epin_inquiry_url' => env('ATM_PREPAID_EPIN_INQUIRY_URL'),
             'id' => env('ATM_PREPAID_SOLUTIONS_ID'),
             'uid' => env('ATM_PREPAID_SOLUTIONS_UID'),
             'password' => env('ATM_PREPAID_SOLUTIONS_PASSWORD'),
