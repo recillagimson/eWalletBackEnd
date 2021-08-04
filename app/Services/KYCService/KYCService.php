@@ -184,7 +184,7 @@ class KYCService implements IKYCService
                 }
             }
             // ELSE BREAKDOWNED VERSION
-            else {
+            else if($params['ocr_response'] && isset($params['last_name']) && isset($params['first_name'])) {
                 $ocr_respose = $params['ocr_response'];
                 $last_name = strtolower($params['last_name']);
                 $first_name = strtolower($params['first_name']);
