@@ -17,6 +17,7 @@ use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
@@ -47,6 +48,7 @@ class SendMoneyService implements ISendMoneyService
     private IOtpService $otpService;
     private ITransactionValidationService $transactionValidationService;
     private INotificationRepository $notificationRepository;
+    private IServiceFeeRepository $serviceFeeRepository;
 
     public function __construct(
         IOutSendMoneyRepository $outSendMoney,
@@ -63,8 +65,8 @@ class SendMoneyService implements ISendMoneyService
         ISmsService $smsService,
         IOtpService $otpService,
         ITransactionValidationService $transactionValidationService,
-        INotificationRepository $notificationRepository
-
+        INotificationRepository $notificationRepository,
+        IServiceFeeRepository $serviceFeeRepository
     ) {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
@@ -81,6 +83,7 @@ class SendMoneyService implements ISendMoneyService
         $this->otpService = $otpService;
         $this->transactionValidationService = $transactionValidationService;
         $this->notificationRepository = $notificationRepository;
+        $this->serviceFeeRepository = $serviceFeeRepository;
     }
 
 
@@ -92,16 +95,18 @@ class SendMoneyService implements ISendMoneyService
      * @param object $user
      * @return array
      */
-    public function send(string $username, array $fillRequest, object $user)
+    public function send(string $username, array $fillRequest, UserAccount $user)
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
         $receiverUser = $this->userAccounts->get($receiverID);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
-        $isEnough = $this->checkAmount($senderID, $fillRequest);
+        $isEnough = $this->checkAmount($senderID, $fillRequest, $user);
         $receiverDetails = $this->userDetails($receiverID);
         $senderDetails = $this->userDetails($senderID);
+        $senderAccount = $this->userAccounts->get($senderID);
+        $receiverAccount = $this->userAccounts->get($receiverID);
         $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
         $this->otpService->ensureValidated($identifier, $user->otp_enabled);
@@ -110,31 +115,24 @@ class SendMoneyService implements ISendMoneyService
         if (!$receiverDetails) $this->recipientDetailsNotFound();
         if (!$senderDetails) $this->senderDetailsNotFound();
 
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-        $sender_account = $this->userAccounts->get($senderID);
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($sender_account, $fillRequest['amount'], TransactionCategoryIds::sendMoneyToSquidPayAccount);
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
-        $receiver_account = $this->userAccounts->get($receiverID);
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($receiver_account, $fillRequest['amount'], TransactionCategoryIds::receiveMoneyToSquidPayAccount, [ 'key' => ErrorCodes::receiverMonthlyLimitExceeded, 'value' => 'Receiver Transaction Limit reached.' ]);
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
+        $this->checkMonthlyLimitForSender($senderAccount, $fillRequest);
+        $this->checkMonthlyLimitForReceiver($receiverAccount, $fillRequest);
 
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
 
-        $this->subtractSenderBalance($senderID, $fillRequest);
-        $this->addReceiverBalance($receiverID, $fillRequest);
-
-        $outSendMoney = $this->outSendMoney($senderID, $receiverID, $fillRequest);
+        $outSendMoney = $this->outSendMoney($senderID, $receiverID, $fillRequest, $user);
         $inReceiveMoney = $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
 
+        $this->subtractSenderBalance($senderID, $fillRequest, $user);
+        $this->addReceiverBalance($receiverID, $fillRequest, $user);
+
         $this->logHistories($senderID, $receiverID, $fillRequest);
-        $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest);
+        $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest, $user);
         $this->senderNotification($user, $username, $fillRequest, $receiverID, $senderID);
         $this->recipientNotification($receiverUser, $username, $fillRequest, $senderID, $receiverID);
 
-        return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username);
+        return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username, $user);
     }
 
 
@@ -146,31 +144,26 @@ class SendMoneyService implements ISendMoneyService
      * @param object $user
      * @return array
      */
-    public function sendValidate(string $username, array $fillRequest, object $user)
+    public function sendValidate(string $username, array $fillRequest, UserAccount $user)
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
-        $isEnough = $this->checkAmount($senderID, $fillRequest);
+        $isEnough = $this->checkAmount($senderID, $fillRequest, $user);
         $receiverDetails = $this->userDetails($receiverID);
         $senderDetails = $this->userDetails($senderID);
+        $senderAccount = $this->userAccounts->get($senderID);
+        $receiverAccount = $this->userAccounts->get($receiverID);
 
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
         if (!$receiverDetails) $this->recipientDetailsNotFound();
         if (!$senderDetails) $this->senderDetailsNotFound();
 
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-        $sender_account = $this->userAccounts->get($senderID);
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($sender_account, $fillRequest['amount'], TransactionCategoryIds::sendMoneyToSquidPayAccount);
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) SEND MONEY
-
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
-        $receiver_account = $this->userAccounts->get($receiverID);
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($receiver_account, $fillRequest['amount'], TransactionCategoryIds::receiveMoneyToSquidPayAccount, [ 'key' => ErrorCodes::receiverMonthlyLimitExceeded, 'value' => 'Receiver Transaction Limit reached.' ]);
-        // ADD GLOBAL VALIDATION FOR TIER LIMITS (MONTHLY) RECEIVE MONEY
-
+        $this->checkMonthlyLimitForSender($senderAccount, $fillRequest);
+        $this->checkMonthlyLimitForReceiver($receiverAccount, $fillRequest);
+   
         return $this->sendMoneyReview($receiverID);
     }
 
@@ -247,7 +240,7 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function sendMoneyResponse($receiverDetails, $fillRequest, $username)
+    private function sendMoneyResponse($receiverDetails, $fillRequest, $username, UserAccount $user)
     {
         return [
             'first_name' => $receiverDetails->first_name,
@@ -257,7 +250,7 @@ class SendMoneyService implements ISendMoneyService
             $username => $fillRequest[$username],
             'message' => $fillRequest['message'],
             'reference_number' =>  $fillRequest['refNo'],
-            'total_amount' =>  number_format($fillRequest['amount'] + SendMoneyConfig::ServiceFee, 2),
+            'total_amount' =>  number_format($fillRequest['amount'] + $this->getServiceFee($user, true), 2),
             'transaction_date' => Carbon::now()
         ];
     }
@@ -283,35 +276,61 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function checkAmount(string $senderID, array $fillRequest)
+    private function checkAmount(string $senderID, array $fillRequest, UserAccount $user)
     {
         $balance = $this->userBalanceInfo->getUserBalance($senderID);
-        $fillRequest['amount'] = $fillRequest['amount'] + SendMoneyConfig::ServiceFee;
+        $fillRequest['amount'] = $fillRequest['amount'] + $this->getServiceFee($user, true);
         if ($balance >= $fillRequest['amount']) return true;
     }
 
 
-    private function subtractSenderBalance(string $senderID, array $fillRequest)
+    private function subtractSenderBalance(string $senderID, array $fillRequest, UserAccount $user)
     {
         $senderBalance = $this->userBalanceInfo->getUserBalance($senderID);
-        $balanceSubtractByServiceFee = $senderBalance - SendMoneyConfig::ServiceFee;
+        $balanceSubtractByServiceFee = $senderBalance - $this->getServiceFee($user, true);
         $newBalance = $balanceSubtractByServiceFee - $fillRequest['amount'];
         $this->userBalanceInfo->updateUserBalance($senderID, $newBalance);
     }
 
 
-    private function addReceiverBalance(string $receiverID, array $fillRequest)
+    private function addReceiverBalance(string $receiverID, array $fillRequest, UserAccount $user)
     {
         $receiverBalance = $this->userBalanceInfo->getUserBalance($receiverID);
-        $newBalance = $receiverBalance + $fillRequest['amount'];
+        $newBalance = $receiverBalance + $fillRequest['amount'] - $this->getServiceFee($user, false);
         $this->userBalanceInfo->updateUserBalance($receiverID, $newBalance);
+    }
+
+
+    private function getServiceFee(UserAccount $user, $isSend)
+    {
+        if($isSend){
+            $serviceFee = $this->serviceFeeRepository->getByTierAndTransCategory($user->tier_id, TransactionCategoryIds::sendMoneyToSquidPayAccount);
+            $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
+        } else {
+            $serviceFee = $this->serviceFeeRepository->getByTierAndTransCategory($user->tier_id, TransactionCategoryIds::receiveMoneyToSquidPayAccount);
+            $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
+        }
+
+        return $serviceFeeAmount;
+    }
+
+
+    private function checkMonthlyLimitForSender($senderAccount, array $fillRequest)
+    {
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($senderAccount, $fillRequest['amount'], TransactionCategoryIds::sendMoneyToSquidPayAccount);
+    }
+
+
+    private function checkMonthlyLimitForReceiver($receiverAccount, array $fillRequest)
+    {
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($receiverAccount, $fillRequest['amount'], TransactionCategoryIds::receiveMoneyToSquidPayAccount, ['key' => ErrorCodes::receiverMonthlyLimitExceeded, 'value' => 'Receiver Transaction Limit reached.']);
     }
 
 
     private function senderNotification(UserAccount $user, $username, $fillRequest, $receiverID, $senderID)
     {
         $userDetail  = $this->userDetailRepository->getByUserId($receiverID);
-        $fillRequest['serviceFee'] = SendMoneyConfig::ServiceFee;
+        $fillRequest['serviceFee'] = $this->getServiceFee($user, true);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
 
         $usernameField = $this->getUsernameFieldByAvailability($user);
@@ -341,16 +360,16 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function outSendMoney(string $senderID, string $receiverID, array $fillRequest)
+    private function outSendMoney(string $senderID, string $receiverID, array $fillRequest, UserAccount $user)
     {
         return $this->outSendMoney->create([
             'user_account_id' => $senderID,
             'receiver_id' => $receiverID,
             'reference_number' => $fillRequest['refNo'],
             'amount' => $fillRequest['amount'],
-            'service_fee' => SendMoneyConfig::ServiceFee,
+            'service_fee' => $this->getServiceFee($user, true),
             // 'service_fee_id' => '',
-            'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'total_amount' => $fillRequest['amount'] + $this->getServiceFee($user, true),
             // 'purpose_of_transfer_id' => '',
             'message' => $fillRequest['message'],
             'status' => 'SUCCESS',
@@ -427,13 +446,13 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest)
+    private function userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest, UserAccount $user)
     {
         $this->userTransactionHistoryRepository->create([
             'user_account_id' => $senderID,
             'transaction_id' => $outSendMoney->id,
             'reference_number' => $fillRequest['refNo'],
-            'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'total_amount' => $fillRequest['amount'] + $this->getServiceFee($user, true),
             'transaction_category_id' => SendMoneyConfig::CXSEND,
             'user_created' => $senderID,
             'transaction_date' => $outSendMoney->transaction_date
@@ -442,7 +461,7 @@ class SendMoneyService implements ISendMoneyService
             'user_account_id' => $receiverID,
             'transaction_id' => $inReceiveMoney->id,
             'reference_number' => $fillRequest['refNoRM'],
-            'total_amount' => $fillRequest['amount'] + SendMoneyConfig::ServiceFee,
+            'total_amount' => $fillRequest['amount'] + $this->getServiceFee($user, false),
             'transaction_category_id' => SendMoneyConfig::CXRECEIVE,
             'user_created' => $receiverID,
             'transaction_date' => $outSendMoney->transaction_date

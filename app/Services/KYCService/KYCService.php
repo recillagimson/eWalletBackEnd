@@ -161,6 +161,8 @@ class KYCService implements IKYCService
         // ];
     }
 
+    
+
     public function isEKYCValidated(array $params) {
         if($params && isset($params['ocr_response'])) {
             // CHECK IF FULLNAME
@@ -192,6 +194,8 @@ class KYCService implements IKYCService
                 }
             }
         }
+
+
         // CANT READ OCR RESPONSE
         return false;
     }
