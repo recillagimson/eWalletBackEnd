@@ -123,11 +123,13 @@ class SendMoneyService implements ISendMoneyService
         $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
         $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
 
-        $this->subtractSenderBalance($senderID, $fillRequest);
-        $this->addReceiverBalance($receiverID, $fillRequest);
+       
+      
 
         $outSendMoney = $this->outSendMoney($senderID, $receiverID, $fillRequest);
+         $this->subtractSenderBalance($senderID, $fillRequest);
         $inReceiveMoney = $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
+        $this->addReceiverBalance($receiverID, $fillRequest);
 
         $this->logHistories($senderID, $receiverID, $fillRequest);
         $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest);
