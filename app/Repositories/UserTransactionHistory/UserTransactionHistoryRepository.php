@@ -3,6 +3,7 @@
 namespace App\Repositories\UserTransactionHistory;
 
 use App\Models\UserTransactionHistory;
+use App\Models\UserUtilities\UserTransactionHistoryView;
 use App\Repositories\Repository;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -94,6 +95,31 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     {
         if ($this->model->where('transaction_id', $id)->first()) return true;
         return false;
+    }
+
+    public function getByAuthUserViaViews(string $status) {
+        if($status == 'ALL') {
+            return UserTransactionHistoryView::with(['transaction_category'])
+                ->where('user_account_id', request()->user()->id)
+                ->orderBy('transaction_date', 'DESC')
+                ->paginate();
+        }
+        return UserTransactionHistoryView::with(['transaction_category'])
+            ->where('user_account_id', request()->user()->id)
+            ->where('status', $status)
+            ->orderBy('transaction_date', 'DESC')
+            ->paginate();
+    }
+
+    public function findTransactionWithRelationViaView(string $id) {
+        $record = UserTransactionHistoryView::with(['transaction_category'])->where('transaction_id', $id)->first();
+
+        if(is_null($record)) {
+            throw ValidationException::withMessages([
+                'record_not_found' => 'Record not found'
+            ]);
+        }
+        return $record->append('transactable');
     }
 
 }

@@ -248,7 +248,12 @@ class Send2BankService implements ISend2BankService
 
         foreach ($pendingSend2Banks as $send2Bank) {
             $response = $this->ubpService->checkStatus($send2Bank->provider, $send2Bank->reference_number);
-            $send2Bank = $this->handleSecBankStatusResponse($send2Bank, $response);
+
+            if ($send2Bank->provider === TpaProviders::secBankInstapay || $send2Bank->provider === TpaProviders::secBankPesonet)
+                $send2Bank = $this->handleSecBankStatusResponse($send2Bank, $response);
+            else
+                $send2Bank = $this->handleStatusResponse($send2Bank, $response);
+
             $balanceInfo = $this->updateUserBalance($user->balanceInfo, $send2Bank->total_amount, $send2Bank->status);
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
 

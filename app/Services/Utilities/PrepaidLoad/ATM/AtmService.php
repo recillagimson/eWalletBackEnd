@@ -24,6 +24,7 @@ class AtmService implements IAtmService
     private string $id;
     private string $uid;
     private string $password;
+    private string $keyPassword;
 
     private string $baseUrl;
     private string $productsUrl;
@@ -40,6 +41,7 @@ class AtmService implements IAtmService
         $this->id = config('services.load.atm.id');
         $this->uid = config('services.load.atm.uid');
         $this->password = config('services.load.atm.password');
+        $this->keyPassword = config('services.load.atm.key_password', '');
 
         $this->baseUrl = config('services.load.atm.url');
         $this->productsUrl = config('services.load.atm.products_url');
@@ -78,6 +80,7 @@ class AtmService implements IAtmService
             }
         }
 
+        Log::error('ATM getProvider API Error', $response->json());
         $this->prefixNotSupported();
     }
 
@@ -98,6 +101,7 @@ class AtmService implements IAtmService
             }
         }
 
+        Log::error('ATM getProductsByProvider API Error', $response->json());
         $this->prefixNotSupported();
     }
 
@@ -131,7 +135,7 @@ class AtmService implements IAtmService
     public function generateSignature(array $data): string
     {
         $privateKeyContent = Storage::disk('local')->get('/key/partnerid.private.pfx');
-        openssl_pkcs12_read($privateKeyContent, $certs, '');
+        openssl_pkcs12_read($privateKeyContent, $certs, $this->keyPassword);
 
         $jsonData = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION);
         openssl_sign($jsonData, $signature, $certs['pkey'], OPENSSL_ALGO_SHA1);

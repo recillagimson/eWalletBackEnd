@@ -8,6 +8,7 @@ use App\Traits\UsesUuid;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TempUserDetail extends Model
 {
@@ -60,4 +61,21 @@ class TempUserDetail extends Model
         "approved_date",
         "declined_date"
     ];
+
+    /**
+     * Get the user that owns the TempUserDetail
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(UserAccount::class, 'user_account_id', 'id');
+    }
+
+    public function latestTierApproval()
+    {
+        return $this->hasOne(TierApproval::class, 'user_account_id', 'user_account_id')
+                    ->where('status', "!=" , "REJECTED")
+                    ->orderBy('created_at', 'DESC');
+    }
 }

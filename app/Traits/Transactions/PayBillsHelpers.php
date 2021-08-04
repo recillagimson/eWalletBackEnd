@@ -26,11 +26,12 @@ use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
 
+
 use function GuzzleHttp\json_encode;
 
 trait PayBillsHelpers
 {
-    use WithUserErrors, WithTpaErrors;
+    use WithUserErrors, WithTpaErrors, UserHelpers;
 
     private IBayadCenterService $bayadCenterService;
 
@@ -67,11 +68,29 @@ trait PayBillsHelpers
      * @param array $response
      * @return mixed
      */
-    private function saveTransaction(UserAccount $user, string $billerCode, $response)
+    private function saveTransaction(UserAccount $user, string $billerCode, $response, $data)
     {
         $this->subtractUserBalance($user, $billerCode, $response);
-      //$this->notificationService->payBillsNotification();
-        return $this->outPayBills($user, $billerCode, $response);
+        $serviceFee = $this->getServiceFee($user);
+        $outPayBills = $this->outPayBills($user, $billerCode, $response);
+
+        $userDetail  = $this->userDetailRepository->getByUserId($user->id);
+        $fillRequest['serviceFee'] = $response['data']['otherCharges'] + $serviceFee;
+        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($user->id), 2);
+        $fillRequest['amount'] = $response['data']['amount'];
+        $fillRequest['refNo'] = $outPayBills->reference_number;
+        $fillRequest['biller'] = $outPayBills->billers_name;
+
+        $usernameField = $this->getUsernameFieldByAvailability($user);
+        $username = $this->getUsernameByField($user, $usernameField);
+        $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
+        $notifService->payBillsNotification($username, $fillRequest, $userDetail->first_name);
+
+        $description = 'Hi Squidee! Your payment of P' . $fillRequest['amount'] . ' to ' . $fillRequest['biller'] . ' with fee ' . $fillRequest['serviceFee'] . '. has been successfully processed on ' . date('Y-m-d H:i:s') . ' with Ref No. ' . $fillRequest['refNo'] . '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
+        $title = 'SquidPay - Pay Bills Notification';
+        $this->insertNotification($user, $title, $description);
+
+        return $outPayBills;
     }
 
 
@@ -154,6 +173,17 @@ trait PayBillsHelpers
             'biller_reference_number' => $response['data']['billerReference'],
             'user_created' => $user->id,
             'user_updated' => ''
+        ]);
+    }
+
+    private function insertNotification(UserAccount $user, $title, $description)
+    {
+        $this->notificationRepository->create([
+            'title' => $title,
+            'status' => '1',
+            'description' => $description,
+            'user_account_id' => $user->id,
+            'user_created' => $user->id
         ]);
     }
 

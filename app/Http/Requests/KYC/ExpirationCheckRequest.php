@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\DRCR;
+namespace App\Http\Requests\KYC;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DRCRReportRequest extends FormRequest
+class ExpirationCheckRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
@@ -21,10 +21,11 @@ class DRCRReportRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            //
+            'id_photo' => 'required|max:10000|mimes:jpeg,png',
+            'id_type' => 'required'
         ];
     }
 }

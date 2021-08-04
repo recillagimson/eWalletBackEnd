@@ -48,6 +48,7 @@ return [
             'id' => env('ATM_PREPAID_SOLUTIONS_ID'),
             'uid' => env('ATM_PREPAID_SOLUTIONS_UID'),
             'password' => env('ATM_PREPAID_SOLUTIONS_PASSWORD'),
+            'key_password' => env('ATM_KEY_PASSWORD', ''),
         ],
     ]
 ];

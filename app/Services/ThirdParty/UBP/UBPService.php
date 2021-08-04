@@ -136,7 +136,7 @@ class UBPService implements IUBPService
                 ]
             ],
             "remittance" => [
-                "amount" => number_format($amount, 2),
+                "amount" => number_format($amount, 2, '.', ''),
                 "currency" => "PHP",
                 "receivingBank" => $bankCode,
                 "purpose" => $purpose,
@@ -144,6 +144,7 @@ class UBPService implements IUBPService
             ]
         ];
 
+        //Log::info('Fund Transfer Payload ' . $provider . ':', $data);
         $json = json_encode($data);
 
         $transferUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetTransferUrl : $this->instaPayTransferUrl;
@@ -213,7 +214,8 @@ class UBPService implements IUBPService
         return $this->apiService->post($url, $data, $headers);
     }
 
-    public function verifyPendingDirectTransaction(string $senderRefId) {
+    public function verifyPendingDirectTransaction(string $senderRefId): Response
+    {
         $token = $this->getToken();
         $headers = $this->defaultHeaders;
         $headers['Authorization'] = 'Bearer ' . $token->access_token;

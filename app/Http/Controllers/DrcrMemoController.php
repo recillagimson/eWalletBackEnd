@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
-use Illuminate\Http\JsonResponse;
-use App\Http\Requests\DrcrMemo\ShowRequest;
-use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Http\Requests\DRCR\DRCRReportRequest;
-use App\Http\Requests\DrcrMemo\GetUserRequest;
 use App\Http\Requests\DrcrMemo\ApprovalRequest;
 use App\Http\Requests\DrcrMemo\DrcrMemoRequest;
+use App\Http\Requests\DrcrMemo\GetUserRequest;
+use App\Http\Requests\DrcrMemo\ShowRequest;
 use App\Http\Requests\DrcrMemo\UpdateMemoRequest;
+use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Utilities\Responses\IResponseService;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class DrcrMemoController extends Controller
 {
@@ -145,8 +147,15 @@ class DrcrMemoController extends Controller
         return $this->responseService->successResponse($approval, SuccessMessages::success);
     }
 
-    public function report(DRCRReportRequest $request) {
-        return $this->drcrMemoService->report($request->all(), request()->user()->id);
+    public function report(DRCRReportRequest $request)
+    {
+        try {
+            Log::debug('Report Request Parameters:', $request->all());
+            return $this->drcrMemoService->report($request->all(), request()->user()->id);
+        } catch (Exception $e) {
+            Log::error('Error in exporting PDF', $e->getTrace());
+            throw $e;
+        }
     }
 
 }
