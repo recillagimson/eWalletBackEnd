@@ -217,7 +217,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
 
         Route::prefix('/user_accounts')->group(function (){
-            Route::get('/', [UserAccountController::class, 'index']);
+            Route::post('/', [UserAccountController::class, 'index']);
             Route::get('/{id}', [UserAccountController::class, 'show']);
 
             Route::post('/{id}/supervisorUpdateProfile', [UserProfileController::class, 'supervisorUpdateProfile']);
@@ -245,6 +245,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
+            Route::post('/transaction/histories', [UserTransactionHistoryController::class, 'transactionHistoryAdmin']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
             Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
