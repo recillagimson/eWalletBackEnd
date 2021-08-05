@@ -24,13 +24,14 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
 
     public function createTransaction(string $userId, string $refNo, string $productCode, string $productName,
                                       string $recipientMobileNumber, float $amount, Carbon $transactionDate,
-                                      string $transactionCategoryId, string $userCreated): OutBuyLoad
+                                      string $transactionCategoryId, string $type, string $userCreated): OutBuyLoad
     {
         $data = [
             'user_account_id' => $userId,
             'reference_number' => $refNo,
             'product_code' => $productCode,
             'product_name' => $productName,
+            'topup_type' => $type,
             'recipient_mobile_number' => $recipientMobileNumber,
             'total_amount' => $amount,
             'transaction_date' => $transactionDate,
