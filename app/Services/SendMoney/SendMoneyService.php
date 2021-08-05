@@ -250,7 +250,7 @@ class SendMoneyService implements ISendMoneyService
             $username => $fillRequest[$username],
             'message' => $fillRequest['message'],
             'reference_number' =>  $fillRequest['refNo'],
-            'total_amount' =>  number_format($fillRequest['amount'] + $this->getServiceFee($user, true), 2),
+            'total_amount' =>  $fillRequest['amount'] + $this->getServiceFee($user, true),
             'transaction_date' => Carbon::now()
         ];
     }
