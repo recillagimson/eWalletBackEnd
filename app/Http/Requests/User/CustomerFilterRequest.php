@@ -36,7 +36,7 @@ class CustomerFilterRequest extends FormRequest
             ],
             'filter_by' => [
                 'nullable',
-                'in:CUSTOMER_ID, CUSTOMER_NAME, TYPE, STATUS'
+                'in:CUSTOMER_ID, CUSTOMER_NAME, TIER, STATUS'
             ],
             'filter_value' => [
                 'required_with:filter_by',            ]
