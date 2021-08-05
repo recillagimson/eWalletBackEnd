@@ -34,6 +34,7 @@ class OutBuyLoad extends Model
         'provider',
         'product_code',
         'product_name',
+        'topup_type',
         'transaction_response',
         'status',
         'user_created',
