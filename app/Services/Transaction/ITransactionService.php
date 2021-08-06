@@ -19,4 +19,6 @@ interface ITransactionService
     public function generateTransactionHistory(string $userAccountId, string $dateFrom, string $dateTo);
 
     public function downloadCountTotalAmountEachUserCSV(object $request);
+
+    public function getTransactionHistoryAdmin(array $attr, bool $paginated = true);
 }

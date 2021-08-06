@@ -39,8 +39,8 @@ class UserTransactionHistoryController extends Controller
     }
 
     public function transactionHistoryAdmin(Request $request) {
-        $records = $this->userTransactionHistory->getTransactionHistoryAdmin($request->all());
-        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
+        $records = $this->transactionService->getTransactionHistoryAdmin($request->all());
+        return $this->responseService->successResponse($records, SuccessMessages::success);
     }
 
     public function show(string $id) {
