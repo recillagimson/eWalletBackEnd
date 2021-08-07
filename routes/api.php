@@ -217,7 +217,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
 
         Route::prefix('/user_accounts')->group(function (){
-            Route::get('/', [UserAccountController::class, 'index']);
+            Route::post('/', [UserAccountController::class, 'index']);
             Route::get('/{id}', [UserAccountController::class, 'show']);
 
             Route::post('/{id}/supervisorUpdateProfile', [UserProfileController::class, 'supervisorUpdateProfile']);
@@ -245,6 +245,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
+            Route::post('/transaction/histories', [UserTransactionHistoryController::class, 'transactionHistoryAdmin']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
             Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
@@ -259,19 +260,26 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::prefix('/buy/load')->name('buy.load.')->group(function () {
             Route::post('/', [AtmController::class, 'topupLoad'])->name('top.up.load');
-            Route::post('/validate', [AtmController::class, 'validateLoadTopup'])->name('validate.load.top.up');
+            Route::post('/validate', [AtmController::class, 'validateTopup'])->name('validate.load.top.up');
             Route::post('/products', [AtmController::class, 'getProductsByProvider'])->name('get.products.by.provider');
             Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
         });
 
-        Route::prefix('/address')->group(function() {
+        Route::prefix('/buy/epins')->name('buy.epins.')->group(function () {
+            Route::post('/', [AtmController::class, 'topupEPins'])->name('top.up.load');
+            Route::post('/validate', [AtmController::class, 'validateTopup'])->name('validate.load.top.up');
+            Route::get('/products', [AtmController::class, 'getEpinProducts'])->name('get.products.by.provider');
+            Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
+        });
+
+        Route::prefix('/address')->group(function () {
             Route::get('/regions', [RegionController::class, 'index']);
             Route::post('/provinces', [ProvinceController::class, 'getProvinces']);
             Route::post('/municipalities', [MunicipalityController::class, 'getMunicipalities']);
             Route::post('/barangays', [BarangayController::class, 'getBarangays']);
         });
 
-        Route::prefix('/bpi')->group(function() {
+        Route::prefix('/bpi')->group(function () {
             Route::post('/auth', [BPIController::class, 'bpiAuth']);
             Route::post('/accounts', [BPIController::class, 'getAccounts']);
             Route::post('/fundtopup', [BPIController::class, 'fundTopUp']);
