@@ -28,6 +28,7 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Carbon\Carbon;
 use App\Traits\UserHelpers;
+use DB;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -117,22 +118,28 @@ class SendMoneyService implements ISendMoneyService
 
         $this->checkMonthlyLimitForSender($senderAccount, $fillRequest);
         $this->checkMonthlyLimitForReceiver($receiverAccount, $fillRequest);
+      
+        DB::beginTransaction();
+            try {
+                $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
+                $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
+                $outSendMoney = $this->outSendMoney($senderID, $receiverID, $fillRequest, $user);
+                $inReceiveMoney = $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
 
-        $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
-        $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
+                $this->subtractSenderBalance($senderID, $fillRequest, $user);
+                $this->addReceiverBalance($receiverID, $fillRequest, $user);
+                $this->logHistories($senderID, $receiverID, $fillRequest);
+                $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest, $user);
+                $this->senderNotification($user, $username, $fillRequest, $receiverID, $senderID);
+                $this->recipientNotification($receiverUser, $username, $fillRequest, $senderID, $receiverID);
+                
+                DB::commit();
+                return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username, $user);
 
-        $outSendMoney = $this->outSendMoney($senderID, $receiverID, $fillRequest, $user);
-        $inReceiveMoney = $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
-
-        $this->subtractSenderBalance($senderID, $fillRequest, $user);
-        $this->addReceiverBalance($receiverID, $fillRequest, $user);
-
-        $this->logHistories($senderID, $receiverID, $fillRequest);
-        $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest, $user);
-        $this->senderNotification($user, $username, $fillRequest, $receiverID, $senderID);
-        $this->recipientNotification($receiverUser, $username, $fillRequest, $senderID, $receiverID);
-
-        return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username, $user);
+            } catch (\Exception $e) {
+                DB::rollBack();
+            }
+      
     }
 
 
@@ -199,7 +206,6 @@ class SendMoneyService implements ISendMoneyService
     {
         $qrTransaction = $this->qrTransactions->get($id);
         if (!$qrTransaction) $this->invalidQr();
-
         $user = $this->userAccounts->get($qrTransaction->user_account_id);
         if (!$user) $this->invalidAccount();
 
@@ -368,9 +374,7 @@ class SendMoneyService implements ISendMoneyService
             'reference_number' => $fillRequest['refNo'],
             'amount' => $fillRequest['amount'],
             'service_fee' => $this->getServiceFee($user, true),
-            // 'service_fee_id' => '',
             'total_amount' => $fillRequest['amount'] + $this->getServiceFee($user, true),
-            // 'purpose_of_transfer_id' => '',
             'message' => $fillRequest['message'],
             'status' => 'SUCCESS',
             'transaction_date' => date('Y-m-d H:i:s'),
