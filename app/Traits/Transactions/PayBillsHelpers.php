@@ -23,6 +23,7 @@ use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithUserErrors;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
 
@@ -70,27 +71,35 @@ trait PayBillsHelpers
      */
     private function saveTransaction(UserAccount $user, string $billerCode, $response, $data)
     {
-        $this->subtractUserBalance($user, $billerCode, $response);
-        $serviceFee = $this->getServiceFee($user);
-        $outPayBills = $this->outPayBills($user, $billerCode, $response);
+        DB::beginTransaction();
+            try {
+                $serviceFee = $this->getServiceFee($user);
+                $outPayBills = $this->outPayBills($user, $billerCode, $response);
+                $userDetail  = $this->userDetailRepository->getByUserId($user->id);
 
-        $userDetail  = $this->userDetailRepository->getByUserId($user->id);
-        $fillRequest['serviceFee'] = $response['data']['otherCharges'] + $serviceFee;
-        $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($user->id), 2);
-        $fillRequest['amount'] = $response['data']['amount'];
-        $fillRequest['refNo'] = $outPayBills->reference_number;
-        $fillRequest['biller'] = $outPayBills->billers_name;
+                $fillRequest['serviceFee'] = $response['data']['otherCharges'] + $serviceFee;
+                $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($user->id), 2);
+                $fillRequest['amount'] = $response['data']['amount'];
+                $fillRequest['refNo'] = $outPayBills->reference_number;
+                $fillRequest['biller'] = $outPayBills->billers_name;
 
-        $usernameField = $this->getUsernameFieldByAvailability($user);
-        $username = $this->getUsernameByField($user, $usernameField);
-        $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
-        $notifService->payBillsNotification($username, $fillRequest, $userDetail->first_name);
+                $usernameField = $this->getUsernameFieldByAvailability($user);
+                $username = $this->getUsernameByField($user, $usernameField);
+                $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
+                $notifService->payBillsNotification($username, $fillRequest, $userDetail->first_name);
 
-        $description = 'Hi Squidee! Your payment of P' . $fillRequest['amount'] . ' to ' . $fillRequest['biller'] . ' with fee ' . $fillRequest['serviceFee'] . '. has been successfully processed on ' . date('Y-m-d H:i:s') . ' with Ref No. ' . $fillRequest['refNo'] . '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
-        $title = 'SquidPay - Pay Bills Notification';
-        $this->insertNotification($user, $title, $description);
+                $description = 'Hi Squidee! Your payment of P' . $fillRequest['amount'] . ' to ' . $fillRequest['biller'] . ' with fee ' . $fillRequest['serviceFee'] . '. has been successfully processed on ' . date('Y-m-d H:i:s') . ' with Ref No. ' . $fillRequest['refNo'] . '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
+                $title = 'SquidPay - Pay Bills Notification';
+                
+                $this->subtractUserBalance($user, $billerCode, $response);
+                $this->insertNotification($user, $title, $description);
 
-        return $outPayBills;
+                DB::commit();    
+                return $outPayBills;
+            } catch (\Exception $e) {
+                DB::rollBack();
+            }
+
     }
 
 
