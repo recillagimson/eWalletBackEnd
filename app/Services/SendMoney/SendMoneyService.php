@@ -118,7 +118,7 @@ class SendMoneyService implements ISendMoneyService
 
         $this->checkMonthlyLimitForSender($senderAccount, $fillRequest);
         $this->checkMonthlyLimitForReceiver($receiverAccount, $fillRequest);
-      
+
         DB::beginTransaction();
             try {
                 $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
@@ -132,14 +132,14 @@ class SendMoneyService implements ISendMoneyService
                 $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest, $user);
                 $this->senderNotification($user, $username, $fillRequest, $receiverID, $senderID);
                 $this->recipientNotification($receiverUser, $username, $fillRequest, $senderID, $receiverID);
-                
+
                 DB::commit();
                 return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username, $user);
 
             } catch (\Exception $e) {
                 DB::rollBack();
             }
-      
+
     }
 
 
@@ -170,7 +170,7 @@ class SendMoneyService implements ISendMoneyService
 
         $this->checkMonthlyLimitForSender($senderAccount, $fillRequest);
         $this->checkMonthlyLimitForReceiver($receiverAccount, $fillRequest);
-   
+
         return $this->sendMoneyReview($receiverID);
     }
 
