@@ -43,7 +43,7 @@ class TempUserDetailService implements ITempUserDetailService
     public function findById(string $id) 
     {
 
-        $result = $this->tempUserDetail->get($id);
+        $result = $this->tempUserDetail->findById($id);
 
         if(!$result) {
             throw ValidationException::withMessages([

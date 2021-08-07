@@ -40,7 +40,7 @@ class CurrencyController extends Controller
      */
     public function index(): JsonResponse
     {
-        $records = $this->currencyRepository->getAll();
+        $records = $this->currencyRepository->getAll()->sortBy('description');
 
         // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
