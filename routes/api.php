@@ -274,7 +274,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::prefix('/address')->group(function () {
             Route::get('/regions', [RegionController::class, 'index']);
-            Route::post('/provinces', [ProvinceController::class, 'getProvinces']);
+            Route::get('/provinces', [ProvinceController::class, 'getProvinces']);
             Route::post('/municipalities', [MunicipalityController::class, 'getMunicipalities']);
             Route::post('/barangays', [BarangayController::class, 'getBarangays']);
         });
