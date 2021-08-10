@@ -167,4 +167,14 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('is_active','=',1)->count('*');
     }
 
+    public function getUserByRSBAWithRelations(string $RSBSANo) {
+        $record = $this->model->with(['profile', 'user_balance_info'])->where('rsbsa_number', $RSBSANo)->first();
+
+        if($record) {
+            return $record;
+        }
+
+        $this->userAccountNotFound();
+    }
+
 }

@@ -245,7 +245,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
-            Route::post('/transaction/histories', [UserTransactionHistoryController::class, 'transactionHistoryAdmin']);
+            Route::post('/transaction/histories', [UserTransactionHistoryController::class, '
+            ']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
             Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
@@ -403,6 +404,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/report')->middleware(['decrypt.request'])->group(function() {
         Route::post('/biller', [ReportController::class, 'billerReport']);
     });
+
+    Route::prefix('/farmer')->middleware(['decrypt.request'])->group(function() {
+        Route::post('/scanqr', [FarmerController::class, 'getFarmerViaRSVA']);
+    });
+    
 });
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {

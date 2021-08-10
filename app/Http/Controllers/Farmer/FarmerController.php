@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Farmer;
 
-use Request;
+use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Farmer\FarmerIdUploadRequest;
@@ -12,8 +12,8 @@ use App\Http\Requests\Farmer\FarmerSelfieUploadRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
-use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
 use App\Services\Utilities\Verification\IVerificationService;
+use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
 
 class FarmerController extends Controller
 {
@@ -59,5 +59,10 @@ class FarmerController extends Controller
     {
         $record = $this->farmerProfileService->upgradeFarmerToSilver($request->all(), request()->user()->id);
         return $this->responseService->successResponse($record, SuccessMessages::updateUserSuccessful);
+    }
+    
+    public function getFarmerViaRSVA(Request $request) {
+        $record = $this->userAccountRepository->getUserByRSBAWithRelations($request->rsbsa_number);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 }
