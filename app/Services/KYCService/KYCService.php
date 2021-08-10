@@ -11,11 +11,12 @@ use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\Errors\WithKYCErrors;
+use App\Traits\Errors\WithTransactionErrors;
 use Carbon\Carbon;
 
 class KYCService implements IKYCService
 {   
-    use WithKYCErrors;
+    use WithKYCErrors, WithTransactionErrors;
     private ICurlService $curlService;
     private IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     private IUserAccountRepository $userAccountRepository;
@@ -202,40 +203,65 @@ class KYCService implements IKYCService
     }
 
     public function verify(array $attr) {
-        $url = env('KYC_APP_VERIFY_URL');
-        $headers = $this->getAuthorizationHeaders();
+        \DB::beginTransaction();
+        try {
+            $url = env('KYC_APP_VERIFY_URL');
+            $headers = $this->getAuthorizationHeaders();
 
-        // $filename = Str::random(20);
-        // $tempImage = tempnam(sys_get_temp_dir(), $filename);
-        // copy($selfie_s3, $tempImage);
+            $data = [
+                'callbackURL' => env('KYC_APP_CALLBACK_URL'),
+                'name' => $attr['name'],
+                'idNumber' => $attr['id_number'],
+                'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
+                'applicationId' => Str::uuid(),
+                'enrol' => 'no',
+                'selfie' => new \CURLFILE($attr['selfie']->getPathname()),
+                'idFront' => new \CURLFILE($attr['nid_front']->getPathname()),
+            ];
 
-        // dd($attr['selfie']->getPathname());
-        // dd($attr);
+            $response = $this->curlService->curlPost($url, $data, $headers);
 
-        $data = [
-            'callbackURL' => env('KYC_APP_CALLBACK_URL'),
-            'name' => $attr['name'],
-            'idNumber' => $attr['id_number'],
-            'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
-            'applicationId' => Str::uuid(),
-            'enrol' => 'no',
-            'selfie' => new \CURLFILE($attr['selfie']->getPathname()),
-            'idFront' => new \CURLFILE($attr['nid_front']->getPathname()),
-        ];
+            if($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
 
-        $response = $this->curlService->curlPost($url, $data, $headers);
+                $record = $this->kycRepository->create([
+                    'user_account_id' => $attr['user_account_id'],
+                    'request_id' => $response['result']->requestId,
+                    'application_id' => $response['result']->applicationId,
+                    'hv_response' => '',
+                    'hv_result' => '',
+                ]);
 
-        if($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
+                // WAIT FOR CALLBACK
+                sleep(5);
 
-            $record = $this->kycRepository->create([
-                'user_account_id' => $attr['user_account_id'],
-                'request_id' => $response['result']->requestId,
-                'application_id' => $response['result']->applicationId,
-                'hv_response' => '',
-                'hv_result' => '',
-            ]);
+                $record = $this->kycRepository->findByRequestId($record->request_id);
+                \DB::commit();
+                return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+            }
+
+            return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
+
+        } catch(\Exception $err) {
+            \DB::rollBack();
+            $this->kycVerifyFailed();
         }
-        dd($response);
+    }
+
+    public function handleCallback(array $attr) {
+        if($attr && isset($attr['result']) && isset($attr['result']['requestId'])) {
+            $record = $this->kycRepository->findByRequestId($attr['result']['requestId']);
+            if($record) {
+                $this->kycRepository->update($record, [
+                    'hv_response' => json_encode($attr),
+                    'hv_result' => $attr['result']['unifiedResult']['channel'],
+                    'status' => 'CALLBACK_RECEIVED'
+                ]);
+            }
+        }
+
+        return response()->json([
+            'message' => 'Callback Received'
+        ], 200);
     }
 
 }

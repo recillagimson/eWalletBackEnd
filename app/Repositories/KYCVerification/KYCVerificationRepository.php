@@ -11,4 +11,8 @@ class KYCVerificationRepository extends Repository implements IKYCVerificationRe
     {
         parent::__construct($model);
     }
+
+    public function findByRequestId(string $requestId) {
+        return $this->model->where('request_id', $requestId)->first();
+    }
 }

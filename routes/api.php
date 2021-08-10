@@ -416,4 +416,7 @@ Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
     Route::get('/postback', [AddMoneyController::class, 'postBack']);
 });
 
+Route::prefix('/hv')->group(function() {
+    Route::post('/callback', [KYCController::class, 'handleCallback']);
+});
 

@@ -12,4 +12,5 @@ interface IKYCService {
     public function matchOCR(array $attr);
     public function isEKYCValidated(array $params);
     public function verify(array $attr);
+    public function handleCallback(array $attr);
 }
