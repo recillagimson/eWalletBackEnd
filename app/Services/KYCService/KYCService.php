@@ -3,12 +3,11 @@
 namespace App\Services\KYCService;
 
 use App\Enums\SuccessMessages;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
-use Illuminate\Http\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\Errors\WithKYCErrors;
@@ -21,13 +20,15 @@ class KYCService implements IKYCService
     private IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     private IUserAccountRepository $userAccountRepository;
     private IResponseService $responseService;
+    private IKYCVerificationRepository $kycRepository;
 
-    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService)
+    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository)
     {
         $this->curlService = $curlService;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
         $this->userAccountRepository = $userAccountRepository;
         $this->responseService = $responseService;
+        $this->kycRepository = $kycRepository;
     }
 
     private function getAuthorizationHeaders(): array
@@ -198,6 +199,43 @@ class KYCService implements IKYCService
 
         // CANT READ OCR RESPONSE
         return false;
+    }
+
+    public function verify(array $attr) {
+        $url = env('KYC_APP_VERIFY_URL');
+        $headers = $this->getAuthorizationHeaders();
+
+        // $filename = Str::random(20);
+        // $tempImage = tempnam(sys_get_temp_dir(), $filename);
+        // copy($selfie_s3, $tempImage);
+
+        // dd($attr['selfie']->getPathname());
+        // dd($attr);
+
+        $data = [
+            'callbackURL' => env('KYC_APP_CALLBACK_URL'),
+            'name' => $attr['name'],
+            'idNumber' => $attr['id_number'],
+            'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
+            'applicationId' => Str::uuid(),
+            'enrol' => 'no',
+            'selfie' => new \CURLFILE($attr['selfie']->getPathname()),
+            'idFront' => new \CURLFILE($attr['nid_front']->getPathname()),
+        ];
+
+        $response = $this->curlService->curlPost($url, $data, $headers);
+
+        if($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
+
+            $record = $this->kycRepository->create([
+                'user_account_id' => $attr['user_account_id'],
+                'request_id' => $response['result']->requestId,
+                'application_id' => $response['result']->applicationId,
+                'hv_response' => '',
+                'hv_result' => '',
+            ]);
+        }
+        dd($response);
     }
 
 }

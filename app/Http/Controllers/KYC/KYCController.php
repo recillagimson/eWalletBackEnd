@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers\KYC;
 
-use Carbon\Carbon;
-use Illuminate\Http\File;
-use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KYC\OCRRequest;
-use Illuminate\Support\Facades\Storage;
 use App\Services\KYCService\IKYCService;
 use App\Http\Requests\KYC\MatchOCRRequest;
 use App\Http\Requests\KYC\FaceMatchRequest;
-use League\CommonMark\Inline\Element\Image;
 use App\Http\Requests\KYC\ExpirationCheckRequest;
+use App\Http\Requests\KYC\VerifyRequest;
 use App\Services\Utilities\Responses\IResponseService;
 
 class KYCController extends Controller
@@ -45,5 +41,9 @@ class KYCController extends Controller
 
     public function matchOCR(MatchOCRRequest $request) {
         return $this->kycService->matchOCR($request->all());
+    }
+
+    public function verify(VerifyRequest $request) {
+        return $this->kycService->verify($request->all());
     }
 }
