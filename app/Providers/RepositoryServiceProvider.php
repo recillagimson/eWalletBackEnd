@@ -104,6 +104,8 @@ use App\Repositories\Address\Municipality\MunicipalityRepository;
 use App\Repositories\Address\Municipality\IMunicipalityRepository;
 use App\Repositories\Address\Barangay\BarangayRepository;
 use App\Repositories\Address\Barangay\IBarangayRepository;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
+use App\Repositories\KYCVerification\KYCVerificationRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -221,6 +223,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //In Add Money BPI Repositories
         $this->app->bind(IInAddMoneyBPIRepository::class, InAddMoneyBPIRepository::class);
+
+        // KYC Verification
+        $this->app->bind(IKYCVerificationRepository::class, KYCVerificationRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
