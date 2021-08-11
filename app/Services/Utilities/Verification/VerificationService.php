@@ -6,6 +6,7 @@ use App\Enums\eKYC;
 use App\Enums\SquidPayModuleTypes;
 use App\Repositories\IdType\IIdTypeRepository;
 use App\Repositories\Tier\ITierApprovalCommentRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
@@ -25,6 +26,7 @@ class VerificationService implements IVerificationService
     public IIdTypeRepository $iIdTypeRepository;
     public ITierApprovalCommentRepository $tierApprovalComment;
     private IKYCService $kycService;
+    private IUserAccountRepository $userAccountService;
 
     public function __construct(IUserPhotoRepository $userPhotoRepository,
                                 IUserDetailRepository $userDetailRepository,
@@ -32,7 +34,8 @@ class VerificationService implements IVerificationService
                                 ILogHistoryService $logHistoryService,
                                 IIdTypeRepository $iIdTypeRepository,
                                 ITierApprovalCommentRepository $iTierApprovalCommentRepository,
-                                IKYCService $kycService)
+                                IKYCService $kycService,
+                                IUserAccountRepository $userAccountService)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -41,6 +44,7 @@ class VerificationService implements IVerificationService
         $this->iIdTypeRepository = $iIdTypeRepository;
         $this->iTierApprovalCommentRepository = $iTierApprovalCommentRepository;
         $this->kycService = $kycService;
+        $this->userAccountService = $userAccountService;
     }
 
     public function createSelfieVerification(array $data, ?string $userAccountId = null)
@@ -48,6 +52,8 @@ class VerificationService implements IVerificationService
         // Delete existing first
         // Get details first
         $userDetails = $this->userDetailRepository->getByUserId($userAccountId ? $userAccountId : request()->user()->id);
+        $userAccount = $this->userAccountService->get($userAccountId);
+
         // If no user Details
         if(!$userDetails) {
             throw ValidationException::withMessages([
@@ -85,7 +91,19 @@ class VerificationService implements IVerificationService
         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadSelfiePhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
 
 
-        return $record;
+        $res = $this->kycService->verify([
+            'dob' => $userDetails['birth_date'],
+            'name' => $userDetails['first_name'] . " " . $userDetails['last_name'],
+            'id_number' => $userAccount['rsbsa_number'],
+            'user_account_id' => $userAccountId,
+            'selfie' => $data['selfie_photo'],
+            'nid_front' => $data['id_photo'],
+        ], false);
+
+        return [
+            'selfie_record' => $record,
+            'dedupe' => $res
+        ];
         // return to controller all created records
     }
 

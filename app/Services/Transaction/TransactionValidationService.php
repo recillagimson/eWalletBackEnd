@@ -112,20 +112,21 @@ class TransactionValidationService implements ITransactionValidationService
                 $totalTransactionCurrentMonth = 0;
 
                 // OUT TRANSACTIONS
-                if($transactionCategory->transaction_type === 'NEGATIVE') {
+                // if($transactionCategory->transaction_type === 'NEGATIVE') {
                     $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
                     $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
                     $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
                     $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
-                    $totalTransactionCurrentMonth = $buyLoad + $payBills + $send2Banks + $sendMoney;
+                    $out = $buyLoad + $payBills + $send2Banks + $sendMoney;
 
-                } else {
+                // } else {
                     $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
                     $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
-                    $totalTransactionCurrentMonth = $addMoneyFromBank + $receiveMoney;
-                }
+                    $in = $addMoneyFromBank + $receiveMoney;
+                    $totalTransactionCurrentMonth = $out + $in;
+                // }
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
