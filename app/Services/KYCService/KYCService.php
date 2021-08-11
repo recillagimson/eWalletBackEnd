@@ -239,7 +239,8 @@ class KYCService implements IKYCService
                 }
                 return $record;
             } else {
-                \DB::rollBack();
+                // \DB::rollBack();
+                \DB::commit();
                 // ERROR
                 if($from_api) {
                     // return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
