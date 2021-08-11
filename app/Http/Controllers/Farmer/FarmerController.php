@@ -48,7 +48,7 @@ class FarmerController extends Controller
 
     public function farmerVerification(FarmerVerificationRequest $request) {
         // $record = $this->farmerAccountService->getUserAccountByAccountNumberAndRSBSANo($request->all());
-        $record = $this->userAccountRepository->getUserAccountByAccountNumberAndRSBSANo($request->account_number, $request->rsbsa_number);
+        $record = $this->userAccountRepository->getUserAccountByRSBSANo($request->rsbsa_number);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 

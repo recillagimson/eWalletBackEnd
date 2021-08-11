@@ -24,7 +24,7 @@ class FarmerVerificationRequest extends FormRequest
     public function rules()
     {
         return [
-            'account_number' => 'required|exists:user_accounts,account_number',
+            // 'account_number' => 'required|exists:user_accounts,account_number',
             'rsbsa_number' => 'required'
         ];
     }
