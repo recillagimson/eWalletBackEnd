@@ -221,25 +221,29 @@ class KYCService implements IKYCService
 
             $response = $this->curlService->curlPost($url, $data, $headers);
 
+            $record = $this->kycRepository->create([
+                'user_account_id' => $attr['user_account_id'],
+                'request_id' => isset($response['result']) ? $response['result']->requestId : $response['requestId'],
+                'application_id' => isset($response['result']) ? $response['result']->applicationId : $response['applicationId'],
+                'hv_response' => '',
+                'hv_result' => '',
+            ]);
+
             if($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
-
-                $record = $this->kycRepository->create([
-                    'user_account_id' => $attr['user_account_id'],
-                    'request_id' => $response['result']->requestId,
-                    'application_id' => $response['result']->applicationId,
-                    'hv_response' => '',
-                    'hv_result' => '',
-                ]);
-
                 // WAIT FOR CALLBACK
                 sleep(5);
-
                 $record = $this->kycRepository->findByRequestId($record->request_id);
                 \DB::commit();
                 return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+            } else {
+                \DB::rollBack();
+                // ERROR
+                return $this->responseService->successResponse([
+                    'statusCode' => $response['statusCode'],
+                    'message' => $response['error'],
+                    'status' => $response['status']
+                ], SuccessMessages::success);
             }
-
-            return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
 
         } catch(\Exception $err) {
             \DB::rollBack();
@@ -253,7 +257,7 @@ class KYCService implements IKYCService
             if($record) {
                 $this->kycRepository->update($record, [
                     'hv_response' => json_encode($attr),
-                    'hv_result' => $attr['result']['unifiedResult']['channel'],
+                    'hv_result' => isset($attr['result']['unifiedResult']['channel']) ? $attr['result']['unifiedResult']['channel'] : $attr['error'],
                     'status' => 'CALLBACK_RECEIVED'
                 ]);
             }
