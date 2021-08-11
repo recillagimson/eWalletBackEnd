@@ -112,11 +112,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Merchat Verification of Selfie
     Route::middleware(['require.user.token'])->post('/merchant/selfie/verification', [MerchantController::class, 'selfieVerification']);
 
-    Route::middleware(['decrypt.request'])->prefix('ekyc')->group(function() {
+    Route::prefix('ekyc')->group(function() {
         Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
         Route::post('ocr', [KYCController::class, 'initOCR'])->name('ocr');
-        Route::post('expiration/check', [KYCController::class, 'checkIDExpiration'])->name('expiration.check');
-        Route::post('ocr/match', [KYCController::class, 'matchOCR'])->name('ocr.match');
     });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
@@ -217,7 +215,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
 
         Route::prefix('/user_accounts')->group(function (){
-            Route::post('/', [UserAccountController::class, 'index']);
+            Route::get('/', [UserAccountController::class, 'index']);
             Route::get('/{id}', [UserAccountController::class, 'show']);
 
             Route::post('/{id}/supervisorUpdateProfile', [UserProfileController::class, 'supervisorUpdateProfile']);
@@ -245,7 +243,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
-            Route::post('/transaction/histories', [UserTransactionHistoryController::class, 'transactionHistoryAdmin']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
             Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
@@ -260,26 +257,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::prefix('/buy/load')->name('buy.load.')->group(function () {
             Route::post('/', [AtmController::class, 'topupLoad'])->name('top.up.load');
-            Route::post('/validate', [AtmController::class, 'validateTopup'])->name('validate.load.top.up');
+            Route::post('/validate', [AtmController::class, 'validateLoadTopup'])->name('validate.load.top.up');
             Route::post('/products', [AtmController::class, 'getProductsByProvider'])->name('get.products.by.provider');
             Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
         });
 
-        Route::prefix('/buy/epins')->name('buy.epins.')->group(function () {
-            Route::post('/', [AtmController::class, 'topupEPins'])->name('top.up.load');
-            Route::post('/validate', [AtmController::class, 'validateTopup'])->name('validate.load.top.up');
-            Route::get('/products', [AtmController::class, 'getEpinProducts'])->name('get.products.by.provider');
-            Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
-        });
-
-        Route::prefix('/address')->group(function () {
+        Route::prefix('/address')->group(function() {
             Route::get('/regions', [RegionController::class, 'index']);
             Route::post('/provinces', [ProvinceController::class, 'getProvinces']);
             Route::post('/municipalities', [MunicipalityController::class, 'getMunicipalities']);
             Route::post('/barangays', [BarangayController::class, 'getBarangays']);
         });
 
-        Route::prefix('/bpi')->group(function () {
+        Route::prefix('/bpi')->group(function() {
             Route::post('/auth', [BPIController::class, 'bpiAuth']);
             Route::post('/accounts', [BPIController::class, 'getAccounts']);
             Route::post('/fundtopup', [BPIController::class, 'fundTopUp']);
@@ -324,7 +314,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
-        Route::post('/', [TierApprovalController::class, 'index']);
+        Route::get('/', [TierApprovalController::class, 'index']);
         // Route::post('/', [TierApprovalController::class, 'store']);
         Route::get('/{tierApproval}', [TierApprovalController::class, 'show'])->name('show');
         Route::put('/{tierApproval}', [TierApprovalController::class, 'update'])->name('update');

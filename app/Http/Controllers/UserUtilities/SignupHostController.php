@@ -40,7 +40,7 @@ class SignupHostController extends Controller
      */
     public function index(): JsonResponse
     {
-        $records = $this->signupHostRepository->getAll()->sortBy('description');
+        $records = $this->signupHostRepository->getAll();
 
         // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);

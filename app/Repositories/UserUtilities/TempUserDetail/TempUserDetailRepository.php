@@ -20,15 +20,13 @@ class TempUserDetailRepository extends Repository implements ITempUserDetailRepo
 
     public function findById($id)
     {
-        $result = $this->model->with('latestTierApproval:id,user_account_id,status,approved_by,approved_date')->find($id);
+        $result = $this->model->find($id);
         
         return $result;
     }
 
     public function getAllPaginated($perPage = 10) {
-        $result = $this->model->with([
-            'user:id,account_number,tier_id', 
-        ])->orderBy('created_at', 'DESC')->paginate($perPage);
+        $result = $this->model->orderBy('created_at', 'DESC')->paginate($perPage);
         
         return $result;
     }

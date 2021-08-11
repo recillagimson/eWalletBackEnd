@@ -40,43 +40,10 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
     }
 
     public function list(array $attr) {
-        $from = Carbon::now()->subDays(30)->format('Y-m-d');
-        $to = Carbon::now()->format('Y-m-d');
         $records = $this->model->with(['user_account', 'user_detail']);
 
-        if(isset($attr['from']) && isset($attr['to'])) {
-            $from = $attr['from'];
-            $to = $attr['to'];
-        }
-        
-        $records = $records->whereHas('user_account', function($query) use($from, $to) {
-            $query->whereBetween('created_at', [$from, $to]);
-        });
-        
-        if(isset($attr['filter_by']) && isset($attr['filter_value'])) {
-            $filter_by = $attr['filter_by'];
-            $filter_value = $attr['filter_value'];
-
-            // IF CUSTOMER NAME
-            if($filter_by === 'CUSTOMER_NAME') {
-                $records = $records->whereHas('user_detail', function($query) use($filter_value) {
-                    $query->where(function($q) use($filter_value) {
-                        $q->where('first_name', 'LIKE', '%' . $filter_value . '%')
-                        ->orWhere('middle_name', 'LIKE', '%' . $filter_value . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%');
-                    });
-                });
-            }
-            // IF CUSTOMER ID 
-            else if($filter_by === 'CUSTOMER_ID'){
-                $records = $records->whereHas('user_account', function($query) use($filter_value) {
-                    $query->where('account_number', $filter_value);
-                });
-            } 
-            // IF STATUS
-            else if($filter_by === 'STATUS') {
-                $records = $records->where('status', $filter_value);
-            }
+        if(isset($attr['status'])) {
+            $records = $records->where('status', $attr['status']);
         }
 
         return $records->paginate();

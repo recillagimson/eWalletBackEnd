@@ -9,7 +9,6 @@ use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
 use App\Mail\LoginVerification;
-use App\Mail\PayBills\PayBillsNotification;
 use App\Mail\Send2Bank\Send2BankReceipt;
 use App\Mail\Send2Bank\SenderNotification;
 use App\Mail\SendMoney\SendMoneyRecipientNotification;
@@ -211,7 +210,7 @@ class EmailService implements IEmailService
     public function payBillsNotification(string $to, array $fillRequest, string $biller)
     {
         $subject = 'SquidPay - Pay Bills Notification';
-        $template = new PayBillsNotification($fillRequest, $biller);
+        $template = new SendMoneySenderNotification($fillRequest, $biller);
         $this->sendMessage($to, $subject, $template);
     }
 
