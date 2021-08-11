@@ -66,7 +66,6 @@ class ErrorCodes
 
     // eKYC - 600
     const ocrMismatch = 601;
-    const verifyRequestFailed = 602;
 
 
 }

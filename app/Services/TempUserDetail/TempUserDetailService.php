@@ -2,21 +2,14 @@
 
 namespace App\Services\TempUserDetail;
 
-use App\Enums\OtpTypes;
-use App\Models\TempUserDetail;
-use App\Traits\Errors\WithAuthErrors;
-use App\Traits\Errors\WithUserErrors;
-use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use App\Enums\TempUserDetailStatuses;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Traits\Errors\WithAuthErrors;
+use App\Traits\Errors\WithUserErrors;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
-use App\Enums\TempUserDetailStatuses;
 
 class TempUserDetailService implements ITempUserDetailService
 {
@@ -36,16 +29,16 @@ class TempUserDetailService implements ITempUserDetailService
     public function getAllPaginated($perPage = 10)
     {
         $result = $this->tempUserDetail->getAllPaginated($perPage);
-        
+
         return $result;
     }
 
-    public function findById(string $id) 
+    public function findById(string $id)
     {
 
-        $result = $this->tempUserDetail->get($id);
+        $result = $this->tempUserDetail->findById($id);
 
-        if(!$result) {
+        if (!$result) {
             throw ValidationException::withMessages([
                 'user_not_found' => 'Temp User Detail not found'
             ]);
@@ -54,17 +47,17 @@ class TempUserDetailService implements ITempUserDetailService
         return $result;
     }
 
-    public function updateStatus(string $id, $status, $user) 
+    public function updateStatus(string $id, $status, $user)
     {
         $tempUserDetail = $this->findById($id);
 
-        if($tempUserDetail->status == TempUserDetailStatuses::approved) {
+        if ($tempUserDetail->status == TempUserDetailStatuses::approved) {
             throw ValidationException::withMessages([
                 'temp_user_already_solved' => 'Temp User Detail already resolved.'
             ]);
         }
 
-        if($tempUserDetail->status == TempUserDetailStatuses::denied) {
+        if ($tempUserDetail->status == TempUserDetailStatuses::denied) {
             throw ValidationException::withMessages([
                 'temp_user_already_declined' => 'Temp User Detail already declined.'
             ]);
@@ -96,9 +89,9 @@ class TempUserDetailService implements ITempUserDetailService
 
 
         $data['status'] = $status == 1 ? TempUserDetailStatuses::approved : TempUserDetailStatuses::denied;
-        
+
         $this->tempUserDetail->update($tempUserDetail, $data);
-        
+
         return $tempUserDetail;
     }
 }

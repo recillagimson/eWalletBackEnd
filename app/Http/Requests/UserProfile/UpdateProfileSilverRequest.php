@@ -4,9 +4,9 @@ namespace App\Http\Requests\UserProfile;
 
 use App\Enums\AccountTiers;
 use App\Rules\MobileNumber;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
-use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProfileSilverRequest  extends FormRequest
 {
@@ -58,8 +58,9 @@ class UpdateProfileSilverRequest  extends FormRequest
             'mother_maidenname'=>'required',
             'employer'=>['required', 'max:50'],
             'contact_no'=>['required', 'max:11',  new MobileNumber()],
+            //'ocr_response' => ['required']
         ];
-        
+
         $inputs = request()->input();
 
         // check if first time to upgrade to silver
@@ -68,8 +69,9 @@ class UpdateProfileSilverRequest  extends FormRequest
             $required_fields_default['id_photos_ids.*'] = ['required', 'exists:user_id_photos,id'];
             $required_fields_default['id_selfie_ids'] = ['required', 'array', 'min:1'];
             $required_fields_default['id_selfie_ids.*'] = ['required', 'exists:user_selfie_photos,id'];
+
         }
-        
+
         if(isset($inputs['birth_date'])) {
             $birthdate = Carbon::parse($inputs['birth_date']);
             $age = $birthdate->diffInYears(Carbon::now());

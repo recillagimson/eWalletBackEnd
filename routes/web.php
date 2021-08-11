@@ -1,10 +1,5 @@
 <?php
 
-use App\Models\BillerReport;
-use App\Models\DRCRProcedure;
-use App\Traits\LogHistory\LogHistory;
-use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,4 +10,3 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-

@@ -259,7 +259,8 @@ class DrcrMemoService implements IDrcrMemoService
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         }
         else if($params['type'] == 'API')  {
-            return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
+            $processed = $this->processData($data, true);
+            return $this->responseService->successResponse($processed, SuccessMessages::success);
         }
         else {
             Excel::store(new DRCRReport($data, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);

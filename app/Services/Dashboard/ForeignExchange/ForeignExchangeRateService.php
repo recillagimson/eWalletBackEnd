@@ -1,18 +1,18 @@
 <?php
 
 namespace App\Services\Dashboard\ForeignExchange;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Validation\ValidationException;
-use DB;
 use App\Enums\CurrencyRatesConfig;
-use Illuminate\Support\Str;
-
-//Models
 use App\Models\Admin\ForeignExchangeRate;
 use App\Models\UserUtilities\Currency;
+use App\Repositories\Repository;
+use DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+
+//Models
 
 //Repository
-use App\Repositories\Repository;
 
 class ForeignExchangeRateService extends Repository implements IForeignExchangeRateService
 {
@@ -34,19 +34,24 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
                 $rate['id'] = (string)Str::uuid();
                 $this->model->create($rate);
             }
-
         });
     }
 
     public function getForeignCurrencyRates()
     {
         $data = $this->model->all();
-        if($data->isEmpty()) {
+        if ($data->isEmpty()) {
             throw ValidationException::withMessages([
                 'foreign_exchange_rate_details' => "Foreign exchange rate details can't be found."
             ]);
         }
-        return $data;
+        return collect(CurrencyRatesConfig::currenciesArrangement)->map(function ($e) use ($data) {
+            foreach ($data as $value) {
+                if ($value['code'] == $e) {
+                    return $value;
+                }
+            }
+        });
     }
 
     private function mappedInBetweenStrings($data, $from, $to)
@@ -61,14 +66,19 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
         $from = '<div class="widget exchange-rates">';
         $to = '</div>';
         $exploded = explode('</i>', $this->mappedInBetweenStrings($data, $from, $to));
+        $peso = array(
+            'code' => 'PHP',
+            'name' => 'Philippine Peso',
+            'rate' => floatval($this->mappedInBetweenStrings($data, '"exchCalcMedium()">', '</span>'))
+        );
         unset($exploded[0]);
-        return collect($exploded)->map(function($value) {
+        return collect($exploded)->map(function ($value) {
             return array(
-               'code' => substr($value, 0, 3),
-               'name' => $this->getCurrencyDescription(substr($value, 0, 3)),
-               'rate' => floatval(explode('<td>',$value)[1])
-           );
-       });
+                'code' => substr($value, 0, 3),
+                'name' => $this->getCurrencyDescription(substr($value, 0, 3)),
+                'rate' => floatval(explode('<td>', $value)[1])
+            );
+        })->prepend($peso);
     }
 
     private function getCurrencyDescription($code)

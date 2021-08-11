@@ -4,11 +4,10 @@ namespace App\Repositories\UserAccount;
 
 use App\Models\UserAccount;
 use App\Repositories\Repository;
-use App\Traits\Errors\WithErrors;
 use App\Traits\Errors\WithUserErrors;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Carbon\Carbon;
 
 class UserAccountRepository extends Repository implements IUserAccountRepository
 {
@@ -25,19 +24,45 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getAdminUserBaseQuery()->get();
     }
 
-    public function getAllUsersPaginated($perPage)
+    public function getAllUsersPaginated($attributes, $perPage)
     {
-        $result = $this->model->with(['profile', 'tier', 'tierApprovals' => function($q) {
+        $result = $this->model;
+
+        if (isset($attributes['filter_by']) && isset($attributes['filter_value'])) {
+            $filter_by = $attributes['filter_by'];
+            $filter_value = $attributes['filter_value'];
+            // IF CUSTOMER NAME
+            if ($filter_by === 'CUSTOMER_NAME') {
+                $result = $result->whereHas('userDetail', function ($query) use ($filter_value) {
+                    $query->whereRaw("concat(first_name, ' ', middle_name, ' ', last_name)LIKE '%$filter_value%'");
+                });
+            } // IF CUSTOMER ID
+            else if ($filter_by === 'CUSTOMER_ID') {
+                $result = $result->where('account_number', $filter_value);
+            } // IF TIER
+            else if ($filter_by === 'TIER') {
+                $result = $result->whereHas('tier', function ($query) use ($filter_value) {
+                    $query->where('name', $filter_value);
+                });
+            } // IF STATUS
+            else if ($filter_by === 'STATUS') {
+                $result = $result->where('status', $filter_value);
+            }
+        }
+
+        if (isset($from) && isset($to)) {
+            $result = $result->whereBetween('created_at', [$attributes['from'], $attributes['to']]);
+        }
+
+        return $result->with(['profile', 'tier', 'tierApprovals' => function ($q) {
             return $q->where('status', '!=', 'DECLINED');
         }])->orderBy('created_at', 'DESC')->paginate($perPage);
-        
-        return $result;
     }
 
     public function findById($id)
     {
         $result = $this->model->with(['profile', 'tier'])->find($id);
-        
+
         return $result;
     }
 
@@ -125,7 +150,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             // ->where('account_number', $accountNumber)
             ->where('rsbsa_number', $RSBSANo)
             ->first();
-        
+
         if($record) {
             return $record;
         }

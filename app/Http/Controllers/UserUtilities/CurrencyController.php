@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\UserUtilities;
 
+use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Repositories\UserUtilities\Currency\ICurrencyRepository;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\CurrencyRequest;
 use App\Models\UserUtilities\Currency;
+use App\Repositories\UserUtilities\Currency\ICurrencyRepository;
+use App\Services\Encryption\IEncryptionService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\Utilities\Responses\IResponseService;
-use App\Enums\SuccessMessages;
+use Illuminate\Http\JsonResponse;
 
 class CurrencyController extends Controller
 {
@@ -21,11 +19,11 @@ class CurrencyController extends Controller
     private ICurrencyRepository $currencyRepository;
     private IUserProfileService $userProfileService;
     private IResponseService $responseService;
-    
+
     public function __construct(ICurrencyRepository $currencyRepository,
-                                IEncryptionService $encryptionService,
+                                IEncryptionService  $encryptionService,
                                 IUserProfileService $userProfileService,
-                                IResponseService $responseService)
+                                IResponseService    $responseService)
     {
         $this->currencyRepository = $currencyRepository;
         $this->encryptionService = $encryptionService;
@@ -40,7 +38,7 @@ class CurrencyController extends Controller
      */
     public function index(): JsonResponse
     {
-        $records = $this->currencyRepository->getAll();
+        $records = $this->currencyRepository->getAll()->sortBy('description');
 
         // $encryptedResponse = $this->encryptionService->encrypt($records->toArray());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
