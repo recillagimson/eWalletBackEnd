@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Carbon\Carbon;
 
 class UserAccountService implements IUserAccountService
 {
@@ -127,21 +126,9 @@ class UserAccountService implements IUserAccountService
         $user->delete();
     }
 
-    public function getAllPaginated($request, $perPage = 10) {
+    public function getAllPaginated($perPage = 10) {
 
-        // if ($request->missing('from')) {
-        //     $request->request->add(['from' => Carbon::now()->format('Y-m-d')]);
-        // }
-
-        // if ($request->missing('to')) {
-        //     $request->request->add(['to' => Carbon::now()->subDays(30)->format('Y-m-d')]);
-        // }
-
-        if ($request->missing('type')) {
-            $request->request->add(['type' => 'API']);
-        }
-
-        return $this->users->getAllUsersPaginated($request->all(), $perPage);
+        return $this->users->getAllUsersPaginated($perPage);
     }
 
     public function findById(string $id) {

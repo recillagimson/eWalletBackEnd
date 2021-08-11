@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 trait LogHistory
 {
-    private function processData(Collection $data, $namedKey = false) {
+    private function processData(Collection $data) {
         $processed_data = [];
         $current_balance = 0;
         $available_balance = 0;
@@ -35,37 +35,20 @@ trait LogHistory
                 }
             }
 
-            if(!$namedKey) {
-                $proc = [
-                    $entry->transaction_date,
-                    $entry->account_number,
-                    $entry->first_name . " " . $entry->last_name,
-                    strval($current_balance),
-                    $entry->Type == 'CR' ? 'Credit' : 'Debit',
-                    $entry->Description,
-                    strval($entry->total_amount),
-                    $entry->reference_number,
-                    strval($available_balance),
-                    $entry->Status
-                ];
-    
-                array_push($processed_data, $proc);
-            } else {
-                $proc = [
-                    "transaction_date" => $entry->transaction_date,
-                    "customer_id" => $entry->account_number,
-                    "customer_name" => $entry->first_name . " " . $entry->last_name,
-                    "current_balance" => strval($current_balance),
-                    "type" => $entry->Type == 'CR' ? 'Credit' : 'Debit',
-                    "category" => $entry->Description,
-                    "amount" => strval($entry->total_amount),
-                    "transaction_description" => $entry->reference_number,
-                    "available_balance" => strval($available_balance),
-                    "status" => $entry->Status
-                ];
-    
-                array_push($processed_data, $proc);
-            }
+            $proc = [
+                $entry->transaction_date,
+                $entry->account_number,
+                $entry->first_name . " " . $entry->last_name,
+                strval($current_balance),
+                $entry->Type == 'CR' ? 'Credit' : 'Debit',
+                $entry->Description,
+                strval($entry->total_amount),
+                $entry->reference_number,
+                strval($available_balance),
+                $entry->Status
+            ];
+
+            array_push($processed_data, $proc);
         }
 
         return $processed_data;

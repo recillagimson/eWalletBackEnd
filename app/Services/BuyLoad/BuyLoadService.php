@@ -73,19 +73,14 @@ class BuyLoadService implements IBuyLoadService
         $this->logHistoryService = $logHistoryService;
     }
 
-    public function getEpinProducts(): array
-    {
-        return array_values($this->atmService->getProductsByProvider('EPIN')->toArray());
-    }
-
     public function getProductsByProvider(string $mobileNumber): array
     {
         $provider = $this->atmService->getProvider($mobileNumber);
         return array_values($this->atmService->getProductsByProvider($provider)->toArray());
     }
 
-    public function validateTopup(string $userId, string $recipientMobileNumber, string $productCode, string $productName,
-                                  float  $amount)
+    public function validateLoadTopup(string $userId, string $recipientMobileNumber, string $productCode, string $productName,
+                                      float $amount)
     {
         $transactionCategoryId = TransactionCategoryIds::buyLoad;
 
@@ -96,8 +91,8 @@ class BuyLoadService implements IBuyLoadService
         $this->transactionValidationService->validate($user, $transactionCategoryId, $amount);
     }
 
-    public function topup(string $userId, string $recipientMobileNumber, string $productCode, string $productName,
-                          float  $amount, string $type): array
+    public function topupLoad(string $userId, string $recipientMobileNumber, string $productCode, string $productName,
+                              float $amount): array
     {
         try {
             DB::beginTransaction();
@@ -115,11 +110,11 @@ class BuyLoadService implements IBuyLoadService
             $currentDate = Carbon::now();
 
             $buyLoad = $this->buyLoads->createTransaction($userId, $refNo, $productCode, $productName, $recipientMobileNumber,
-                $amount, $currentDate, $transactionCategoryId, $type, $userId);
+                $amount, $currentDate, $transactionCategoryId, $userId);
 
             if (!$buyLoad) $this->transactionFailed();
 
-            $buyLoadResponse = $this->atmService->topup($productCode, $recipientMobileNumber, $refNo, $type);
+            $buyLoadResponse = $this->atmService->topupLoad($productCode, $recipientMobileNumber, $refNo);
 
             $updateReferenceCounter = true;
             $buyLoad = $this->handleLoadTopupResponse($buyLoad, $buyLoadResponse);
@@ -154,7 +149,7 @@ class BuyLoadService implements IBuyLoadService
         $failCount = 0;
 
         foreach ($pendingBuyLoads as $buyLoad) {
-            $response = $this->atmService->checkStatus($buyLoad->reference_number, $buyLoad->topup_type);
+            $response = $this->atmService->checkStatus($buyLoad->reference_number);
             $buyLoad = $this->handleStatusResponse($buyLoad, $response);
             $amount = $buyLoad->total_amount;
 
@@ -220,7 +215,7 @@ class BuyLoadService implements IBuyLoadService
 
     }
 
-    private function handleStatusResponse(OutBuyLoad $buyLoad, Response $response): OutBuyLoad
+    private function handleStatusResponse(OutBuyLoad $buyLoad, Response $response)
     {
         if (!$response->successful()) {
             $error = $response->json();

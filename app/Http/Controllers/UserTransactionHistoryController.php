@@ -29,22 +29,13 @@ class UserTransactionHistoryController extends Controller
         $this->pdfService = $pdfService;
     }
 
-    public function index(Request $request) {
-        $status = 'ALL';
-        if($request->has('status')) {
-            $status = $request->status;
-        }
-        $records = $this->userTransactionHistory->getByAuthUserViaViews($status);
-        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
-    }
-
-    public function transactionHistoryAdmin(Request $request) {
-        $records = $this->userTransactionHistory->getTransactionHistoryAdmin($request->all());
+    public function index() {
+        $records = $this->userTransactionHistory->getByAuthUser();
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     public function show(string $id) {
-        $record = $this->userTransactionHistory->findTransactionWithRelationViaView($id);
+        $record = $this->userTransactionHistory->findTransactionWithRelation($id);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 

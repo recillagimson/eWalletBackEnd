@@ -34,6 +34,7 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
                 $rate['id'] = (string)Str::uuid();
                 $this->model->create($rate);
             }
+
         });
     }
 
@@ -45,13 +46,7 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
                 'foreign_exchange_rate_details' => "Foreign exchange rate details can't be found."
             ]);
         }
-        return collect(CurrencyRatesConfig::currenciesArrangement)->map(function($e) use ($data) {
-            foreach ($data as $value) {
-                if($value['code'] == $e) {
-                    return $value;
-                }
-            }
-       });
+        return $data;
     }
 
     private function mappedInBetweenStrings($data, $from, $to)
@@ -66,11 +61,6 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
         $from = '<div class="widget exchange-rates">';
         $to = '</div>';
         $exploded = explode('</i>', $this->mappedInBetweenStrings($data, $from, $to));
-        $peso = array(
-            'code' => 'PHP',
-            'name' => 'Philippine Peso',
-            'rate' => floatval($this->mappedInBetweenStrings($data, '"exchCalcMedium()">', '</span>'))
-        );
         unset($exploded[0]);
         return collect($exploded)->map(function($value) {
             return array(
@@ -78,7 +68,7 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
                'name' => $this->getCurrencyDescription(substr($value, 0, 3)),
                'rate' => floatval(explode('<td>',$value)[1])
            );
-       })->prepend($peso);
+       });
     }
 
     private function getCurrencyDescription($code)

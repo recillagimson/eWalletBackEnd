@@ -25,9 +25,7 @@ use App\Http\Requests\UserProfile\UpdateProfileBronzeRequest;
 use App\Http\Requests\UserProfile\UpdateProfileSilverRequest;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Http\Requests\UserProfile\UpdateFarmerToSilverRequest;
-use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\KYCService\IKYCService;
 
 class UserProfileController extends Controller
 {
@@ -41,8 +39,6 @@ class UserProfileController extends Controller
     private ITierApprovalRepository $userApprovalRepository;
     private IVerificationService $verificationService;
     private ILogHistoryService $logHistoryService;
-    private IKYCService $kycService;
-    private IUserAccountRepository $userAccountRepository;
 
     public function __construct(IEncryptionService $encryptionService, 
                                 IUserProfileService $userProfileService,
@@ -50,9 +46,7 @@ class UserProfileController extends Controller
                                 ITierApprovalRepository $userApprovalRepository,
                                 IUserDetailRepository $userDetailRepository,
                                 IVerificationService $verificationService,
-                                ILogHistoryService $logHistoryService,
-                                IKYCService $kycService,
-                                IUserAccountRepository $userAccountRepository)
+                                ILogHistoryService $logHistoryService)
     {
         $this->encryptionService = $encryptionService;
         $this->userProfileService = $userProfileService;
@@ -61,8 +55,6 @@ class UserProfileController extends Controller
         $this->userApprovalRepository = $userApprovalRepository;
         $this->verificationService = $verificationService;
         $this->logHistoryService = $logHistoryService;
-        $this->kycService = $kycService;
-        $this->userAccountRepository = $userAccountRepository;
     }
 
     /**
@@ -91,56 +83,37 @@ class UserProfileController extends Controller
      */
     public function updateSilver(UpdateProfileSilverRequest $request): JsonResponse
     {
-        \DB::beginTransaction();
-        try {
-            // IF REQUESTING FOR TIER UPDATE
-            if(request()->user() && request()->user()->tier && request()->user()->tier->id !== AccountTiers::tier2) {
-                // VALIDATE IF HAS EXISTING REQUEST
-                $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequest();
-                if($findExistingRequest) {
-                    return $this->tierUpgradeAlreadyExist();
-                }
-
-                // Trigger auto check
-                //$ekyc_auto_check == false;
-                $ekyc_auto_check = $this->kycService->isEKYCValidated($request->all());
-
-
-                if($ekyc_auto_check) {
-                    $this->userAccountRepository->update(request()->user(), [
-                        'tier_id' => AccountTiers::tier2
-                    ]);
-                }
-
-                // CREATE APPROVAL RECORD FOR ADMIN
-                // TU-MMDDYYY-RANDON
-                $generatedTransactionNumber = "TU" . Carbon::now()->format('YmdHi') . rand(0,99999);
-                $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
-                    'user_account_id' => request()->user()->id,
-                    'request_tier_id' => AccountTiers::tier2,
-                    'status' => $ekyc_auto_check ? 'APPROVED' : 'PENDING',
-                    'user_created' => request()->user()->id,
-                    'user_updated' => request()->user()->id,
-                    'transaction_number' => $generatedTransactionNumber
-                ]);
-
-                $this->verificationService->updateTierApprovalIds($request->id_photos_ids, $request->id_selfie_ids, $tierApproval->id);
-
-                $audit_remarks = request()->user()->account_number . " has requested to upgrade to Silver";
-                $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+        // IF REQUESTING FOR TIER UPDATE
+        if(request()->user() && request()->user()->tier && request()->user()->tier->id !== AccountTiers::tier2) {
+            // VALIDATE IF HAS EXISTING REQUEST
+            $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequest();
+            if($findExistingRequest) {
+                return $this->tierUpgradeAlreadyExist();
             }
-            $details = $request->validated();
-            $addOrUpdate = $this->userProfileService->update($request->user(), $details);
-            $audit_remarks = request()->user()->account_number . " Profile Information has been successfully updated.";
-            $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
 
-            // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
-            \DB::commit();
-            return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
-        } 
-        catch (\Exception $e) {
-            throw $e;
+            // CREATE APPROVAL RECORD FOR ADMIN
+            // TU-MMDDYYY-RANDON
+            $generatedTransactionNumber = "TU" . Carbon::now()->format('YmdHi') . rand(0,99999);
+            $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
+                'user_account_id' => request()->user()->id,
+                'request_tier_id' => AccountTiers::tier2,
+                'status' => 'PENDING',
+                'user_created' => request()->user()->id,
+                'user_updated' => request()->user()->id,
+                'transaction_number' => $generatedTransactionNumber
+            ]);
+            $this->verificationService->updateTierApprovalIds($request->id_photos_ids, $request->id_selfie_ids, $tierApproval->id);
+
+            $audit_remarks = request()->user()->account_number . " has requested to upgrade to Silver";
+            $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
         }
+        $details = $request->validated();
+        $addOrUpdate = $this->userProfileService->update($request->user(), $details);
+        $audit_remarks = request()->user()->account_number . " Profile Information has been successfully updated.";
+        $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+
+        // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
+        return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
     }
 
     public function updateSilverValidation(UpdateProfileSilverRequest $request): JsonResponse {

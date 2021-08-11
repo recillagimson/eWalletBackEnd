@@ -5,7 +5,6 @@ namespace App\Services\Utilities\PrepaidLoad\ATM;
 
 
 use App\Enums\AtmPrepaidResponseCodes;
-use App\Enums\TopupTypes;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithBuyLoadErrors;
@@ -34,11 +33,9 @@ class AtmService implements IAtmService
     private string $balanceUrl;
     private string $topupUrl;
     private string $topupInquiryUrl;
-    private string $epinUrl;
-    private string $epinInquiryUrl;
     private IApiService $apiService;
 
-    public function __construct(IApiService             $apiService,
+    public function __construct(IApiService $apiService,
                                 IReferenceNumberService $referenceNumberService)
     {
         $this->id = config('services.load.atm.id');
@@ -53,31 +50,9 @@ class AtmService implements IAtmService
         $this->balanceUrl = config('services.load.atm.balance_url');
         $this->topupUrl = config('services.load.atm.topup_url');
         $this->topupInquiryUrl = config('services.load.atm.topup_inquiry_url');
-        $this->epinUrl = config('services.load.atm.topup_epin_url');
-        $this->epinInquiryUrl = config('services.load.atm.topup_epin_inquiry_url');
 
         $this->referenceNumberService = $referenceNumberService;
         $this->apiService = $apiService;
-    }
-
-    public function getEpinProducts(): array
-    {
-        $data = $this->createATMPostBody();
-        $headers = $this->getHeaders($data);
-
-        $url = $this->baseUrl . $this->productsUrl;
-        $response = $this->apiService->post($url, $data, $headers);
-
-        if ($response->successful()) {
-            $data = $response->json();
-            $state = $data['responseCode'];
-            if ($state === AtmPrepaidResponseCodes::requestReceived) {
-                return $data['data'];
-            }
-        }
-
-        Log::error('Get ATM Products Error', $response->json());
-        return [];
     }
 
     public function getProvider(string $mobileNumber)
@@ -130,7 +105,7 @@ class AtmService implements IAtmService
         $this->prefixNotSupported();
     }
 
-    public function topup(string $productCode, string $mobileNumber, string $refNo, string $type): Response
+    public function topupLoad(string $productCode, string $mobileNumber, string $refNo): Response
     {
         $data = [
             'productCode' => $productCode,
@@ -140,14 +115,12 @@ class AtmService implements IAtmService
         $postData = $this->createATMPostBody($data);
         $headers = $this->getHeaders($postData);
 
-        $requestUrl = $type === TopupTypes::load ? $this->topupUrl : $this->epinUrl;
-        $url = $this->baseUrl . $requestUrl;
-
-        Log::info("Request {$type}:", $postData);
+        $url = $this->baseUrl . $this->topupUrl;
+        Log::info('Buy Load Topup', $postData);
         return $this->apiService->post($url, $postData, $headers);
     }
 
-    public function checkStatus(string $refNo, string $type): Response
+    public function checkStatus(string $refNo): Response
     {
         $data = [
             'agentRefNo' => $refNo
@@ -155,8 +128,7 @@ class AtmService implements IAtmService
         $postData = $this->createATMPostBody($data);
         $headers = $this->getHeaders($postData);
 
-        $inquiryUrl = $type === TopupTypes::load ? $this->topupInquiryUrl : $this->epinInquiryUrl;
-        $url = $this->baseUrl . $inquiryUrl;
+        $url = $this->baseUrl . $this->topupInquiryUrl;
         return $this->apiService->post($url, $postData, $headers);
     }
 

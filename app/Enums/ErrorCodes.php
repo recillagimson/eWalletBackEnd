@@ -64,8 +64,5 @@ class ErrorCodes
     const buyLoadTelcoUnavailable = 505;
     const buyLoadProductMismatch = 506;
 
-    // eKYC - 600
-    const ocrMismatch = 601;
-
 
 }

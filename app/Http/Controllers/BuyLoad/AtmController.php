@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\BuyLoad;
 
 use App\Enums\SuccessMessages;
-use App\Enums\TopupTypes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BuyLoad\ATM\GenerateSignatureRequest;
 use App\Http\Requests\BuyLoad\ATM\VerifySignatureRequest;
@@ -64,12 +63,6 @@ class AtmController extends Controller
         return response()->json($response, Response::HTTP_OK);
     }
 
-    public function getEpinProducts(): JsonResponse
-    {
-        $responseData = $this->buyLoadService->getEpinProducts();
-        return $this->responseService->successResponse($responseData);
-    }
-
     public function getProductsByProvider(GetProductsByProviderRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -79,12 +72,12 @@ class AtmController extends Controller
         return $this->responseService->successResponse($responseData);
     }
 
-    public function validateTopup(TopupLoadRequest $request): JsonResponse
+    public function validateLoadTopup(TopupLoadRequest $request): JsonResponse
     {
         $userId = $request->user()->id;
         $data = $request->validated();
 
-        $this->buyLoadService->validateTopup($userId, $data['mobile_number'], $data['product_code'],
+        $this->buyLoadService->validateLoadTopup($userId, $data['mobile_number'], $data['product_code'],
             $data['product_name'], $data['amount']);
 
         return $this->responseService->successResponse([],
@@ -96,19 +89,8 @@ class AtmController extends Controller
         $userId = $request->user()->id;
         $data = $request->validated();
 
-        $response = $this->buyLoadService->topup($userId, $data['mobile_number'], $data['product_code'],
-            $data['product_name'], $data['amount'], TopupTypes::load);
-
-        return $this->responseService->successResponse($response);
-    }
-
-    public function topupEPins(TopupLoadRequest $request): JsonResponse
-    {
-        $userId = $request->user()->id;
-        $data = $request->validated();
-
-        $response = $this->buyLoadService->topup($userId, $data['mobile_number'], $data['product_code'],
-            $data['product_name'], $data['amount'], TopupTypes::epins);
+        $response = $this->buyLoadService->topupLoad($userId, $data['mobile_number'], $data['product_code'],
+            $data['product_name'], $data['amount']);
 
         return $this->responseService->successResponse($response);
     }
