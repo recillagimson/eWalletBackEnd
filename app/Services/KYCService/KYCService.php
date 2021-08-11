@@ -202,7 +202,7 @@ class KYCService implements IKYCService
         return false;
     }
 
-    public function verify(array $attr) {
+    public function verify(array $attr, $from_api = true) {
         \DB::beginTransaction();
         try {
             $url = env('KYC_APP_VERIFY_URL');
@@ -234,15 +234,22 @@ class KYCService implements IKYCService
                 sleep(5);
                 $record = $this->kycRepository->findByRequestId($record->request_id);
                 \DB::commit();
-                return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+                if($from_api) {
+                    return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+                }
+                return $record;
             } else {
                 \DB::rollBack();
                 // ERROR
-                return $this->responseService->successResponse([
-                    'statusCode' => $response['statusCode'],
-                    'message' => $response['error'],
-                    'status' => $response['status']
-                ], SuccessMessages::success);
+                if($from_api) {
+                    // return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+                    return $this->responseService->successResponse([
+                        'statusCode' => $response['statusCode'],
+                        'message' => $response['error'],
+                        'status' => $response['status']
+                    ], SuccessMessages::success);
+                }
+                return $record;
             }
 
         } catch(\Exception $err) {
