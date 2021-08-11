@@ -35,7 +35,8 @@ class UserTransactionHistoryController extends Controller
         if ($request->has('status')) {
             $status = $request->status;
         }
-        $records = $this->userTransactionHistory->getByAuthUserViaViews($status);
+//        $records = $this->userTransactionHistory->getByAuthUserViaViews($status);
+        $records = $this->userTransactionHistory->getByAuthUser();
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
@@ -47,7 +48,8 @@ class UserTransactionHistoryController extends Controller
 
     public function show(string $id)
     {
-        $record = $this->userTransactionHistory->findTransactionWithRelationViaView($id);
+//        $record = $this->userTransactionHistory->findTransactionWithRelationViaView($id);
+        $record = $this->userTransactionHistory->findTransactionWithRelation($id);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
