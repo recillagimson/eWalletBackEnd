@@ -30,4 +30,8 @@ trait WithTransactionErrors
     {
         $this->validationErrorMessage(ErrorCodes::transactionDoesntExists, 'Transaction does not exists.');
     }
+
+    public function kycVerifyFailed() {
+        $this->validationErrorMessage(ErrorCodes::verifyRequestFailed, 'KYC Verification Failed, Please try again');
+    }
 }

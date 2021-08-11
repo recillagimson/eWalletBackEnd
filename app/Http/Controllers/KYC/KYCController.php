@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\KYC;
 
-use Carbon\Carbon;
-use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-use App\Services\KYCService\IKYCService;
-use App\Http\Requests\KYC\FaceMatchRequest;
 use App\Http\Requests\KYC\OCRRequest;
-use League\CommonMark\Inline\Element\Image;
+use App\Http\Requests\KYC\VerifyRequest;
+use App\Services\KYCService\IKYCService;
+use App\Http\Requests\KYC\MatchOCRRequest;
+use App\Http\Requests\KYC\FaceMatchRequest;
+use App\Http\Requests\KYC\ExpirationCheckRequest;
 use App\Services\Utilities\Responses\IResponseService;
 
 class KYCController extends Controller
@@ -34,5 +33,22 @@ class KYCController extends Controller
     public function initOCR(OCRRequest $request) {
         $response =  $this->kycService->initOCR($request->all());
         return $this->responseService->successResponse($response, SuccessMessages::success);
+    }
+
+    public function checkIDExpiration(ExpirationCheckRequest $request) {
+        $response =  $this->kycService->checkIDExpiration($request->all(), $request->id_type);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
+    }
+
+    public function matchOCR(MatchOCRRequest $request) {
+        return $this->kycService->matchOCR($request->all());
+    }
+
+    public function verify(VerifyRequest $request) {
+        return $this->kycService->verify($request->all());
+    }
+
+    public function handleCallback(Request $request) {
+        return $this->kycService->handleCallback($request->all());
     }
 }

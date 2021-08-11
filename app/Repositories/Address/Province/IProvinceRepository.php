@@ -6,5 +6,5 @@ use App\Repositories\IRepository;
 
 interface IProvinceRepository extends IRepository
 {
-    public function getProvinces(string $code);
+    public function getProvinces();
 }

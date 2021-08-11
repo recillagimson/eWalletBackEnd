@@ -30,10 +30,9 @@ class ProvinceController extends Controller
      *
      * @return JsonResponse
      */
-    public function getProvinces(ProvinceRequest $request): JsonResponse
+    public function getProvinces(): JsonResponse
     {
-        $data = $request->all();
-        $provinces = $this->provinceRepository->getProvinces($data['region_code']);
+        $provinces = $this->provinceRepository->getProvinces();
         return $this->responseService->successResponse($provinces->toArray(), SuccessMessages::success);
     }
 }

@@ -19,7 +19,7 @@ class UserTransactionHistoryController extends Controller
 
 
     public function __construct(IResponseService $responseService,
-        IUserTransactionHistoryRepository $userTransactionHistory, 
+        IUserTransactionHistoryRepository $userTransactionHistory,
         ITransactionService $transactionService,
         IPDFService $pdfService)
     {
@@ -29,10 +29,19 @@ class UserTransactionHistoryController extends Controller
         $this->pdfService = $pdfService;
     }
 
-    public function index() {
+    public function index(Request $request) {
+        $status = 'ALL';
+        if($request->has('status')) {
+            $status = $request->status;
+        }
         $records = $this->userTransactionHistory->getByAuthUser();
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
+
+//    public function transactionHistoryAdmin(Request $request) {
+//        $records = $this->transactionService->getTransactionHistoryAdmin($request->all());
+//        return $this->responseService->successResponse($records, SuccessMessages::success);
+//    }
 
     public function show(string $id) {
         $record = $this->userTransactionHistory->findTransactionWithRelation($id);
@@ -54,7 +63,7 @@ class UserTransactionHistoryController extends Controller
             'datas' => $record,
             'from'=> $request->from,
             'to'=> $request->to
-        ]; 
+        ];
 
         return $this->pdfService->generatePDFNoUserPassword($data, 'reports.user_transaction_history.user_transaction_history');
 

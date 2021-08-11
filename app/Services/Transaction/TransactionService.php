@@ -3,17 +3,20 @@
 
 namespace App\Services\Transaction;
 
+use PDF;
+use Carbon\Carbon;
 use App\Models\UserAccount;
-use App\Repositories\UserBalance\IUserBalanceRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\AddMoneyV2\IAddMoneyService;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
-use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
 use App\Services\Utilities\CSV\ICSVService;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
-use PDF;
+use App\Services\AddMoneyV2\IAddMoneyService;
+use App\Exports\TransactionReport\TransactionReport;
+use App\Repositories\UserBalance\IUserBalanceRepository;
+use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class TransactionService implements ITransactionService
 {
@@ -127,5 +130,40 @@ class TransactionService implements ITransactionService
         return $this->csvService->generateCSV($datas, $columns);
     }
 
+    public function getTransactionHistoryAdmin(array $attr, bool $paginated = true) {
+        $records = $this->userTransactionHistoryRepository->getTransactionHistoryAdmin($attr, false);
+        $from = Carbon::now()->format('Y-m-d');
+        $to = Carbon::now()->subDays(30)->format('Y-m-d');
+        $type = 'API';
+
+        if($attr && isset($attr['from']) && isset($attr['to'])) {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+        if($attr && isset($attr['type'])) {
+            $type = $attr['type'];
+        }
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+        if($type === 'CSV') {
+            Excel::store(new TransactionReport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+            return [
+                'temp_url' => $temp_url
+            ];
+        } else if($type === 'XLSX') {
+            Excel::store(new TransactionReport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return [
+                'temp_url' => $temp_url
+            ];
+        } else {
+            return $records->toArray();
+        }
+    }
+
+    public function s3TempUrl(string $generated_link) {
+        $temp_url = Storage::disk('s3')->temporaryUrl($generated_link, Carbon::now()->addMinutes(30));
+        return $temp_url;
+    }
 
 }

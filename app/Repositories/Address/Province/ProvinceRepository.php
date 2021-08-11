@@ -12,8 +12,8 @@ class ProvinceRepository extends Repository implements IProvinceRepository
         parent::__construct($model);
     }
 
-    public function getProvinces(string $code)
+    public function getProvinces()
     {
-        return $this->model->where('region_code', '=', $code)->get();
+        return $this->model->get();
     }
 }
