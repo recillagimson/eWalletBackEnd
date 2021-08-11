@@ -42,7 +42,7 @@ class FarmerController extends Controller
     }
 
     public function farmerSelfieUpload(FarmerSelfieUploadRequest $request) {
-        $record = $this->verificationService->createSelfieVerification($request->all(), $request->user_account_id);
+        $record = $this->verificationService->createSelfieVerificationFarmers($request->all(), $request->user_account_id);
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 

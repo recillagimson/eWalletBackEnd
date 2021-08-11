@@ -52,7 +52,6 @@ class VerificationService implements IVerificationService
         // Delete existing first
         // Get details first
         $userDetails = $this->userDetailRepository->getByUserId($userAccountId ? $userAccountId : request()->user()->id);
-        $userAccount = $this->userAccountService->get($userAccountId);
 
         // If no user Details
         if(!$userDetails) {
@@ -90,20 +89,7 @@ class VerificationService implements IVerificationService
         $audit_remarks = request()->user()->account_number . "  has uploaded Selfie";
         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadSelfiePhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
 
-
-        $res = $this->kycService->verify([
-            'dob' => $userDetails['birth_date'],
-            'name' => $userDetails['first_name'] . " " . $userDetails['last_name'],
-            'id_number' => $userAccount['rsbsa_number'],
-            'user_account_id' => $userAccountId,
-            'selfie' => $data['selfie_photo'],
-            'nid_front' => $data['id_photo'],
-        ], false);
-
-        return [
-            'selfie_record' => $record,
-            'dedupe' => $res
-        ];
+        return $record;
         // return to controller all created records
     }
 
@@ -322,4 +308,66 @@ class VerificationService implements IVerificationService
             ]);
         }
     }
+
+    public function createSelfieVerificationFarmers(array $data, ?string $userAccountId = null)
+    {
+        // Delete existing first
+        // Get details first
+        $userDetails = $this->userDetailRepository->getByUserId($userAccountId ? $userAccountId : request()->user()->id);
+        $userAccount = $this->userAccountService->get($userAccountId);
+
+        // If no user Details
+        if(!$userDetails) {
+            throw ValidationException::withMessages([
+                'user_detail_not_found' => 'User Detail not found'
+            ]);
+        }
+        // Delete file using path from current detail
+        // $this->deleteFile($userDetails->selfie_loction);
+
+        // For Serfile Processing
+        // GET EXT NAME
+        $selfiePhotoExt = $this->getFileExtensionName($data['selfie_photo']);
+        // GENERATE NEW FILE NAME
+        $selfiePhotoName = request()->user()->id . "/" . \Str::random(40) . "." . $selfiePhotoExt;
+        // PUT FILE TO STORAGE
+        $selfiePhotoPath = $this->saveFile($data['selfie_photo'], $selfiePhotoName, 'selfie_photo');
+
+        $data['photo_location'] = $selfiePhotoPath;
+        $data['user_account_id'] = $userAccountId ? $userAccountId : request()->user()->id;
+        $data['user_created'] = request()->user()->id;
+        $data['user_updated'] = request()->user()->id;
+        // SAVE SELFIE LOCATION ON USER DETAILS
+        $record = $this->userSelfiePhotoRepository->create($data);
+
+        if(isset($data['remarks'])) {
+            $this->iTierApprovalCommentRepository->create([
+                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
+                'user_created' => $data['user_created'] = request()->user()->id,
+                'user_updated' => $data['user_updated'] = request()->user()->id
+            ]);
+        }
+
+        $audit_remarks = request()->user()->account_number . "  has uploaded Selfie";
+        $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::uploadSelfiePhoto, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+
+
+        $res = $this->kycService->verify([
+            'dob' => $userDetails['birth_date'],
+            'name' => $userDetails['first_name'] . " " . $userDetails['last_name'],
+            'id_number' => $userAccount['rsbsa_number'],
+            'user_account_id' => $userAccountId,
+            'selfie' => $data['selfie_photo'],
+            'nid_front' => $data['id_photo'],
+        ], false);
+
+        return [
+            'selfie_record' => $record,
+            'dedupe' => $res
+        ];
+        // return to controller all created records
+    }
 }
+
+
