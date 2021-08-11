@@ -15,7 +15,7 @@ use App\Traits\Errors\WithTransactionErrors;
 use Carbon\Carbon;
 
 class KYCService implements IKYCService
-{
+{   
     use WithKYCErrors, WithTransactionErrors;
     private ICurlService $curlService;
     private IUserSelfiePhotoRepository $userSelfiePhotoRepository;
@@ -68,10 +68,10 @@ class KYCService implements IKYCService
         $headers = $this->getAuthorizationHeaders();
         $headers[4] = "transactionId: " . (string)Str::uuid();
         $id = new \CURLFILE($attr['id_photo']->getPathname());
-
+        
         $data = array('id' => $id);
         if($idType) {
-            // $headers[5] = "cardType: " . $idType;
+            // $headers[5] = "cardType: " . $idType; 
             $data['cardType'] = $idType;
         }
 
@@ -96,18 +96,18 @@ class KYCService implements IKYCService
         $selfie = new \CURLFILE($attr['selfie_photo']->getPathname());
 
         $data = array('id' => $selfie_retrieved, 'selfie' => $selfie);
-
+        
         $reponse = $this->curlService->curlPost($url, $data, $headers);
         unlink($tempImage);
         return $reponse;
     }
 
     public function checkIDExpiration(array $attr, $idType = 'phl_dl') {
-
+        
         $initOCR = $this->initOCR([
             'id_photo' => $attr['id_photo']
         ], $idType);
-
+        
         if($initOCR && isset($initOCR['result'])  && isset($initOCR['result']['0']) && $initOCR['result']['0']->details && $initOCR['result']['0']->details->doe) {
             // GET DATE OF EXPIRATION
             $doe = $initOCR['result']['0']->details->doe;
@@ -129,7 +129,7 @@ class KYCService implements IKYCService
         }
 
         return $initOCR;
-
+        
     }
 
     public function matchOCR(array $attr) {
@@ -163,7 +163,7 @@ class KYCService implements IKYCService
         // ];
     }
 
-
+    
 
     public function isEKYCValidated(array $params) {
         if($params && isset($params['ocr_response'])) {

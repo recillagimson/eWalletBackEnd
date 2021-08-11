@@ -116,7 +116,7 @@ class VerificationService implements IVerificationService
             // Init eKYC OCR
             $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
             $extractData = $this->extractData($eKYC, $idType->type);
-
+            
             $params = [
                 'user_account_id' => $data['user_account_id'],
                 'id_type_id' => $data['id_type_id'],
