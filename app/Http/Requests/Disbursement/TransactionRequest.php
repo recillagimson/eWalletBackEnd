@@ -26,7 +26,6 @@ class TransactionRequest extends FormRequest
         return [
             'acccountNumber' => 'required',
             'rsbsaNumber' => 'required',
-            'name' => 'nullable',
             'amount' => 'required|numeric|min:1',
         ];
     }
