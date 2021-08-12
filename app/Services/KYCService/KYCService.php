@@ -25,6 +25,14 @@ class KYCService implements IKYCService
     private IResponseService $responseService;
     private IKYCVerificationRepository $kycRepository;
 
+    private $appId;
+    private $appKey;
+    private $faceMatchUrl;
+    private $ocrUrl;
+    private $ocrPassportUrl;
+    private $verifyUrl;
+    private $callBackUrl;
+
     public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository)
     {
         $this->curlService = $curlService;
@@ -32,13 +40,22 @@ class KYCService implements IKYCService
         $this->userAccountRepository = $userAccountRepository;
         $this->responseService = $responseService;
         $this->kycRepository = $kycRepository;
+
+        $this->appId = env('KYC_APP_ID');
+        $this->appKey = env('KYC_APP_KEY');
+        $this->faceMatchUrl = env('KYC_APP_FACEMATCH_URL');
+        $this->ocrUrl = env('KYC_APP_FACEMATCH_URL');
+        $this->ocrPassportUrl = env('KYC_APP_FACEMATCH_URL');
+        $this->verifyUrl = env('KYC_APP_VERIFY_URL');
+        $this->callBackUrl = env('KYC_APP_CALLBACK_URL');
+
     }
 
     private function getAuthorizationHeaders(): array
     {
         $headers = array(
-            'appId: ' . env('KYC_APP_ID'),
-            'appKey: '. env('KYC_APP_KEY'),
+            'appId: ' . $this->appId,
+            'appKey: '. $this->appKey,
             'accept: '. 'application/json',
             'content-type: ' . 'multipart/form-data'
         );
@@ -46,7 +63,7 @@ class KYCService implements IKYCService
     }
 
     public function initFaceMatch(array $attr, bool $isPath = false) {
-        $url = env('KYC_APP_FACEMATCH_URL');
+        $url = $this->faceMatchUrl;
         $headers = $this->getAuthorizationHeaders();
 
         if($isPath) {
@@ -64,9 +81,9 @@ class KYCService implements IKYCService
 
     public function initOCR(array $attr, $idType = '')
     {
-        $url = env('KYC_APP_OCR_URL');
+        $url = $this->ocrUrl;
         if ($idType == 'passport') {
-            $url = env('KYC_APP_OCR_URL_PASSPORT');
+            $url = $this->ocrPassportUrl;
         }
         $headers = $this->getAuthorizationHeaders();
         $headers[4] = "transactionId: " . (string)Str::uuid();
@@ -92,7 +109,7 @@ class KYCService implements IKYCService
         $tempImage = tempnam(sys_get_temp_dir(), $filename);
         copy($selfie_s3, $tempImage);
 
-        $url = env('KYC_APP_FACEMATCH_URL');
+        $url = $this->faceMatchUrl;
         $headers = $this->getAuthorizationHeaders();
 
         $selfie_retrieved = new CURLFILE($tempImage);
@@ -207,11 +224,11 @@ class KYCService implements IKYCService
     public function verify(array $attr, $from_api = true) {
         \DB::beginTransaction();
         try {
-            $url = env('KYC_APP_VERIFY_URL');
+            $url = $this->verifyUrl;
             $headers = $this->getAuthorizationHeaders();
 
             $data = [
-                'callbackURL' => env('KYC_APP_CALLBACK_URL'),
+                'callbackURL' => $this->callBackUrl,
                 'name' => $attr['name'],
                 'idNumber' => $attr['id_number'],
                 'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
@@ -275,6 +292,17 @@ class KYCService implements IKYCService
             }
         }
 
+        if($attr && isset($attr['error'])) {
+            $record = $this->kycRepository->findByRequestId($attr['requestId']);
+            if($record) {
+                $this->kycRepository->update($record, [
+                    'hv_response' => json_encode($attr),
+                    'hv_result' => $attr['error'],
+                    'status' => 'CALLBACK_RECEIVED_ERROR'
+                ]);
+            }
+        }
+
         return response()->json([
             'message' => 'Callback Received'
         ], 200);
@@ -282,7 +310,10 @@ class KYCService implements IKYCService
 
     public function verifyRequest(string $requestId) {
         $record = $this->kycRepository->findByRequestId($requestId);
-        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+        if($record) {
+            return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+        }
+        $this->kycVerifyFailed();
     }
 
 }
