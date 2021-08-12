@@ -12,8 +12,12 @@ use App\Traits\Errors\WithKYCErrors;
 use App\Traits\Errors\WithTransactionErrors;
 use Carbon\Carbon;
 use CURLFILE;
+use DB;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Log;
 
 class KYCService implements IKYCService
 {
@@ -105,13 +109,14 @@ class KYCService implements IKYCService
         return $reponse;
     }
 
-    public function checkIDExpiration(array $attr, $idType = 'phl_dl') {
+    public function checkIDExpiration(array $attr, $idType = 'phl_dl'): array
+    {
 
         $initOCR = $this->initOCR([
             'id_photo' => $attr['id_photo']
         ], $idType);
 
-        if($initOCR && isset($initOCR['result'])  && isset($initOCR['result']['0']) && $initOCR['result']['0']->details && $initOCR['result']['0']->details->doe) {
+        if ($initOCR && isset($initOCR['result']) && isset($initOCR['result']['0']) && $initOCR['result']['0']->details && $initOCR['result']['0']->details->doe) {
             // GET DATE OF EXPIRATION
             $doe = $initOCR['result']['0']->details->doe;
             $expDate = Carbon::parse($doe->value);
@@ -167,10 +172,11 @@ class KYCService implements IKYCService
     }
 
 
-    public function isEKYCValidated(array $params) {
-        if($params && isset($params['ocr_response'])) {
+    public function isEKYCValidated(array $params): bool
+    {
+        if ($params && isset($params['ocr_response'])) {
             // CHECK IF FULLNAME
-            if($params['ocr_response'] && isset($params['ocr_response']['last_name']) && $params['ocr_response']['last_name'] == '') {
+            if ($params['ocr_response'] && isset($params['ocr_response']['last_name']) && $params['ocr_response']['last_name'] == '') {
                 // Build full name
                 $last_name = $params['last_name'];
                 $first_name = $params['first_name'];
@@ -205,7 +211,7 @@ class KYCService implements IKYCService
     }
 
     public function verify(array $attr, $from_api = true) {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $url = env('KYC_APP_VERIFY_URL');
             $headers = $this->getAuthorizationHeaders();
@@ -217,11 +223,17 @@ class KYCService implements IKYCService
                 'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
                 'applicationId' => Str::uuid(),
                 'enrol' => env('KYC_APP_VERIFY_REGISTER_ID', 'no'),
-                'selfie' => new \CURLFILE($attr['selfie']->getPathname()),
-                'idFront' => new \CURLFILE($attr['nid_front']->getPathname()),
+                'selfie' => new CURLFILE($attr['selfie']->getPathname()),
+                'idFront' => new CURLFILE($attr['nid_front']->getPathname()),
             ];
 
             $response = $this->curlService->curlPost($url, $data, $headers);
+
+            Log::debug('eKYC Response', [
+                'verifyURL' => $url,
+                'callbackURL' => env('KYC_APP_CALLBACK_URL'),
+                'response' => $response
+            ]);
 
             $record = $this->kycRepository->create([
                 'user_account_id' => $attr['user_account_id'],
@@ -231,8 +243,8 @@ class KYCService implements IKYCService
                 'hv_result' => '',
             ]);
 
-            if($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
-                \DB::commit();
+            if ($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
+                DB::commit();
                 // WAIT FOR CALLBACK
                 sleep(5);
                 // $record = $this->kycRepository->findByRequestId($record->request_id);
@@ -242,7 +254,7 @@ class KYCService implements IKYCService
                 return $record;
             } else {
                 // \DB::rollBack();
-                \DB::commit();
+                DB::commit();
                 // ERROR
                 if($from_api) {
                     // return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
@@ -255,18 +267,19 @@ class KYCService implements IKYCService
                 return $record;
             }
 
-        } catch(\Exception $err) {
-            \Log::info(json_encode($err->getMessage()));
-            \DB::rollBack();
+        } catch (Exception $err) {
+            Log::info(json_encode($err->getMessage()));
+            DB::rollBack();
             $this->kycVerifyFailed();
         }
     }
 
-    public function handleCallback(array $attr) {
-        \Log::info(json_encode($attr));
-        if($attr && isset($attr['result']) && isset($attr['result']['requestId'])) {
+    public function handleCallback(array $attr): JsonResponse
+    {
+        Log::info(json_encode($attr));
+        if ($attr && isset($attr['result']) && isset($attr['result']['requestId'])) {
             $record = $this->kycRepository->findByRequestId($attr['result']['requestId']);
-            if($record) {
+            if ($record) {
                 $this->kycRepository->update($record, [
                     'hv_response' => json_encode($attr),
                     'hv_result' => isset($attr['result']['unifiedResult']['channel']) ? $attr['result']['unifiedResult']['channel'] : $attr['error'],
@@ -280,7 +293,8 @@ class KYCService implements IKYCService
         ], 200);
     }
 
-    public function verifyRequest(string $requestId) {
+    public function verifyRequest(string $requestId): JsonResponse
+    {
         $record = $this->kycRepository->findByRequestId($requestId);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
