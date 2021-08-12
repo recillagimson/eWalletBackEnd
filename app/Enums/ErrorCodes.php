@@ -55,6 +55,7 @@ class ErrorCodes
     const invalidTypeOfMemo = 416;
     const isEmpty = 417;
     const isExisting = 418;
+    const kycRecordNotFound = 419;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;

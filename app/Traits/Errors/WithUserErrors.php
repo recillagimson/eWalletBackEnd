@@ -73,4 +73,8 @@ trait WithUserErrors
     public function bpiTokenInvalid() {
         $this->validationErrorMessage(ErrorCodes::bpiTokenInvalidOrExpired, 'Please Login to BPI');
     }
+
+    public function recordNotFound() {
+        $this->validationErrorMessage(ErrorCodes::kycRecordNotFound, 'KYC record not found');
+    }
 }
