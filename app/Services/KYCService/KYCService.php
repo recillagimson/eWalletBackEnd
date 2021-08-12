@@ -216,7 +216,7 @@ class KYCService implements IKYCService
                 'idNumber' => $attr['id_number'],
                 'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
                 'applicationId' => Str::uuid(),
-                'enrol' => 'no',
+                'enrol' => env('KYC_APP_VERIFY_REGISTER_ID', 'no'),
                 'selfie' => new \CURLFILE($attr['selfie']->getPathname()),
                 'idFront' => new \CURLFILE($attr['nid_front']->getPathname()),
             ];
