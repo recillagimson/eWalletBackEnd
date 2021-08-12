@@ -5,6 +5,7 @@ namespace App\Services\Utilities\Verification;
 use App\Enums\eKYC;
 use App\Enums\SquidPayModuleTypes;
 use App\Repositories\IdType\IIdTypeRepository;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\Tier\ITierApprovalCommentRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
@@ -29,6 +30,7 @@ class VerificationService implements IVerificationService
     public ITierApprovalCommentRepository $tierApprovalComment;
     private IKYCService $kycService;
     private IUserAccountRepository $userAccountService;
+    private IKYCVerificationRepository $kycRepository;
 
     public function __construct(IUserPhotoRepository $userPhotoRepository,
                                 IUserDetailRepository $userDetailRepository,
@@ -37,7 +39,8 @@ class VerificationService implements IVerificationService
                                 IIdTypeRepository $iIdTypeRepository,
                                 ITierApprovalCommentRepository $iTierApprovalCommentRepository,
                                 IKYCService $kycService,
-                                IUserAccountRepository $userAccountService)
+                                IUserAccountRepository $userAccountService,
+                                IKYCVerificationRepository $kycRepository)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -47,6 +50,7 @@ class VerificationService implements IVerificationService
         $this->iTierApprovalCommentRepository = $iTierApprovalCommentRepository;
         $this->kycService = $kycService;
         $this->userAccountService = $userAccountService;
+        $this->kycRepository = $kycRepository;
     }
 
     public function createSelfieVerification(array $data, ?string $userAccountId = null)
@@ -358,7 +362,7 @@ class VerificationService implements IVerificationService
         $res = $this->kycService->verify([
             'dob' => $userDetails['birth_date'],
             'name' => $userDetails['first_name'] . " " . $userDetails['last_name'],
-            'id_number' => $userAccount['rsbsa_number'],
+            'id_number' => "111",
             'user_account_id' => $userAccountId,
             'selfie' => $data['selfie_photo'],
             'nid_front' => $data['id_photo'],

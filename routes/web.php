@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\KYC\KYCController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,3 +12,4 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::post('/', [KYCController::class, 'callback']);

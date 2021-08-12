@@ -3,31 +3,39 @@
 namespace App\Services\KYCService;
 
 use App\Enums\SuccessMessages;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\Errors\WithKYCErrors;
+use App\Traits\Errors\WithTransactionErrors;
 use Carbon\Carbon;
 use CURLFILE;
+use DB;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Log;
 
 class KYCService implements IKYCService
 {
-    use WithKYCErrors;
+    use WithKYCErrors, WithTransactionErrors;
 
     private ICurlService $curlService;
     private IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     private IUserAccountRepository $userAccountRepository;
     private IResponseService $responseService;
+    private IKYCVerificationRepository $kycRepository;
 
-    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService)
+    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository)
     {
         $this->curlService = $curlService;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
         $this->userAccountRepository = $userAccountRepository;
         $this->responseService = $responseService;
+        $this->kycRepository = $kycRepository;
     }
 
     private function getAuthorizationHeaders(): array
@@ -101,13 +109,14 @@ class KYCService implements IKYCService
         return $reponse;
     }
 
-    public function checkIDExpiration(array $attr, $idType = 'phl_dl') {
+    public function checkIDExpiration(array $attr, $idType = 'phl_dl'): array
+    {
 
         $initOCR = $this->initOCR([
             'id_photo' => $attr['id_photo']
         ], $idType);
 
-        if($initOCR && isset($initOCR['result'])  && isset($initOCR['result']['0']) && $initOCR['result']['0']->details && $initOCR['result']['0']->details->doe) {
+        if ($initOCR && isset($initOCR['result']) && isset($initOCR['result']['0']) && $initOCR['result']['0']->details && $initOCR['result']['0']->details->doe) {
             // GET DATE OF EXPIRATION
             $doe = $initOCR['result']['0']->details->doe;
             $expDate = Carbon::parse($doe->value);
@@ -163,10 +172,11 @@ class KYCService implements IKYCService
     }
 
 
-    public function isEKYCValidated(array $params) {
-        if($params && isset($params['ocr_response'])) {
+    public function isEKYCValidated(array $params): bool
+    {
+        if ($params && isset($params['ocr_response'])) {
             // CHECK IF FULLNAME
-            if($params['ocr_response'] && isset($params['ocr_response']['last_name']) && $params['ocr_response']['last_name'] == '') {
+            if ($params['ocr_response'] && isset($params['ocr_response']['last_name']) && $params['ocr_response']['last_name'] == '') {
                 // Build full name
                 $last_name = $params['last_name'];
                 $first_name = $params['first_name'];
@@ -198,6 +208,95 @@ class KYCService implements IKYCService
 
         // CANT READ OCR RESPONSE
         return false;
+    }
+
+    public function verify(array $attr, $from_api = true) {
+        DB::beginTransaction();
+        try {
+            $url = env('KYC_APP_VERIFY_URL');
+            $headers = $this->getAuthorizationHeaders();
+
+            $data = [
+                'callbackURL' => env('KYC_APP_CALLBACK_URL'),
+                'name' => $attr['name'],
+                'idNumber' => $attr['id_number'],
+                'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
+                'applicationId' => Str::uuid(),
+                'enrol' => env('KYC_APP_VERIFY_REGISTER_ID', 'no'),
+                'selfie' => new CURLFILE($attr['selfie']->getPathname()),
+                'idFront' => new CURLFILE($attr['nid_front']->getPathname()),
+            ];
+
+            $response = $this->curlService->curlPost($url, $data, $headers);
+
+            Log::debug('eKYC Response', [
+                'verifyURL' => $url,
+                'callbackURL' => env('KYC_APP_CALLBACK_URL'),
+                'response' => $response
+            ]);
+
+            $record = $this->kycRepository->create([
+                'user_account_id' => $attr['user_account_id'],
+                'request_id' => isset($response['result']) ? $response['result']->requestId : $response['requestId'],
+                'application_id' => isset($response['result']) ? $response['result']->applicationId : $response['applicationId'],
+                'hv_response' => '',
+                'hv_result' => '',
+            ]);
+
+            if ($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
+                DB::commit();
+                // WAIT FOR CALLBACK
+                sleep(5);
+                // $record = $this->kycRepository->findByRequestId($record->request_id);
+                if($from_api) {
+                    return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+                }
+                return $record;
+            } else {
+                // \DB::rollBack();
+                DB::commit();
+                // ERROR
+                if($from_api) {
+                    // return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+                    return $this->responseService->successResponse([
+                        'statusCode' => $response['statusCode'],
+                        'message' => $response['error'],
+                        'status' => $response['status']
+                    ], SuccessMessages::success);
+                }
+                return $record;
+            }
+
+        } catch (Exception $err) {
+            Log::info(json_encode($err->getMessage()));
+            DB::rollBack();
+            $this->kycVerifyFailed();
+        }
+    }
+
+    public function handleCallback(array $attr): JsonResponse
+    {
+        Log::info(json_encode($attr));
+        if ($attr && isset($attr['result']) && isset($attr['result']['requestId'])) {
+            $record = $this->kycRepository->findByRequestId($attr['result']['requestId']);
+            if ($record) {
+                $this->kycRepository->update($record, [
+                    'hv_response' => json_encode($attr),
+                    'hv_result' => isset($attr['result']['unifiedResult']['channel']) ? $attr['result']['unifiedResult']['channel'] : $attr['error'],
+                    'status' => 'CALLBACK_RECEIVED'
+                ]);
+            }
+        }
+
+        return response()->json([
+            'message' => 'Callback Received'
+        ], 200);
+    }
+
+    public function verifyRequest(string $requestId): JsonResponse
+    {
+        $record = $this->kycRepository->findByRequestId($requestId);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
 }
