@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.4|^8.0",
+        "ext-curl": "^7.4",
         "ext-json": "^7.4",
         "ext-libxml": "^7.4",
         "ext-openssl": "^7.4",
