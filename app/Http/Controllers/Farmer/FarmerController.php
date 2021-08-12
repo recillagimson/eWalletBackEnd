@@ -12,11 +12,7 @@ use App\Http\Requests\Farmer\FarmerSelfieUploadRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
-<<<<<<< Updated upstream
-=======
-use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
 use App\Http\Requests\Farmer\FarmerBatchUploadRequest;
->>>>>>> Stashed changes
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
 use App\Services\UserAccount\IUserAccountService;
