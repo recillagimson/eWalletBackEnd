@@ -10,6 +10,7 @@ use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\Errors\WithKYCErrors;
 use App\Traits\Errors\WithTransactionErrors;
+use App\Traits\Errors\WithUserErrors;
 use Carbon\Carbon;
 use CURLFILE;
 use DB;
@@ -21,7 +22,7 @@ use Log;
 
 class KYCService implements IKYCService
 {
-    use WithKYCErrors, WithTransactionErrors;
+    use WithKYCErrors, WithTransactionErrors, WithUserErrors;
 
     private ICurlService $curlService;
     private IUserSelfiePhotoRepository $userSelfiePhotoRepository;
@@ -327,7 +328,7 @@ class KYCService implements IKYCService
         if($record) {
             return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
         }
-        $this->kycVerifyFailed();
+        $this->recordNotFound();
     }
 
 }
