@@ -232,10 +232,10 @@ class KYCService implements IKYCService
             ]);
 
             if($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
-                // WAIT FOR CALLBACK
-                sleep(5);
-                $record = $this->kycRepository->findByRequestId($record->request_id);
                 \DB::commit();
+                // WAIT FOR CALLBACK
+                sleep(20);
+                // $record = $this->kycRepository->findByRequestId($record->request_id);
                 if($from_api) {
                     return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
                 }
@@ -278,6 +278,11 @@ class KYCService implements IKYCService
         return response()->json([
             'message' => 'Callback Received'
         ], 200);
+    }
+
+    public function verifyRequest(string $requestId) {
+        $record = $this->kycRepository->findByRequestId($requestId);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
 }
