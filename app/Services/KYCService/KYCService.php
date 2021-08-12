@@ -256,7 +256,7 @@ class KYCService implements IKYCService
             }
 
         } catch(\Exception $err) {
-            dd($err);
+            \Log::info(json_encode($err->getMessage()));
             \DB::rollBack();
             $this->kycVerifyFailed();
         }
