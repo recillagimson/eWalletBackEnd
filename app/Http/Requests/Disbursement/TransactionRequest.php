@@ -24,8 +24,8 @@ class TransactionRequest extends FormRequest
     public function rules()
     {
         return [
-            'acccountNumber' => 'required',
-            'rsbsaNumber' => 'required',
+            'account_number' => 'required',
+            'rsbsa_number' => 'required',
             'amount' => 'required|numeric|min:1',
         ];
     }
