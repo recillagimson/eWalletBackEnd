@@ -116,6 +116,8 @@ use App\Services\AddMoneyV2\IAddMoneyService as IAddMoneyServiceV2;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
 use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
+use App\Services\Disbursement\DisbursementDbpService;
+use App\Services\Disbursement\IDisbursementDbpService;
 use App\Services\ThirdParty\DragonPay\DragonPayService as DragonPayServiceV2;
 
 
@@ -220,6 +222,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
         // FARMER SERVICE
         $this->app->bind(IFarmerProfileService::class, FarmerProfileService::class);
+
+        // BPI SERVICE
+        $this->app->bind(IDisbursementDbpService::class, DisbursementDbpService::class);
+        
         // BPI SERVICE
         $this->app->bind(IBPIService::class, BPIService::class);
 

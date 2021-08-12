@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
+use App\Models\OutDisbursementDbp;
 use App\Repositories\Admin\Permission\IPermissionRepository;
 use App\Repositories\Admin\Permission\PermissionRepository;
 use App\Repositories\Admin\Role\IRoleRepository;
@@ -104,6 +105,8 @@ use App\Repositories\Address\Municipality\MunicipalityRepository;
 use App\Repositories\Address\Municipality\IMunicipalityRepository;
 use App\Repositories\Address\Barangay\BarangayRepository;
 use App\Repositories\Address\Barangay\IBarangayRepository;
+use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
+use App\Repositories\Disbursement\OutDisbursementDbpRepository;
 use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\KYCVerification\KYCVerificationRepository;
 use App\Services\Auth\UserKey\UserKeyService;
@@ -226,6 +229,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // KYC Verification
         $this->app->bind(IKYCVerificationRepository::class, KYCVerificationRepository::class);
+
+        // Disbursement DBP
+        $this->app->bind(IOutDisbursementDbpRepository::class, OutDisbursementDbpRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
