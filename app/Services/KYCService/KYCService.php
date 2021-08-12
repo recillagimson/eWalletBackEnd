@@ -234,7 +234,7 @@ class KYCService implements IKYCService
             if($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
                 \DB::commit();
                 // WAIT FOR CALLBACK
-                sleep(20);
+                sleep(5);
                 // $record = $this->kycRepository->findByRequestId($record->request_id);
                 if($from_api) {
                     return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
