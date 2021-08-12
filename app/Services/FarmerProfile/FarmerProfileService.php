@@ -21,6 +21,14 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Services\Utilities\Verification\IVerificationService;
+use App\Imports\FarmersImport;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserBalance\IUserBalanceRepository;
+use Excel;
+use App\Exports\Farmer\FailedUploadExport;
+use App\Exports\Farmer\SuccessUploadExport;
 
 class FarmerProfileService implements IFarmerProfileService
 {
@@ -30,18 +38,35 @@ class FarmerProfileService implements IFarmerProfileService
     private IVerificationService $verificationService;
     private ILogHistoryService $logHistoryService;
     private IUserProfileService $userProfileService;
+    private IUserAccountNumberRepository $userAccountNumbers;
+    private IMaritalStatusRepository $maritalStatus;
 
     private IUserAccountRepository $userAccountRepository;
+    private IUserDetailRepository $userDetailRepository;
+    private IUserBalanceRepository $userBalance;
     private IKYCService $kycService;
     private IUserPhotoRepository $userPhotoRepository;
     private IUserSelfiePhotoRepository $userSelfieRepository;
 
 
     public function __construct(
-                                ITierApprovalRepository $userApprovalRepository, IUserAccountRepository $userAccountRepository, IVerificationService $verificationService, ILogHistoryService $logHistoryService, IUserProfileService $userProfileService, IKYCService $kycService, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfieRepository)
+                                ITierApprovalRepository $userApprovalRepository, 
+                                IUserAccountRepository $userAccountRepository, 
+                                IUserDetailRepository $userDetailRepository, 
+                                IUserBalanceRepository $userBalance, 
+                                IVerificationService $verificationService, 
+                                ILogHistoryService $logHistoryService, 
+                                IUserProfileService $userProfileService, 
+                                IKYCService $kycService, 
+                                IUserPhotoRepository $userPhotoRepository, 
+                                IUserSelfiePhotoRepository $userSelfieRepository,
+                                IUserAccountNumberRepository $userAccountNumbers,
+                                IMaritalStatusRepository $maritalStatus
+                                )
     {
         $this->userApprovalRepository = $userApprovalRepository;
         $this->userAccountRepository = $userAccountRepository;
+        $this->userDetailRepository = $userDetailRepository;
         $this->verificationService = $verificationService;
         $this->logHistoryService = $logHistoryService;
         $this->userProfileService = $userProfileService;
@@ -49,6 +74,9 @@ class FarmerProfileService implements IFarmerProfileService
         $this->userPhotoRepository = $userPhotoRepository;
         $this->kycService = $kycService;
         $this->userSelfieRepository = $userSelfieRepository;
+        $this->userAccountNumbers = $userAccountNumbers;
+        $this->maritalStatus = $maritalStatus;
+        $this->userBalance = $userBalance;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
@@ -99,5 +127,26 @@ class FarmerProfileService implements IFarmerProfileService
             \DB::rollBack();
             throw $e;
         }
+    }
+
+    public function batchUpload($file, string $authUser) {
+        $import = new FarmersImport( $this->userAccountRepository, 
+                                    $this->userDetailRepository, 
+                                    $this->userAccountNumbers, 
+                                    $this->maritalStatus, 
+                                    $this->userBalance, 
+                                    $authUser );
+        Excel::import($import, $file);
+
+        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.xlsx';
+        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.xlsx';
+
+        Excel::store(new FailedUploadExport($import->getFails()), $failFilename, 's3');
+        Excel::store(new SuccessUploadExport($import->getSuccesses()), $successFilename, 's3');
+
+        return [
+            'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
+            'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30))
+        ];
     }
 }
