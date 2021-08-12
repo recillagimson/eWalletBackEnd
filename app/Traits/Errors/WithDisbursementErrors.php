@@ -6,13 +6,13 @@ namespace App\Traits\Errors;
 
 use App\Enums\ErrorCodes;
 
-trait WithPayBillsErrors
+trait WithDisbursementErrors
 {
     use WithErrors;
 
     /*
     |--------------------------------------------------------------------------
-    | PAY BILLS VALIDATION EXCEPTION HELPER METHODS
+    | Disvursement DBP VALIDATION EXCEPTION HELPER METHODS
     |--------------------------------------------------------------------------
     */
 
@@ -21,11 +21,6 @@ trait WithPayBillsErrors
     private function insuficientBalance()
     {
         $this->validationErrorMessage(ErrorCodes::userInsufficientBalance, 'Not Enough balance.');
-    }
-
-    private function invalidUser()
-    {
-        $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exists.');
     }
 
 

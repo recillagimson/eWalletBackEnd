@@ -12,6 +12,7 @@ use App\Http\Controllers\BPIController;
 use App\Http\Controllers\BuyLoad\AtmController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Disbursement\DisbursementController;
 use App\Http\Controllers\DrcrMemoController;
 use App\Http\Controllers\Farmer\FarmerController;
 use App\Http\Controllers\HelpCenterController;
@@ -309,6 +310,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/list/billers/pdf', [PayBillsController::class, 'downloadListOfBillersPDF']);
         Route::get('/list/billers/csv', [PayBillsController::class, 'downloadListOfBillersCSV']);
     });
+
+    Route::prefix('disbursement/dbp')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/transaction', [DisbursementController::class, 'transaction']);
+    });
+
 
     Route::prefix('/notifications')->middleware(['decrypt.request'])->name('notifications.')->group(function () {
         Route::get('/', [NotificationController::class, 'GetAll'])->name('list');

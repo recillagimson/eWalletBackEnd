@@ -15,4 +15,5 @@ class ReferenceNumberTypes
     const AddMoneyViaSquidPay = 'AS';
     const DR = 'DR';
     const CR = 'CR';
+    const DI = 'DI';
 }
