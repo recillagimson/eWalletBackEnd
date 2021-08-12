@@ -117,6 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('ocr', [KYCController::class, 'initOCR'])->name('ocr');
         Route::post('expiration/check', [KYCController::class, 'checkIDExpiration'])->name('expiration.check');
         Route::post('ocr/match', [KYCController::class, 'matchOCR'])->name('ocr.match');
+        Route::get('verify/{requestId}', [KYCController::class, 'verifyRequest'])->name('verify');
     });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {

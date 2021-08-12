@@ -10,4 +10,5 @@ interface IKYCService {
     public function isEKYCValidated(array $params);
     public function handleCallback(array $attr);
     public function verify(array $attr, $from_api = true);
+    public function verifyRequest(string $requestId);
 }
