@@ -16,6 +16,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Log;
+use Str;
 
 class VerificationService implements IVerificationService
 {
@@ -66,7 +68,7 @@ class VerificationService implements IVerificationService
         // GET EXT NAME
         $selfiePhotoExt = $this->getFileExtensionName($data['selfie_photo']);
         // GENERATE NEW FILE NAME
-        $selfiePhotoName = request()->user()->id . "/" . \Str::random(40) . "." . $selfiePhotoExt;
+        $selfiePhotoName = request()->user()->id . "/" . Str::random(40) . "." . $selfiePhotoExt;
         // PUT FILE TO STORAGE
         $selfiePhotoPath = $this->saveFile($data['selfie_photo'], $selfiePhotoName, 'selfie_photo');
 
@@ -108,7 +110,7 @@ class VerificationService implements IVerificationService
             // Get file extension name
             $extName = $this->getFileExtensionName($idPhoto);
             // Generate new file name
-            $idPhotoName = $data['user_account_id'] . "/" . \Str::random(40) . "." . $extName;
+            $idPhotoName = $data['user_account_id'] . "/" . Str::random(40) . "." . $extName;
             // Put file to storage
             $path = $this->saveFile($idPhoto, $idPhotoName, 'id_photo');
             // Save record to DB
@@ -116,7 +118,7 @@ class VerificationService implements IVerificationService
             // Init eKYC OCR
             $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
             $extractData = $this->extractData($eKYC, $idType->type);
-            
+
             $params = [
                 'user_account_id' => $data['user_account_id'],
                 'id_type_id' => $data['id_type_id'],
@@ -154,7 +156,7 @@ class VerificationService implements IVerificationService
 
     private function extractData($response, $idType) {
         $data = $response;
-        \Log::info(json_encode($response));
+        Log::info(json_encode($response));
         if($response && isset($response['result']) && isset($response['result']['0']) && $response['result']['0']->details) {
             $response_data = $response['result']['0']->details;
 
@@ -329,7 +331,7 @@ class VerificationService implements IVerificationService
         // GET EXT NAME
         $selfiePhotoExt = $this->getFileExtensionName($data['selfie_photo']);
         // GENERATE NEW FILE NAME
-        $selfiePhotoName = request()->user()->id . "/" . \Str::random(40) . "." . $selfiePhotoExt;
+        $selfiePhotoName = request()->user()->id . "/" . Str::random(40) . "." . $selfiePhotoExt;
         // PUT FILE TO STORAGE
         $selfiePhotoPath = $this->saveFile($data['selfie_photo'], $selfiePhotoName, 'selfie_photo');
 
@@ -369,5 +371,3 @@ class VerificationService implements IVerificationService
         // return to controller all created records
     }
 }
-
-

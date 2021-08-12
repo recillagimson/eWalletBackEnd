@@ -5,7 +5,6 @@ namespace App\Traits\Errors;
 
 
 use App\Enums\ErrorCodes;
-use Illuminate\Validation\ValidationException;
 
 trait WithKYCErrors
 {
@@ -17,7 +16,8 @@ trait WithKYCErrors
     |--------------------------------------------------------------------------
     */
 
-    public function OCRmatchOCR() {
+    public function OCRmatchOCR()
+    {
         $this->validationErrorMessage(ErrorCodes::ocrMismatch,
             'OCR matching failed.');
     }

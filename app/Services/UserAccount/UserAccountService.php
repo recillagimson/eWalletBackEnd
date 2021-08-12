@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Carbon\Carbon;
 
 class UserAccountService implements IUserAccountService
 {
@@ -127,7 +126,8 @@ class UserAccountService implements IUserAccountService
         $user->delete();
     }
 
-    public function getAllPaginated($request, $perPage = 10) {
+    public function getAllPaginated($request, $perPage = 10)
+    {
 
         // if ($request->missing('from')) {
         //     $request->request->add(['from' => Carbon::now()->format('Y-m-d')]);

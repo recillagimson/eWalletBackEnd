@@ -2,40 +2,33 @@
 
 namespace App\Services\PayBills;
 
-use Exception;
-use App\Models\UserDetail;
-use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Models\UserAccount;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\Notification\INotificationRepository;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Services\Transaction\ITransactionValidationService;
+use App\Services\Utilities\CSV\ICSVService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithPayBillsErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Transactions\PayBillsHelpers;
-use Illuminate\Validation\ValidationException;
-use App\Services\Utilities\CSV\ICSVService;
-use App\Services\Utilities\Notifications\Email\IEmailService;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
 use Carbon\Carbon;
 
 class PayBillsService implements IPayBillsService
 {
     use WithTpaErrors, PayBillsHelpers, WithPayBillsErrors;
 
-   
+
     private IOutPayBillsRepository $outPayBills;
     private IBayadCenterService $bayadCenterService;
     private IUserDetailRepository $userDetailRepository;
@@ -53,7 +46,8 @@ class PayBillsService implements IPayBillsService
     private ISmsService $smsService;
     private INotificationRepository $notificationRepository;
 
-    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService, ICSVService $csvService, ILogHistoryRepository $logHistory, IEmailService $emailService, ISmsService $smsService, INotificationRepository $notificationRepository){
+    public function __construct(IOutPayBillsRepository $outPayBills, IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, ITransactionValidationService $transactionValidationService, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService, ICSVService $csvService, ILogHistoryRepository $logHistory, IEmailService $emailService, ISmsService $smsService, INotificationRepository $notificationRepository)
+    {
         $this->outPayBills = $outPayBills;
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
@@ -72,7 +66,7 @@ class PayBillsService implements IPayBillsService
         $this->notificationRepository = $notificationRepository;
     }
 
-    
+
     public function getBillers(): array
     {
         $response = $this->bayadCenterService->getBillers();
@@ -84,34 +78,34 @@ class PayBillsService implements IPayBillsService
 
         //list of active billing partners
         for ($x = 0; $x < $billersCount; $x++) {
-            if( 
-                $arrayResponse['data'][$x]['code'] == 'MECOR' || 
-                $arrayResponse['data'][$x]['code'] == 'MWCOM' || 
-                $arrayResponse['data'][$x]['code'] == 'MWSIN' || 
-                $arrayResponse['data'][$x]['code'] == 'RFID1' || 
+            if (
+                $arrayResponse['data'][$x]['code'] == 'MECOR' ||
+                $arrayResponse['data'][$x]['code'] == 'MWCOM' ||
+                $arrayResponse['data'][$x]['code'] == 'MWSIN' ||
+                $arrayResponse['data'][$x]['code'] == 'RFID1' ||
                 $arrayResponse['data'][$x]['code'] == 'ETRIP' ||
-                $arrayResponse['data'][$x]['code'] == 'SPLAN' || 
-                $arrayResponse['data'][$x]['code'] == 'SKY01' || 
-                $arrayResponse['data'][$x]['code'] == 'MCARE ' || 
-                $arrayResponse['data'][$x]['code'] == 'AEON1' || 
-                $arrayResponse['data'][$x]['code'] == 'BNECO' || 
-                $arrayResponse['data'][$x]['code'] == 'PRULI' || 
-                $arrayResponse['data'][$x]['code'] == 'AECOR' || 
-                $arrayResponse['data'][$x]['code'] == 'CNVRG' || 
-                $arrayResponse['data'][$x]['code'] == 'SMART' || 
+                $arrayResponse['data'][$x]['code'] == 'SPLAN' ||
+                $arrayResponse['data'][$x]['code'] == 'SKY01' ||
+                $arrayResponse['data'][$x]['code'] == 'MCARE ' ||
+                $arrayResponse['data'][$x]['code'] == 'AEON1' ||
+                $arrayResponse['data'][$x]['code'] == 'BNECO' ||
+                $arrayResponse['data'][$x]['code'] == 'PRULI' ||
+                $arrayResponse['data'][$x]['code'] == 'AECOR' ||
+                $arrayResponse['data'][$x]['code'] == 'CNVRG' ||
+                $arrayResponse['data'][$x]['code'] == 'SMART' ||
                 //$arrayResponse['data'][$x]['code'] == 'SSS01' ||
-               // $arrayResponse['data'][$x]['code'] == 'SSS02' || 
-                $arrayResponse['data'][$x]['code'] == 'SSS03' || 
-                //$arrayResponse['data'][$x]['code'] == 'DFA01' || 
+                // $arrayResponse['data'][$x]['code'] == 'SSS02' ||
+                $arrayResponse['data'][$x]['code'] == 'SSS03' ||
+                //$arrayResponse['data'][$x]['code'] == 'DFA01' ||
                 //$arrayResponse['data'][$x]['code'] == 'POEA1'
-                $arrayResponse['data'][$x]['code'] == 'MBCCC' || 
-                $arrayResponse['data'][$x]['code'] == 'BPI00' || 
-                $arrayResponse['data'][$x]['code'] == 'BNKRD' || 
-                $arrayResponse['data'][$x]['code'] == 'UNBNK' || 
-                $arrayResponse['data'][$x]['code'] == 'PILAM' || 
-                $arrayResponse['data'][$x]['code'] == 'ADMSN' || 
-                $arrayResponse['data'][$x]['code'] == 'UBNK4' || 
-                $arrayResponse['data'][$x]['code'] == 'ASLNK' 
+                $arrayResponse['data'][$x]['code'] == 'MBCCC' ||
+                $arrayResponse['data'][$x]['code'] == 'BPI00' ||
+                $arrayResponse['data'][$x]['code'] == 'BNKRD' ||
+                $arrayResponse['data'][$x]['code'] == 'UNBNK' ||
+                $arrayResponse['data'][$x]['code'] == 'PILAM' ||
+                $arrayResponse['data'][$x]['code'] == 'ADMSN' ||
+                $arrayResponse['data'][$x]['code'] == 'UBNK4' ||
+                $arrayResponse['data'][$x]['code'] == 'ASLNK'
 
                 ){
                     $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
@@ -137,7 +131,7 @@ class PayBillsService implements IPayBillsService
     {
         $response = $this->bayadCenterService->getWalletBalance();
         $arrayResponse = (array)json_decode($response->body(), true);
-        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse); 
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
         return $arrayResponse;
     }
 
@@ -160,10 +154,10 @@ class PayBillsService implements IPayBillsService
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
         $outPayBills = $this->saveTransaction($user, $billerCode, $response, $response);
-       
+
         // For automatic validation of incoming pending status
         $this->processPending($user);
-       
+
         return (array)json_decode($outPayBills);
     }
 
@@ -186,7 +180,7 @@ class PayBillsService implements IPayBillsService
         $response = array();
 
         foreach ($pendingOutPayBills as $payBill) {
-            
+
             $response = $this->bayadCenterService->inquirePayment($payBill->billers_code, $payBill->client_reference);
             $payBill = $this->handleStatusResponse($payBill, $response);
             $amount = $payBill->total_amount;
@@ -206,14 +200,14 @@ class PayBillsService implements IPayBillsService
             if ($payBill->status === TransactionStatuses::success) $successCount++;
             if ($payBill->status === TransactionStatuses::failed) $failCount++;
         }
-        
+
 
         return [
             'total_pending_count' => $pendingOutPayBills->count(),
             'success_count' => $successCount,
             'failed_count' => $failCount
         ];
-    }    
+    }
 
     public function downloadListOfBillersCSV()
     {
@@ -236,5 +230,5 @@ class PayBillsService implements IPayBillsService
 
         return $this->csvService->generateCSV($datas, $columns);
     }
-    
+
 }

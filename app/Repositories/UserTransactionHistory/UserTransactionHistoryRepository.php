@@ -7,9 +7,8 @@ use App\Models\UserTransactionHistory;
 use App\Models\UserUtilities\UserTransactionHistoryView;
 use App\Repositories\Repository;
 use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
-use DB;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\ValidationException;
 
 class UserTransactionHistoryRepository extends Repository implements IUserTransactionHistoryRepository
 {
@@ -82,7 +81,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         //     ->having('amount', '>=', $amount_limit);
             // ->groupBy(function($val) {
             //     return Carbon::parse($val->transaction_date)->format('Y-m-d');
-            // })      
+            // })
 
         $records = $this->model
         ->with(['user_account', 'user_details'])
@@ -115,7 +114,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     public function findTransactionWithRelationViaView(string $id) {
         $record = UserTransactionHistoryView::with(['transaction_category'])->where('transaction_id', $id)->first();
 
-        if(is_null($record)) {
+        if (is_null($record)) {
             throw ValidationException::withMessages([
                 'record_not_found' => 'Record not found'
             ]);
@@ -123,51 +122,44 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $record->append('transactable');
     }
 
-    public function getTransactionHistoryAdmin(array $attr, bool $paginated = true) {
+    public function getTransactionHistoryAdmin(array $attr)
+    {
         $records = DRCRProcedure::with([]);
         $from = Carbon::now()->subDays(30)->format('Y-m-d');
         $to = Carbon::now()->format('Y-m-d');
 
-        if(isset($attr['from']) && isset($attr['to']) && $attr['from'] != '' && $attr['to'] != '') {
+        if (isset($attr['from']) && isset($attr['to']) && $attr['from'] != '' && $attr['to'] != '') {
             $from = $attr['from'];
             $to = $attr['to'];
         }
 
-        if(isset($attr['filter_by']) && $attr['filter_by'] != '' && isset($attr['filter_value']) && $attr['filter_value'] != '') {
+        if (isset($attr['filter_by']) && $attr['filter_by'] != '' && isset($attr['filter_value']) && $attr['filter_value'] != '') {
             $filter_by = $attr['filter_by'];
             $filter_value = $attr['filter_value'];
 
             // IF CUSTOMER NAME
-            if($filter_by == 'CUSTOMER_NAME') {
-                $records = $records->where(function($q) use($filter_value) {
+            if ($filter_by == 'CUSTOMER_NAME') {
+                $records = $records->where(function ($q) use ($filter_value) {
                     $q->where('first_name', 'LIKE', '%' . $filter_value . '%')
-                    ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%');
+                        ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%');
                 });
-            }
-
-            // IF CUSTOMER ACCOUNT NUMBER
-            else if($filter_by == 'CUSTOMER_ID') {
+            } // IF CUSTOMER ACCOUNT NUMBER
+            else if ($filter_by == 'CUSTOMER_ID') {
                 $records = $records->where('account_number', $filter_value);
             }
 
             // IF TYPE
-            else if($filter_by == 'TYPE') {
+            else if ($filter_by == 'TYPE') {
                 $records = $records->where('Type', $filter_value);
-            }
-
-            // IF STATUS
-            else if($filter_by == 'STATUS') {
+            } // IF STATUS
+            else if ($filter_by == 'STATUS') {
                 $records = $records->where('Status', $filter_value);
             }
         }
 
         $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE');
 
-        if($paginated) {
-            return $records->paginate();
-        }
-
-        return $records->get();
+        return $records->paginate();
     }
 
 }

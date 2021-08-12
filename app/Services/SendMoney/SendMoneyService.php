@@ -9,13 +9,10 @@ use App\Enums\SendMoneyConfig;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\UsernameTypes;
 use App\Models\UserAccount;
-use App\Traits\Errors\WithSendMoneyErrors;
-use App\Services\Utilities\OTP\IOtpService;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
-use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
-use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\QrTransactions\IQrTransactionsRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -23,12 +20,16 @@ use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Transaction\ITransactionValidationService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use Carbon\Carbon;
+use App\Traits\Errors\WithSendMoneyErrors;
 use App\Traits\UserHelpers;
+use Carbon\Carbon;
 use DB;
+use Exception;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -52,23 +53,24 @@ class SendMoneyService implements ISendMoneyService
     private IServiceFeeRepository $serviceFeeRepository;
 
     public function __construct(
-        IOutSendMoneyRepository $outSendMoney,
-        IInReceiveMoneyRepository $inReceiveMoney,
-        IUserAccountRepository $userAccts,
-        IUserBalanceInfoRepository $userBalanceInfo,
-        IQrTransactionsRepository $qrTransactions,
-        IReferenceNumberService $referenceNumberService,
-        ILogHistoryRepository $loghistoryrepository,
+        IOutSendMoneyRepository           $outSendMoney,
+        IInReceiveMoneyRepository         $inReceiveMoney,
+        IUserAccountRepository            $userAccts,
+        IUserBalanceInfoRepository        $userBalanceInfo,
+        IQrTransactionsRepository         $qrTransactions,
+        IReferenceNumberService           $referenceNumberService,
+        ILogHistoryRepository             $loghistoryrepository,
         IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-        IUserDetailRepository $userDetailRepository,
-        INotificationService $notificationService,
-        IEmailService $emailService,
-        ISmsService $smsService,
-        IOtpService $otpService,
-        ITransactionValidationService $transactionValidationService,
-        INotificationRepository $notificationRepository,
-        IServiceFeeRepository $serviceFeeRepository
-    ) {
+        IUserDetailRepository             $userDetailRepository,
+        INotificationService              $notificationService,
+        IEmailService                     $emailService,
+        ISmsService                       $smsService,
+        IOtpService                       $otpService,
+        ITransactionValidationService     $transactionValidationService,
+        INotificationRepository           $notificationRepository,
+        IServiceFeeRepository             $serviceFeeRepository
+    )
+    {
         $this->outSendMoney = $outSendMoney;
         $this->inReceiveMoney = $inReceiveMoney;
         $this->userAccounts = $userAccts;
@@ -118,28 +120,28 @@ class SendMoneyService implements ISendMoneyService
 
         $this->checkMonthlyLimitForSender($senderAccount, $fillRequest);
         $this->checkMonthlyLimitForReceiver($receiverAccount, $fillRequest);
-      
+
         DB::beginTransaction();
-            try {
-                $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
-                $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
-                $outSendMoney = $this->outSendMoney($senderID, $receiverID, $fillRequest, $user);
-                $inReceiveMoney = $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
+        try {
+            $fillRequest['refNo'] = $this->referenceNumberService->generate(ReferenceNumberTypes::SendMoney);
+            $fillRequest['refNoRM'] = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoney);
+            $outSendMoney = $this->outSendMoney($senderID, $receiverID, $fillRequest, $user);
+            $inReceiveMoney = $this->inReceiveMoney($senderID, $receiverID, $fillRequest);
 
-                $this->subtractSenderBalance($senderID, $fillRequest, $user);
-                $this->addReceiverBalance($receiverID, $fillRequest, $user);
-                $this->logHistories($senderID, $receiverID, $fillRequest);
-                $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest, $user);
-                $this->senderNotification($user, $username, $fillRequest, $receiverID, $senderID);
-                $this->recipientNotification($receiverUser, $username, $fillRequest, $senderID, $receiverID);
-                
-                DB::commit();
-                return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username, $user);
+            $this->subtractSenderBalance($senderID, $fillRequest, $user);
+            $this->addReceiverBalance($receiverID, $fillRequest, $user);
+            $this->logHistories($senderID, $receiverID, $fillRequest);
+            $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest, $user);
+            $this->senderNotification($user, $username, $fillRequest, $receiverID, $senderID);
+            $this->recipientNotification($receiverUser, $username, $fillRequest, $senderID, $receiverID);
 
-            } catch (\Exception $e) {
-                DB::rollBack();
-            }
-      
+            DB::commit();
+            return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username, $user);
+
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
+
     }
 
 
@@ -170,7 +172,7 @@ class SendMoneyService implements ISendMoneyService
 
         $this->checkMonthlyLimitForSender($senderAccount, $fillRequest);
         $this->checkMonthlyLimitForReceiver($receiverAccount, $fillRequest);
-   
+
         return $this->sendMoneyReview($receiverID);
     }
 
@@ -251,12 +253,12 @@ class SendMoneyService implements ISendMoneyService
         return [
             'first_name' => $receiverDetails->first_name,
             'middle_name' => $receiverDetails->middle_name,
-            'last_name' =>  $receiverDetails->last_name,
+            'last_name' => $receiverDetails->last_name,
             'name_extension' => $receiverDetails->extension,
             $username => $fillRequest[$username],
             'message' => $fillRequest['message'],
-            'reference_number' =>  $fillRequest['refNo'],
-            'total_amount' =>  $fillRequest['amount'] + $this->getServiceFee($user, true),
+            'reference_number' => $fillRequest['refNo'],
+            'total_amount' => $fillRequest['amount'] + $this->getServiceFee($user, true),
             'transaction_date' => Carbon::now()
         ];
     }
@@ -309,7 +311,7 @@ class SendMoneyService implements ISendMoneyService
 
     private function getServiceFee(UserAccount $user, $isSend)
     {
-        if($isSend){
+        if ($isSend) {
             $serviceFee = $this->serviceFeeRepository->getByTierAndTransCategory($user->tier_id, TransactionCategoryIds::sendMoneyToSquidPayAccount);
             $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
         } else {
@@ -335,7 +337,7 @@ class SendMoneyService implements ISendMoneyService
 
     private function senderNotification(UserAccount $user, $username, $fillRequest, $receiverID, $senderID)
     {
-        $userDetail  = $this->userDetailRepository->getByUserId($receiverID);
+        $userDetail = $this->userDetailRepository->getByUserId($receiverID);
         $fillRequest['serviceFee'] = $this->getServiceFee($user, true);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($senderID), 2);
 

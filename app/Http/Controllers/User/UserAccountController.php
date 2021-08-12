@@ -4,7 +4,6 @@ namespace App\Http\Controllers\User;
 
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\CustomerFilterRequest;
 use App\Http\Requests\User\UpdateEmailRequest;
 use App\Http\Requests\User\UpdateMobileRequest;
 use App\Http\Requests\UserRole\SetUserRoleRequest;

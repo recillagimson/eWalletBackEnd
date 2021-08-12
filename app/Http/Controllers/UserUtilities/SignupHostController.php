@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\UserUtilities;
 
+use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Repositories\UserUtilities\SignupHost\ISignupHostRepository;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use App\Services\Encryption\IEncryptionService;
 use App\Http\Requests\UserUtilities\SignupHostRequest;
 use App\Models\UserUtilities\SignupHost;
+use App\Repositories\UserUtilities\SignupHost\ISignupHostRepository;
+use App\Services\Encryption\IEncryptionService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\Utilities\Responses\IResponseService;
-use App\Enums\SuccessMessages;
+use Illuminate\Http\JsonResponse;
 
 class SignupHostController extends Controller
 {
@@ -21,11 +19,11 @@ class SignupHostController extends Controller
     private ISignupHostRepository $signupHostRepository;
     private IUserProfileService $userProfileService;
     private IResponseService $responseService;
-    
+
     public function __construct(ISignupHostRepository $signupHostRepository,
-                                IEncryptionService $encryptionService,
-                                IUserProfileService $userProfileService,
-                                IResponseService $responseService)
+                                IEncryptionService    $encryptionService,
+                                IUserProfileService   $userProfileService,
+                                IResponseService      $responseService)
     {
         $this->signupHostRepository = $signupHostRepository;
         $this->encryptionService = $encryptionService;

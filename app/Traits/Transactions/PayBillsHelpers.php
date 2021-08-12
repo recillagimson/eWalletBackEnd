@@ -6,29 +6,20 @@ namespace App\Traits\Transactions;
 use App\Enums\BayadCenterResponseCode;
 use App\Enums\PayBillsConfig;
 use App\Enums\ReferenceNumberTypes;
-use App\Enums\TpaProviders;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
-use App\Enums\UbpResponseCodes;
-use App\Enums\UbpResponseStates;
 use App\Enums\UsernameTypes;
 use App\Models\OutPayBills;
-use App\Models\OutSend2Bank;
 use App\Models\UserAccount;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
-use App\Services\Utilities\Notifications\Email\IEmailService;
-use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithUserErrors;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use DB;
+use Exception;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Str;
 
-
-use function GuzzleHttp\json_encode;
 
 trait PayBillsHelpers
 {
@@ -44,9 +35,9 @@ trait PayBillsHelpers
 
 
     /**
-     * Validates the transaction 
+     * Validates the transaction
      * Validate Account Endpoint
-     * 
+     *
      * @param UserAccount $user
      * @param string $billerCode
      * @param array $response
@@ -72,33 +63,33 @@ trait PayBillsHelpers
     private function saveTransaction(UserAccount $user, string $billerCode, $response, $data)
     {
         DB::beginTransaction();
-            try {
-                $serviceFee = $this->getServiceFee($user);
-                $outPayBills = $this->outPayBills($user, $billerCode, $response);
-                $userDetail  = $this->userDetailRepository->getByUserId($user->id);
+        try {
+            $serviceFee = $this->getServiceFee($user);
+            $outPayBills = $this->outPayBills($user, $billerCode, $response);
+            $userDetail = $this->userDetailRepository->getByUserId($user->id);
 
-                $fillRequest['serviceFee'] = $response['data']['otherCharges'] + $serviceFee;
-                $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($user->id), 2);
-                $fillRequest['amount'] = $response['data']['amount'];
-                $fillRequest['refNo'] = $outPayBills->reference_number;
-                $fillRequest['biller'] = $outPayBills->billers_name;
+            $fillRequest['serviceFee'] = $response['data']['otherCharges'] + $serviceFee;
+            $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($user->id), 2);
+            $fillRequest['amount'] = $response['data']['amount'];
+            $fillRequest['refNo'] = $outPayBills->reference_number;
+            $fillRequest['biller'] = $outPayBills->billers_name;
 
-                $usernameField = $this->getUsernameFieldByAvailability($user);
-                $username = $this->getUsernameByField($user, $usernameField);
-                $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
-                $notifService->payBillsNotification($username, $fillRequest, $userDetail->first_name);
+            $usernameField = $this->getUsernameFieldByAvailability($user);
+            $username = $this->getUsernameByField($user, $usernameField);
+            $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
+            $notifService->payBillsNotification($username, $fillRequest, $userDetail->first_name);
 
-                $description = 'Hi Squidee! Your payment of P' . $fillRequest['amount'] . ' to ' . $fillRequest['biller'] . ' with fee ' . $fillRequest['serviceFee'] . '. has been successfully processed on ' . date('Y-m-d H:i:s') . ' with Ref No. ' . $fillRequest['refNo'] . '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
-                $title = 'SquidPay - Pay Bills Notification';
-                
-                $this->subtractUserBalance($user, $billerCode, $response);
-                $this->insertNotification($user, $title, $description);
+            $description = 'Hi Squidee! Your payment of P' . $fillRequest['amount'] . ' to ' . $fillRequest['biller'] . ' with fee ' . $fillRequest['serviceFee'] . '. has been successfully processed on ' . date('Y-m-d H:i:s') . ' with Ref No. ' . $fillRequest['refNo'] . '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
+            $title = 'SquidPay - Pay Bills Notification';
 
-                DB::commit();    
-                return $outPayBills;
-            } catch (\Exception $e) {
-                DB::rollBack();
-            }
+            $this->subtractUserBalance($user, $billerCode, $response);
+            $this->insertNotification($user, $title, $description);
+
+            DB::commit();
+            return $outPayBills;
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
 
     }
 
@@ -141,7 +132,7 @@ trait PayBillsHelpers
     {
         return $this->referenceNumberService->generate(ReferenceNumberTypes::PayBills);
     }
-    
+
 
     private function getServiceFee(UserAccount $user)
     {
@@ -176,7 +167,7 @@ trait PayBillsHelpers
             'transaction_remarks' => 'Pay bills to ' . $biller['data']['name'],
             'message' => '',
             'status' => TransactionStatuses::pending,
-            'client_reference' =>  $response['data']['clientReference'],
+            'client_reference' => $response['data']['clientReference'],
             'billers_code' => $biller['data']['code'],
             'billers_name' => $biller['data']['name'],
             'biller_reference_number' => $response['data']['billerReference'],
@@ -200,7 +191,7 @@ trait PayBillsHelpers
     private function validationResponse(UserAccount $user, $response, string $billerCode)
     {
         $data = array();
-        $data += array('serviceFee' => (string) $this->getServiceFee($user));
+        $data += array('serviceFee' => (string)$this->getServiceFee($user));
         $data += array('otherCharges' => $this->getOtherCharges($billerCode));
         $data += array('validationNumber' => $response['data']['validationNumber']);
 
@@ -215,7 +206,7 @@ trait PayBillsHelpers
             $responseData = $response->json();
             $state = $responseData['data']['status'];
             $status = '';
-            
+
             if ($state === BayadCenterResponseCode::paymentPosted)
                 $status = TransactionStatuses::success;
 
@@ -236,8 +227,8 @@ trait PayBillsHelpers
 
             if ($state === BayadCenterResponseCode::processing)
                 $status = TransactionStatuses::pending;
-                
-                
+
+
             $payBill->status = $status;
             $payBill->user_updated = $payBill->user_account_id;
             $payBill->save();

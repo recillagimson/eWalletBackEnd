@@ -3,33 +3,32 @@
 namespace App\Services\KYCService;
 
 use App\Enums\SuccessMessages;
-use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\Errors\WithKYCErrors;
 use App\Traits\Errors\WithTransactionErrors;
 use Carbon\Carbon;
+use CURLFILE;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class KYCService implements IKYCService
-{   
+{
     use WithKYCErrors, WithTransactionErrors;
+
     private ICurlService $curlService;
     private IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     private IUserAccountRepository $userAccountRepository;
     private IResponseService $responseService;
-    private IKYCVerificationRepository $kycRepository;
 
-    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository)
+    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService)
     {
         $this->curlService = $curlService;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
         $this->userAccountRepository = $userAccountRepository;
         $this->responseService = $responseService;
-        $this->kycRepository = $kycRepository;
     }
 
     private function getAuthorizationHeaders(): array
@@ -48,11 +47,11 @@ class KYCService implements IKYCService
         $headers = $this->getAuthorizationHeaders();
 
         if($isPath) {
-            $id = new \CURLFILE($attr['id_photo']);
-            $selfie = new \CURLFILE($attr['selfie_photo']);
+            $id = new CURLFILE($attr['id_photo']);
+            $selfie = new CURLFILE($attr['selfie_photo']);
         } else {
-            $id = new \CURLFILE($attr['id_photo']->getPathname());
-            $selfie = new \CURLFILE($attr['selfie_photo']->getPathname());
+            $id = new CURLFILE($attr['id_photo']->getPathname());
+            $selfie = new CURLFILE($attr['selfie_photo']->getPathname());
         }
 
         $data = array('id' => $id, 'selfie' => $selfie);
@@ -60,18 +59,19 @@ class KYCService implements IKYCService
         return $this->curlService->curlPost($url, $data, $headers);
     }
 
-    public function initOCR(array $attr, $idType = '') {
+    public function initOCR(array $attr, $idType = '')
+    {
         $url = env('KYC_APP_OCR_URL');
-        if($idType == 'passport') {
+        if ($idType == 'passport') {
             $url = env('KYC_APP_OCR_URL_PASSPORT');
         }
         $headers = $this->getAuthorizationHeaders();
         $headers[4] = "transactionId: " . (string)Str::uuid();
-        $id = new \CURLFILE($attr['id_photo']->getPathname());
-        
+        $id = new CURLFILE($attr['id_photo']->getPathname());
+
         $data = array('id' => $id);
-        if($idType) {
-            // $headers[5] = "cardType: " . $idType; 
+        if ($idType) {
+            // $headers[5] = "cardType: " . $idType;
             $data['cardType'] = $idType;
         }
 
@@ -92,22 +92,22 @@ class KYCService implements IKYCService
         $url = env('KYC_APP_FACEMATCH_URL');
         $headers = $this->getAuthorizationHeaders();
 
-        $selfie_retrieved = new \CURLFILE($tempImage);
-        $selfie = new \CURLFILE($attr['selfie_photo']->getPathname());
+        $selfie_retrieved = new CURLFILE($tempImage);
+        $selfie = new CURLFILE($attr['selfie_photo']->getPathname());
 
         $data = array('id' => $selfie_retrieved, 'selfie' => $selfie);
-        
+
         $reponse = $this->curlService->curlPost($url, $data, $headers);
         unlink($tempImage);
         return $reponse;
     }
 
     public function checkIDExpiration(array $attr, $idType = 'phl_dl') {
-        
+
         $initOCR = $this->initOCR([
             'id_photo' => $attr['id_photo']
         ], $idType);
-        
+
         if($initOCR && isset($initOCR['result'])  && isset($initOCR['result']['0']) && $initOCR['result']['0']->details && $initOCR['result']['0']->details->doe) {
             // GET DATE OF EXPIRATION
             $doe = $initOCR['result']['0']->details->doe;
@@ -129,7 +129,7 @@ class KYCService implements IKYCService
         }
 
         return $initOCR;
-        
+
     }
 
     public function matchOCR(array $attr) {
@@ -163,7 +163,6 @@ class KYCService implements IKYCService
         // ];
     }
 
-    
 
     public function isEKYCValidated(array $params) {
         if($params && isset($params['ocr_response'])) {

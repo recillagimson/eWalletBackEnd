@@ -12,7 +12,7 @@ class AddMoneyRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -22,7 +22,7 @@ class AddMoneyRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'provider' => [
@@ -31,7 +31,7 @@ class AddMoneyRequest extends FormRequest
                     'DragonPay',
                 ]),
             ],
-            'amount' => 'bail|required|numeric|min:1|regex:/^\d*(\.\d{2})?$/',
+            'amount' => 'bail|required|numeric|min:50|regex:/^\d*(\.\d{2})?$/',
         ];
     }
 }

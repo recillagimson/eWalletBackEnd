@@ -39,7 +39,7 @@ class CustomerFilterRequest extends FormRequest
                 'in:CUSTOMER_ID, CUSTOMER_NAME, TIER, STATUS'
             ],
             'filter_value' => [
-                'required_with:filter_by',            ]
+                'required_with:filter_by',]
 
         ];
     }

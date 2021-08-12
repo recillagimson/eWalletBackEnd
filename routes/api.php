@@ -112,12 +112,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Merchat Verification of Selfie
     Route::middleware(['require.user.token'])->post('/merchant/selfie/verification', [MerchantController::class, 'selfieVerification']);
 
-    Route::prefix('ekyc')->group(function() {
+    Route::middleware(['decrypt.request'])->prefix('ekyc')->group(function () {
         Route::post('face/match', [KYCController::class, 'initFaceMatch'])->name('face.match');
         Route::post('ocr', [KYCController::class, 'initOCR'])->name('ocr');
         Route::post('expiration/check', [KYCController::class, 'checkIDExpiration'])->name('expiration.check');
         Route::post('ocr/match', [KYCController::class, 'matchOCR'])->name('ocr.match');
-        Route::post('verify', [KYCController::class, 'verify']);
     });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
@@ -246,8 +245,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
-            Route::post('/transaction/histories', [UserTransactionHistoryController::class, '
-            ']);
+            Route::post('/transaction/histories', [UserTransactionHistoryController::class, 'transactionHistoryAdmin']);
             Route::post('/transaction/histories/download', [UserTransactionHistoryController::class, 'download']);
             Route::get('/transaction/histories/{id}', [UserTransactionHistoryController::class, 'show']);
             Route::post('/transaction/histories/count/total_amount/list', [UserTransactionHistoryController::class, 'countTotalAmountEachUser']);
@@ -276,7 +274,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::prefix('/address')->group(function () {
             Route::get('/regions', [RegionController::class, 'index']);
-            Route::get('/provinces', [ProvinceController::class, 'getProvinces']);
+            Route::post('/provinces', [ProvinceController::class, 'getProvinces']);
             Route::post('/municipalities', [MunicipalityController::class, 'getMunicipalities']);
             Route::post('/barangays', [BarangayController::class, 'getBarangays']);
         });
@@ -405,18 +403,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/report')->middleware(['decrypt.request'])->group(function() {
         Route::post('/biller', [ReportController::class, 'billerReport']);
     });
-
-    Route::prefix('/farmer')->middleware(['decrypt.request'])->group(function() {
-        Route::post('/scanqr', [FarmerController::class, 'getFarmerViaRSVA']);
-    });
-    
 });
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
     Route::get('/postback', [AddMoneyController::class, 'postBack']);
 });
 
-Route::prefix('/hv')->group(function() {
-    Route::post('/callback', [KYCController::class, 'handleCallback']);
-});
 
