@@ -12,4 +12,4 @@ use App\Http\Controllers\KYC\KYCController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::post('/hv/callback', [KYCController::class, 'callback']);
+Route::post('/', [KYCController::class, 'callback']);
