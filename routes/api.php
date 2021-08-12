@@ -408,5 +408,5 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
     Route::get('/postback', [AddMoneyController::class, 'postBack']);
 });
-
+Route::post('/hv/callback', [KYCController::class, 'callback']);
 
