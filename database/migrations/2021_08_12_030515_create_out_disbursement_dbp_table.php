@@ -20,8 +20,7 @@ class CreateOutDisbursementDbpTable extends Migration
             $table->decimal('total_amount', 19, 6);
             $table->string('status', 20);
             $table->datetime('transaction_date')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->uuid('transaction_category_id');
-            $table->foreign('transaction_category_id')->references('id')->on('transaction_categories');
+ $table->uuid('transaction_category_id')->references('id')->on('transaction_categories')->onDelete('restrict');
             $table->string('transaction_remarks', 50)->nullable();
             $table->string('disbursed_by', 36)->nullable();
             $table->uuid('user_created')->nullable();
