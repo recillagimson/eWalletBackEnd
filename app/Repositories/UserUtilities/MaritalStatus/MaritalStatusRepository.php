@@ -16,4 +16,9 @@ class MaritalStatusRepository extends Repository implements IMaritalStatusReposi
     {
         return $this->model->orderBy('description')->get();
     }
+
+    public function getByDescription($value)
+    {
+        return $this->model->where('description', $value)->first();
+    }
 }
