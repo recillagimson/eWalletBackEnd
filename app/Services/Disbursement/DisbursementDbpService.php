@@ -102,7 +102,7 @@ class DisbursementDbpService implements IDisbursementDbpService
 
     private function getClientUser($fillRequest)
     {
-        return $this->userAccountRepository->getUserByAccountNumberAndRsbsaNumber($fillRequest['acccountNumber'], $fillRequest['rsbsaNumber']);
+        return $this->userAccountRepository->getUserByAccountNumberAndRsbsaNumber($fillRequest['account_number'], $fillRequest['rsbsa_number']);
     }
 
     private function subtractBalance(UserAccount $user, $fillRequest)
