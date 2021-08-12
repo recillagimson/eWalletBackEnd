@@ -8,4 +8,6 @@ interface IKYCService {
     public function checkIDExpiration(array $attr, $idType = 'phl_dl');
     public function matchOCR(array $attr);
     public function isEKYCValidated(array $params);
+    public function handleCallback(array $attr);
+    public function verify(array $attr, $from_api = true);
 }
