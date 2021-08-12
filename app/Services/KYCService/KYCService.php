@@ -3,6 +3,7 @@
 namespace App\Services\KYCService;
 
 use App\Enums\SuccessMessages;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Services\Utilities\CurlService\ICurlService;
@@ -22,13 +23,15 @@ class KYCService implements IKYCService
     private IUserSelfiePhotoRepository $userSelfiePhotoRepository;
     private IUserAccountRepository $userAccountRepository;
     private IResponseService $responseService;
+    private IKYCVerificationRepository $kycRepository;
 
-    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService)
+    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository)
     {
         $this->curlService = $curlService;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
         $this->userAccountRepository = $userAccountRepository;
         $this->responseService = $responseService;
+        $this->kycRepository = $kycRepository;
     }
 
     private function getAuthorizationHeaders(): array
@@ -253,6 +256,7 @@ class KYCService implements IKYCService
             }
 
         } catch(\Exception $err) {
+            dd($err);
             \DB::rollBack();
             $this->kycVerifyFailed();
         }

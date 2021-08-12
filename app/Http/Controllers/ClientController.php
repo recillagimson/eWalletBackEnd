@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Auth\ClientLoginRequest;
-use App\Services\Auth\IAuthService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Services\Auth\IAuthService;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\Auth\ClientLoginRequest;
 
 class ClientController extends Controller
 {
@@ -25,6 +26,8 @@ class ClientController extends Controller
      */
     public function getToken(ClientLoginRequest $request): JsonResponse
     {
+        // dd(Hash::make('iZMsCTcJGyC1duTWR3=H&IG'));
+        // dd($request->all());
         $clientLogin = $request->validated();
         $clientToken = $this->authService->clientLogin($clientLogin['client_id'], $clientLogin['client_secret']);
 
