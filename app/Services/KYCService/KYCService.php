@@ -260,6 +260,7 @@ class KYCService implements IKYCService
     }
 
     public function handleCallback(array $attr) {
+        \Log::info(json_encode($attr));
         if($attr && isset($attr['result']) && isset($attr['result']['requestId'])) {
             $record = $this->kycRepository->findByRequestId($attr['result']['requestId']);
             if($record) {
