@@ -58,7 +58,7 @@ class UserDetailRepository extends Repository implements IUserDetailRepository
 
             // IF RSBSA_NUMBER
             else if($filterBy == 'RSBSA_NUMBER') {
-                $records = $records->where('rsbsa', $filterValue);
+                $records = $records->where('rsbsa_number', $filterValue);
             }
         }
 
