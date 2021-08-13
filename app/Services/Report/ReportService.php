@@ -10,8 +10,10 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\PDF\IPDFService;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
+use App\Exports\TransactionReport\TransactionReport;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class ReportService implements IReportService
 {
@@ -20,13 +22,15 @@ class ReportService implements IReportService
     private IPDFService $pdfService;
     private IResponseService $responseService;
     private IDrcrMemoRepository $drcrRepo;
+    private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
 
-    public function __construct(IOutPayBillsRepository $payBills, IPDFService $pdfService, IResponseService $responseService, IDrcrMemoRepository $drcrRepo)
+    public function __construct(IOutPayBillsRepository $payBills, IPDFService $pdfService, IResponseService $responseService, IDrcrMemoRepository $drcrRepo, IUserTransactionHistoryRepository $userTransactionHistoryRepository)
     {
         $this->payBills = $payBills;
         $this->pdfService = $pdfService;
         $this->responseService = $responseService;
         $this->drcrRepo = $drcrRepo;
+        $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
     }
 
     public function billersReport(array $params, string $currentUser) {
@@ -133,5 +137,34 @@ class ReportService implements IReportService
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         }
 
+    }
+
+    public function transactionReportFarmers(array $attr) {
+        $records = $this->userTransactionHistoryRepository->getTransactionHistoryAdminFarmer($attr, false);
+        $from = Carbon::now()->format('Y-m-d');
+        $to = Carbon::now()->subDays(30)->format('Y-m-d');
+        $type = 'API';
+
+        if($attr && isset($attr['from']) && isset($attr['to'])) {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+        if($attr && isset($attr['type'])) {
+            $type = $attr['type'];
+        }
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+        if($type === 'CSV') {
+            Excel::store(new TransactionReport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        } else if($type === 'XLSX') {
+            Excel::store(new TransactionReport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+
+        } else {
+            return $records->toArray();
+        }
     }
 }

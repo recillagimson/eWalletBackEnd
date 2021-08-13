@@ -29,4 +29,6 @@ interface IUserTransactionHistoryRepository extends IRepository
     public function findTransactionWithRelationViaView(string $id);
 
     public function getTransactionHistoryAdmin(array $attr);
+
+    public function getTransactionHistoryAdminFarmer(array $attr);
 }

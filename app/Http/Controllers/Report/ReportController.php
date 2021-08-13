@@ -22,4 +22,8 @@ class ReportController extends Controller
     public function DRCRMemoFarmers(Request $request) {
         return $this->reportService->drcrmemofarmers($request->all());
     }
+
+    public function TransactionReportFarmers(Request $request) {
+        return $this->reportService->transactionReportFarmers($request->all());
+    }
 }
