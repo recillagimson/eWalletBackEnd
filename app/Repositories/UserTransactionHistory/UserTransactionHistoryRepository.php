@@ -162,4 +162,44 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $records->paginate();
     }
 
+    public function getTransactionHistoryAdminFarmer(array $attr)
+    {
+        $records = DRCRProcedure::with([]);
+        $from = Carbon::now()->subDays(30)->format('Y-m-d');
+        $to = Carbon::now()->format('Y-m-d');
+
+        if (isset($attr['from']) && isset($attr['to']) && $attr['from'] != '' && $attr['to'] != '') {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+
+        if (isset($attr['filter_by']) && $attr['filter_by'] != '' && isset($attr['filter_value']) && $attr['filter_value'] != '') {
+            $filter_by = $attr['filter_by'];
+            $filter_value = $attr['filter_value'];
+
+            // IF CUSTOMER NAME
+            if ($filter_by == 'CUSTOMER_NAME') {
+                $records = $records->where(function ($q) use ($filter_value) {
+                    $q->where('first_name', 'LIKE', '%' . $filter_value . '%')
+                        ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%');
+                });
+            } // IF CUSTOMER ACCOUNT NUMBER
+            else if ($filter_by == 'CUSTOMER_ID') {
+                $records = $records->where('account_number', $filter_value);
+            }
+
+            // IF TYPE
+            else if ($filter_by == 'TYPE') {
+                $records = $records->where('Type', $filter_value);
+            } // IF STATUS
+            else if ($filter_by == 'STATUS') {
+                $records = $records->where('Status', $filter_value);
+            }
+        }
+
+        $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE');
+
+        return $records->get();
+    }
+
 }

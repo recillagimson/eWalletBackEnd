@@ -410,6 +410,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/report')->middleware(['decrypt.request'])->group(function() {
         Route::post('/biller', [ReportController::class, 'billerReport']);
+        Route::post('/farmers/drcr', [ReportController::class, 'DRCRMemoFarmers']);
+        Route::post('/farmers/transaction', [ReportController::class, 'TransactionReportFarmers']);
     });
 });
 
