@@ -28,5 +28,10 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exists.');
     }
 
+    private function errorEncountered()
+    {
+        $this->validationErrorMessage(ErrorCodes::transactionErrorEncountered, 'Transaction error encountered.');
+    }
+
 
 }
