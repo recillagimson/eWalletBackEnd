@@ -18,4 +18,8 @@ class ReportController extends Controller
     public function billerReport(Request $request) {
         return $this->reportService->billersReport($request->all(), request()->user()->id);
     }
+
+    public function DRCRMemoFarmers(Request $request) {
+        return $this->reportService->drcrmemofarmers($request->all());
+    }
 }

@@ -195,4 +195,34 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 
         return $record->get();
     }
+
+    public function reportDataFarmers(string $from, string $to, string $filterBy = '', string $filterValue = '') {
+        $record = DRCRProcedure::where('original_transaction_date', '>=', $from)
+            ->where('original_transaction_date', '<=', $to);
+
+        if($filterBy && $filterValue) {
+            // IF CUSTOMER_ID
+            if($filterBy == 'CUSTOMER_ID') {
+                $record = $record->where('user_account_id', $filterValue);
+            } 
+            // IF CUSTOMER_NAME
+            else if ($filterBy == 'CUSTOMER_NAME') {
+                $record = $record->where(function($q) use($filterValue) {
+                    $q->where('first_name', 'LIKE', '%' . $filterValue . '%')
+                      ->orWhere('last_name', 'LIKE', '%' . $filterValue . '%');
+                });
+            }
+            // IF TYPE
+            else if($filterBy == 'TYPE') {
+                $record = $record->where('Type', $filterValue );
+            }
+            // IF STATUS
+            else if($filterBy == 'STATUS') {
+                $record = $record->where('Status', $filterValue);
+            }
+        }
+
+        return $record->where('rsbsa_number', '!=', '')->get();
+
+    }
 }
