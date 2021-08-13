@@ -7,12 +7,14 @@ use App\Enums\SuccessMessages;
 use App\Exports\DRCR\DRCRReport;
 use App\Exports\Biller\BillerReport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\User\FarmerListExport;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Utilities\PDF\IPDFService;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Exports\TransactionReport\TransactionReport;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class ReportService implements IReportService
@@ -23,14 +25,16 @@ class ReportService implements IReportService
     private IResponseService $responseService;
     private IDrcrMemoRepository $drcrRepo;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
+    private IUserDetailRepository $userDetail;
 
-    public function __construct(IOutPayBillsRepository $payBills, IPDFService $pdfService, IResponseService $responseService, IDrcrMemoRepository $drcrRepo, IUserTransactionHistoryRepository $userTransactionHistoryRepository)
+    public function __construct(IOutPayBillsRepository $payBills, IPDFService $pdfService, IResponseService $responseService, IDrcrMemoRepository $drcrRepo, IUserTransactionHistoryRepository $userTransactionHistoryRepository, IUserDetailRepository $userDetail)
     {
         $this->payBills = $payBills;
         $this->pdfService = $pdfService;
         $this->responseService = $responseService;
         $this->drcrRepo = $drcrRepo;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
+        $this->userDetail = $userDetail;
     }
 
     public function billersReport(array $params, string $currentUser) {
@@ -160,6 +164,46 @@ class ReportService implements IReportService
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } else if($type === 'XLSX') {
             Excel::store(new TransactionReport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+
+        } else {
+            // return $records->toArray();
+            return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
+        }
+    }
+
+    public function farmersList(array $attr) {
+        $from = Carbon::now()->subDays(30)->format('Y-m-d H:i:s');
+        $to = Carbon::now()->format('Y-m-d H:i:s');
+        $filterBy = '';
+        $filterValue = '';
+        $type = 'XLSX';
+        
+        if($attr && isset($attr['type'])) {
+            $type = $attr['type'];
+        }
+        
+        if($attr && isset($attr['from']) && isset($attr['to'])) {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+        
+        if($attr && isset($attr['filter_by']) && isset($attr['filter_value'])) {
+            $filterBy = $attr['filter_by'];
+            $filterValue = $attr['filter_value'];
+        }
+
+        $records = $this->userDetail->getFarmers($from, $to, $filterBy, $filterValue, $type);
+
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+        if($type === 'CSV') {
+            Excel::store(new FarmerListExport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        } else if($type === 'XLSX') {
+            Excel::store(new FarmerListExport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
 
