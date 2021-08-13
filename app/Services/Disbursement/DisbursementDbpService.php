@@ -84,6 +84,7 @@ class DisbursementDbpService implements IDisbursementDbpService
             return [$outDisbursementDbp];
         } catch (Exception $e) {
             DB::rollBack();
+            $this->errorEncountered();
         }
       
     }
@@ -120,7 +121,7 @@ class DisbursementDbpService implements IDisbursementDbpService
     private function outDisbursementDbp(UserAccount $user, UserAccount $clientUser,$fillRequest)
     {
         return $this->outDisbursementDbpRepository->create([
-            'user_account_id' => $clientUser->account_number,
+            'user_account_id' => $clientUser->id,
             'reference_number' => $this->getReference(),
             'total_amount' => $fillRequest['amount'],
             'status' => TransactionStatuses::success,
