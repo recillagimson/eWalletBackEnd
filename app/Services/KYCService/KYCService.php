@@ -46,13 +46,13 @@ class KYCService implements IKYCService
         $this->responseService = $responseService;
         $this->kycRepository = $kycRepository;
 
-        $this->appId = env('KYC_APP_ID');
-        $this->appKey = env('KYC_APP_KEY');
-        $this->faceMatchUrl = env('KYC_APP_FACEMATCH_URL');
-        $this->ocrUrl = env('KYC_APP_FACEMATCH_URL');
-        $this->ocrPassportUrl = env('KYC_APP_FACEMATCH_URL');
-        $this->verifyUrl = env('KYC_APP_VERIFY_URL');
-        $this->callBackUrl = env('KYC_APP_CALLBACK_URL');
+        $this->appId = config('appId');
+        $this->appKey = config('appKey');
+        $this->faceMatchUrl = config('faceMatchUrl');
+        $this->ocrUrl = config('ocrUrl');
+        $this->ocrPassportUrl = config('ocrPassportUrl');
+        $this->verifyUrl = config('verifyUrl');
+        $this->callBackUrl = config('callbackUrl');
 
     }
 
