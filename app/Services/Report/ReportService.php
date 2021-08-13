@@ -4,13 +4,14 @@ namespace App\Services\Report;
 
 use Carbon\Carbon;
 use App\Enums\SuccessMessages;
+use App\Exports\DRCR\DRCRReport;
 use App\Exports\Biller\BillerReport;
-use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
-use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Services\Utilities\PDF\IPDFService;
+use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Services\Utilities\Responses\IResponseService;
+use App\Repositories\OutPayBills\IOutPayBillsRepository;
 
 class ReportService implements IReportService
 {
@@ -119,7 +120,7 @@ class ReportService implements IReportService
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
 
         if($params['type'] == 'CSV') {
-            Excel::store(new BillerReport($records, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            Excel::store(new DRCRReport($records, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
@@ -127,7 +128,7 @@ class ReportService implements IReportService
             return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
         }
         else {
-            Excel::store(new BillerReport($records, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            Excel::store(new DRCRReport($records, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         }
