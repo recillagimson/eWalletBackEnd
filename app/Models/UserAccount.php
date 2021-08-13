@@ -36,6 +36,7 @@ class UserAccount extends Authenticatable
         'tier_id',
         'user_created',
         'user_updated',
+        'rsbsa_number',
     ];
 
     /**
