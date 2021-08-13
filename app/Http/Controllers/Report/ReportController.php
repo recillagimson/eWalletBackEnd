@@ -26,4 +26,9 @@ class ReportController extends Controller
     public function TransactionReportFarmers(Request $request) {
         return $this->reportService->transactionReportFarmers($request->all());
     }
+
+    public function FarmersList(Request $request) {
+        return $this->reportService->farmersList($request->all());
+    }
+  
 }
