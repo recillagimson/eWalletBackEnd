@@ -120,7 +120,7 @@ class ReportService implements IReportService
             $filterValue = $params['filter_value'];
         }
 
-        $records = $this->drcrRepo->reportDataFarmers($from, $to, $filterBy, $filterValue);
+        $records = $this->drcrRepo->reportDataFarmers($from, $to, $filterBy, $filterValue, $type);
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
 
         if($params['type'] == 'CSV') {
@@ -140,10 +140,10 @@ class ReportService implements IReportService
     }
 
     public function transactionReportFarmers(array $attr) {
-        $records = $this->userTransactionHistoryRepository->getTransactionHistoryAdminFarmer($attr, false);
         $from = Carbon::now()->format('Y-m-d');
         $to = Carbon::now()->subDays(30)->format('Y-m-d');
         $type = 'API';
+        $records = $this->userTransactionHistoryRepository->getTransactionHistoryAdminFarmer($attr, false);
 
         if($attr && isset($attr['from']) && isset($attr['to'])) {
             $from = $attr['from'];
@@ -164,7 +164,8 @@ class ReportService implements IReportService
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
 
         } else {
-            return $records->toArray();
+            // return $records->toArray();
+            return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
         }
     }
 }

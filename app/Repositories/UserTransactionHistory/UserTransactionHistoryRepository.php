@@ -195,10 +195,19 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             else if ($filter_by == 'STATUS') {
                 $records = $records->where('Status', $filter_value);
             }
+
+            // IF RSBSA_NUMBER
+            else if($filter_by == 'RSBSA_NUMBER') {
+                $records = $records->where('rsbsa', $filter_value);
+            }
         }
 
-        $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE');
+        $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE')
+        ->where('rsbsa_number', '!=', '');
 
+        if($attr && $attr['type'] == 'API') {
+            return $records->paginate();
+        }
         return $records->get();
     }
 
