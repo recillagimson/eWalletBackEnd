@@ -196,7 +196,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         return $record->get();
     }
 
-    public function reportDataFarmers(string $from, string $to, string $filterBy = '', string $filterValue = '') {
+    public function reportDataFarmers(string $from, string $to, string $filterBy = '', string $filterValue = '', $type) {
         $record = DRCRProcedure::where('original_transaction_date', '>=', $from)
             ->where('original_transaction_date', '<=', $to);
 
@@ -220,9 +220,19 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             else if($filterBy == 'STATUS') {
                 $record = $record->where('Status', $filterValue);
             }
+
+            // IF RSBSA_NUMBER
+            else if($filterBy == 'RSBSA_NUMBER') {
+                $record = $record->where('rsbsa', $filterValue);
+            }
         }
 
-        return $record->where('rsbsa_number', '!=', '')->get();
+        $record = $record->where('rsbsa_number', '!=', '');
+
+        if($type == 'API') {
+            return $record->paginate();
+        }
+        return $record->get();
 
     }
 }
