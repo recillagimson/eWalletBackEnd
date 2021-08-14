@@ -37,6 +37,7 @@ class KYCService implements IKYCService
     private $ocrPassportUrl;
     private $verifyUrl;
     private $callBackUrl;
+    private $enrolId;
 
     public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository)
     {
@@ -53,6 +54,7 @@ class KYCService implements IKYCService
         $this->ocrPassportUrl = config('ekyc.ocrPassportUrl');
         $this->verifyUrl = config('ekyc.verifyUrl');
         $this->callBackUrl = config('ekyc.callbackUrl');
+        $this->enrolId = config('ekyc.enrolId');
 
     }
 
@@ -240,7 +242,7 @@ class KYCService implements IKYCService
                 'idNumber' => $attr['id_number'],
                 'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
                 'applicationId' => Str::uuid(),
-                'enrol' => env('KYC_APP_VERIFY_REGISTER_ID', 'no'),
+                'enrol' => $this->enrolId,
                 'selfie' => new CURLFILE($attr['selfie']->getPathname()),
                 'idFront' => new CURLFILE($attr['nid_front']->getPathname()),
             ];
