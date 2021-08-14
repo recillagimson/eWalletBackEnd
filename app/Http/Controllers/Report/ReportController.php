@@ -48,7 +48,8 @@ class ReportController extends Controller
     public function print(PrintRequest $request): JsonResponse
     {
         $this->printService->print($request->validated());
-        return $this->responseService->successResponse($request->input('RSBSA'));
+        return $this->responseService->successResponse($request->all());
+
 
     }
 }
