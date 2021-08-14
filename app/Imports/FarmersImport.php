@@ -112,7 +112,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             'vw_farmerprofile_full_wmmunname' => 'required', //vw_farmerprofile_full_wmmunname = user_details.province_state
             'vw_farmerprofile_full_wmprovname' => 'required', //vw_farmerprofile_full_wmprovname = user_details.province_state
             'vw_farmerprofile_full_wmregshortname' => 'nullable', //vw_farmerprofile_full_wmregshortname = N/A
-            'vw_farmerprofile_full_wmcontact_num' => 'required', //vw_farmerprofile_full_wmcontact_num = user_accounts.mobile_number and user_details.contact_no
+            'vw_farmerprofile_full_wmcontact_num' => 'nullable', //vw_farmerprofile_full_wmcontact_num = user_accounts.mobile_number and user_details.contact_no
             'vw_farmerprofile_full_wmeducation' => 'nullable', //vw_farmerprofile_full_wmeducation = N/A
             'vw_farmerprofile_full_wmbirthdate' => [
                 'required'
