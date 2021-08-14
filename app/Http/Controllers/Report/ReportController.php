@@ -48,6 +48,6 @@ class ReportController extends Controller
     public function print(PrintRequest $request)
     {
         $this->printService->print($request->validated());
-        return $this->responseService->successResponse();
+        return $this->reportService->successResponse();
     }
 }
