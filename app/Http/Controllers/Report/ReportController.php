@@ -45,7 +45,7 @@ class ReportController extends Controller
         return $this->reportService->farmersList($request->all());
     }
   
-    public function print(PrintRequest $request): JsonResponse
+    public function print(PrintRequest $request)
     {
         $this->printService->print($request->validated());
         return $this->responseService->successResponse();
