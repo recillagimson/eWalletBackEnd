@@ -112,7 +112,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             'vw_farmerprofile_full_wmmunname' => 'required', //vw_farmerprofile_full_wmmunname = user_details.province_state
             'vw_farmerprofile_full_wmprovname' => 'required', //vw_farmerprofile_full_wmprovname = user_details.province_state
             'vw_farmerprofile_full_wmregshortname' => 'nullable', //vw_farmerprofile_full_wmregshortname = N/A
-            'vw_farmerprofile_full_wmcontact_num' => 'required', //vw_farmerprofile_full_wmcontact_num = user_accounts.mobile_number and user_details.contact_no
+            'vw_farmerprofile_full_wmcontact_num' => 'nullable', //vw_farmerprofile_full_wmcontact_num = user_accounts.mobile_number and user_details.contact_no
             'vw_farmerprofile_full_wmeducation' => 'nullable', //vw_farmerprofile_full_wmeducation = N/A
             'vw_farmerprofile_full_wmbirthdate' => [
                 'required'
@@ -161,7 +161,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         $pin = substr($rsbsa, -4); //last 4 chars of rsbsa_number
         
         $farmer = [
-            'rsbsa_number' => $row['vw_farmerprofile_full_wmrsbsa_no'],
+            'rsbsa_number' => $rsbsa,
             'password' => Hash::make($password),
             'pin_code' => Hash::make($pin),
             'tier_id' => AccountTiers::tier1,
