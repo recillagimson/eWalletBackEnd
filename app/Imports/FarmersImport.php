@@ -161,7 +161,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         $pin = substr($rsbsa, -4); //last 4 chars of rsbsa_number
         
         $farmer = [
-            'rsbsa_number' => $row['vw_farmerprofile_full_wmrsbsa_no'],
+            'rsbsa_number' => $rsbsa,
             'password' => Hash::make($password),
             'pin_code' => Hash::make($pin),
             'tier_id' => AccountTiers::tier1,
