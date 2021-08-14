@@ -35,6 +35,7 @@ class ErrorCodes
     const transactionInvalid = 301;
     const transactionFailed = 302;
     const transactionDoesntExists = 303;
+    const transactionErrorEncountered = 304;
 
     //USER ERRORS - 400
     const userProfileNotUpdated = 401;
