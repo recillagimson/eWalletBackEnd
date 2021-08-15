@@ -109,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
     // FARMER
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload', [FarmerController::class, 'batchUpload']);
+    Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/selfie/verification', [FarmerController::class, 'farmerSelfieUpload']);
     // Merchat Verification of Selfie
