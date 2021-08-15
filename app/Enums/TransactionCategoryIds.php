@@ -22,6 +22,8 @@ class TransactionCategoryIds
 
     const drMemo = '0ec434b6-9131-11eb-b44f-1c1b0d14e211';
     const crMemo = '0ec43514-9131-11eb-b44f-1c1b0d14e211';
+    
+    const dbpSubsidy = 'edj4d5d0-9299-11eb-9663-1c1b0d14e211';
 
     const cashinTransactions = [
         self::posAddFunds,
