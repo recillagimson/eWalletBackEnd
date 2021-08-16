@@ -54,6 +54,8 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             $result = $result->whereBetween('created_at', [$attributes['from'], $attributes['to']]);
         }
 
+        $result = $result->where('is_admin', '!=', 1);
+
         return $result->with(['profile', 'tier', 'tierApprovals' => function ($q) {
             return $q->where('status', '!=', 'DECLINED');
         }])->orderBy('created_at', 'DESC')->paginate($perPage);
