@@ -52,6 +52,7 @@ class UserDetail extends Model
         'guardian_mobile_number',
         'is_accept_parental_consent',
         'avatar_location',
+        'barangay'
     ];
 
     public function getFullNameAttribute(): string

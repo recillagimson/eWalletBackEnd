@@ -46,13 +46,13 @@ class KYCService implements IKYCService
         $this->responseService = $responseService;
         $this->kycRepository = $kycRepository;
 
-        $this->appId = config('appId');
-        $this->appKey = config('appKey');
-        $this->faceMatchUrl = config('faceMatchUrl');
-        $this->ocrUrl = config('ocrUrl');
-        $this->ocrPassportUrl = config('ocrPassportUrl');
-        $this->verifyUrl = config('verifyUrl');
-        $this->callBackUrl = config('callbackUrl');
+        $this->appId = config('ekyc.appId');
+        $this->appKey = config('ekyc.appKey');
+        $this->faceMatchUrl = config('ekyc.faceMatchUrl');
+        $this->ocrUrl = config('ekyc.ocrUrl');
+        $this->ocrPassportUrl = config('ekyc.ocrPassportUrl');
+        $this->verifyUrl = config('ekyc.verifyUrl');
+        $this->callBackUrl = config('ekyc.callbackUrl');
 
     }
 
@@ -247,11 +247,14 @@ class KYCService implements IKYCService
 
             $response = $this->curlService->curlPost($url, $data, $headers);
 
-            Log::debug('eKYC Response', [
-                'verifyURL' => $url,
-                'callbackURL' => env('KYC_APP_CALLBACK_URL'),
-                'response' => $response
-            ]);
+            // Log::debug('eKYC Response', [
+            //     'verifyURL' => $url,
+            //     'callbackURL' => env('KYC_APP_CALLBACK_URL'),
+            //     'response' => $response
+            // ]);
+            // dd($this->callBackUrl);
+
+            // dd($response);
 
             $record = $this->kycRepository->create([
                 'user_account_id' => $attr['user_account_id'],
@@ -288,7 +291,7 @@ class KYCService implements IKYCService
         } catch (Exception $err) {
             Log::info(json_encode($err->getMessage()));
             DB::rollBack();
-            $this->kycVerifyFailed();
+            $this->kycVerifyFailed($err->getMessage());
         }
     }
 
