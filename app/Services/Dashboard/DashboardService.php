@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services\Dashboard;
+use App\Jobs\Transactions\ProcessUserPending;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Transaction\ITransactionService;
 use Illuminate\Validation\ValidationException;
@@ -15,7 +16,7 @@ class DashboardService implements IDashboardService
 
     public function __construct(IUserAccountRepository $userdetail,
                                 IUserAccountRepository $userAccounts,
-                                ITransactionService $transactionService)
+                                ITransactionService    $transactionService)
     {
         $this->userDetail = $userdetail;
         $this->transactionService = $transactionService;
@@ -28,7 +29,7 @@ class DashboardService implements IDashboardService
         $user = $this->userAccounts->getUser($userID);
         $UserDetails = $this->userDetail->getUserInfo($userID);
 
-        $this->transactionService->processUserPending($user);
+        ProcessUserPending::dispatch($user);
 
         if ($UserDetails) {
             return $UserDetails;

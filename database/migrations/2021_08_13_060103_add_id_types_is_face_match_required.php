@@ -26,7 +26,7 @@ class AddIdTypesIsFaceMatchRequired extends Migration
    public function down()
    {
        Schema::table('id_types', function (Blueprint $table) {
-           $table->dropColumn('barangay');
+           $table->dropColumn('is_face_match_required');
        });
    }
 }
