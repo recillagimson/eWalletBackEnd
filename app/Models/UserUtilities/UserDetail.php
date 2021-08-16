@@ -68,8 +68,8 @@ class UserDetail extends Model
         "occupation",
         "employer",
         "contact_no",
-        "avatar_location"
-
+        "avatar_location",
+        "barangay"
     ];
 
     public function getUserAccount()

@@ -10,4 +10,7 @@ namespace App\Services\Report;
 interface IReportService
 {
     public function billersReport(array $params, string $currentUser);
+    public function drcrmemofarmers(array $attr);
+    public function transactionReportFarmers(array $attr);
+    public function farmersList(array $attr);
 }

@@ -109,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
     // FARMER
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload', [FarmerController::class, 'batchUpload']);
+    Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/selfie/verification', [FarmerController::class, 'farmerSelfieUpload']);
     // Merchat Verification of Selfie
@@ -247,6 +248,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::middleware(['require.user.token'])->post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
             Route::middleware(['require.user.token'])->post('/farmer/verification', [FarmerController::class, 'farmerVerification']);
             Route::middleware(['require.user.token'])->post('/farmer/verification/account-number', [FarmerController::class, 'farmerVerificationUserAccountNumberOnly']);
+            Route::middleware(['require.user.token'])->post('/farmer/print', [ReportController::class, 'print']);
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
@@ -412,6 +414,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/report')->middleware(['decrypt.request'])->group(function() {
         Route::post('/biller', [ReportController::class, 'billerReport']);
+        Route::post('/farmers/drcr', [ReportController::class, 'DRCRMemoFarmers']);
+        Route::post('/farmers/transaction', [ReportController::class, 'TransactionReportFarmers']);
+        Route::post('/farmers/list', [ReportController::class, 'FarmersList']);
+
     });
 });
 

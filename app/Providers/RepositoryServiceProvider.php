@@ -109,6 +109,8 @@ use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
 use App\Repositories\Disbursement\OutDisbursementDbpRepository;
 use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\KYCVerification\KYCVerificationRepository;
+use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
+use App\Repositories\InReceiveFromDBP\InReceiveFromDBPRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -233,6 +235,9 @@ class RepositoryServiceProvider extends ServiceProvider
         // Disbursement DBP
         $this->app->bind(IOutDisbursementDbpRepository::class, OutDisbursementDbpRepository::class);
 
+        // In Receive Money from DBP
+        $this->app->bind(IInReceiveFromDBPRepository::class, InReceiveFromDBPRepository::class);
+        
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
 

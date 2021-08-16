@@ -35,6 +35,6 @@ class RSBSARule implements Rule
      */
     public function message()
     {
-        return 'The RSBSA Number is invalid.';
+        return ':attribute is invalid.';
     }
 }
