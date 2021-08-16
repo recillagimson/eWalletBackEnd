@@ -119,6 +119,8 @@ use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
 use App\Services\Disbursement\DisbursementDbpService;
 use App\Services\Disbursement\IDisbursementDbpService;
 use App\Services\ThirdParty\DragonPay\DragonPayService as DragonPayServiceV2;
+use App\Services\ThirdParty\ECPay\IECPayService;
+use App\Services\ThirdParty\ECPay\ECPayService;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -150,6 +152,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(IBayadCenterService::class, BayadCenterService::class);
         $this->app->singleton(IAtmService::class, AtmService::class);
         $this->app->singleton(IDragonPayService::class, DragonPayServiceV2::class);
+        $this->app->singleton(IECPayService::class, ECPayService::class);
 
         //APP SERVICES
         $this->app->singleton(IAuthService::class, AuthService::class);

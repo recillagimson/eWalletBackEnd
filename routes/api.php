@@ -122,6 +122,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('verify/{requestId}', [KYCController::class, 'verifyRequest'])->name('verify');
     });
 
+    Route::post('ecpay/custom', [Send2BankController::class, 'sample']);
+
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser'])->name('user.show');
 

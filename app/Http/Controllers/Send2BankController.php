@@ -13,18 +13,21 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Throwable;
+use App\Services\ThirdParty\ECPay\IECPayService;
 
 class Send2BankController extends Controller
 {
     private ISend2BankService $send2BankService;
     private ISend2BankDirectService $send2BankDirectService;
     private IResponseService $responseService;
+    private IECPayService $ecpayService;
 
-    public function __construct(ISend2BankService $send2BankService, IResponseService $responseService, ISend2BankDirectService $send2BankDirectService)
+    public function __construct(ISend2BankService $send2BankService, IResponseService $responseService, ISend2BankDirectService $send2BankDirectService, IECPayService $ecpayService)
     {
         $this->send2BankService = $send2BankService;
         $this->send2BankDirectService = $send2BankDirectService;
         $this->responseService = $responseService;
+        $this->ecpayService = $ecpayService;
     }
 
     /**
@@ -147,5 +150,9 @@ class Send2BankController extends Controller
         //     SuccessMessages::transactionValidationSuccessful);
         return $this->responseService->successResponse($response,
             SuccessMessages::transactionValidationSuccessful);
+    }
+
+    public function sample() {
+        $this->ecpayService->getBanks();
     }
 }
