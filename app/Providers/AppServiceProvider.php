@@ -113,15 +113,6 @@ use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-<<<<<<< HEAD
-use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
-use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
-use App\Services\Disbursement\DisbursementDbpService;
-use App\Services\Disbursement\IDisbursementDbpService;
-use App\Services\ThirdParty\DragonPay\DragonPayService as DragonPayServiceV2;
-use App\Services\ThirdParty\ECPay\IECPayService;
-use App\Services\ThirdParty\ECPay\ECPayService;
-=======
 use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Services\Utilities\Responses\ResponseService;
@@ -135,7 +126,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic;
->>>>>>> de6f17f911e92fcff311f60c89a0e4f65db8417b
+use App\Services\ThirdParty\ECPay\IECPayService;
+use App\Services\ThirdParty\ECPay\ECPayService;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -168,11 +160,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(IBayadCenterService::class, BayadCenterService::class);
         $this->app->singleton(IAtmService::class, AtmService::class);
         $this->app->singleton(IDragonPayService::class, DragonPayServiceV2::class);
-<<<<<<< HEAD
-        $this->app->singleton(IECPayService::class, ECPayService::class);
-=======
         $this->app->singleton(IGHService::class, GHService::class);
->>>>>>> de6f17f911e92fcff311f60c89a0e4f65db8417b
+        $this->app->singleton(IECPayService::class, ECPayService::class);
 
         //APP SERVICES
         $this->app->singleton(IAuthService::class, AuthService::class);
