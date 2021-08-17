@@ -24,13 +24,14 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\RemembersRowNumber;
 use App\Rules\RSBSARule;
 use App\Rules\RSBSAUniqueRule;
 use App\Rules\MobileNumber;
 
 class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure, SkipsOnError, WithEvents, WithChunkReading, WithBatchInserts
 {
-    use RegistersEventListeners;
+    use RegistersEventListeners, RemembersRowNumber;
 
     private $userId;
     private $fails;
@@ -69,13 +70,26 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
 
     public function model(array $row)
     {
-        $user = $this->setupUserAccount($row);
-        $this->setupUserProfile($user->id, $row);
-        $this->setupUserBalance($user->id);
-        
-        $usr = ['account_number' => $user->account_number];
+        if (!$this->userDetail->getIsExistingByNameAndBirthday(
+                $row['vw_farmerprofile_full_wmfname'], 
+                $row['vw_farmerprofile_full_wmmname'], 
+                $row['vw_farmerprofile_full_wmlname'], 
+                $row['vw_farmerprofile_full_wmbirthdate'])
+        ) {
+            $user = $this->setupUserAccount($row);
+            $this->setupUserProfile($user->id, $row);
+            $this->setupUserBalance($user->id);
+            
+            $usr = ['account_number' => $user->account_number];
 
-        $this->successes->push(array_merge($usr, $row));
+            $this->successes->push(array_merge($usr, $row));
+        } else {
+            $remark['remarks']['row'] = $this->getRowNumber();
+            $remark['remarks']['errors'][] = [
+                'Duplicate Data.'
+            ];
+            $this->fails->push(array_merge($usr, $row));
+        }
     }
 
     public function rules(): array
