@@ -131,7 +131,8 @@ class FarmerProfileService implements IFarmerProfileService
             $this->userAccountRepository->update($user_account, [
                 'password' => bcrypt($attr['rsbsa_number']),
                 'pin_code' => bcrypt(substr($attr['rsbsa_number'], -4)),
-                'verified' => 1
+                'verified' => 1,
+                'mobile_number' => $attr['contact_no'],
             ]);
 
             $addOrUpdate = $this->userProfileService->update($user_account, $attr);
