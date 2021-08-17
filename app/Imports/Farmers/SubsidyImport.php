@@ -164,7 +164,7 @@ class SubsidyImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     private function addUserBalance($user, $amount)
     {
         $currentBalance = $this->userBalanceInfo->getUserBalance($user->id);
-        $total = $currentBalance + (float)$amount;
+        $total = (float)$currentBalance + (float)$amount;
         return $this->userBalanceInfo->updateUserBalance($user->id, $total);
     }
 
