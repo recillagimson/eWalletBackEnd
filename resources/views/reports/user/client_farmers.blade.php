@@ -39,6 +39,9 @@
                 {{ $record->account_number }}
             </td>
             <td>
+                {{ $record->rsbsa_number }}
+            </td>
+            <td>
                 {{ $record->first_name }}
             </td>
             <td>
