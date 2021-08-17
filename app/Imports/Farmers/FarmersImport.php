@@ -35,6 +35,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     private $userId;
     private $fails;
     private $successes;
+    private $rsbsaNumbers;
     private IUserAccountRepository $userAccounts;
     private IUserAccountNumberRepository $userAccountNumbers;
     private IMaritalStatusRepository $maritalStatus;
@@ -55,6 +56,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         $this->userBalance = $userBalance;
         $this->fails = collect();
         $this->successes = collect();
+        $this->rsbsaNumbers = collect();
     }
 
     // /**
@@ -82,7 +84,14 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             'vw_farmerprofile_full_wmrsbsa_no' => [
                 'required',
                 new RSBSAUniqueRule(),
-                new RSBSARule()
+                new RSBSARule(),
+                function($attribute, $value, $onFailure) {
+                    if (in_array($value, $this->rsbsaNumbers->toArray())) {
+                         $onFailure('RSBSA Duplicate' . implode(', ',$this->rsbsaNumbers->toArray()));
+                    }
+                    
+                    $this->rsbsaNumbers->push($value);
+                }
             ], //vw_farmerprofile_full_wmrsbsa_no = user_accounts.rsbsa_number
             'vw_farmerprofile_full_wmfname' => [
                 'required',
