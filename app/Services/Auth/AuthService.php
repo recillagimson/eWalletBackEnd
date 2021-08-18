@@ -132,6 +132,7 @@ class AuthService implements IAuthService
 
         $this->validateUser($user);
         $this->tryLogin($user, $password, $user->password);
+
         $this->generateMobileLoginOTP(UsernameTypes::MobileNumber, $mobileNumber);
     }
 
@@ -145,7 +146,7 @@ class AuthService implements IAuthService
         $this->verifyLogin(UsernameTypes::MobileNumber, $mobileNumber, $otp);
 
         $firstLogin = !$user->last_login;
-        $this->updateLastLogin($user);
+        $this->updateLastLogin($user, UsernameTypes::MobileNumber);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
