@@ -2,20 +2,23 @@
 
 namespace App\Services\UserProfile;
 
-use App\Enums\TempUserDetailStatuses;
+use Carbon\Carbon;
+use App\Enums\AccountTiers;
 use App\Models\UserAccount;
-use App\Repositories\Tier\ITierApprovalRepository;
+use App\Traits\HasFileUploads;
+use App\Enums\SquidPayModuleTypes;
+use Illuminate\Support\Facades\DB;
+use App\Enums\TempUserDetailStatuses;
+use App\Traits\Errors\WithUserErrors;
 use App\Repositories\Tier\ITierRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
+use Illuminate\Validation\ValidationException;
+use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
-use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Verification\IVerificationService;
-use App\Traits\Errors\WithUserErrors;
-use App\Traits\HasFileUploads;
-use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
 
 class UserProfileService implements IUserProfileService
 {
@@ -249,5 +252,58 @@ class UserProfileService implements IUserProfileService
         }
 
         return true;
+    }
+
+    public function upgradeToSilver(array $attr) {
+        DB::beginTransaction();
+        try {
+            // IF REQUESTING FOR TIER UPDATE
+            if (request()->user() && request()->user()->tier && request()->user()->tier->id !== AccountTiers::tier2) {
+                // VALIDATE IF HAS EXISTING REQUEST
+                $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequest();
+                if ($findExistingRequest) {
+                    return $this->tierUpgradeAlreadyExist();
+                }
+
+                // Trigger auto check
+                //$ekyc_auto_check == false;
+                $ekyc_auto_check = $this->kycService->isEKYCValidated($attr);
+
+
+                if ($ekyc_auto_check) {
+                    $this->userAccountRepository->update(request()->user(), [
+                        'tier_id' => AccountTiers::tier2
+                    ]);
+                }
+
+                // CREATE APPROVAL RECORD FOR ADMIN
+                // TU-MMDDYYY-RANDON
+                $generatedTransactionNumber = "TU" . Carbon::now()->format('YmdHi') . rand(0, 99999);
+                $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
+                    'user_account_id' => request()->user()->id,
+                    'request_tier_id' => AccountTiers::tier2,
+                    'status' => $ekyc_auto_check ? 'APPROVED' : 'PENDING',
+                    'user_created' => request()->user()->id,
+                    'user_updated' => request()->user()->id,
+                    'transaction_number' => $generatedTransactionNumber
+                ]);
+
+                $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id);
+
+                $audit_remarks = request()->user()->account_number . " has requested to upgrade to Silver";
+                $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+            }
+            // $details = $request->validated();
+            $addOrUpdate = $this->update(request()->user(), $attr);
+            $audit_remarks = request()->user()->account_number . " Profile Information has been successfully updated.";
+            $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
+
+            // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
+            DB::commit();
+            // return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
+            return $addOrUpdate;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 }
