@@ -118,7 +118,8 @@ class FarmerProfileService implements IFarmerProfileService
                     'user_updated' => $authUser,
                     'transaction_number' => $generatedTransactionNumber,
                     'approved_by' => eKYC::eKYC,
-                    'remarks' => eKYC::eKYC_remarks
+                    'remarks' => eKYC::eKYC_remarks,
+                    'approved_date' => Carbon::now()->format('Y-m-d H:i:s')
                 ]);
                 $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id, true);
                 $audit_remarks = $user_account->id . " has requested to upgrade to Silver";
@@ -129,8 +130,10 @@ class FarmerProfileService implements IFarmerProfileService
             // dd($user_account->profile);
 
             $this->userAccountRepository->update($user_account, [
+                'mobile_number' => $attr['contact_no'],
                 'password' => bcrypt($attr['rsbsa_number']),
                 'pin_code' => bcrypt(substr($attr['rsbsa_number'], -4)),
+                'verified' => 1,
             ]);
 
             $addOrUpdate = $this->userProfileService->update($user_account, $attr);

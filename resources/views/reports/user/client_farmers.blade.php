@@ -22,11 +22,12 @@
             <th>First Name</th>
             <th>Middle Name</th>
             <th>Last Name</th>
-            <th>Account Status/<th>
+            <th>Account Status</th>
             <th>Profile Status</th>
-            <th>Tier</th>,
+            <th>Tier</th>
             <th>Registration Date</th>
             <th>Verified Date</th>
+            <th>On Boarding Status</th>
         </tr>
     </thead>
     <tbody>
@@ -37,6 +38,9 @@
             </td> -->
             <td>
                 {{ $record->account_number }}
+            </td>
+            <td>
+                {{ $record->rsbsa_number }}
             </td>
             <td>
                 {{ $record->first_name }}
@@ -61,6 +65,9 @@
             </td>
             <td>
                 {{ $record->original_approved_date }}
+            </td>
+            <td>
+                {{ $record->on_boarding_status }}
             </td>
         </tr>
         @endforeach

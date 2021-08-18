@@ -12,12 +12,27 @@ trait LogHistory
         $available_balance = 0;
         $current_id = "";
         foreach ($data as $entry) {
-
             // Check if need to add balance base on user_account_id
             if ($current_id != $entry->account_number) {
                 $current_balance = 0;
                 $available_balance = 0;
                 $current_id = $entry->account_number;
+
+                // CHECK Transaction type for Current Balance
+                if ($entry->Type == 'CR') {
+                    $current_balance = $current_balance + (float)$entry->total_amount;
+                } else {
+                    $current_balance = $current_balance - (float)$entry->total_amount;
+                }
+
+                // Check for available balance
+                if ($entry->Status == 'SUCCESS') {
+                    if ($entry->Type == 'CR') {
+                        $available_balance = $available_balance + (float)$entry->total_amount;
+                    } else {
+                        $available_balance = $available_balance - (float)$entry->total_amount;
+                    }
+                }
             } else {
                 // CHECK Transaction type for Current Balance
                 if ($entry->Type == 'CR') {
@@ -64,7 +79,6 @@ trait LogHistory
                     "available_balance" => strval($available_balance),
                     "status" => $entry->Status
                 ];
-
                 array_push($processed_data, $proc);
             }
         }
