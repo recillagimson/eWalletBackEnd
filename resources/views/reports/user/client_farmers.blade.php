@@ -27,6 +27,7 @@
             <th>Tier</th>
             <th>Registration Date</th>
             <th>Verified Date</th>
+            <th>On Boarding Status</th>
         </tr>
     </thead>
     <tbody>
@@ -64,6 +65,9 @@
             </td>
             <td>
                 {{ $record->original_approved_date }}
+            </td>
+            <td>
+                {{ $record->on_boarding_status }}
             </td>
         </tr>
         @endforeach
