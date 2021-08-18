@@ -223,7 +223,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 
             // IF RSBSA_NUMBER
             else if($filterBy == 'RSBSA_NUMBER') {
-                $record = $record->where('rsbsa', $filterValue);
+                $record = $record->where('rsbsa_number', $filterValue);
             }
         }
 

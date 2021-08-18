@@ -198,7 +198,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
             // IF RSBSA_NUMBER
             else if($filter_by == 'RSBSA_NUMBER') {
-                $records = $records->where('rsbsa', $filter_value);
+                $records = $records->where('rsbsa_number', $filter_value);
             }
         }
 
