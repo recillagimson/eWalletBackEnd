@@ -157,8 +157,8 @@ class FarmerProfileService implements IFarmerProfileService
             $authUser);
         Excel::import($import, $file);
 
-        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.xlsx';
-        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.xlsx';
+        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.csv';
+        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.csv';
 
         Excel::store(new FailedUploadExport($import->getFails()), $failFilename, 's3');
         Excel::store(new SuccessUploadExport($import->getSuccesses()), $successFilename, 's3');
