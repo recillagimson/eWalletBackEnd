@@ -24,17 +24,19 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\RemembersRowNumber;
 use App\Rules\RSBSARule;
 use App\Rules\RSBSAUniqueRule;
 use App\Rules\MobileNumber;
 
 class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure, SkipsOnError, WithEvents, WithChunkReading, WithBatchInserts
 {
-    use RegistersEventListeners;
+    use RegistersEventListeners, RemembersRowNumber;
 
     private $userId;
     private $fails;
     private $successes;
+    private $rsbsaNumbers;
     private IUserAccountRepository $userAccounts;
     private IUserAccountNumberRepository $userAccountNumbers;
     private IMaritalStatusRepository $maritalStatus;
@@ -55,6 +57,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         $this->userBalance = $userBalance;
         $this->fails = collect();
         $this->successes = collect();
+        $this->rsbsaNumbers = collect();
     }
 
     // /**
@@ -67,13 +70,26 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
 
     public function model(array $row)
     {
-        $user = $this->setupUserAccount($row);
-        $this->setupUserProfile($user->id, $row);
-        $this->setupUserBalance($user->id);
-        
-        $usr = ['account_number' => $user->account_number];
+        if (!$this->userDetail->getIsExistingByNameAndBirthday(
+                $row['vw_farmerprofile_full_wmfname'], 
+                $row['vw_farmerprofile_full_wmmname'], 
+                $row['vw_farmerprofile_full_wmlname'], 
+                $row['vw_farmerprofile_full_wmbirthdate'])
+        ) {
+            $user = $this->setupUserAccount($row);
+            $this->setupUserProfile($user->id, $row);
+            $this->setupUserBalance($user->id);
+            
+            $usr = ['account_number' => $user->account_number];
 
-        $this->successes->push(array_merge($usr, $row));
+            $this->successes->push(array_merge($usr, $row));
+        } else {
+            $remark['remarks']['row'] = $this->getRowNumber();
+            $remark['remarks']['errors'][] = [
+                'Duplicate Data.'
+            ];
+            $this->fails->push(array_merge($usr, $row));
+        }
     }
 
     public function rules(): array
@@ -82,7 +98,14 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             'vw_farmerprofile_full_wmrsbsa_no' => [
                 'required',
                 new RSBSAUniqueRule(),
-                new RSBSARule()
+                new RSBSARule(),
+                function($attribute, $value, $onFailure) {
+                    if (in_array($value, $this->rsbsaNumbers->toArray())) {
+                         $onFailure('RSBSA Duplicate' . implode(', ',$this->rsbsaNumbers->toArray()));
+                    }
+                    
+                    $this->rsbsaNumbers->push($value);
+                }
             ], //vw_farmerprofile_full_wmrsbsa_no = user_accounts.rsbsa_number
             'vw_farmerprofile_full_wmfname' => [
                 'required',

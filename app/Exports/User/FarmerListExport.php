@@ -68,7 +68,7 @@ class FarmerListExport implements WithHeadings, FromView, WithEvents
     public function headings(): array
     {
         return [
-            'Customer ID', 'RSBSA Number', 'First Name', 'Middle Name', 'Last Name', 'Account Status', 'Profile Status', 'Tier', 'Registration Date', 'Verified Date'
+            'Customer ID', 'RSBSA Number', 'First Name', 'Middle Name', 'Last Name', 'Account Status', 'Profile Status', 'Tier', 'Registration Date', 'Verified Date', 'On Boarding Status'
         ];
     }
 
@@ -79,8 +79,8 @@ class FarmerListExport implements WithHeadings, FromView, WithEvents
         return [
             AfterSheet::class => function (AfterSheet $event) use($count, $type) {
                 $i = 0;
-                while($i < $count) {
-                    $cells = 'A' . ($i + 1) . ":J" . ($i + 1);
+                while($i <= $count) {
+                    $cells = 'A' . ($i + 1) . ":K" . ($i + 1);
                     // dd($cells);
                     $style = [
                         'borders' => [
