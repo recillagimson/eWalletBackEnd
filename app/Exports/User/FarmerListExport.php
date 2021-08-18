@@ -79,7 +79,7 @@ class FarmerListExport implements WithHeadings, FromView, WithEvents
         return [
             AfterSheet::class => function (AfterSheet $event) use($count, $type) {
                 $i = 0;
-                while($i < $count) {
+                while($i <= $count) {
                     $cells = 'A' . ($i + 1) . ":J" . ($i + 1);
                     // dd($cells);
                     $style = [
