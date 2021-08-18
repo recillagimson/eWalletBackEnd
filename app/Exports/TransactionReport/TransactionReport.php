@@ -71,13 +71,13 @@ class TransactionReport implements WithHeadings, FromView, WithEvents
 
     public function registerEvents(): array
     {
-        $count = count($this->data);
+        $count = count($this->data) + 2;
         $type = $this->type;
         return [
             AfterSheet::class => function (AfterSheet $event) use($count, $type) {
                 $i = 0;
-                while($i < $count) {
-                    $cells = 'A' . ($i + 1) . ":E" . ($i + 1);
+                while($i <= $count) {
+                    $cells = 'A' . ($i + 1) . ":G" . ($i + 1);
                     // dd($cells);
                     $style = [
                         'borders' => [
@@ -96,7 +96,7 @@ class TransactionReport implements WithHeadings, FromView, WithEvents
                         ]
                     ];
 
-                    if($i == 0) {
+                    if($i == 0 || $i == 2) {
 
                         // $style['font'] =;
                         $style['fill'] = [
