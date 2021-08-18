@@ -9,6 +9,7 @@ interface ISend2BankDirectService
      *
      * @param string $fromUserId
      * @param array $recipient
+     * @param bool $requireOtp
      * @throws Throwable
      */
     // public function fundTransfer(string $fromUserId, array $recipient);

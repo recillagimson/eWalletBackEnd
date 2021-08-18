@@ -82,7 +82,8 @@ class AuthService implements IAuthService
         $this->tryLogin($user, $creds['password'], $user->password);
 
         $firstLogin = !$user->last_login;
-        $this->updateLastLogin($user);
+        $this->updateLastLogin($user, $usernameField);
+
 
         //$this->transactionService->processUserPending($user);
 
@@ -99,7 +100,7 @@ class AuthService implements IAuthService
         $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
 
         $firstLogin = !$user->last_login;
-        $this->updateLastLogin($user);
+        $this->updateLastLogin($user, $usernameField);
 
         //$this->transactionService->processUserPending($user);
 
@@ -117,7 +118,7 @@ class AuthService implements IAuthService
         $this->tryLogin($user, $password, $user->password);
 
         $firstLogin = !$user->last_login;
-        $this->updateLastLogin($user);
+        $this->updateLastLogin($user, UsernameTypes::Email);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
@@ -202,7 +203,7 @@ class AuthService implements IAuthService
         }
 
         $username = $this->getUsernameByField($user, $usernameField);
-        $notifService = $usernameField === UsernameTypes::MobileNumber ? $this->smsService : $this->emailService;
+        $notifService = $user->is_login_email ? $this->emailService : $this->smsService;
 
         $this->sendOTP($usernameField, $username, $otpType, $notifService);
     }
@@ -311,9 +312,10 @@ class AuthService implements IAuthService
         $user->resetLoginAttempts($this->daysToResetAttempts, true);
     }
 
-    private function updateLastLogin(UserAccount $user)
+    private function updateLastLogin(UserAccount $user, string $usernameField)
     {
         $user->last_login = Carbon::now();
+        $user->is_login_email = $usernameField == UsernameTypes::Email;
         $user->save();
     }
 }
