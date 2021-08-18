@@ -53,7 +53,7 @@ class UserDetailRepository extends Repository implements IUserDetailRepository
             }
             // IF STATUS
             else if($filterBy == 'STATUS') {
-                $records = $records->where('Status', $filterValue);
+                $records = $records->where('account_status', $filterValue);
             }
 
             // IF RSBSA_NUMBER
