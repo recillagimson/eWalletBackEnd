@@ -4,10 +4,12 @@
 namespace App\Services\Utilities\Notifications\Email;
 
 
+use App\Enums\EmailSubjects;
 use App\Enums\OtpTypes;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
+use App\Mail\Farmers\BatchUploadNotification;
 use App\Mail\LoginVerification;
 use App\Mail\PayBills\PayBillsNotification;
 use App\Mail\Send2Bank\Send2BankReceipt;
@@ -20,6 +22,7 @@ use App\Mail\User\AdminUserVerification;
 use App\Mail\User\OtpVerification;
 use App\Models\OutSend2Bank;
 use App\Models\Tier;
+use App\Models\UserAccount;
 use App\Models\UserUtilities\UserDetail;
 use App\Traits\Transactions\Send2BankHelpers;
 use Carbon\Carbon;
@@ -236,7 +239,6 @@ class EmailService implements IEmailService
         ]);
     }
 
-
     public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier)
     {
         $subject = 'SquidPay - Tier Upgrade Update';
@@ -244,5 +246,10 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
-
+    public function batchUploadNotification(UserAccount $user, string $successLink, string $failedLink)
+    {
+        $subject = EmailSubjects::farmersBatchUploadNotif;
+        $firstName = ucwords($user->profile->first_name);
+        $template = new BatchUploadNotification($firstName, $successLink, $failedLink);
+    }
 }

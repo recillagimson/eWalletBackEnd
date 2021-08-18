@@ -23,11 +23,13 @@
         "guzzlehttp/guzzle": "^7.3",
         "intervention/image": "^2.6",
         "laravel/framework": "^8.12",
+        "laravel/horizon": "^5.7",
         "laravel/sanctum": "^2.9",
         "laravel/tinker": "^2.5",
         "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
         "niklasravnsborg/laravel-pdf": "^4.0",
+        "predis/predis": "^1.1",
         "ricorocks-digital-agency/soap": "^1.4",
         "sendgrid/sendgrid": "^7.9",
         "tmilos/jose-jwt": "^2.0"
