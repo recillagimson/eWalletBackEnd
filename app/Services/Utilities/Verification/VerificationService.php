@@ -323,7 +323,7 @@ class VerificationService implements IVerificationService
         $userAccount = $this->userAccountService->get($userAccountId);
 
         // If no user Details
-        if(!$userDetails) {
+        if(!$userDetails || !$userAccount) {
             throw ValidationException::withMessages([
                 'user_detail_not_found' => 'User Detail not found'
             ]);
@@ -362,11 +362,12 @@ class VerificationService implements IVerificationService
         $res = $this->kycService->verify([
             'dob' => $userDetails['birth_date'],
             'name' => $userDetails['first_name'] . " " . $userDetails['last_name'],
-            'id_number' => "111",
+            'id_number' => $userAccount->rsbsa_number,
             'user_account_id' => $userAccountId,
             'selfie' => $data['selfie_photo'],
             'nid_front' => $data['id_photo'],
         ], false);
+
 
         return [
             'selfie_record' => $record,
