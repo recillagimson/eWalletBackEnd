@@ -24,15 +24,17 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\KYCService\IKYCService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Traits\Errors\WithUserErrors;
 use App\Traits\HasFileUploads;
 use DB;
-use Excel;
 use Exception;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class FarmerProfileService implements IFarmerProfileService
 {
@@ -54,6 +56,7 @@ class FarmerProfileService implements IFarmerProfileService
     private IInReceiveFromDBPRepository $inReceiveFromDBP;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private IReferenceNumberService $referenceNumberService;
+    private IEmailService $emailService;
 
 
     public function __construct(
@@ -71,7 +74,8 @@ class FarmerProfileService implements IFarmerProfileService
         IMaritalStatusRepository          $maritalStatus,
         IInReceiveFromDBPRepository       $inReceiveFromDBP,
         IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-        IReferenceNumberService           $referenceNumberService
+        IReferenceNumberService           $referenceNumberService,
+        IEmailService                     $emailService
     )
     {
         $this->userApprovalRepository = $userApprovalRepository;
@@ -90,6 +94,7 @@ class FarmerProfileService implements IFarmerProfileService
         $this->inReceiveFromDBP = $inReceiveFromDBP;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->referenceNumberService = $referenceNumberService;
+        $this->emailService = $emailService;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
@@ -155,6 +160,7 @@ class FarmerProfileService implements IFarmerProfileService
             $this->maritalStatus,
             $this->userBalanceInfo,
             $authUser);
+
         Excel::import($import, $file);
 
         $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.csv';
@@ -184,5 +190,12 @@ class FarmerProfileService implements IFarmerProfileService
             'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
             'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30))
         ];
+    }
+
+    public function processBatchUpload(UploadedFile $file, string $userId)
+    {
+        $user = $this->userAccountRepository->getUser($userId);
+        $result = $this->batchUpload($file, $userId);
+        $this->emailService->batchUploadNotification($user, $result['success_file'], $result['fail_file']);
     }
 }
