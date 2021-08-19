@@ -68,6 +68,14 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     */
     public function model(array $row)
     {
+
+
+        if (!$this->userDetail->getIsExistingByNameAndBirthday(
+            $row['vw_farmerprofile_full_wmfname'], 
+            $row['vw_farmerprofile_full_wmmname'], 
+            $row['vw_farmerprofile_full_wmlname'], 
+            $row['vw_farmerprofile_full_wmbirthdate'])
+    ) {
         $user = $this->setupUserAccount($row);
         $this->setupUserProfile($user->id, $row);
         $this->setupUserBalance($user->id);
@@ -75,6 +83,13 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         $usr = ['account_number' => $user->account_number];
 
         $this->successes->push(array_merge($usr, $row));
+    } else {
+        $remark['remarks']['row'] = $this->getRowNumber();
+        $remark['remarks']['errors'][] = 'Duplicate Data.';
+        $this->fails->push(array_merge($remark, $row));
+    }
+
+
     }
 
     public function rules(): array
