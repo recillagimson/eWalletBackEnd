@@ -191,6 +191,11 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
             else if($filterBy == 'STATUS') {
                 $record = $record->where('Status', $filterValue);
             }
+
+            // IF TRANSACTION_DESCRIPTION
+            else if($filterBy == 'TRANSACTION_DESCRIPTION') {
+                $record = $record->where('Description', 'LIKE', '%'. $filterBy .'%');
+            }
         }
 
         return $record->get();
