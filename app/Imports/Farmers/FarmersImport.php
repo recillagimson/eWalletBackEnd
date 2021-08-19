@@ -73,8 +73,8 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         if (!$this->userDetail->getIsExistingByNameAndBirthday(
                 $row['vw_farmerprofile_full_wmfname'], 
                 $row['vw_farmerprofile_full_wmmname'], 
-                $row['vw_farmerprofile_full_wmlname'], 
-                $row['vw_farmerprofile_full_wmbirthdate'])
+                $row['vw_farmerprofile_full_wmlname']
+              )
         ) {
             $user = $this->setupUserAccount($row);
             $this->setupUserProfile($user->id, $row);

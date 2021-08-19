@@ -68,13 +68,12 @@ class UserDetailRepository extends Repository implements IUserDetailRepository
         return $records->where('rsbsa_number', '!=', '')->get();
     }
 
-    public function getIsExistingByNameAndBirthday($firstname, $middename, $lastname, $birthday)
+    public function getIsExistingByNameAndBirthday($firstname, $middename, $lastname)
     {
         return $this->model
                     ->where('last_name', $firstname)
                     ->where('first_name', $middename)
                     ->where('middle_name', $lastname)
-                    ->where('birth_date', $birthday)
                     ->count();
     }
 }
