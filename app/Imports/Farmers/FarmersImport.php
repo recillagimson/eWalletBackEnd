@@ -107,7 +107,8 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             ], //vw_farmerprofile_full_wmrsbsa_no = user_accounts.rsbsa_number
             'vw_farmerprofile_full_wmfname' => [
                 'required',
-                'max:50'
+                'max:50',
+                Rule::unique('vw_farmerprofile_full_wmfname', 'vw_farmerprofile_full_wmmname', 'vw_farmerprofile_full_wmlname', 'vw_farmerprofile_full_wmbirthdate')
             ], //vw_farmerprofile_full_wmfname = user_details.first_name
             'vw_farmerprofile_full_wmmname' => [
                 'sometimes',
