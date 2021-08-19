@@ -85,10 +85,8 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             $this->successes->push(array_merge($usr, $row));
         } else {
             $remark['remarks']['row'] = $this->getRowNumber();
-            $remark['remarks']['errors'][] = [
-                'Duplicate Data.'
-            ];
-            $this->fails->push(array_merge($usr, $row));
+            $remark['remarks']['errors'][] = 'Duplicate Data.';
+            $this->fails->push(array_merge($remark, $row));
         }
     }
 
@@ -101,7 +99,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
                 new RSBSARule(),
                 function($attribute, $value, $onFailure) {
                     if (in_array($value, $this->rsbsaNumbers->toArray())) {
-                         $onFailure('RSBSA Duplicate' . implode(', ',$this->rsbsaNumbers->toArray()));
+                         $onFailure('RSBSA Duplicate');
                     }
                     
                     $this->rsbsaNumbers->push($value);
