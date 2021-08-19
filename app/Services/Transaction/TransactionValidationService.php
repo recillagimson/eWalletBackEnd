@@ -113,19 +113,19 @@ class TransactionValidationService implements ITransactionValidationService
 
                 // OUT TRANSACTIONS
                 // if($transactionCategory->transaction_type === 'NEGATIVE') {
-                    $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
-                    $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
-                    $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
-                    $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    // $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
+                    // $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
+                    // $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
+                    // $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
-                    $out = $buyLoad + $payBills + $send2Banks + $sendMoney;
+                    // $out = $buyLoad + $payBills + $send2Banks + $sendMoney;
 
                 // } else {
                     $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
                     $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
                     $in = $addMoneyFromBank + $receiveMoney;
-                    $totalTransactionCurrentMonth = $out + $in;
+                    $totalTransactionCurrentMonth = $in;
                 // }
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
