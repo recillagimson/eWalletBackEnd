@@ -71,7 +71,7 @@ class SubsidyImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         }
         
         if (!$user->verified) {
-            $remark['remarks']['errors'][] = 'Subsidiary for this record has already been uploaded(duplicate record)';
+            $remark['remarks']['errors'][] = 'Unverified Account';
         }
         
         if (isset($remark['remarks']['errors']) && count($remark['remarks']['errors'])) {
