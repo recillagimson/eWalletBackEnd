@@ -77,7 +77,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
                 $row['vw_farmerprofile_full_wmbirthdate'])
         ) {
             $user = $this->setupUserAccount($row);
-            $this->setupUserProfisle($user->id, $row);
+            $this->setupUserProfile($user->id, $row);
             $this->setupUserBalance($user->id);
             
             $usr = ['account_number' => $user->account_number];
