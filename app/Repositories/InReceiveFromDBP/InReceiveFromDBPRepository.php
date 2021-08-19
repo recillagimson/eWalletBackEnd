@@ -12,4 +12,12 @@ class InReceiveFromDBPRepository extends Repository implements IInReceiveFromDBP
     {
         parent::__construct($model);
     }
+
+    public function getExistByTransactionCategory($userId, $transactionCategoryId) 
+    {
+        return $this->model
+                    ->where('user_account_id', $userId)
+                    ->where('transaction_category_id', $transactionCategoryId)
+                    ->count();
+    }
 }

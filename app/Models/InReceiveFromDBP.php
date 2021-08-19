@@ -23,7 +23,7 @@ class InReceiveFromDBP extends Model
         "reference_number",
         "total_amount",
         "transaction_date",
-        "transction_category_id",
+        "transaction_category_id",
         "transaction_remarks",
         "file_name",
         "status",

@@ -22,10 +22,11 @@ use App\Enums\ReferenceNumberTypes;
 use App\Enums\TransactionCategoryIds;
 use App\Rules\RSBSARule;
 use App\Rules\RSBSAExistsRule;
+use Maatwebsite\Excel\Concerns\RemembersRowNumber;
 
 class SubsidyImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure, SkipsOnError, WithChunkReading, WithBatchInserts
 {
-    use RegistersEventListeners;
+    use RegistersEventListeners, RemembersRowNumber;
 
     private $userId;
     private $fails;
@@ -59,17 +60,29 @@ class SubsidyImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     
     public function model(array $row)
     {
+        $remark = [];
         $rsbsa = preg_replace("/[^0-9]/", "", $row['vw_farmerprofile_full_wmrsbsa_no']);
-        $referenceId = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoneyDBP);
         $user = $this->userAccountRepository->getUserAccountByRSBSANo($rsbsa);
-        $transaction = $this->addReceiveFromDBP($user, $referenceId, $row);
-        $this->addTransaction($user, $referenceId, $transaction, $row);
-        $this->addUserBalance($user, $referenceId, $row['amount']);
+        $exist = $this->inReceiveFromDBP->getExistByTransactionCategory($user->id, $row['batch_code']);
+        $remark['remarks']['row'] = $this->getRowNumber();
 
-        // $usr = ['account_number' => $user->account_number];
-
-        // $this->successes->push(array_merge($usr, $row));
-        $this->successes->push($row);
+        if ($exist) {
+            $remark['remarks']['errors'][] = 'Subsidiary for this record has already been uploaded(duplicate record)';
+        }
+        
+        if (!$user->verified) {
+            $remark['remarks']['errors'][] = 'Subsidiary for this record has already been uploaded(duplicate record)';
+        }
+        
+        if (isset($remark['remarks']['errors']) && count($remark['remarks']['errors'])) {
+            $this->fails->push(array_merge($remark, $row));
+        } else {
+            $referenceId = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoneyDBP);
+            $transaction = $this->addReceiveFromDBP($user, $referenceId, $row);
+            $this->addTransaction($user, $referenceId, $transaction, $row);
+            $this->addUserBalance($user, $referenceId, $row['amount']);
+            $this->successes->push($row);
+        }
     }
 
     /**
@@ -106,7 +119,7 @@ class SubsidyImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
                 new RSBSARule(),
                 function($attribute, $value, $onFailure) {
                     if (in_array($value, $this->rsbsaNumbers->toArray())) {
-                         $onFailure('RSBSA Duplicate' . implode(', ',$this->rsbsaNumbers->toArray()));
+                         $onFailure('RSBSA Duplicate');
                     }
                     
                     $this->rsbsaNumbers->push($value);
@@ -115,6 +128,10 @@ class SubsidyImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             'amount' => [
                 'required',
                 'numeric'
+            ],
+            'batch_code' => [
+                'required',
+                'exists:transaction_categories,id'
             ]
         ];
     }
@@ -136,7 +153,7 @@ class SubsidyImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             "reference_number" => $referenceId,
             "total_amount" => (float)$row['amount'],
             "transaction_date" => date('Y-m-d H:i:s'),
-            "transction_category_id" => TransactionCategoryIds::dbpSubsidy,
+            "transaction_category_id" => $row['batch_code'],
             "transaction_remarks" => '',
             "file_name" => $this->filename,
             "status" => 'SUCCESS',
@@ -154,7 +171,7 @@ class SubsidyImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             'transaction_id' => $transaction->id,
             'reference_number' => $referenceId,
             'total_amount' => (float)$row['amount'],
-            'transaction_category_id' => TransactionCategoryIds::dbpSubsidy,
+            'transaction_category_id' => $row['batch_code'],
             'user_created' => $this->userId,
             'user_updated' => $this->userId,
             'transaction_date' => $transaction->transaction_date
@@ -176,5 +193,15 @@ class SubsidyImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     public function getSuccesses()
     {
         return $this->successes;
+    }
+
+    /**
+     * @return array
+     */
+    public function customValidationMessages()
+    {
+        return [
+            'batch_code.exists' => 'Invalid batch code.',
+        ];
     }
 }
