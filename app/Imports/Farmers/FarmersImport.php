@@ -33,6 +33,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
 {
     use RegistersEventListeners, RemembersRowNumber;
 
+    private $infos;
     private $userId;
     private $fails;
     private $successes;
@@ -58,6 +59,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         $this->fails = collect();
         $this->successes = collect();
         $this->rsbsaNumbers = collect();
+        $this->infos = collect();
     }
 
     // /**
@@ -74,7 +76,15 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
                 $row['vw_farmerprofile_full_wmfname'], 
                 $row['vw_farmerprofile_full_wmmname'], 
                 $row['vw_farmerprofile_full_wmlname'], 
-                $row['vw_farmerprofile_full_wmbirthdate'])
+                $row['vw_farmerprofile_full_wmbirthdate']) &&
+            !$this->isExistingInFile(
+                $row['vw_farmerprofile_full_wmfname'], 
+                $row['vw_farmerprofile_full_wmmname'], 
+                $row['vw_farmerprofile_full_wmlname'], 
+                $row['vw_farmerprofile_full_wmbirthdate'],
+                $this->getRowNumber(),
+                $row
+            )
         ) {
             $user = $this->setupUserAccount($row);
             $this->setupUserProfile($user->id, $row);
@@ -268,6 +278,17 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         ];
 
         $this->userBalance->create($balance);
+    }
+
+    public function isExistingInFile(string $fname, string $mname, string $lname, string $birthday, $rowNumber, $row)
+    {
+        if ($this->infos->contains("$fname $mname $lname $birthday")) {
+            return true;
+        }
+        
+        $this->infos->push("$fname $mname $lname $birthday");
+        
+        return false;
     }
 
     public function getFails()
