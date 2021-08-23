@@ -8,7 +8,7 @@ trait StringHelpers
 {
     public function formatDate(Carbon $date): string
     {
-        return $date->timezone('Asia/Manila')->toDateTimeString();
+        return $date->timezone('Asia/Manila')->toDayDateTimeString();
     }
 
     public function formatAmount(float $amount): string
