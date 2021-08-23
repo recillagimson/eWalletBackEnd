@@ -219,7 +219,7 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $recipientName = ucwords($user->profile()->first_name);
+        $recipientName = ucwords($user->profile->first_name);
         $otp = $this->generateOTP($otpType, $user->id, $user->otp_enabled);
         if (App::environment('local') || !$user->otp_enabled) return;
 
