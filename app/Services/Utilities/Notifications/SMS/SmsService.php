@@ -6,7 +6,9 @@ namespace App\Services\Utilities\Notifications\SMS;
 
 use App\Enums\OtpTypes;
 use App\Models\Tier;
+use App\Models\UserAccount;
 use App\Models\UserUtilities\UserDetail;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Transactions\Send2BankHelpers;
 use Carbon\Carbon;
@@ -27,8 +29,9 @@ class SmsService implements ISmsService
 
     private IApiService $apiService;
     private string $broadcastUrl;
+    private IUserAccountRepository $userAccounts;
 
-    public function __construct(IApiService $apiService)
+    public function __construct(IApiService $apiService, IUserAccountRepository $userAccounts)
     {
         $this->apiUrl = config('sms.api_url');
         $this->username = config('sms.username');
@@ -36,49 +39,54 @@ class SmsService implements ISmsService
         $this->shotcodeMask = config('sms.shortcode_mask');
 
         $this->apiService = $apiService;
-        $this->broadcastUrl = $this->apiUrl.'/broadcast';
+        $this->broadcastUrl = $this->apiUrl . '/broadcast';
+        $this->userAccounts = $userAccounts;
     }
 
-    public function sendPasswordVerification(string $to, string $otp, string $otpType)
+    public function sendPasswordVerification(string $to, string $otp, string $otpType, string $recipientName)
     {
+
         $pinOrPassword = $otpType === OtpTypes::passwordRecovery ? 'password' : 'pin code';
-        $content = 'Hi Squidee! Your ' . $pinOrPassword . ' recovery code is: ' . $otp . '. DO NOT SHARE this OTP';
+
+        $content = 'Hi ' . $recipientName . '! Your ' . $pinOrPassword . ' recovery code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
         $this->sendMessages($to, $content);
     }
 
-    public function sendAccountVerification(string $to, string $otp)
+    public function sendAccountVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi Squidee! Your account verification code is: '.$otp .'. DO NOT SHARE this OTP';
+
+        $content = 'Hi ' . $recipientName . '! Your account verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
         $this->sendMessages($to, $content);
     }
 
-    public function sendLoginVerification(string $to, string $otp)
+    public function sendLoginVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi Squidee! Your login verification code is: ' . $otp . '. DO NOT SHARE this OTP';
+        $content = 'Hi ' . $recipientName . '! Your login verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
         $this->sendMessages($to, $content);
     }
 
-    public function sendMoneyVerification(string $to, string $otp)
+    public function sendMoneyVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi Squidee! Your send money verification code is: ' . $otp . '. DO NOT SHARE this OTP';
+        $content = 'Hi ' . $recipientName . '! Your send money verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
         $this->sendMessages($to, $content);
     }
 
-    public function sendS2BVerification(string $to, string $otp)
+    public function sendS2BVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi Squidee! Your send to bank verification code is: ' . $otp . '. DO NOT SHARE this OTP';
+        $content = 'Hi ' . $recipientName . '! Your send to bank verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
         $this->sendMessages($to, $content);
     }
 
-    public function updateProfileVerification(string $to, string $otp)
+    public function updateProfileVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi Squidee! Your update profile verification code is: ' . $otp . '. DO NOT SHARE this OTP';
+        $content = 'Hi ' . $recipientName . '! Your update profile verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
         $this->sendMessages($to, $content);
     }
 
-    public function updateMobileVerification(string $to, string $otp)
+    public function updateMobileVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi Squidee! Your update mobile verification code is: ' . $otp . '. DO NOT SHARE this OTP';
+
+        $content = 'Hi ' . $recipientName . '! Your update mobile verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
         $this->sendMessages($to, $content);
     }
 
@@ -87,7 +95,6 @@ class SmsService implements ISmsService
         $content = 'Hi Squidee! You have forwarded: ' . $fillRequest['amount'] . ' to ' . $receiverName . '. This amount has been debited to your account. Your new balance is P ' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
         $this->sendMessages($to, $content);
     }
-
 
     public function sendMoneyRecipientNotification(string $to, array $fillRequest, string $senderName)
     {
@@ -156,10 +163,16 @@ class SmsService implements ISmsService
         ]);
     }
 
-    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier) {
-       $content = "Hi Squidee! Your account is now fully verified. Login to your account and enjoy additional features.";
+    public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier)
+    {
+        $content = "Hi Squidee! Your account is now fully verified. Login to your account and enjoy additional features.";
         $this->sendMessages($to, $content);
     }
 
+    private function getUser(): UserAccount
+    {
+        $userId = request()->user()->id;
+        return $this->userAccounts->getUser($userId);
+    }
 
 }

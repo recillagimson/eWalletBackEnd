@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -12,16 +11,18 @@ class LoginVerification extends Mailable
     use Queueable, SerializesModels;
 
     private string $otp;
+    private string $recipientName;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(string $otp)
+    public function __construct(string $otp, string $recipientName)
     {
         //
         $this->otp = $otp;
+        $this->recipientName = $recipientName;
     }
 
     /**
@@ -34,7 +35,8 @@ class LoginVerification extends Mailable
         return $this->view('emails.auth.login_verification')
             ->subject('SquidPay - Login Verification')
             ->with([
-                'code' => $this->otp
+                'code' => $this->otp,
+                '$recipientName' => $this->recipientName
             ]);
     }
 }

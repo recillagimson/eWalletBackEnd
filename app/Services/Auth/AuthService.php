@@ -219,23 +219,24 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
+        $recipientName = ucwords($user->profile()->first_name);
         $otp = $this->generateOTP($otpType, $user->id, $user->otp_enabled);
         if (App::environment('local') || !$user->otp_enabled) return;
 
         $notif = $notifService == null ? $this->notificationService : $notifService;
 
         if ($otpType === OtpTypes::registration)
-            $notif->sendAccountVerification($username, $otp->token);
+            $notif->sendAccountVerification($username, $otp->token, $recipientName);
         elseif ($otpType === OtpTypes::login)
-            $notif->sendLoginVerification($username, $otp->token);
+            $notif->sendLoginVerification($username, $otp->token, $recipientName);
         elseif ($otpType === OtpTypes::passwordRecovery || $otpType === OtpTypes::pinRecovery)
-            $notif->sendPasswordVerification($username, $otp->token, $otpType);
+            $notif->sendPasswordVerification($username, $otp->token, $otpType, $recipientName);
         elseif ($otpType === OtpTypes::sendMoney)
-            $notif->sendMoneyVerification($username, $otp->token);
+            $notif->sendMoneyVerification($username, $otp->token, $recipientName);
         elseif ($otpType === OtpTypes::send2Bank)
-            $notif->sendS2BVerification($username, $otp->token);
+            $notif->sendS2BVerification($username, $otp->token, $recipientName);
         elseif ($otpType === OtpTypes::updateProfile)
-            $notif->updateProfileVerification($username, $otp->token);
+            $notif->updateProfileVerification($username, $otp->token, $recipientName);
         else
             $this->otpTypeInvalid();
     }
