@@ -30,6 +30,7 @@ use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Throwable;
 
 class SendMoneyService implements ISendMoneyService
 {
@@ -93,15 +94,16 @@ class SendMoneyService implements ISendMoneyService
     /**
      * Creates a new record for out_send_money, in_receive_money
      *
-     * @param string $username
+     * @param string $usernameField
      * @param array $fillRequest
-     * @param object $user
+     * @param UserAccount $user
      * @return array
+     * @throws Throwable
      */
-    public function send(string $username, array $fillRequest, UserAccount $user)
+    public function send(string $usernameField, array $fillRequest, UserAccount $user): array
     {
         $senderID = $user->id;
-        $receiverID = $this->getUserID($username, $fillRequest);
+        $receiverID = $this->getUserID($usernameField, $fillRequest);
         $receiverUser = $this->userAccounts->get($receiverID);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
@@ -132,11 +134,11 @@ class SendMoneyService implements ISendMoneyService
             $this->addReceiverBalance($receiverID, $fillRequest, $user);
             $this->logHistories($senderID, $receiverID, $fillRequest);
             $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest, $user);
-            $this->senderNotification($user, $username, $fillRequest, $receiverID, $senderID);
-            $this->recipientNotification($receiverUser, $username, $fillRequest, $senderID, $receiverID);
+            $this->senderNotification($user, $usernameField, $fillRequest, $receiverID, $senderID);
+            $this->recipientNotification($receiverUser, $usernameField, $fillRequest, $senderID, $receiverID);
 
             DB::commit();
-            return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username, $user);
+            return $this->sendMoneyResponse($receiverDetails, $fillRequest, $usernameField, $user);
 
         } catch (Exception $e) {
             DB::rollBack();
@@ -150,7 +152,7 @@ class SendMoneyService implements ISendMoneyService
      *
      * @param string $username
      * @param array $fillRequest
-     * @param object $user
+     * @param UserAccount $user
      * @return array
      */
     public function sendValidate(string $username, array $fillRequest, UserAccount $user)
@@ -335,7 +337,8 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function senderNotification(UserAccount $user, $username, $fillRequest, $receiverID, $senderID)
+    private function senderNotification(UserAccount $user, string $username, array $fillRequest, string $receiverID,
+                                        string      $senderID)
     {
         $userDetail = $this->userDetailRepository->getByUserId($receiverID);
         $fillRequest['serviceFee'] = $this->getServiceFee($user, true);
@@ -346,23 +349,32 @@ class SendMoneyService implements ISendMoneyService
         $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
         $notifService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
 
-        $description = 'Hi Squidee! You have forwarded: ' . $fillRequest['amount'] . ' to ' . $userDetail->first_name . '. This amount has been debited to your account. Your new balance is P ' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
+        $description = 'You have forwarded: ' . $fillRequest['amount'] . ' to ' . $userDetail->first_name .
+            '. This amount has been debited to your account. Your new balance is P ' . $fillRequest['newBalance'] .
+            ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
         $title = 'SquidPay - Send Money Notification';
+
         $this->insertNotification($user, $title, $description);
     }
-
 
     private function recipientNotification(UserAccount $user, $username, $fillRequest, $senderID, $receiverID)
     {
 
-        $userDetail  = $this->userDetailRepository->getByUserId($senderID);
+        $userDetail = $this->userDetailRepository->getByUserId($senderID);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
-         $usernameField = $this->getUsernameFieldByAvailability($user);
+
+        $usernameField = $this->getUsernameFieldByAvailability($user);
         $username = $this->getUsernameByField($user, $usernameField);
+
         $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
         $notifService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
 
-        $description = 'Hi Squidee! You have received P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' from ' . $userDetail->first_name . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Use now to buy load, send money, pay bills and a lot more!';
+
+        $description = 'Hi Squidee! You have received P' . $fillRequest['amount'] . ' of SquidPay on ' .
+            date('Y-m-d H:i:s') . ' from ' . $userDetail->first_name . '. Your new balance is P' .
+            $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] .
+            '. Use now to buy load, send money, pay bills and a lot more!';
+
         $title = 'SquidPay - Send Money Notification';
         $this->insertNotification($user, $title, $description);
     }
@@ -379,7 +391,7 @@ class SendMoneyService implements ISendMoneyService
             'total_amount' => $fillRequest['amount'] + $this->getServiceFee($user, true),
             'message' => $fillRequest['message'],
             'status' => 'SUCCESS',
-            'transaction_date' => date('Y-m-d H:i:s'),
+            'transaction_date' => Carbon::now(),
             'transaction_category_id' => SendMoneyConfig::CXSEND,
             'transaction_remarks' => '',
             'user_created' => $senderID,

@@ -203,7 +203,7 @@ class AuthService implements IAuthService
             $usernameField = $type;
         }
 
-        $username = $this->getUsernameByField($user, $usernameField);
+        $username = $user->is_login_email ? $user->email : $user->mobile_number;
         $notifService = $user->is_login_email ? $this->emailService : $this->smsService;
 
         $this->sendOTP($usernameField, $username, $otpType, $notifService);

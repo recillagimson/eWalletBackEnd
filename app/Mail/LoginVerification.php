@@ -36,7 +36,7 @@ class LoginVerification extends Mailable
             ->subject('SquidPay - Login Verification')
             ->with([
                 'code' => $this->otp,
-                '$recipientName' => $this->recipientName
+                'recipientName' => $this->recipientName
             ]);
     }
 }
