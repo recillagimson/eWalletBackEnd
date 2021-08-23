@@ -238,7 +238,7 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function sendMoneyReview(string $userID)
+    private function sendMoneyReview(string $userID): array
     {
         $user = $this->userDetailRepository->getByUserId($userID);
         return [
@@ -251,7 +251,7 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function sendMoneyResponse($receiverDetails, $fillRequest, $username, UserAccount $user)
+    private function sendMoneyResponse($receiverDetails, $fillRequest, $username, UserAccount $user): array
     {
         return [
             'first_name' => $receiverDetails->first_name,
