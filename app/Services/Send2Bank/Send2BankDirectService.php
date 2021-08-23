@@ -4,7 +4,6 @@
 namespace App\Services\Send2Bank;
 
 
-use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TpaProviders;
@@ -73,17 +72,18 @@ class Send2BankDirectService implements ISend2BankDirectService
         $this->userBalances = $userBalances;
         $this->serviceFees = $serviceFees;
         $this->send2banks = $send2banks;
-        $this->transactionHistories = $transactionHistories;
-        $this->smsService = $smsService;
-        $this->emailService = $emailService;
+                                    $this->transactionHistories = $transactionHistories;
+                                    $this->smsService = $smsService;
+                                    $this->emailService = $emailService;
 
 
-        $this->logHistoryService = $logHistoryService;
-    }
+                                    $this->logHistoryService = $logHistoryService;
+                                }
 
 
     // Direct to bank
-    public function fundTransferToUBPDirect(string $userId, array $recipient, bool $requireOtp = true) {
+    public function fundTransferToUBPDirect(string $userId, array $recipient, bool $requireOtp = true): array
+    {
         $updateReferenceCounter = false;
 
         try {
@@ -105,7 +105,7 @@ class Send2BankDirectService implements ISend2BankDirectService
                 ->validate($user, $transactionCategoryId, $totalAmount);
 
 
-            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
+//            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
 
             $currentDate = Carbon::now();
@@ -160,7 +160,7 @@ class Send2BankDirectService implements ISend2BankDirectService
         }
     }
 
-    public function validateFundTransfer(string $userId, array $recipient)
+    public function validateFundTransfer(string $userId, array $recipient): array
     {
         $user = $this->users->getUser($userId);
         $this->transactionValidationService->validateUser($user);

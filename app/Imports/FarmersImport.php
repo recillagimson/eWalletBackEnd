@@ -68,6 +68,14 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     */
     public function model(array $row)
     {
+
+
+        if (!$this->userDetail->getIsExistingByNameAndBirthday(
+            $row['vw_farmerprofile_full_wmfname'], 
+            $row['vw_farmerprofile_full_wmmname'], 
+            $row['vw_farmerprofile_full_wmlname'], 
+            $row['vw_farmerprofile_full_wmbirthdate'])
+    ) {
         $user = $this->setupUserAccount($row);
         $this->setupUserProfile($user->id, $row);
         $this->setupUserBalance($user->id);
@@ -75,6 +83,13 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         $usr = ['account_number' => $user->account_number];
 
         $this->successes->push(array_merge($usr, $row));
+    } else {
+        $remark['remarks']['row'] = $this->getRowNumber();
+        $remark['remarks']['errors'][] = 'Duplicate Data.';
+        $this->fails->push(array_merge($remark, $row));
+    }
+
+
     }
 
     public function rules(): array
@@ -87,7 +102,8 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             ], //vw_farmerprofile_full_wmrsbsa_no = user_accounts.rsbsa_number
             'vw_farmerprofile_full_wmfname' => [
                 'required',
-                'max:50'
+                'max:50',
+                //Rule::unique('vw_farmerprofile_full_wmfname', 'vw_farmerprofile_full_wmmname', 'vw_farmerprofile_full_wmlname', 'vw_farmerprofile_full_wmbirthdate')
             ], //vw_farmerprofile_full_wmfname = user_details.first_name
             'vw_farmerprofile_full_wmmname' => [
                 'sometimes',

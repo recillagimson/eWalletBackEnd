@@ -173,6 +173,9 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             $to = $attr['to'];
         }
 
+        $records = $records->where('original_transaction_date', '>=', $from)
+        ->where('original_transaction_date', '<=', $to);
+
         if (isset($attr['filter_by']) && $attr['filter_by'] != '' && isset($attr['filter_value']) && $attr['filter_value'] != '') {
             $filter_by = $attr['filter_by'];
             $filter_value = $attr['filter_value'];
@@ -199,6 +202,11 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             // IF RSBSA_NUMBER
             else if($filter_by == 'RSBSA_NUMBER') {
                 $records = $records->where('rsbsa_number', $filter_value);
+            }
+
+            // IF TRANSACTION_DESCRIPTION
+            else if($filter_by == 'TRANSACTION_DESCRIPTION') {
+                $records = $records->where('Description', 'LIKE', '%'. $filter_value .'%');
             }
         }
 
