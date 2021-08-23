@@ -93,8 +93,11 @@ class SmsService implements ISmsService
 
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName)
     {
-        $content = 'Hi Squidee! You have forwarded: ' . $fillRequest['amount'] . ' to ' . $receiverName .
-            '. This amount has been debited to your account. Your new balance is P ' . $fillRequest['newBalance'] .
+        $strAmount = $this->formatAmount($fillRequest['amount']);
+        $strNewBalance = $this->formatAmount($fillRequest['newBalance']);
+
+        $content = 'Hi Squidee! You have forwarded: ' . $strAmount . ' to ' . $receiverName .
+            '. This amount has been debited to your account. Your new balance is P ' . $strNewBalance .
             ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
         $this->sendMessages($to, $content);
     }
