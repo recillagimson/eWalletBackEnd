@@ -197,12 +197,7 @@ class AuthService implements IAuthService
 
     public function generateTransactionOTP(UserAccount $user, string $otpType, ?string $type)
     {
-        $usernameField = $this->getUsernameFieldByAvailability($user);
-
-        if ($type) {
-            $usernameField = $type;
-        }
-
+        $usernameField = $user->is_login_email ? UsernameTypes::Email : UsernameTypes::MobileNumber;
         $username = $user->is_login_email ? $user->email : $user->mobile_number;
         $notifService = $user->is_login_email ? $this->emailService : $this->smsService;
 
