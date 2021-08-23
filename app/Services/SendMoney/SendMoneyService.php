@@ -377,7 +377,7 @@ class SendMoneyService implements ISendMoneyService
         $strAmount = $this->formatAmount($fillRequest['amount']);
         $strNewBalance = $this->formatAmount($fillRequest['newBalance']);
 
-        $description = 'Hi Squidee! You have received P' . $strAmount . ' of SquidPay on ' .
+        $description = 'You have received P' . $strAmount . ' of SquidPay on ' .
             $strDate . ' from ' . $userDetail->first_name . '. Your new balance is P' .
             $strNewBalance . ' with Ref No. ' . $fillRequest['refNo'] .
             '. Use now to buy load, send money, pay bills and a lot more!';
