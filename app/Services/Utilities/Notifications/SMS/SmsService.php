@@ -103,8 +103,9 @@ class SmsService implements ISmsService
     {
         $strAmount = $this->formatAmount($fillRequest['amount']);
         $strNewBalance = $this->formatAmount($fillRequest['newBalance']);
+        $strDate = $this->formatDate(Carbon::now());
 
-        $content = 'Hi Squidee! You have received P' . $strAmount . ' of SquidPay on ' . date('Y-m-d H:i:s') .
+        $content = 'Hi Squidee! You have received P' . $strAmount . ' of SquidPay on ' . $strDate .
             ' from ' . $senderName . '. Your new balance is P' . $strNewBalance . ' with Ref No. ' . $fillRequest['refNo'] .
             '. Use now to buy load, send money, pay bills and a lot more!';
         $this->sendMessages($to, $content);

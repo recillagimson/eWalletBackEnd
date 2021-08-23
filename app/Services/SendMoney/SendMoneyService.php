@@ -26,6 +26,7 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithSendMoneyErrors;
+use App\Traits\StringHelpers;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use DB;
@@ -34,7 +35,7 @@ use Throwable;
 
 class SendMoneyService implements ISendMoneyService
 {
-    use WithSendMoneyErrors, UserHelpers;
+    use WithSendMoneyErrors, UserHelpers, StringHelpers;
 
     private IOutSendMoneyRepository $outSendMoney;
     private IInReceiveMoneyRepository $inReceiveMoney;
@@ -349,8 +350,11 @@ class SendMoneyService implements ISendMoneyService
         $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
         $notifService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
 
-        $description = 'You have forwarded: ' . $fillRequest['amount'] . ' to ' . $userDetail->first_name .
-            '. This amount has been debited to your account. Your new balance is P ' . $fillRequest['newBalance'] .
+        $strAmount = $this->formatAmount($fillRequest['amount']);
+        $strNewBalance = $this->formatAmount($fillRequest['newBalance']);
+
+        $description = 'You have forwarded: P ' . $strAmount . ' to ' . $userDetail->first_name .
+            '. This amount has been debited to your account. Your new balance is P ' . $strNewBalance .
             ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
         $title = 'SquidPay - Send Money Notification';
 
@@ -369,10 +373,13 @@ class SendMoneyService implements ISendMoneyService
         $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
         $notifService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
 
+        $strDate = $this->formatDate(Carbon::now());
+        $strAmount = $this->formatAmount($fillRequest['amount']);
+        $strNewBalance = $this->formatAmount($fillRequest['newBalance']);
 
-        $description = 'Hi Squidee! You have received P' . $fillRequest['amount'] . ' of SquidPay on ' .
-            date('Y-m-d H:i:s') . ' from ' . $userDetail->first_name . '. Your new balance is P' .
-            $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] .
+        $description = 'Hi Squidee! You have received P' . $strAmount . ' of SquidPay on ' .
+            $strDate . ' from ' . $userDetail->first_name . '. Your new balance is P' .
+            $strNewBalance . ' with Ref No. ' . $fillRequest['refNo'] .
             '. Use now to buy load, send money, pay bills and a lot more!';
 
         $title = 'SquidPay - Send Money Notification';
