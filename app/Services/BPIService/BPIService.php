@@ -64,7 +64,7 @@ class BPIService implements IBPIService
     public function getAccounts(string $token) {
 
         $token = $this->getHeaders($token);
-        $response = $this->apiService->get('https://apitest.bpi.com.ph/bpi/api/accounts/transactionalAccounts', $token)->json();
+        $response = $this->apiService->get(env('BPI_TRANSACTIONAL_ENDPOINT'), $token)->json();
 
         if($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
