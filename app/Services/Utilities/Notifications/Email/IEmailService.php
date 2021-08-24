@@ -14,7 +14,7 @@ interface IEmailService extends INotificationService
 
     // public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier);
 
-    public function updateEmailVerification(string $to, string $otp);
+    public function updateEmailVerification(string $to, string $otp, string $recipientName);
 
     public function batchUploadNotification(UserAccount $user, string $successLink, string $failedLink);
 }
