@@ -57,6 +57,7 @@ class ErrorCodes
     const isEmpty = 417;
     const isExisting = 418;
     const kycRecordNotFound = 419;
+    const invalidDigitsLength = 420;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;

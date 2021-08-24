@@ -33,5 +33,9 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::transactionErrorEncountered, 'Transaction error encountered.');
     }
 
+    private function invalidDigitsLength(string $digits)
+    {
+        $this->validationErrorMessage(ErrorCodes::invalidDigitsLength, 'Account number must be ' . $digits . ' digits.');
+    }
 
 }

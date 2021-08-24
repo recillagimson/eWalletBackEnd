@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Client\Response;
-
+use Str;
 
 trait PayBillsHelpers
 {
@@ -263,6 +263,32 @@ trait PayBillsHelpers
         }
 
         return $payBill;
+    }
+
+
+    private function validateAccountNumber(string $billerCode, $accountNumber)
+    {
+        if ($billerCode === 'MWCOM') {
+            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
+        }
+        if ($billerCode === 'MECOR') {
+            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
+        }
+        if ($billerCode === 'MWSIN') {
+            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
+        }
+        if ($billerCode === 'ETRIP') {
+            if (Str::length($accountNumber) != 12) return $this->invalidDigitsLength(12);
+        }
+        if ($billerCode === 'SMART') {
+            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
+        }
+        if ($billerCode === 'SSS03') {
+            if (Str::length($accountNumber) < 10  || Str::length($accountNumber) > 13) return $this->invalidDigitsLength("10 - 13");
+        }
+        if ($billerCode === 'PRULI') {
+            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
+        }
     }
 
 }
