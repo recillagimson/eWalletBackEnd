@@ -114,6 +114,8 @@ use App\Repositories\InReceiveFromDBP\InReceiveFromDBPRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
+use App\Repositories\InAddMoneyEcPay\InAddMoneyEcPayRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -240,6 +242,9 @@ class RepositoryServiceProvider extends ServiceProvider
         
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
+
+        //In Add Money ECPAY Repositories
+        $this->app->bind(IInAddMoneyEcPayRepository::class, InAddMoneyEcPayRepository::class);
 
     }
 
