@@ -31,6 +31,15 @@ class BPIService implements IBPIService
     private IInAddMoneyBPIRepository $bpiRepository;
     private IServiceFeeRepository $serviceFee;
 
+    private $clientId;
+    private $clientSecret;
+    private $authUrl;
+    private $transactionalUrl;
+    private $fundTopUpUrl;
+    private $fundTopUpOtpUrl;
+    private $fundTopUpStatusUrl;
+    private $processUrl;
+
 
     public function __construct(IApiService $apiService, IReferenceNumberService $referenceNumberService, ILogHistoryService $logHistory, IUserTransactionHistoryRepository $transactionHistory, IUserBalanceInfoRepository $userBalanceInfo, IInAddMoneyBPIRepository $bpiRepository, IServiceFeeRepository $serviceFee)
     {
@@ -40,12 +49,21 @@ class BPIService implements IBPIService
         $this->userBalanceInfo = $userBalanceInfo;
         $this->bpiRepository = $bpiRepository;
         $this->serviceFee = $serviceFee;
+
+        $this->clientId = config('bpi.clientId');
+        $this->clientSecret = config('bpi.clientSecret');
+        $this->authUrl = config('bpi.authUrl');
+        $this->transactionalUrl = config('bpi.transactionalUrl');
+        $this->fundTopUpUrl = config('bpi.fundTopUpUrl');
+        $this->fundTopUpOtpUrl = config('bpi.fundTopUpOtpUrl');
+        $this->fundTopUpStatusUrl = config('bpi.fundTopUpStatusUrl');
+        $this->processUrl = config('bpi.processUrl');
     }
 
     private function getHeaders(string $token) {
         return [
-            'x-ibm-client-id' => env('BPI_CLIENT_ID'),
-            'x-ibm-client-secret' => env('BPI_CLIENT_SECRET'),
+            'x-ibm-client-id' => $this->clientId,
+            'x-ibm-client-secret' => $this->clientSecret,
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer ' . $token
         ];
@@ -53,18 +71,18 @@ class BPIService implements IBPIService
 
     public function bpiAuth(string $code) {
         $body = [
-            'client_id' => env('BPI_CLIENT_ID'),
-            'client_secret' => env('BPI_CLIENT_SECRET'),
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
             'grant_type' => 'authorization_code',
             'code' => $code
         ];
-        return $this->apiService->postAsForm(env('BPI_AUTH'), $body, ['accept' => 'application/json', 'content-type' => 'application/x-www-form-urlencoded'])->json();
+        return $this->apiService->postAsForm($this->authUrl, $body, ['accept' => 'application/json', 'content-type' => 'application/x-www-form-urlencoded'])->json();
     }
 
     public function getAccounts(string $token) {
 
         $token = $this->getHeaders($token);
-        $response = $this->apiService->get(env('BPI_TRANSACTIONAL_ENDPOINT'), $token)->json();
+        $response = $this->apiService->get($this->transactionalUrl, $token)->json();
 
         if($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
@@ -93,7 +111,7 @@ class BPIService implements IBPIService
         $jwe = $this->bpiEncodeJWE($jwt);
         
         // Send API request
-        $response = $this->apiService->post(env('BPI_FUND_TOP_UP_ENDPOINT'), ['token' => $jwe], $token);
+        $response = $this->apiService->post($this->fundTopUpUrl, ['token' => $jwe], $token);
         
         if($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
@@ -118,7 +136,7 @@ class BPIService implements IBPIService
         
         $headers = $token = $this->getHeaders($params['token']);
         $headers['transactionId'] = $params['transactionId'];
-        $otp_url = env('BPI_FUND_TOP_UP_OTP');
+        $otp_url = $this->fundTopUpOtpUrl;
 
         $params['jti'] = Str::uuid()->toString();
         $params['iss'] = 'PARTNER';
@@ -146,7 +164,7 @@ class BPIService implements IBPIService
         \DB::beginTransaction();
         try {
             $headers = $this->getHeaders($params['token']);
-            $status_url = env('BPI_FUND_TOP_UP_STATUS');
+            $status_url = $this->fundTopUpStatusUrl;
 
             $processedTransactions = [];
             foreach($params['transactionIds'] as $transactionId) {
@@ -188,7 +206,7 @@ class BPIService implements IBPIService
         try {
             $headers = $this->getHeaders($params['token']);
             $headers['transactionId'] = $params['transactionId'];
-            $otp_url = env('BPI_PROCESS_URL');
+            $otp_url = $this->processUrl;
     
             $values['otp'] = $params['otp'];
             $values['jti'] = Str::uuid()->toString();
