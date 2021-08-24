@@ -58,6 +58,7 @@ class ECPayService implements IECPayService
 
         $this->username = config('ecpay.ecpay_username');
         $this->password = config('ecpay.ecpay_password');
+        $this->expirationPerHour = config('ecpay.ecpay_expiration_per_hour');
 
         $this->apiService = $apiService;
         $this->handlePostBackService = $handlePostBackService;
@@ -79,14 +80,17 @@ class ECPayService implements IECPayService
 
     public function commitPayment(array $data, object $user): object
     {
-        $result = $this->generateXmlBody($data, "CommitPayment");
+        $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaOTC);
+        $expirationDate = Carbon::now()->addHours($this->expirationPerHour)->format('Y-m-d H:i:s');
+        $result = $this->generateXmlBody($this->createBodyCommitPaymentFormat($refNo, $expirationDate, $data), "CommitPayment");
         $response = $this->apiService->postXml($this->ecpayUrl, $result, $this->getXmlHeaders());
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->CommitPaymentResponse->CommitPaymentResult, true)[0];
 
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
-        $result = $this->createOrUpdateTransaction($jsondecode, $data, $user);
+        $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $refNo, $expirationDate);
+        $data['reference_number'] = $refNo;
 
         return $this->responseService->successResponse(
             $data,
@@ -118,8 +122,8 @@ class ECPayService implements IECPayService
         return $xmlData;
     }
 
-    private function createOrUpdateTransaction(array $data, array $inputData, object $user) {
-        $isDataExisting = $this->addMoneyEcPayRepository->getDataByReferenceNumber($inputData['referenceno']);
+    private function createOrUpdateTransaction(array $data, array $inputData, object $user, string $refNo, string $expirationDate) {
+        $isDataExisting = $this->addMoneyEcPayRepository->getDataByReferenceNumber($refNo);
         $transCategoryId = $this->transactionCategoryRepository->getById(TransactionCategoryIds::sendMoneyToSquidPayAccount);
        
         if($isDataExisting) {
@@ -132,8 +136,7 @@ class ECPayService implements IECPayService
             ]);
         } else {
             $amount = $inputData['amount'];
-            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaOTC);
-            $isDataExisting = $this->addMoneyEcPayRepository->create($this->createBodyFormat($data, $inputData, $user, $refNo, $transCategoryId));
+            $isDataExisting = $this->addMoneyEcPayRepository->create($this->createBodyFormat($data, $inputData, $user, $refNo, $transCategoryId, $expirationDate));
             $logStringResult = 'Successfully added money from EcPay with amount of ' . $amount;
         }
        
@@ -154,15 +157,26 @@ class ECPayService implements IECPayService
         return $isDataExisting;
     }
 
-    private function createBodyFormat(array $data, array $inputData, object $user, string $refNo, object $transCategoryId) {
+    private function createBodyCommitPaymentFormat($refNo, $expirationDate, $data) {
+        $result = [
+            "referenceno"=>$refNo,
+            "amount"=>$data['amount'],
+            "expirydate"=>$expirationDate,
+            "remarks"=>"Send Money via Ecpay",
+        ];
+
+        return $result;
+    }
+
+    private function createBodyFormat(array $data, array $inputData, object $user, string $refNo, object $transCategoryId, string $expirationDate) {
 
         $result = [
             "user_account_id"=>$user->id,
             "reference_number"=>$refNo,
             "amount"=>$inputData['amount'],
             "total_amount"=>$inputData['amount'],
-            "ec_pay_reference_number"=>$inputData['referenceno'],
-            "expiry_date"=>Carbon::parse($inputData['expirydate'])->format('Y-m-d H:i:s'),
+            "ec_pay_reference_number"=>$refNo,
+            "expiry_date"=>$expirationDate,
             "transaction_date"=>Carbon::now()->format('Y-m-d H:i:s'),
             "transction_category_id"=>$transCategoryId->id,
             "transaction_remarks"=>"Send Money via Ecpay",

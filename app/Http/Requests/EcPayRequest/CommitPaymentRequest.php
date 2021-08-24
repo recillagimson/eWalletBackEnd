@@ -24,10 +24,7 @@ class CommitPaymentRequest extends FormRequest
     public function rules()
     {
         return [
-            'referenceno' => 'required',
             'amount' => 'required|min:10|integer',
-            'expirydate' => 'required',
-            'remarks' => 'required',
         ];
     }
 }
