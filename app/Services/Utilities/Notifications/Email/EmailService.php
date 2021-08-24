@@ -26,12 +26,12 @@ use App\Models\UserAccount;
 use App\Models\UserUtilities\UserDetail;
 use App\Traits\Transactions\Send2BankHelpers;
 use Carbon\Carbon;
-use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use SendGrid;
 use SendGrid\Mail\Mail;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class EmailService implements IEmailService
 {
@@ -55,11 +55,11 @@ class EmailService implements IEmailService
      * @param string $otp
      * @param string $otpType
      */
-    public function sendPasswordVerification(string $to, string $otp, string $otpType)
+    public function sendPasswordVerification(string $to, string $otp, string $otpType, string $recipientName)
     {
         $pinOrPassword = $otpType == OtpTypes::passwordRecovery ? 'password' : 'pin code';
         $subject = 'SquidPay - Account ' . ucwords($pinOrPassword) . ' Recovery Verification';
-        $template = new PasswordRecoveryEmail($otp, $otpType);
+        $template = new PasswordRecoveryEmail($otp, $otpType, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -70,10 +70,10 @@ class EmailService implements IEmailService
      * @param string $to
      * @param string $otp
      */
-    public function sendAccountVerification(string $to, string $otp)
+    public function sendAccountVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Account Verification';
-        $template = new AccountVerification($otp);
+        $template = new AccountVerification($otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -83,10 +83,10 @@ class EmailService implements IEmailService
      * @param string $to
      * @param string $otp
      */
-    public function sendLoginVerification(string $to, string $otp)
+    public function sendLoginVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Login Verification';
-        $template = new LoginVerification($otp);
+        $template = new LoginVerification($otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -96,17 +96,17 @@ class EmailService implements IEmailService
      * @param string $to
      * @param string $otp
      */
-    public function sendMoneyVerification(string $to, string $otp)
+    public function sendMoneyVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Send Money Verification';
-        $template = new SendMoneyVerification($otp);
+        $template = new SendMoneyVerification($otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
-    public function sendS2BVerification(string $to, string $otp)
+    public function sendS2BVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Send to Bank Verification';
-        $template = new OtpVerification($subject, $otp);
+        $template = new OtpVerification($subject, $otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -115,11 +115,12 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function updateEmailVerification(string $to, string $otp)
+    public function updateEmailVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Update Email Verification';
-        $template = new OtpVerification($subject, $otp);
+        $template = new OtpVerification($subject, $otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -128,11 +129,12 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function updateProfileVerification(string $to, string $otp)
+    public function updateProfileVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Update Profile Verification';
-        $template = new OtpVerification($subject, $otp);
+        $template = new OtpVerification($subject, $otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -229,7 +231,7 @@ class EmailService implements IEmailService
         $sendgrid = new SendGrid($this->apiKey);
         $response = $sendgrid->send($mail);
 
-        if (!$response->statusCode() == Response::HTTP_OK) $this->sendingFailed();
+        if (!$response->statusCode() == ResponseAlias::HTTP_OK) $this->sendingFailed();
     }
 
     function sendingFailed()
@@ -251,5 +253,11 @@ class EmailService implements IEmailService
         $subject = EmailSubjects::farmersBatchUploadNotif;
         $firstName = ucwords($user->profile->first_name);
         $template = new BatchUploadNotification($firstName, $successLink, $failedLink);
+    }
+
+    private function getUser(): UserAccount
+    {
+        $userId = request()->user()->id;
+        return $this->userAccounts->getUser($userId);
     }
 }
