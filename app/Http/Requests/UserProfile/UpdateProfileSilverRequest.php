@@ -59,6 +59,7 @@ class UpdateProfileSilverRequest  extends FormRequest
             'employer'=>['required', 'max:50'],
             'contact_no'=>['required', 'max:11',  new MobileNumber()],
             //'ocr_response' => ['required']
+           //'barangay' => 'required'
         ];
 
         $inputs = request()->input();

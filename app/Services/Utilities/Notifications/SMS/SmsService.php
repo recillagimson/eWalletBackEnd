@@ -96,7 +96,10 @@ class SmsService implements ISmsService
         $strAmount = $this->formatAmount($fillRequest['amount']);
         $strNewBalance = $this->formatAmount($fillRequest['newBalance']);
 
-        $content = 'Hi Squidee! You have forwarded: ' . $strAmount . ' to ' . $receiverName .
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
+
+        $content = 'Hi ' . $firstName . '! You have forwarded: ' . $strAmount . ' to ' . $receiverName .
             '. This amount has been debited to your account. Your new balance is P ' . $strNewBalance .
             ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
         $this->sendMessages($to, $content);
@@ -108,7 +111,10 @@ class SmsService implements ISmsService
         $strNewBalance = $this->formatAmount($fillRequest['newBalance']);
         $strDate = $this->formatDate(Carbon::now());
 
-        $content = 'Hi Squidee! You have received P' . $strAmount . ' of SquidPay on ' . $strDate .
+        $firstName = ucwords($fillRequest['receiverName']);
+
+
+        $content = 'Hi ' . $firstName . '! You have received P' . $strAmount . ' of SquidPay on ' . $strDate .
             ' from ' . $senderName . '. Your new balance is P' . $strNewBalance . ' with Ref No. ' . $fillRequest['refNo'] .
             '. Use now to buy load, send money, pay bills and a lot more!';
         $this->sendMessages($to, $content);
@@ -118,8 +124,13 @@ class SmsService implements ISmsService
     {
         $strAmount = $this->formatAmount($fillRequest['amount']);
         $strServiceFee = $this->formatAmount($fillRequest['serviceFee']);
-        $content = 'Hi Squidee! Your payment of P' . $strAmount . ' to ' . $fillRequest['biller'] .
-            ' with fee P' . $strServiceFee . '. has been successfully processed on ' . date('Y-m-d H:i:s') .
+        $strDate = $this->formatDate(Carbon::now());
+
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
+
+        $content = 'Hi ' . $firstName . '! Your payment of P' . $strAmount . ' to ' . $fillRequest['biller'] .
+            ' with fee P' . $strServiceFee . '. has been successfully processed on ' . $strDate .
             ' with Ref No. ' . $fillRequest['refNo'] . '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
         $this->sendMessages($to, $content);
     }
@@ -134,7 +145,10 @@ class SmsService implements ISmsService
         $strDate = $this->formatDate($transactionDate);
         $strProvider = $this->getSend2BankProviderCaption($provider);
 
-        $content = 'Hi Squidee! You have sent P' . $strAmount . ' of SquidPay on ' . $strDate . ' to the account ending in '
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
+
+        $content = 'Hi ' . $firstName . '! You have sent P' . $strAmount . ' of SquidPay on ' . $strDate . ' to the account ending in '
             . $hideAccountNo . '. Service Fee for this transaction is P' . $strServiceFee . '. Your new balance is P'
             . $strNewBalance . ' with SquidPay Ref. No. ' . $refNo . ' & ' . $strProvider . ' Remittance No. ' . $remittanceId
             . '. Thank you for using SquidPay!';
@@ -148,7 +162,10 @@ class SmsService implements ISmsService
         $strAmount = $this->formatAmount($amount);
         $strNewBalance = $this->formatAmount($newBalance);
 
-        $content = 'Hi Squidee! You have paid P' . $strAmount . ' of SquidPay to purchase ' . $productName . ' for ' .
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
+
+        $content = 'Hi ' . $firstName . '! You have paid P' . $strAmount . ' of SquidPay to purchase ' . $productName . ' for ' .
             $recipientMobileNumber . ' on ' . $strDate . '. Your SquidPay balance is P' . $strNewBalance .
             '. Ref. No. ' . $refNo . '.';
         $this->sendMessages($to, $content);
