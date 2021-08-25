@@ -98,12 +98,12 @@ class PayBillsService implements IPayBillsService
                 $arrayResponse['data'][$x]['code'] == 'SSS03'
                 //$arrayResponse['data'][$x]['code'] == 'DFA01' ||
                 //$arrayResponse['data'][$x]['code'] == 'POEA1'
-                //$arrayResponse['data'][$x]['code'] == 'MBCCC' ||
-                //$arrayResponse['data'][$x]['code'] == 'BPI00' ||
-                //$arrayResponse['data'][$x]['code'] == 'BNKRD' ||
+               // $arrayResponse['data'][$x]['code'] == 'MBCCC' ||
+               // $arrayResponse['data'][$x]['code'] == 'BPI00' ||
+               // $arrayResponse['data'][$x]['code'] == 'BNKRD' ||
                 //$arrayResponse['data'][$x]['code'] == 'UNBNK' ||
-                //$arrayResponse['data'][$x]['code'] == 'PILAM' ||
-                //$arrayResponse['data'][$x]['code'] == 'ADMSN' ||
+               // $arrayResponse['data'][$x]['code'] == 'PILAM' ||
+               // $arrayResponse['data'][$x]['code'] == 'ADMSN' ||
                 //$arrayResponse['data'][$x]['code'] == 'UBNK4' ||
                 //$arrayResponse['data'][$x]['code'] == 'ASLNK'
             ) {

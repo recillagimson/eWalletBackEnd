@@ -101,7 +101,7 @@ class TransactionValidationService implements ITransactionValidationService
 
     public function checkUserMonthlyTransactionLimit(UserAccount $user, float $totalAmount, string $transactionCategoryId, array $customMessage = [])
     {
-        $tier = $this->tierRepository->get($user->tier_id);
+         $tier = $this->tierRepository->get($user->tier_id);
         if ($tier) {
             $from = Carbon::now()->startOfMonth()->format('Y-m-d');
             $to = Carbon::now()->endOfMonth()->format('Y-m-d');
