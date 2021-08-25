@@ -10,6 +10,7 @@ use App\Enums\SquidPayModuleTypes;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategories;
 use App\Enums\TransactionStatuses;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\ProviderBanks\IProviderBanksRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
@@ -60,21 +61,22 @@ class Send2BankService implements ISend2BankService
     protected string $provider;
     private IProviderBanksRepository $providerBanks;
 
-    public function __construct(IUBPService $ubpService,
-                                ISecurityBankService $secBankService,
-                                IReferenceNumberService $referenceNumberService,
-                                ITransactionValidationService $transactionValidationService,
-                                INotificationService $notificationService,
-                                ISmsService $smsService,
-                                IEmailService $emailService,
-                                IOtpService $otpService,
-                                ILogHistoryService $logHistories,
-                                IUserAccountRepository $users,
-                                IUserBalanceInfoRepository $userBalances,
-                                IOutSend2BankRepository $send2banks,
-                                IServiceFeeRepository $serviceFees,
+    public function __construct(IUBPService                       $ubpService,
+                                ISecurityBankService              $secBankService,
+                                IReferenceNumberService           $referenceNumberService,
+                                ITransactionValidationService     $transactionValidationService,
+                                INotificationService              $notificationService,
+                                ISmsService                       $smsService,
+                                IEmailService                     $emailService,
+                                IOtpService                       $otpService,
+                                ILogHistoryService                $logHistories,
+                                IUserAccountRepository            $users,
+                                IUserBalanceInfoRepository        $userBalances,
+                                IOutSend2BankRepository           $send2banks,
+                                IServiceFeeRepository             $serviceFees,
                                 IUserTransactionHistoryRepository $transactionHistories,
-                                IProviderBanksRepository $providerBanks)
+                                IProviderBanksRepository          $providerBanks,
+                                INotificationRepository           $notificationRepository)
     {
         $this->ubpService = $ubpService;
         $this->referenceNumberService = $referenceNumberService;
@@ -92,6 +94,7 @@ class Send2BankService implements ISend2BankService
         $this->transactionHistories = $transactionHistories;
         $this->secBankService = $secBankService;
         $this->logHistories = $logHistories;
+        $this->notificationRepository = $notificationRepository;
     }
 
 

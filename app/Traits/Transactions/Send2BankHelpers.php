@@ -14,6 +14,7 @@ use App\Enums\UsernameTypes;
 use App\Models\OutSend2Bank;
 use App\Models\UserAccount;
 use App\Models\UserBalanceInfo;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
@@ -33,6 +34,7 @@ trait Send2BankHelpers
 
     private IOutSend2BankRepository $send2banks;
     private IUserTransactionHistoryRepository $transactionHistories;
+    private INotificationRepository $notificationRepository;
     private ISmsService $smsService;
     private IEmailService $emailService;
 
