@@ -45,7 +45,7 @@ trait WithPayBillsErrors
 
     private function requiredField(string $field, string $code)
     {
-        $this->validationErrorMessage(ErrorCodes::requiredField,  $code.' : '.' Please provide the ' . $field . '.');
+        $this->validationErrorMessage(ErrorCodes::requiredField,  $field . 'is required.');
     }
 
 }
