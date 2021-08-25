@@ -20,7 +20,6 @@ use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Client\Response;
-use Str;
 
 trait PayBillsHelpers
 {
@@ -275,156 +274,156 @@ trait PayBillsHelpers
     private function firstLayerValidation(string $billerCode, $accountNumber, $data)
     {
 
-        if(empty($data['amount'])) return $this->noAmountProvided();
-
-        //1ST BILLERS
-
-        if ($billerCode === 'MWCOM') {
-            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
-            if ($data['amount'] < 20.00) return $this->minimumAmount(20.00);
-        }
-        if ($billerCode === 'MECOR') {
-            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
-            if ($data['amount'] < 5.00) return $this->minimumAmount(5.00);
-        }
-        if ($billerCode === 'MWSIN') {
-            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
-            if ($data['amount'] < 20.00) return $this->minimumAmount(20.00);
-        }
-        if ($billerCode === 'RFID1') {
-            // Random Test accounts are still accepting, biller errror
-        }
-        if ($billerCode === 'ETRIP') {
-            if (Str::length($accountNumber) != 12) return $this->invalidDigitsLength(12);
-            if ($data['amount'] < 500.00) return $this->minimumAmount(500.00);
-        }
-        if ($billerCode === 'SMART') {
-            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
-            if (empty($data['otherInfo']['Product'])) return $this->requiredField('product code', 'Product');
-            if (empty($data['otherInfo']['TelephoneNumber'])) return $this->requiredField('telephone number', 'TelephoneNumber');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'SSS03') {
-            if (Str::length($accountNumber) < 10  || Str::length($accountNumber) > 13) return $this->invalidDigitsLength("10 - 13");
-            if (empty($data['otherInfo']['PayorType'])) return $this->requiredField('payor type', 'PayorType');
-            if (empty($data['otherInfo']['RelType'])) return $this->requiredField('relation type', 'RelType');
-            if (empty($data['otherInfo']['LoanAccountNo'])) return $this->requiredField('loan account number', 'LoanAccountNo');
-            if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
-            if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
-            if (empty($data['otherInfo']['MI'])) return $this->requiredField('middle initial', 'MI');
-            if (empty($data['otherInfo']['PlatformType'])) return $this->requiredField('platform type', 'PlatformType');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'PRULI') {
-            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
-            if (empty($data['otherInfo']['AccountName'])) return $this->requiredField('account name', 'AccountName');
-            if (empty($data['otherInfo']['DueDate'])) return $this->requiredField('due date', 'DueDate');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-
-        // 2ND BILLERS
-
-        if ($billerCode === 'SKY01') {
-           // test accounts not working
-        }
-        if ($billerCode === 'MBCCC') {
-            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
-            if (empty($data['otherInfo']['ConsName'])) return $this->requiredField('consumer name', 'ConsName');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'BPI00') {
-            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
-            if (empty($data['otherInfo']['ConsName'])) return $this->requiredField('consumer name', 'ConsName');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'UNBNK') {
-            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
-            if (!isset($data['otherInfo']['Service'])) return $this->requiredField('service', 'Service');
-            if (empty($data['otherInfo']['ConsName'])) return $this->requiredField('consumer name', 'ConsName');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'SPLAN') {
-            if (Str::length($accountNumber) != 15) return $this->invalidCharacterLength(15);
-            if (!isset($data['otherInfo']['PlanType'])) return $this->requiredField('plan type', 'PlanType');
-            if (empty($data['otherInfo']['AccountName'])) return $this->requiredField('account name', 'AccountName');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'PILAM') {
-            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
-            if (empty($data['otherInfo']['LastName'])) return $this->requiredField('due date', 'DueDate');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'ADMSN') {
-            // Pay at Adamson University through over the counter (error)*
-
-            // if (Str::length($accountNumber) != 9) return $this->invalidDigitsLength(9);
-            // if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
-            // if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
-            // if (empty($data['otherInfo']['MiddleName'])) return $this->requiredField('middle name', 'MiddleName');
-            // if (empty($data['otherInfo']['PaymentType'])) return $this->requiredField('payment type', 'PaymentType');
-            // if (empty($data['otherInfo']['SchoolYear'])) return $this->requiredField('school year', 'SchoolYear');
-            // if (empty($data['otherInfo']['Term'])) return $this->requiredField('Term', 'Term');
-        }
-        if ($billerCode === 'UBNK4') {
-            if (Str::length($accountNumber) < 8  || Str::length($accountNumber) > 15) return $this->invalidCharacterLength("8 - 15");
-            if (empty($data['otherInfo']['StudentName'])) return $this->requiredField('student number', 'StudentName');
-            if (empty($data['otherInfo']['Branch'])) return $this->requiredField('branch', 'Branch');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'MCARE') {
-            // Test Account not working
-        }
-        if ($billerCode === 'ASLNK') {
-            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
-            if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
-            if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
-            if (empty($data['otherInfo']['MiddleName'])) return $this->requiredField('middle name', 'MiddleName');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-
-        // 3rd BILLERS
-
-        if ($billerCode === 'CNVRG') {
-            if (Str::length($accountNumber) != 13) return $this->invalidDigitsLength(13);
-            if (empty($data['otherInfo']['AccountName'])) return $this->requiredField('account name', 'AccountName');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'PLDT6') {
-            // Test Account not working
-        }
-        if ($billerCode === 'AEON1') {
-            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
-            if (empty($data['otherInfo']['PartnerRefNo'])) return $this->requiredField('PartnerRefNo', 'PartnerRefNo');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'BNECO') {
-            if (Str::length($accountNumber) != 11) return $this->invalidDigitsLength(11);
-            if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
-            if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
-            if (empty($data['otherInfo']['MiddleName'])) return $this->requiredField('middle name', 'MiddleName');
-            if (empty($data['otherInfo']['DueDate'])) return $this->requiredField('due date', 'DueDate');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'AECOR') {
-            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
-            if (empty($data['otherInfo']['DueDate'])) return $this->requiredField('due date', 'DueDate');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
-        }
-        if ($billerCode === 'LAZAE') {
-            // No test account provided
-        }
-        if ($billerCode === 'DFA01') {
-            // No test account provided
-        }
-        if ($billerCode === 'POEA1') {
-            // No test account provided
-        }
-        if ($billerCode === 'SSS01') {
-            // No test account provided
-        }
-        if ($billerCode === 'SSS02') {
-            // No test account provided
-        }
+//        if(empty($data['amount'])) return $this->noAmountProvided();
+//
+//        //1ST BILLERS
+//
+//        if ($billerCode === 'MWCOM') {
+//            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
+//            if ($data['amount'] < 20.00) return $this->minimumAmount(20.00);
+//        }
+//        if ($billerCode === 'MECOR') {
+//            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
+//            if ($data['amount'] < 5.00) return $this->minimumAmount(5.00);
+//        }
+//        if ($billerCode === 'MWSIN') {
+//            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
+//            if ($data['amount'] < 20.00) return $this->minimumAmount(20.00);
+//        }
+//        if ($billerCode === 'RFID1') {
+//            // Random Test accounts are still accepting, biller errror
+//        }
+//        if ($billerCode === 'ETRIP') {
+//            if (Str::length($accountNumber) != 12) return $this->invalidDigitsLength(12);
+//            if ($data['amount'] < 500.00) return $this->minimumAmount(500.00);
+//        }
+//        if ($billerCode === 'SMART') {
+//            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
+//            if (empty($data['otherInfo']['Product'])) return $this->requiredField('product code', 'Product');
+//            if (empty($data['otherInfo']['TelephoneNumber'])) return $this->requiredField('telephone number', 'TelephoneNumber');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'SSS03') {
+//            if (Str::length($accountNumber) < 10  || Str::length($accountNumber) > 13) return $this->invalidDigitsLength("10 - 13");
+//            if (empty($data['otherInfo']['PayorType'])) return $this->requiredField('payor type', 'PayorType');
+//            if (empty($data['otherInfo']['RelType'])) return $this->requiredField('relation type', 'RelType');
+//            if (empty($data['otherInfo']['LoanAccountNo'])) return $this->requiredField('loan account number', 'LoanAccountNo');
+//            if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
+//            if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
+//            if (empty($data['otherInfo']['MI'])) return $this->requiredField('middle initial', 'MI');
+//            if (empty($data['otherInfo']['PlatformType'])) return $this->requiredField('platform type', 'PlatformType');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'PRULI') {
+//            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
+//            if (empty($data['otherInfo']['AccountName'])) return $this->requiredField('account name', 'AccountName');
+//            if (empty($data['otherInfo']['DueDate'])) return $this->requiredField('due date', 'DueDate');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//
+//        // 2ND BILLERS
+//
+//        if ($billerCode === 'SKY01') {
+//           // test accounts not working
+//        }
+//        if ($billerCode === 'MBCCC') {
+//            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
+//            if (empty($data['otherInfo']['ConsName'])) return $this->requiredField('consumer name', 'ConsName');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'BPI00') {
+//            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
+//            if (empty($data['otherInfo']['ConsName'])) return $this->requiredField('consumer name', 'ConsName');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'UNBNK') {
+//            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
+//            if (!isset($data['otherInfo']['Service'])) return $this->requiredField('service', 'Service');
+//            if (empty($data['otherInfo']['ConsName'])) return $this->requiredField('consumer name', 'ConsName');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'SPLAN') {
+//            if (Str::length($accountNumber) != 15) return $this->invalidCharacterLength(15);
+//            if (!isset($data['otherInfo']['PlanType'])) return $this->requiredField('plan type', 'PlanType');
+//            if (empty($data['otherInfo']['AccountName'])) return $this->requiredField('account name', 'AccountName');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'PILAM') {
+//            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
+//            if (empty($data['otherInfo']['LastName'])) return $this->requiredField('due date', 'DueDate');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'ADMSN') {
+//            // Pay at Adamson University through over the counter (error)*
+//
+//            // if (Str::length($accountNumber) != 9) return $this->invalidDigitsLength(9);
+//            // if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
+//            // if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
+//            // if (empty($data['otherInfo']['MiddleName'])) return $this->requiredField('middle name', 'MiddleName');
+//            // if (empty($data['otherInfo']['PaymentType'])) return $this->requiredField('payment type', 'PaymentType');
+//            // if (empty($data['otherInfo']['SchoolYear'])) return $this->requiredField('school year', 'SchoolYear');
+//            // if (empty($data['otherInfo']['Term'])) return $this->requiredField('Term', 'Term');
+//        }
+//        if ($billerCode === 'UBNK4') {
+//            if (Str::length($accountNumber) < 8  || Str::length($accountNumber) > 15) return $this->invalidCharacterLength("8 - 15");
+//            if (empty($data['otherInfo']['StudentName'])) return $this->requiredField('student number', 'StudentName');
+//            if (empty($data['otherInfo']['Branch'])) return $this->requiredField('branch', 'Branch');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'MCARE') {
+//            // Test Account not working
+//        }
+//        if ($billerCode === 'ASLNK') {
+//            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
+//            if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
+//            if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
+//            if (empty($data['otherInfo']['MiddleName'])) return $this->requiredField('middle name', 'MiddleName');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//
+//        // 3rd BILLERS
+//
+//        if ($billerCode === 'CNVRG') {
+//            if (Str::length($accountNumber) != 13) return $this->invalidDigitsLength(13);
+//            if (empty($data['otherInfo']['AccountName'])) return $this->requiredField('account name', 'AccountName');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'PLDT6') {
+//            // Test Account not working
+//        }
+//        if ($billerCode === 'AEON1') {
+//            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
+//            if (empty($data['otherInfo']['PartnerRefNo'])) return $this->requiredField('PartnerRefNo', 'PartnerRefNo');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'BNECO') {
+//            if (Str::length($accountNumber) != 11) return $this->invalidDigitsLength(11);
+//            if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
+//            if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
+//            if (empty($data['otherInfo']['MiddleName'])) return $this->requiredField('middle name', 'MiddleName');
+//            if (empty($data['otherInfo']['DueDate'])) return $this->requiredField('due date', 'DueDate');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'AECOR') {
+//            if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
+//            if (empty($data['otherInfo']['DueDate'])) return $this->requiredField('due date', 'DueDate');
+//            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
+//        }
+//        if ($billerCode === 'LAZAE') {
+//            // No test account provided
+//        }
+//        if ($billerCode === 'DFA01') {
+//            // No test account provided
+//        }
+//        if ($billerCode === 'POEA1') {
+//            // No test account provided
+//        }
+//        if ($billerCode === 'SSS01') {
+//            // No test account provided
+//        }
+//        if ($billerCode === 'SSS02') {
+//            // No test account provided
+//        }
 
 
     }
