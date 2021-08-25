@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Client\Response;
-
+use Str;
 
 trait PayBillsHelpers
 {
@@ -263,6 +263,46 @@ trait PayBillsHelpers
         }
 
         return $payBill;
+    }
+
+
+    private function firstLayerValidation(string $billerCode, $accountNumber, $data)
+    {
+
+        if(empty($data['amount'])) return $this->noAmountProvided();
+        
+        if ($billerCode === 'MWCOM') {
+            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
+        }
+        if ($billerCode === 'MECOR') {
+            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
+        }
+        if ($billerCode === 'MWSIN') {
+            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
+        }
+        if ($billerCode === 'ETRIP') {
+            if (Str::length($accountNumber) != 12) return $this->invalidDigitsLength(12);
+        }
+        if ($billerCode === 'SMART') {
+            if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
+            if (empty($data['otherInfo']['Product'])) return $this->requiredField('product code', 'Product');
+            if (empty($data['otherInfo']['TelephoneNumber'])) return $this->requiredField('telephone number', 'TelephoneNumber'); 
+        }
+        if ($billerCode === 'SSS03') {
+            if (Str::length($accountNumber) < 10  || Str::length($accountNumber) > 13) return $this->invalidDigitsLength("10 - 13");
+            if (empty($data['otherInfo']['PayorType'])) return $this->requiredField('payor type', 'PayorType');
+            if (empty($data['otherInfo']['RelType'])) return $this->requiredField('relation type', 'RelType');
+            if (empty($data['otherInfo']['LoanAccountNo'])) return $this->requiredField('loan account number', 'LoanAccountNo');
+            if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
+            if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
+            if (empty($data['otherInfo']['MI'])) return $this->requiredField('middle initial', 'MI');
+            if (empty($data['otherInfo']['PlatformType'])) return $this->requiredField('platform type', 'PlatformType');
+        }
+        if ($billerCode === 'PRULI') {
+            if (Str::length($accountNumber) != 8) return $this->invalidDigitsLength(8);
+            if (empty($data['otherInfo']['AccountName'])) return $this->requiredField('account name', 'AccountName');
+            if (empty($data['otherInfo']['DueDate'])) return $this->requiredField('due date', 'DueDate');
+        }
     }
 
 }

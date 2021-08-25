@@ -33,5 +33,19 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::transactionErrorEncountered, 'Transaction error encountered.');
     }
 
+    private function invalidDigitsLength(string $digits)
+    {
+        $this->validationErrorMessage(ErrorCodes::invalidDigitsLength, 'Account number must be ' . $digits . ' digits.');
+    }
+
+    private function noAmountProvided()
+    {
+        $this->validationErrorMessage(ErrorCodes::noAmountProvided, 'Please provide the amount.');
+    }
+
+    private function requiredField(string $field, string $code)
+    {
+        $this->validationErrorMessage(ErrorCodes::requiredField,  $code.' : '.' Please provide the ' . $field . '.');
+    }
 
 }
