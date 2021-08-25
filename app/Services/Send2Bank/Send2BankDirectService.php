@@ -107,6 +107,11 @@ class Send2BankDirectService implements ISend2BankDirectService
 
 //            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
+            if(env('APP_ENV') == 'local') {
+                $refNo = $refNo . "-Local";
+            } else if(env('APP_ENV') == 'staging') {
+                $refNo = $refNo . "-UAT";
+            }
 
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
@@ -152,7 +157,6 @@ class Send2BankDirectService implements ISend2BankDirectService
             return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();
-
             if ($updateReferenceCounter === true)
                 $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
 

@@ -164,7 +164,7 @@ trait Send2BankHelpers
         if (!$response->successful()) {
             $errors = $response->json();
             Log::error('Send2Bank UBP Error: ', $errors);
-            $this->transactionFailed();
+            throw $this->transactionFailed();
         } else {
             $data = $response->json();
             $code = $data['code'];
