@@ -30,6 +30,7 @@ use App\Traits\Errors\WithAuthErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithTransactionErrors;
 use App\Traits\Errors\WithUserErrors;
+use App\Traits\StringHelpers;
 use App\Traits\Transactions\Send2BankHelpers;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
@@ -41,7 +42,7 @@ use Log;
 class Send2BankService implements ISend2BankService
 {
     use WithAuthErrors, WithUserErrors, WithTpaErrors, WithTransactionErrors;
-    use UserHelpers, Send2BankHelpers;
+    use UserHelpers, Send2BankHelpers, StringHelpers;
 
     private IReferenceNumberService $referenceNumberService;
     private ITransactionValidationService $transactionValidationService;

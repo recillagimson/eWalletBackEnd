@@ -140,7 +140,7 @@ class SmsService implements ISmsService
     {
         $hideAccountNo = Str::substr($accountNo, 0, -4);
         $strAmount = $this->formatAmount($amount);
-        $strServiceFee = $this->formatAmount($amount);
+        $strServiceFee = $this->formatAmount($serviceFee);
         $strNewBalance = $this->formatAmount($newBalance);
         $strDate = $this->formatDate($transactionDate);
         $strProvider = $this->getSend2BankProviderCaption($provider);
