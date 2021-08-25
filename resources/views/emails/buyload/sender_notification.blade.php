@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h2>Hi Squidee!,</h2>
+<h2>Hi {{ $firstName }}!,</h2>
 <p>
     You have paid ₱ {{ $amount }} of SquidPay to purchase {{ $productName }} for {{ $recipientMobileNumber }}
     on {{ $transactionDate }}. Your SquidPay balance is ₱{{ $newBalance }}. Ref. No. {{ $refNo }}.

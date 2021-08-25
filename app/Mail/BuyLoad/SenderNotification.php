@@ -16,6 +16,7 @@ class SenderNotification extends Mailable
     private string $transactionDate;
     private string $newBalance;
     private string $refNo;
+    private string $firstName;
 
     /**
      * Create a new message instance.
@@ -23,7 +24,7 @@ class SenderNotification extends Mailable
      * @return void
      */
     public function __construct(string $amount, string $productName, string $recipientMobileNumber,
-                                string $transactionDate, string $newBalance, string $refNo)
+                                string $transactionDate, string $newBalance, string $refNo, string $firstName)
     {
         //
         $this->amount = $amount;
@@ -32,6 +33,7 @@ class SenderNotification extends Mailable
         $this->transactionDate = $transactionDate;
         $this->newBalance = $newBalance;
         $this->refNo = $refNo;
+        $this->firstName = $firstName;
     }
 
     /**
@@ -50,6 +52,7 @@ class SenderNotification extends Mailable
                 'transactionDate' => $this->transactionDate,
                 'newBalance' => $this->newBalance,
                 'refNo' => $this->refNo,
+                'firstName' => $this->firstName
             ]);
     }
 }
