@@ -15,6 +15,6 @@ class NotificationRepository extends Repository implements INotificationReposito
 
     public function getByUserId(string $userId) {
         $notifications = Notification::where('user_account_id', $userId);
-        return $notifications->get();
+        return $notifications->latest()->get();
     }
 }
