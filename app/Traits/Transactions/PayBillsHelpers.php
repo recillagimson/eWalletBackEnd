@@ -397,7 +397,7 @@ trait PayBillsHelpers
             if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
             if (empty($data['otherInfo']['MiddleName'])) return $this->requiredField('middle name', 'MiddleName');
             if (empty($data['otherInfo']['DueDate'])) return $this->requiredField('due date', 'DueDate');
-            if ($data['amount'] < 1.00) return $this->minimumAmount(5.00);
+            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
         }
         if ($billerCode === 'AECOR') {
             if (Str::length($accountNumber) != 16) return $this->invalidDigitsLength(16);
