@@ -152,7 +152,6 @@ class Send2BankDirectService implements ISend2BankDirectService
             return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();
-
             if ($updateReferenceCounter === true)
                 $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
 
