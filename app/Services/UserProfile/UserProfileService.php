@@ -19,6 +19,7 @@ use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
+use App\Services\KYCService\IKYCService;
 
 class UserProfileService implements IUserProfileService
 {
@@ -32,6 +33,7 @@ class UserProfileService implements IUserProfileService
     private ITierApprovalRepository $userApprovalRepository;
     private IVerificationService $verificationService;
     private ILogHistoryService $logHistoryService;
+    private IKYCService $kycService;
 
     public function __construct(IUserDetailRepository $userDetailRepository,
                                 IUserAccountRepository $userAccountRepository,
@@ -40,7 +42,8 @@ class UserProfileService implements IUserProfileService
                                 ITierRepository $tierRepository,
                                 ITierApprovalRepository $userApprovalRepository,
                                 IVerificationService $verificationService,
-                                ILogHistoryService $logHistoryService)
+                                ILogHistoryService $logHistoryService,
+                                IKYCService $kycService)
     {
         $this->userAccountRepository = $userAccountRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -50,6 +53,7 @@ class UserProfileService implements IUserProfileService
         $this->userApprovalRepository = $userApprovalRepository;
         $this->verificationService = $verificationService;
         $this->logHistoryService = $logHistoryService;
+        $this->kycService = $kycService;
     }
 
     public function update(object $userAccount, array $details)
