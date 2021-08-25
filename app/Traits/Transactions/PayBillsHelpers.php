@@ -14,6 +14,7 @@ use App\Models\UserAccount;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithUserErrors;
+use App\Traits\StringHelpers;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use DB;
@@ -23,7 +24,7 @@ use Str;
 
 trait PayBillsHelpers
 {
-    use WithUserErrors, WithTpaErrors, UserHelpers;
+    use WithUserErrors, WithTpaErrors, UserHelpers, StringHelpers;
 
     private IBayadCenterService $bayadCenterService;
 
@@ -79,7 +80,12 @@ trait PayBillsHelpers
             $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
             $notifService->payBillsNotification($username, $fillRequest, $userDetail->first_name);
 
-            $description = 'Hi Squidee! Your payment of P' . $fillRequest['amount'] . ' to ' . $fillRequest['biller'] . ' with fee ' . $fillRequest['serviceFee'] . '. has been successfully processed on ' . date('Y-m-d H:i:s') . ' with Ref No. ' . $fillRequest['refNo'] . '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
+
+            $description = 'Hi Squidee! Your payment of P' . $this->formatAmount($fillRequest['amount']) . ' to ' . $fillRequest['biller'] .
+                ' with fee ' . $this->formatAmount($fillRequest['serviceFee']) . '. has been successfully processed on ' .
+                $this->formatDate(Carbon::now()) . ' with Ref No. ' . $fillRequest['refNo'] .
+                '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';
+
             $title = 'SquidPay - Pay Bills Notification';
 
             $this->subtractUserBalance($user, $billerCode, $response);
@@ -270,7 +276,7 @@ trait PayBillsHelpers
     {
 
         if(empty($data['amount'])) return $this->noAmountProvided();
-        
+
         //1ST BILLERS
 
         if ($billerCode === 'MWCOM') {
@@ -350,7 +356,7 @@ trait PayBillsHelpers
         }
         if ($billerCode === 'ADMSN') {
             // Pay at Adamson University through over the counter (error)*
-            
+
             // if (Str::length($accountNumber) != 9) return $this->invalidDigitsLength(9);
             // if (empty($data['otherInfo']['LastName'])) return $this->requiredField('last name', 'LastName');
             // if (empty($data['otherInfo']['FirstName'])) return $this->requiredField('first name', 'FirstName');
@@ -422,6 +428,6 @@ trait PayBillsHelpers
 
 
     }
-    
+
 
 }
