@@ -143,6 +143,7 @@ class SendMoneyService implements ISendMoneyService
 
         } catch (Exception $e) {
             DB::rollBack();
+            throw $e;
         }
 
     }
