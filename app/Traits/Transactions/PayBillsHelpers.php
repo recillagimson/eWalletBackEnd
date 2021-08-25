@@ -389,7 +389,7 @@ trait PayBillsHelpers
         if ($billerCode === 'AEON1') {
             if (Str::length($accountNumber) != 10) return $this->invalidDigitsLength(10);
             if (empty($data['otherInfo']['PartnerRefNo'])) return $this->requiredField('PartnerRefNo', 'PartnerRefNo');
-            if ($data['amount'] < 5.00) return $this->minimumAmount(1.00);
+            if ($data['amount'] < 1.00) return $this->minimumAmount(1.00);
         }
         if ($billerCode === 'BNECO') {
             if (Str::length($accountNumber) != 11) return $this->invalidDigitsLength(11);
