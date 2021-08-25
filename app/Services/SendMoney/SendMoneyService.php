@@ -105,7 +105,7 @@ class SendMoneyService implements ISendMoneyService
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($usernameField, $fillRequest);
-        $receiverUser = $this->userAccounts->get($receiverID);
+        $receiverUser = $this->userAccounts->getUser($receiverID);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest, $user);
@@ -143,6 +143,7 @@ class SendMoneyService implements ISendMoneyService
 
         } catch (Exception $e) {
             DB::rollBack();
+            throw $e;
         }
 
     }
@@ -366,6 +367,7 @@ class SendMoneyService implements ISendMoneyService
 
         $userDetail = $this->userDetailRepository->getByUserId($senderID);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
+        $fillRequest['receiverName'] = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
 
         $usernameField = $this->getUsernameFieldByAvailability($user);
         $username = $this->getUsernameByField($user, $usernameField);

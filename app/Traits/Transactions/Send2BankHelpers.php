@@ -14,6 +14,7 @@ use App\Enums\UsernameTypes;
 use App\Models\OutSend2Bank;
 use App\Models\UserAccount;
 use App\Models\UserBalanceInfo;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
@@ -22,6 +23,7 @@ use App\Services\Utilities\XML\XmlService;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithUserErrors;
 use App\Traits\UserHelpers;
+use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
 use Log;
@@ -32,6 +34,7 @@ trait Send2BankHelpers
 
     private IOutSend2BankRepository $send2banks;
     private IUserTransactionHistoryRepository $transactionHistories;
+    private INotificationRepository $notificationRepository;
     private ISmsService $smsService;
     private IEmailService $emailService;
 
@@ -164,7 +167,7 @@ trait Send2BankHelpers
         if (!$response->successful()) {
             $errors = $response->json();
             Log::error('Send2Bank UBP Error: ', $errors);
-            throw $this->transactionFailed();
+            $this->transactionFailed();
         } else {
             $data = $response->json();
             $code = $data['code'];
@@ -201,6 +204,10 @@ trait Send2BankHelpers
         if ($send2Bank->status === TransactionStatuses::success) {
             $notifService->sendSend2BankSenderNotification($username, $send2Bank->reference_number, $send2Bank->account_number,
                 $send2Bank->amount, $send2Bank->transaction_date, $send2Bank->service_fee, $availableBalance, $send2Bank->provider,
+                $send2Bank->provider_remittance_id);
+
+            $this->createAppNotification($user->id, $send2Bank->reference_number, $send2Bank->account_number, $send2Bank->amount,
+                $send2Bank->transaction_date, $send2Bank->service_fee, $availableBalance, $send2Bank->provider,
                 $send2Bank->provider_remittance_id);
 
             if ($send2Bank->send_receipt_to) {
@@ -297,5 +304,31 @@ trait Send2BankHelpers
         $send2Bank->save();
 
         return $send2Bank;
+    }
+
+    public function createAppNotification(string $userId, string $refNo, string $accountNo, float $amount,
+                                          Carbon $transactionDate, float $serviceFee, float $newBalance, string $provider,
+                                          string $remittanceId)
+    {
+        $hideAccountNo = Str::substr($accountNo, 0, -4);
+        $strAmount = $this->formatAmount($amount);
+        $strServiceFee = $this->formatAmount($serviceFee);
+        $strNewBalance = $this->formatAmount($newBalance);
+        $strDate = $this->formatDate($transactionDate);
+        $strProvider = $this->getSend2BankProviderCaption($provider);
+
+        $title = 'SquidPay - Send to Bank Notification';
+        $description = 'You have sent P' . $strAmount . ' of SquidPay on ' . $strDate . ' to the account ending in '
+            . $hideAccountNo . '. Service Fee for this transaction is P' . $strServiceFee . '. Your new balance is P'
+            . $strNewBalance . ' with SquidPay Ref. No. ' . $refNo . ' & ' . $strProvider . ' Remittance No. ' . $remittanceId
+            . '. Thank you for using SquidPay!';
+
+        $this->notificationRepository->create([
+            'title' => $title,
+            'status' => '1',
+            'description' => $description,
+            'user_account_id' => $userId,
+            'user_created' => $userId
+        ]);
     }
 }

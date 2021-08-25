@@ -24,6 +24,8 @@ use App\Models\OutSend2Bank;
 use App\Models\Tier;
 use App\Models\UserAccount;
 use App\Models\UserUtilities\UserDetail;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Traits\StringHelpers;
 use App\Traits\Transactions\Send2BankHelpers;
 use Carbon\Carbon;
 use Illuminate\Mail\Mailable;
@@ -35,17 +37,19 @@ use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class EmailService implements IEmailService
 {
-    use Send2BankHelpers;
+    use Send2BankHelpers, StringHelpers;
 
     private string $fromAddress;
     private string $fromName;
     private string $apiKey;
+    private IUserAccountRepository $userAccounts;
 
-    public function __construct()
+    public function __construct(IUserAccountRepository $userAccounts)
     {
         $this->fromAddress = config('mail.from.address');
         $this->fromName = config('mail.from.name');
         $this->apiKey = config('mail.mailers.sendgrid.apiKey');
+        $this->userAccounts = $userAccounts;
     }
 
     /**
@@ -69,6 +73,7 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
     public function sendAccountVerification(string $to, string $otp, string $recipientName)
     {
@@ -148,7 +153,11 @@ class EmailService implements IEmailService
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName)
     {
         $subject = 'SquidPay - Send Money Notification';
-        $template = new SendMoneySenderNotification($fillRequest, $receiverName);
+
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
+
+        $template = new SendMoneySenderNotification($fillRequest, $receiverName, $firstName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -171,15 +180,18 @@ class EmailService implements IEmailService
                                                     string $provider, string $remittanceId)
     {
         $hideAccountNo = Str::substr($accountNo, 0, -4);
-        $strAmount = number_format($amount, 2, '.', ',');
-        $strServiceFee = number_format($serviceFee, 2, '.', ',');
-        $strNewBalance = number_format($newBalance, 2, '.', ',');
-        $strDate = $transactionDate->toDayDateTimeString();
+        $strAmount = $this->formatAmount($amount);
+        $strServiceFee = $this->formatAmount($serviceFee);
+        $strNewBalance = $this->formatAmount($newBalance);
+        $strDate = $this->formatDate($transactionDate);
         $strProvider = $this->getSend2BankProviderCaption($provider);
+
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
 
         $subject = 'SquidPay - Send To Bank Notification';
         $template = new SenderNotification($hideAccountNo, $strAmount, $strServiceFee, $strNewBalance, $strDate,
-            $strProvider, $refNo, $remittanceId);
+            $strProvider, $refNo, $remittanceId, $firstName);
 
         $this->sendMessage($to, $subject, $template);
     }
@@ -195,12 +207,15 @@ class EmailService implements IEmailService
                                         Carbon $transactionDate, float $newBalance, string $refNo)
     {
         $subject = 'SquidPay - Buy Load Notification';
-        $strAmount = number_format($amount, 2);
-        $strBalance = number_format($newBalance, 2);
-        $strTransactionDate = $transactionDate->toDayDateTimeString();
+        $strAmount = $this->formatAmount($amount);
+        $strBalance = $this->formatAmount($newBalance);
+        $strTransactionDate = $this->formatDate($transactionDate);
+
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
 
         $template = new BuyLoadSenderNotification($strAmount, $productName, $recipientMobileNumber, $strTransactionDate,
-            $strBalance, $refNo);
+            $strBalance, $refNo, $firstName);
         $this->sendMessage($to, $subject, $template);
     }
 
