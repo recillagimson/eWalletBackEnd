@@ -24,6 +24,7 @@ use App\Models\OutSend2Bank;
 use App\Models\Tier;
 use App\Models\UserAccount;
 use App\Models\UserUtilities\UserDetail;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Traits\StringHelpers;
 use App\Traits\Transactions\Send2BankHelpers;
 use Carbon\Carbon;
@@ -41,12 +42,14 @@ class EmailService implements IEmailService
     private string $fromAddress;
     private string $fromName;
     private string $apiKey;
+    private IUserAccountRepository $userAccounts;
 
-    public function __construct()
+    public function __construct(IUserAccountRepository $userAccounts)
     {
         $this->fromAddress = config('mail.from.address');
         $this->fromName = config('mail.from.name');
         $this->apiKey = config('mail.mailers.sendgrid.apiKey');
+        $this->userAccounts = $userAccounts;
     }
 
     /**
