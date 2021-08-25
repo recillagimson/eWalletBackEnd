@@ -138,7 +138,8 @@ class PayBillsService implements IPayBillsService
 
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
-        $this->validateAccountNumber($billerCode, $accountNumber);
+        $this->firstLayerValidation($billerCode, $accountNumber, $data);
+        
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse = (array)json_decode($response->body(), true);
         if (isset($arrayResponse['exception']) || $arrayResponse['data'] === "NOT_FOUND") return $this->tpaErrorCatch($arrayResponse);
