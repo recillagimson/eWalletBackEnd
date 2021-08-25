@@ -38,6 +38,11 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::invalidDigitsLength, 'Account number must be ' . $digits . ' digits.');
     }
 
+    private function invalidCharacterLength(string $digits)
+    {
+        $this->validationErrorMessage(ErrorCodes::invalidDigitsLength, 'Account number must be ' . $digits . ' characters.');
+    }
+
     private function noAmountProvided()
     {
         $this->validationErrorMessage(ErrorCodes::noAmountProvided, 'Please provide the amount.');
@@ -48,4 +53,8 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::requiredField,  $field . ' is required.');
     }
 
+    private function minimumAmount($amount)
+    {
+        $this->validationErrorMessage(ErrorCodes::minimumAmount, 'The minimum amount for payments must be at least Php ' . $amount . '. Please enter a higher amount.');
+    }
 }
