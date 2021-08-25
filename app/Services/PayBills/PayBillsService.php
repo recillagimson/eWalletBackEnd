@@ -142,8 +142,11 @@ class PayBillsService implements IPayBillsService
         
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse = (array)json_decode($response->body(), true);
-        if (isset($arrayResponse['exception']) || $arrayResponse['data'] === "NOT_FOUND") return $this->tpaErrorCatch($arrayResponse);
-        if ($arrayResponse['data'] === "Internal Server Error") return $this->tpaErrorCatch($arrayResponse);
+     
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
+        if ($arrayResponse['data'] === "NOT_FOUND") return $this->tpaErrorCatch($arrayResponse);
+        if (isset($arrayResponse['message']) === "Internal server error") return $this->tpaErrorCatch($arrayResponse);
+        if (isset($arrayResponse['data']) === "Internal Server Error") return $this->tpaErrorCatch($arrayResponse);
         if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return $this->tpaErrorCatchMeralco($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
         $this->validateTransaction($billerCode, $data, $user);
         return $this->validationResponse($user, $response, $billerCode, $data);
