@@ -268,6 +268,7 @@ return [
         'OtpTypes' => OtpTypes::class,
         'NetworkTypes' => NetworkTypes::class,
         'DragonPayStatusTypes' => DragonPayStatusTypes::class,
+        'ECPayStatusTypes' => ECPayStatusTypes::class,
         'ReferenceNumberTypes' => ReferenceNumberTypes::class,
         'SquidPayModuleTypes' => SquidPayModuleTypes::class,
         'TransactionCategories' => TransactionCategories::class,

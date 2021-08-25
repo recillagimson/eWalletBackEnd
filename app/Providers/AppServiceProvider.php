@@ -126,6 +126,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic;
+use App\Services\ThirdParty\ECPay\IECPayService;
+use App\Services\ThirdParty\ECPay\ECPayService;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -159,6 +161,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(IAtmService::class, AtmService::class);
         $this->app->singleton(IDragonPayService::class, DragonPayServiceV2::class);
         $this->app->singleton(IGHService::class, GHService::class);
+        $this->app->singleton(IECPayService::class, ECPayService::class);
 
         //APP SERVICES
         $this->app->singleton(IAuthService::class, AuthService::class);
