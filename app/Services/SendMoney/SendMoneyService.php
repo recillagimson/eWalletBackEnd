@@ -367,7 +367,7 @@ class SendMoneyService implements ISendMoneyService
 
         $userDetail = $this->userDetailRepository->getByUserId($senderID);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
-        $fillRequest['receiverName'] = ucwords($user->profile()->first_name);
+        $fillRequest['receiverName'] = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
 
         $usernameField = $this->getUsernameFieldByAvailability($user);
         $username = $this->getUsernameByField($user, $usernameField);
