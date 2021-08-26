@@ -66,7 +66,7 @@ class UpdateProfileSilverRequest  extends FormRequest
 
         // check if first time to upgrade to silver
         if(request()->user()->tier->id === AccountTiers::tier1) {
-            $required_fields_default['id_photos_ids'] = ['required', 'array', 'min:1'];
+            $required_fields_default['id_photos_ids'] = ['required', 'array', 'min:1', 'max:4'];
             $required_fields_default['id_photos_ids.*'] = ['required', 'exists:user_id_photos,id'];
             $required_fields_default['id_selfie_ids'] = ['required', 'array', 'min:1'];
             $required_fields_default['id_selfie_ids.*'] = ['required', 'exists:user_selfie_photos,id'];
