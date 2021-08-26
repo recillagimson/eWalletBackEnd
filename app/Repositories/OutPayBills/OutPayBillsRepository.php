@@ -62,8 +62,8 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
     }
 
     public function reportData(string $from, string $to, string $filterBy = '', string $filterValue = '') {
-        $records = BillerReport::where('transaction_date', '>=', $from)
-        ->where('transaction_date', '<=', $to);
+        $records = BillerReport::where('original_transaction_date', '>=', $from)
+        ->where('original_transaction_date', '<=', $to);
 
         if($filterValue != '' && $filterBy != '') {
 
