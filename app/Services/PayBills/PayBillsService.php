@@ -82,36 +82,35 @@ class PayBillsService implements IPayBillsService
                 $arrayResponse['data'][$x]['code'] == 'MECOR' ||
                 $arrayResponse['data'][$x]['code'] == 'MWCOM' ||
                 $arrayResponse['data'][$x]['code'] == 'MWSIN' ||
-                $arrayResponse['data'][$x]['code'] == 'RFID1' ||
+                //$arrayResponse['data'][$x]['code'] == 'RFID1' ||
                 $arrayResponse['data'][$x]['code'] == 'ETRIP' ||
-                $arrayResponse['data'][$x]['code'] == 'SPLAN' ||
-                $arrayResponse['data'][$x]['code'] == 'SKY01' ||
-                $arrayResponse['data'][$x]['code'] == 'MCARE ' ||
-                $arrayResponse['data'][$x]['code'] == 'AEON1' ||
-                $arrayResponse['data'][$x]['code'] == 'BNECO' ||
+                //$arrayResponse['data'][$x]['code'] == 'SPLAN' ||
+                //$arrayResponse['data'][$x]['code'] == 'SKY01' ||
+                //$arrayResponse['data'][$x]['code'] == 'MCARE ' ||
+                //$arrayResponse['data'][$x]['code'] == 'AEON1' ||
+                //$arrayResponse['data'][$x]['code'] == 'BNECO' ||
                 $arrayResponse['data'][$x]['code'] == 'PRULI' ||
-                $arrayResponse['data'][$x]['code'] == 'AECOR' ||
-                $arrayResponse['data'][$x]['code'] == 'CNVRG' ||
+                //$arrayResponse['data'][$x]['code'] == 'AECOR' ||
+                //$arrayResponse['data'][$x]['code'] == 'CNVRG' ||
                 $arrayResponse['data'][$x]['code'] == 'SMART' ||
                 //$arrayResponse['data'][$x]['code'] == 'SSS01' ||
                 // $arrayResponse['data'][$x]['code'] == 'SSS02' ||
-                $arrayResponse['data'][$x]['code'] == 'SSS03' ||
+                $arrayResponse['data'][$x]['code'] == 'SSS03'
                 //$arrayResponse['data'][$x]['code'] == 'DFA01' ||
                 //$arrayResponse['data'][$x]['code'] == 'POEA1'
-                $arrayResponse['data'][$x]['code'] == 'MBCCC' ||
-                $arrayResponse['data'][$x]['code'] == 'BPI00' ||
-                $arrayResponse['data'][$x]['code'] == 'BNKRD' ||
-                $arrayResponse['data'][$x]['code'] == 'UNBNK' ||
-                $arrayResponse['data'][$x]['code'] == 'PILAM' ||
-                $arrayResponse['data'][$x]['code'] == 'ADMSN' ||
-                $arrayResponse['data'][$x]['code'] == 'UBNK4' ||
-                $arrayResponse['data'][$x]['code'] == 'ASLNK'
-
-                ){
-                    $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
-                } else {
-                    $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $inActive);
-                }
+               // $arrayResponse['data'][$x]['code'] == 'MBCCC' ||
+               // $arrayResponse['data'][$x]['code'] == 'BPI00' ||
+               // $arrayResponse['data'][$x]['code'] == 'BNKRD' ||
+                //$arrayResponse['data'][$x]['code'] == 'UNBNK' ||
+               // $arrayResponse['data'][$x]['code'] == 'PILAM' ||
+               // $arrayResponse['data'][$x]['code'] == 'ADMSN' ||
+                //$arrayResponse['data'][$x]['code'] == 'UBNK4' ||
+                //$arrayResponse['data'][$x]['code'] == 'ASLNK'
+            ) {
+                $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
+            } else {
+                $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $inActive);
+            }
         }
 
         return $newResponse;
@@ -139,10 +138,10 @@ class PayBillsService implements IPayBillsService
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $this->firstLayerValidation($billerCode, $accountNumber, $data);
-        
+
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse = (array)json_decode($response->body(), true);
-     
+
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
         if ($arrayResponse['data'] === "NOT_FOUND") return $this->tpaErrorCatch($arrayResponse);
         if (isset($arrayResponse['message']) === "Internal server error") return $this->tpaErrorCatch($arrayResponse);

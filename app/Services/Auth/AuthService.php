@@ -20,6 +20,7 @@ use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\NewAccessToken;
 
 class AuthService implements IAuthService
@@ -182,6 +183,7 @@ class AuthService implements IAuthService
             else $this->otpInvalid('Invalid OTP.');
         }
 
+
         $identifier = $verificationType . ':' . $userId;
         $otpValidity = $this->otpService->validate($identifier, $otp);
         if (!$otpValidity->status) $this->otpInvalid($otpValidity->message);
@@ -216,6 +218,13 @@ class AuthService implements IAuthService
 
         $recipientName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
         $otp = $this->generateOTP($otpType, $user->id, $user->otp_enabled);
+
+        Log::debug('Generated OTP For User: ', [
+            'recipientName' => $recipientName,
+            'userId' => $user->id,
+            'otp' => $otp
+        ]);
+
         if (App::environment('local') || !$user->otp_enabled) return;
 
         $notif = $notifService == null ? $this->notificationService : $notifService;

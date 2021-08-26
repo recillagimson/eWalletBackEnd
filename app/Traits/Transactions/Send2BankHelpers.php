@@ -22,6 +22,7 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\XML\XmlService;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithUserErrors;
+use App\Traits\StringHelpers;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
@@ -30,7 +31,7 @@ use Log;
 
 trait Send2BankHelpers
 {
-    use WithUserErrors, UserHelpers, WithTpaErrors;
+    use WithUserErrors, UserHelpers, WithTpaErrors, StringHelpers;
 
     private IOutSend2BankRepository $send2banks;
     private IUserTransactionHistoryRepository $transactionHistories;
@@ -40,8 +41,12 @@ trait Send2BankHelpers
 
     private function getSend2BankProviderCaption(string $provider): string
     {
+        if ($provider === TpaProviders::ubp) return 'UBP: Direct';
+        if ($provider === TpaProviders::ubpDirect) return 'UBP: Direct';
         if ($provider === TpaProviders::ubpPesonet) return 'UBP: Pesonet';
         if ($provider === TpaProviders::ubpInstapay) return 'UBP: Instapay';
+
+
         if ($provider === TpaProviders::secBankInstapay) return 'SecBank: Instapay';
         if ($provider === TpaProviders::secBankPesonet) return 'SecBank: Pesonet';
 
