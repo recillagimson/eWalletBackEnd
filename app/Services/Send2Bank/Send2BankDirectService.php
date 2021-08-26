@@ -10,6 +10,7 @@ use App\Enums\TpaProviders;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Models\OutSend2Bank;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -52,16 +53,17 @@ class Send2BankDirectService implements ISend2BankDirectService
 
     private ILogHistoryService $logHistoryService;
 
-    public function __construct(IUBPService $ubpService, IReferenceNumberService $referenceNumberService,
-                                ITransactionValidationService $transactionValidationService,
-                                INotificationService $notificationService, ISmsService $smsService,
-                                IEmailService $emailService,
-                                IUserAccountRepository $users, IUserBalanceInfoRepository $userBalances,
-                                IOutSend2BankRepository $send2banks, IServiceFeeRepository $serviceFees,
+    public function __construct(IUBPService                       $ubpService, IReferenceNumberService $referenceNumberService,
+                                ITransactionValidationService     $transactionValidationService,
+                                INotificationService              $notificationService, ISmsService $smsService,
+                                IEmailService                     $emailService,
+                                IUserAccountRepository            $users, IUserBalanceInfoRepository $userBalances,
+                                IOutSend2BankRepository           $send2banks, IServiceFeeRepository $serviceFees,
                                 IUserTransactionHistoryRepository $transactionHistories,
-                                IOtpService $otpService, ILogHistoryService $logHistoryService
-                                )
-                                {
+                                IOtpService                       $otpService, ILogHistoryService $logHistoryService,
+                                INotificationRepository           $notificationRepository
+    )
+    {
         $this->otpService = $otpService;
         $this->ubpService = $ubpService;
         $this->referenceNumberService = $referenceNumberService;
@@ -72,13 +74,13 @@ class Send2BankDirectService implements ISend2BankDirectService
         $this->userBalances = $userBalances;
         $this->serviceFees = $serviceFees;
         $this->send2banks = $send2banks;
-                                    $this->transactionHistories = $transactionHistories;
-                                    $this->smsService = $smsService;
-                                    $this->emailService = $emailService;
+        $this->transactionHistories = $transactionHistories;
+        $this->notificationRepository = $notificationRepository;
 
-
-                                    $this->logHistoryService = $logHistoryService;
-                                }
+        $this->smsService = $smsService;
+        $this->emailService = $emailService;
+        $this->logHistoryService = $logHistoryService;
+    }
 
 
     // Direct to bank
