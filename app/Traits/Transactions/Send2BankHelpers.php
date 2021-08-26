@@ -171,11 +171,11 @@ trait Send2BankHelpers
         } else {
             $data = $response->json();
             $code = $data['code'];
-
+            
             $provider = TpaProviders::ubp;
             $providerTransactionId = $data['ubpTranId'];
             $providerRemittanceId = $data['uuid'];
-
+            
             if ($code === UbpResponseCodes::successfulTransaction) {
                 $send2Bank->status = TransactionStatuses::success;
             } else if($code === UbpResponseCodes::receivedRequest || UbpResponseCodes::processing || UbpResponseCodes::forConfirmation) {
