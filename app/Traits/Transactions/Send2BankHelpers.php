@@ -40,8 +40,12 @@ trait Send2BankHelpers
 
     private function getSend2BankProviderCaption(string $provider): string
     {
+        if ($provider === TpaProviders::ubp) return 'UBP: Direct';
+        if ($provider === TpaProviders::ubpDirect) return 'UBP: Direct';
         if ($provider === TpaProviders::ubpPesonet) return 'UBP: Pesonet';
         if ($provider === TpaProviders::ubpInstapay) return 'UBP: Instapay';
+
+
         if ($provider === TpaProviders::secBankInstapay) return 'SecBank: Instapay';
         if ($provider === TpaProviders::secBankPesonet) return 'SecBank: Pesonet';
 
