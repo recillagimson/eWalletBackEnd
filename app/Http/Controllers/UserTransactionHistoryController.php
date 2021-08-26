@@ -36,7 +36,7 @@ class UserTransactionHistoryController extends Controller
             $status = $request->status;
         }
 //        $records = $this->userTransactionHistory->getByAuthUserViaViews($status);
-        $records = $this->userTransactionHistory->getByAuthUser();
+        $records = $this->userTransactionHistory->getByAuthUserViaViews($status);
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
