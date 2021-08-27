@@ -122,7 +122,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $record->append('transactable');
     }
 
-    public function getTransactionHistoryAdmin(array $attr)
+    public function getTransactionHistoryAdmin(array $attr, $isPaginated = false)
     {
         $records = DRCRProcedure::with([]);
         $from = Carbon::now()->subDays(30)->format('Y-m-d');
@@ -159,7 +159,10 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
         $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE');
 
-        return $records->paginate();
+        if($isPaginated) {
+            return $records->paginate();
+        }
+        return $records->get();
     }
 
     public function getTransactionHistoryAdminFarmer(array $attr)
