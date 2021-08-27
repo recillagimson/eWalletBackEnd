@@ -79,7 +79,7 @@ class PayBillsService implements IPayBillsService
         //list of active billing partners
         for ($x = 0; $x < $billersCount; $x++) {
             if (
-                $arrayResponse['data'][$x]['code'] == 'MECOR' ||
+                //$arrayResponse['data'][$x]['code'] == 'MECOR' ||
                 $arrayResponse['data'][$x]['code'] == 'MECOR' ||
                 $arrayResponse['data'][$x]['code'] == 'MWCOM' ||
                 $arrayResponse['data'][$x]['code'] == 'MWSIN' ||
