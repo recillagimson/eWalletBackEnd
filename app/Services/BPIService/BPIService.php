@@ -311,14 +311,20 @@ class BPIService implements IBPIService
 
     private function bpiDecryptionJWE(string $payload)
     {
-        $factory = new DefaultContextFactory();
-        $context = $factory->get();
+        try {
+            $factory = new DefaultContextFactory();
+            $context = $factory->get();
 
-        $pri = Storage::disk('local')->get('keys/squid.ph.key');
-        $myPrivateKey = openssl_get_privatekey($pri, '');
+            $pri = Storage::disk('local')->get('keys/squid.ph.key');
+            $myPrivateKey = openssl_get_privatekey($pri, '');
 
-        $payload = Jwe::decode($context, $payload, $myPrivateKey);
-        return $payload;
+            $payload = Jwe::decode($context, $payload, $myPrivateKey);
+            return $payload;
+        }
+        catch(\Exception $e) {
+            \Log::error('BPI: Invalid Private Key');
+            return [];
+        }
     }
 
     private function bpiDecryptionJWT(string $payload)
