@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\SuccessMessages;
 use App\Http\Requests\TransactionHistory\DownloadTransactionHistoryRequest;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Report\IReportService;
 use App\Services\Transaction\ITransactionService;
 use App\Services\Utilities\PDF\IPDFService;
 use App\Services\Utilities\Responses\IResponseService;
@@ -17,16 +18,21 @@ class UserTransactionHistoryController extends Controller
     private IResponseService $responseService;
     private IPDFService $pdfService;
 
+    private IReportService $reportService;
+
 
     public function __construct(IResponseService                  $responseService,
                                 IUserTransactionHistoryRepository $userTransactionHistory,
                                 ITransactionService               $transactionService,
-                                IPDFService                       $pdfService)
+                                IPDFService                       $pdfService,
+                                IReportService                    $reportService
+                                )
     {
         $this->responseService = $responseService;
         $this->userTransactionHistory = $userTransactionHistory;
         $this->transactionService = $transactionService;
         $this->pdfService = $pdfService;
+        $this->reportService = $reportService;
     }
 
     public function index(Request $request)
@@ -42,8 +48,7 @@ class UserTransactionHistoryController extends Controller
 
     public function transactionHistoryAdmin(Request $request)
     {
-        $records = $this->userTransactionHistory->getTransactionHistoryAdmin($request->all());
-        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
+        return $this->reportService->transactionReportAdmin($request->all());
     }
 
     public function show(string $id)
