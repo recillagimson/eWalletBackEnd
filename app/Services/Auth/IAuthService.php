@@ -137,4 +137,13 @@ interface IAuthService
      * @param INotificationService|null $notifService
      */
     public function sendOTP(string $usernameField, string $username, string $otpType, INotificationService $notifService = null);
+
+    /**
+     * Operation confirmation via password for admin module
+     *
+     * @param string $userId
+     * @param string $password
+     * @return mixed
+     */
+    public function passwordConfirmation(string $userId, string $password);
 }
