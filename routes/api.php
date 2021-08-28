@@ -396,6 +396,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
 
         Route::post('/report', [DrcrMemoController::class, 'report']);
+        
+        Route::post('/report/filter', [DrcrMemoController::class, 'reportFiltered']);
+
     });
 
     Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
