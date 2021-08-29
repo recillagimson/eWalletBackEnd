@@ -222,7 +222,8 @@ class AuthController extends Controller
         $data = $request->validated();
         $userId = $request->user()->id;
         $this->authService->passwordConfirmation($userId, $data['password']);
-        return $this->responseService->successResponse();
+        return $this->responseService->successResponse($response,
+        SuccessMessages::passwordConfirmationSuccessful);
     }
 
     /**
