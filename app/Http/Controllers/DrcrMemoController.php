@@ -160,7 +160,7 @@ class DrcrMemoController extends Controller
     }
 
     public function reportFiltered(Request $request) {
-        return $this->drcrMemoService->reportFiltered($request->all());
+    return $this->drcrMemoService->reportFiltered($request->all());
     }
 
 }

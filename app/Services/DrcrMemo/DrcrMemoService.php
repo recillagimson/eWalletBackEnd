@@ -302,6 +302,14 @@ class DrcrMemoService implements IDrcrMemoService
             $userId = $attr['userId'];
         }
 
+        if($attr && isset($attr['filter_by'])) {
+            $filterBy = $attr['filter_by'];
+        }
+
+        if($attr && isset($attr['filter_value'])) {
+            $filterValue = $attr['filter_value'];
+        }
+
         $data = [];
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
 

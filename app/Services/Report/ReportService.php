@@ -14,6 +14,7 @@ use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Exports\TransactionReport\TransactionReport;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Exports\TransactionReport\TransactionReportAdmin;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
@@ -235,12 +236,12 @@ class ReportService implements IReportService
         }
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
         if($type === 'CSV') {
-            Excel::store(new TransactionReport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            Excel::store(new TransactionReportAdmin($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
             $temp_url = $this->s3TempUrl($fileName);
 
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } else if($type === 'XLSX') {
-            Excel::store(new TransactionReport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            Excel::store(new TransactionReportAdmin($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
 
