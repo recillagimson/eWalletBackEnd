@@ -2,6 +2,7 @@
 namespace App\Traits\LogHistory;
 
 use Carbon\Carbon;
+use Carbon\CarbonTimeZone;
 use Illuminate\Database\Eloquent\Collection;
 
 trait LogHistory
@@ -93,7 +94,6 @@ trait LogHistory
         $current_balance = 0;
         $available_balance = 0;
         $current_id = "";
-        date_default_timezone_set('Asia/Manila');
 
         foreach ($data as $entry) {
             // Check if need to add balance base on user_account_id
@@ -152,6 +152,7 @@ trait LogHistory
             // <th>Transaction Date</th>
             // <th>Approved at</th>
             // <th>Declined at</th>
+
             if (!$namedKey) {
                 $proc = [
                     $entry->account_number,
@@ -171,9 +172,9 @@ trait LogHistory
                     $entry->transaction_date,
                     $entry->approved_at,
                     $entry->declined_at,
-                    Carbon::parse($entry->transaction_date)->format('m/d/Y h:i:s A'),
-                    $entry->approved_at ? Carbon::parse($entry->approved_at)->format('m/d/Y h:i:s A') : '',
-                    $entry->declined_at ? Carbon::parse($entry->declined_at)->format('m/d/Y h:i:s A') : '',
+                    Carbon::parse($entry->transaction_date)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A'),
+                    $entry->approved_at ? Carbon::parse($entry->approved_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A') : '',
+                    $entry->declined_at ? Carbon::parse($entry->declined_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A') : '',
                 ];
                 array_push($processed_data, $proc);
             } else {
@@ -195,9 +196,9 @@ trait LogHistory
                     $entry->transaction_date,
                     $entry->approved_at,
                     $entry->declined_at,
-                    Carbon::parse($entry->transaction_date)->format('Y-m-d'),
-                    $entry->approved_at ? Carbon::parse($entry->approved_at)->format('Y-m-d') : '',
-                    $entry->declined_at ? Carbon::parse($entry->declined_at)->format('Y-m-d') : '',
+                    Carbon::parse($entry->transaction_date)->setTimezone('Asia/Manila')->format('Y-m-d'),
+                    $entry->approved_at ? Carbon::parse($entry->approved_at)->setTimezone('Asia/Manila')->format('Y-m-d') : '',
+                    $entry->declined_at ? Carbon::parse($entry->declined_at)->setTimezone('Asia/Manila')->format('Y-m-d') : '',
                 ];
                 array_push($processed_data, $proc);
             }

@@ -16,8 +16,7 @@ class DRCRProcedure extends Model
     ];
 
     public function getTransactionDateManilaTimeAttribute() {
-        date_default_timezone_set('Asia/Manila');
-        return Carbon::parse($this->transaction_date)->format('m/d/Y h:i:s A');
+        return Carbon::parse($this->transaction_date)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
     }
 
     public function user_details() {

@@ -23,6 +23,8 @@
             <th>Type of Memo</th>
             <th>Reference Number</th>
             <th>Amount</th>
+            <th>Status</th>
+            <th>Provider Reference</th>
         </tr>
     </thead>
     <tbody>
@@ -50,6 +52,12 @@
             </td>
             <td>
                 {{ $record->total_amount }}
+            </td>
+            <td>
+                {{ $record->Status }}
+            </td>
+            <td>
+                {{ $record->provider_reference }}
             </td>
         </tr>
         @endforeach
