@@ -118,6 +118,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\InAddMoneyUpbDirect\InAddMoneyUpbDirectRepository;
 use App\Repositories\InAddMoneyUpbDirect\IInAddMoneyUpbDirectRepository;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
+use App\Repositories\InAddMoneyEcPay\InAddMoneyEcPayRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
