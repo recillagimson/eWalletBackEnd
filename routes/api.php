@@ -417,6 +417,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/farmers/list', [ReportController::class, 'FarmersList']);
 
     });
+
+    Route::prefix('/upb/add/money')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/oauth/redirect', [InAddMoneyUpbDirectController::class, 'addMoney']);
+    });
 });
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {

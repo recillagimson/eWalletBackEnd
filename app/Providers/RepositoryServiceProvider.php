@@ -114,6 +114,8 @@ use App\Repositories\InReceiveFromDBP\InReceiveFromDBPRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\InAddMoneyUpbDirect\InAddMoneyUpbDirectRepository;
+use App\Repositories\InAddMoneyUpbDirect\IInAddMoneyUpbDirectRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -237,7 +239,10 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // In Receive Money from DBP
         $this->app->bind(IInReceiveFromDBPRepository::class, InReceiveFromDBPRepository::class);
-        
+
+        // Add Money from UPB Direct
+        $this->app->bind(IInAddMoneyUpbDirectRepository::class, InAddMoneyUpbDirectRepository::class);
+
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
 

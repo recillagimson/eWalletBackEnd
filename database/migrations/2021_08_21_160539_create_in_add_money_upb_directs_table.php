@@ -19,7 +19,7 @@ class CreateInAddMoneyUpbDirectsTable extends Migration
             $table->string('reference_number', 50)->unique();
             $table->decimal('total_amount', 10, 3);
             $table->datetime('transaction_date');
-            $table->uuid('transction_category_id');
+            $table->uuid('transaction_category_id');
             $table->string('transaction_remarks', 100);
             $table->string('status', 10);
             $table->string('ubp_reference', 50)->unique();
