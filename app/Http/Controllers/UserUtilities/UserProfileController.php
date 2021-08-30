@@ -73,8 +73,8 @@ class UserProfileController extends Controller
      */
     public function updateBronze(UpdateProfileBronzeRequest $request): JsonResponse
     {
-        $details = $request->validated();
-        $addOrUpdate = $this->userProfileService->update($request->user(), $details);
+        // $details = $request->validated();
+        $addOrUpdate = $this->userProfileService->update($request->user(), $request->all());
 
         $audit_remarks = request()->user()->account_number . "  has updated his/her profile";
         $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToBronze, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);

@@ -105,6 +105,8 @@ use App\Repositories\Address\Municipality\MunicipalityRepository;
 use App\Repositories\Address\Municipality\IMunicipalityRepository;
 use App\Repositories\Address\Barangay\BarangayRepository;
 use App\Repositories\Address\Barangay\IBarangayRepository;
+use App\Repositories\Dashboard\DashboardRepository;
+use App\Repositories\Dashboard\IDashboardRepository;
 use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
 use App\Repositories\Disbursement\OutDisbursementDbpRepository;
 use App\Repositories\KYCVerification\IKYCVerificationRepository;
@@ -245,6 +247,12 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
+
+        //In Add Money ECPAY Repositories
+        $this->app->bind(IInAddMoneyEcPayRepository::class, InAddMoneyEcPayRepository::class);
+
+        // Dashboard
+        $this->app->bind(IDashboardRepository::class, DashboardRepository::class);
 
     }
 

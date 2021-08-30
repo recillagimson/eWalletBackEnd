@@ -4,10 +4,12 @@
 namespace App\Services\Utilities\Notifications\Email;
 
 
+use App\Enums\EmailSubjects;
 use App\Enums\OtpTypes;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
+use App\Mail\Farmers\BatchUploadNotification;
 use App\Mail\LoginVerification;
 use App\Mail\PayBills\PayBillsNotification;
 use App\Mail\Send2Bank\Send2BankReceipt;
@@ -20,29 +22,34 @@ use App\Mail\User\AdminUserVerification;
 use App\Mail\User\OtpVerification;
 use App\Models\OutSend2Bank;
 use App\Models\Tier;
+use App\Models\UserAccount;
 use App\Models\UserUtilities\UserDetail;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Traits\StringHelpers;
 use App\Traits\Transactions\Send2BankHelpers;
 use Carbon\Carbon;
-use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use SendGrid;
 use SendGrid\Mail\Mail;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class EmailService implements IEmailService
 {
-    use Send2BankHelpers;
+    use Send2BankHelpers, StringHelpers;
 
     private string $fromAddress;
     private string $fromName;
     private string $apiKey;
+    private IUserAccountRepository $userAccounts;
 
-    public function __construct()
+    public function __construct(IUserAccountRepository $userAccounts)
     {
         $this->fromAddress = config('mail.from.address');
         $this->fromName = config('mail.from.name');
         $this->apiKey = config('mail.mailers.sendgrid.apiKey');
+        $this->userAccounts = $userAccounts;
     }
 
     /**
@@ -52,11 +59,11 @@ class EmailService implements IEmailService
      * @param string $otp
      * @param string $otpType
      */
-    public function sendPasswordVerification(string $to, string $otp, string $otpType)
+    public function sendPasswordVerification(string $to, string $otp, string $otpType, string $recipientName)
     {
         $pinOrPassword = $otpType == OtpTypes::passwordRecovery ? 'password' : 'pin code';
         $subject = 'SquidPay - Account ' . ucwords($pinOrPassword) . ' Recovery Verification';
-        $template = new PasswordRecoveryEmail($otp, $otpType);
+        $template = new PasswordRecoveryEmail($otp, $otpType, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -66,11 +73,12 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function sendAccountVerification(string $to, string $otp)
+    public function sendAccountVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Account Verification';
-        $template = new AccountVerification($otp);
+        $template = new AccountVerification($otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -80,10 +88,10 @@ class EmailService implements IEmailService
      * @param string $to
      * @param string $otp
      */
-    public function sendLoginVerification(string $to, string $otp)
+    public function sendLoginVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Login Verification';
-        $template = new LoginVerification($otp);
+        $template = new LoginVerification($otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -93,17 +101,17 @@ class EmailService implements IEmailService
      * @param string $to
      * @param string $otp
      */
-    public function sendMoneyVerification(string $to, string $otp)
+    public function sendMoneyVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Send Money Verification';
-        $template = new SendMoneyVerification($otp);
+        $template = new SendMoneyVerification($otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
-    public function sendS2BVerification(string $to, string $otp)
+    public function sendS2BVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Send to Bank Verification';
-        $template = new OtpVerification($subject, $otp);
+        $template = new OtpVerification($subject, $otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -112,11 +120,12 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function updateEmailVerification(string $to, string $otp)
+    public function updateEmailVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Update Email Verification';
-        $template = new OtpVerification($subject, $otp);
+        $template = new OtpVerification($subject, $otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -125,11 +134,12 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function updateProfileVerification(string $to, string $otp)
+    public function updateProfileVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Update Profile Verification';
-        $template = new OtpVerification($subject, $otp);
+        $template = new OtpVerification($subject, $otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -143,7 +153,11 @@ class EmailService implements IEmailService
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName)
     {
         $subject = 'SquidPay - Send Money Notification';
-        $template = new SendMoneySenderNotification($fillRequest, $receiverName);
+
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
+
+        $template = new SendMoneySenderNotification($fillRequest, $receiverName, $firstName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -166,15 +180,18 @@ class EmailService implements IEmailService
                                                     string $provider, string $remittanceId)
     {
         $hideAccountNo = Str::substr($accountNo, 0, -4);
-        $strAmount = number_format($amount, 2, '.', ',');
-        $strServiceFee = number_format($serviceFee, 2, '.', ',');
-        $strNewBalance = number_format($newBalance, 2, '.', ',');
-        $strDate = $transactionDate->toDayDateTimeString();
+        $strAmount = $this->formatAmount($amount);
+        $strServiceFee = $this->formatAmount($serviceFee);
+        $strNewBalance = $this->formatAmount($newBalance);
+        $strDate = $this->formatDate($transactionDate);
         $strProvider = $this->getSend2BankProviderCaption($provider);
+
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
 
         $subject = 'SquidPay - Send To Bank Notification';
         $template = new SenderNotification($hideAccountNo, $strAmount, $strServiceFee, $strNewBalance, $strDate,
-            $strProvider, $refNo, $remittanceId);
+            $strProvider, $refNo, $remittanceId, $firstName);
 
         $this->sendMessage($to, $subject, $template);
     }
@@ -190,12 +207,15 @@ class EmailService implements IEmailService
                                         Carbon $transactionDate, float $newBalance, string $refNo)
     {
         $subject = 'SquidPay - Buy Load Notification';
-        $strAmount = number_format($amount, 2);
-        $strBalance = number_format($newBalance, 2);
-        $strTransactionDate = $transactionDate->toDayDateTimeString();
+        $strAmount = $this->formatAmount($amount);
+        $strBalance = $this->formatAmount($newBalance);
+        $strTransactionDate = $this->formatDate($transactionDate);
+
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
 
         $template = new BuyLoadSenderNotification($strAmount, $productName, $recipientMobileNumber, $strTransactionDate,
-            $strBalance, $refNo);
+            $strBalance, $refNo, $firstName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -226,7 +246,7 @@ class EmailService implements IEmailService
         $sendgrid = new SendGrid($this->apiKey);
         $response = $sendgrid->send($mail);
 
-        if (!$response->statusCode() == Response::HTTP_OK) $this->sendingFailed();
+        if (!$response->statusCode() == ResponseAlias::HTTP_OK) $this->sendingFailed();
     }
 
     function sendingFailed()
@@ -236,7 +256,6 @@ class EmailService implements IEmailService
         ]);
     }
 
-
     public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier)
     {
         $subject = 'SquidPay - Tier Upgrade Update';
@@ -244,5 +263,16 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
+    public function batchUploadNotification(UserAccount $user, string $successLink, string $failedLink)
+    {
+        $subject = EmailSubjects::farmersBatchUploadNotif;
+        $firstName = ucwords($user->profile->first_name);
+        $template = new BatchUploadNotification($firstName, $successLink, $failedLink);
+    }
 
+    private function getUser(): UserAccount
+    {
+        $userId = request()->user()->id;
+        return $this->userAccounts->getUser($userId);
+    }
 }

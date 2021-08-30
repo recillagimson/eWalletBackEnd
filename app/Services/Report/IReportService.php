@@ -13,4 +13,5 @@ interface IReportService
     public function drcrmemofarmers(array $attr);
     public function transactionReportFarmers(array $attr);
     public function farmersList(array $attr);
+    public function transactionReportAdmin(array $attr);
 }

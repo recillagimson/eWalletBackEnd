@@ -26,7 +26,8 @@ class SubsidySuccessUploadExport implements FromCollection, WithHeadings
         return [
             'user_account_number',
             'vw_farmerprofile_full_wm.rsbsa_no',
-            'amount'
+            'amount',
+            'batch_code'
         ];
     }
 }

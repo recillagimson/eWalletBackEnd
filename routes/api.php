@@ -109,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
     // FARMER
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload', [FarmerController::class, 'batchUpload']);
+    Route::middleware(['require.user.token'])->post('/farmer/jobs/batch-upload', [FarmerController::class, 'processBatchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/selfie/verification', [FarmerController::class, 'farmerSelfieUpload']);
@@ -123,6 +124,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('verify/{requestId}', [KYCController::class, 'verifyRequest'])->name('verify');
     });
 
+    // Route::post('ecpay/custom', [Send2BankController::class, 'sample'])->middleware(['decrypt.request']);
+    Route::middleware(['decrypt.request'])->prefix('ecpay')->group(function () {
+        Route::post('commitpayment', [AddMoneyController::class, 'commitPayment']);
+        Route::post('confirmpayment', [AddMoneyController::class, 'confirmPayment']);
+    });
+
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser'])->name('user.show');
 
@@ -133,6 +140,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
         Route::post('/confirmation', [AuthController::class, 'confirmTransactions']);
+        Route::post('/confirmation/password', [AuthController::class, 'passwordConfirmation']);
 
         Route::post('/register', [RegisterController::class, 'register']);
         Route::post('/register/validate', [RegisterController::class, 'registerValidate']);
@@ -388,6 +396,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
 
         Route::post('/report', [DrcrMemoController::class, 'report']);
+        
+        Route::post('/report/filter', [DrcrMemoController::class, 'reportFiltered']);
+
     });
 
     Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {

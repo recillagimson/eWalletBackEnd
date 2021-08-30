@@ -26,6 +26,9 @@ class SuccessMessages
 
     const pinCodeUpdated = 'Account Pin Code has been updated.';
 
+    //Password confirmation
+    const passwordConfirmationSuccessful = 'Transaction Validation Successful';
+
     // Send Money Controller
     const sendMoneySuccessFul = 'Send money successful';
     const validateSendMoney = 'Send money validation successful';
@@ -54,4 +57,6 @@ class SuccessMessages
     const updateMobileSuccessful = "Update mobile successful";
     const updateUserSuccessful = "Update user details successful";
     const updateUserPending = "Update user details request submitted successfully";
+
+    const processingRequestWithEmailNotification = "We are processing your request. An email will be send once the process is done.";
 }

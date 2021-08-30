@@ -30,7 +30,7 @@ class AdminDashboardController extends Controller
     {
         //$UserID = $request->user()->id;
         $Dashboard = $this->admindashboardService->dashboard();
-        return $this->responseService->successResponse($Dashboard, SuccessMessages::success);
+        return $this->responseService->successResponse($Dashboard->toArray(), SuccessMessages::success);
         //return response($Dashboard);
     }
 

@@ -122,7 +122,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $record->append('transactable');
     }
 
-    public function getTransactionHistoryAdmin(array $attr)
+    public function getTransactionHistoryAdmin(array $attr, $isPaginated = false)
     {
         $records = DRCRProcedure::with([]);
         $from = Carbon::now()->subDays(30)->format('Y-m-d');
@@ -159,7 +159,10 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
         $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE');
 
-        return $records->paginate();
+        if($isPaginated) {
+            return $records->paginate();
+        }
+        return $records->get();
     }
 
     public function getTransactionHistoryAdminFarmer(array $attr)
@@ -172,6 +175,9 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             $from = $attr['from'];
             $to = $attr['to'];
         }
+
+        $records = $records->where('original_transaction_date', '>=', $from)
+        ->where('original_transaction_date', '<=', $to);
 
         if (isset($attr['filter_by']) && $attr['filter_by'] != '' && isset($attr['filter_value']) && $attr['filter_value'] != '') {
             $filter_by = $attr['filter_by'];
@@ -199,6 +205,11 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             // IF RSBSA_NUMBER
             else if($filter_by == 'RSBSA_NUMBER') {
                 $records = $records->where('rsbsa_number', $filter_value);
+            }
+
+            // IF TRANSACTION_DESCRIPTION
+            else if($filter_by == 'TRANSACTION_DESCRIPTION') {
+                $records = $records->where('Description', 'LIKE', '%'. $filter_value .'%');
             }
         }
 

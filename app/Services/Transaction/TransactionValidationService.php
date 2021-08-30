@@ -101,7 +101,7 @@ class TransactionValidationService implements ITransactionValidationService
 
     public function checkUserMonthlyTransactionLimit(UserAccount $user, float $totalAmount, string $transactionCategoryId, array $customMessage = [])
     {
-        $tier = $this->tierRepository->get($user->tier_id);
+         $tier = $this->tierRepository->get($user->tier_id);
         if ($tier) {
             $from = Carbon::now()->startOfMonth()->format('Y-m-d');
             $to = Carbon::now()->endOfMonth()->format('Y-m-d');
@@ -111,22 +111,22 @@ class TransactionValidationService implements ITransactionValidationService
             if($transactionCategory) {
                 $totalTransactionCurrentMonth = 0;
 
-                // OUT TRANSACTIONS
-                // if($transactionCategory->transaction_type === 'NEGATIVE') {
-                    $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
-                    $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
-                    $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
-                    $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                //OUT TRANSACTIONS
+                if($transactionCategory->transaction_type === 'NEGATIVE') {
+                    // $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
+                    // $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
+                    // $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
+                    // $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
-                    $out = $buyLoad + $payBills + $send2Banks + $sendMoney;
+                    $totalTransactionCurrentMonth = 0;
 
-                // } else {
+                } else {
                     $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                   
                     $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-
                     $in = $addMoneyFromBank + $receiveMoney;
-                    $totalTransactionCurrentMonth = $out + $in;
-                // }
+                    $totalTransactionCurrentMonth = $in;
+                 }
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);

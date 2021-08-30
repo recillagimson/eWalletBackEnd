@@ -10,6 +10,7 @@ class SquidPayModuleTypes
     const BuyLoad = 'BUY_LOAD';
     const AddMoneyViaWebBanksDragonPay = 'ADD_MONEY_WEB_BANK_DRAGONPAY';
     const AddMoneyViaOTCDragonPay = 'ADD_MONEY_OTC_DRAGONPAY'; //Over the counter
+    const AddMoneyViaOTCECPay = 'ADD_MONEY_OTC_ECPAY';
     const AddMoneyViaSquidPay = 'ADD_MONEY_SQUIDPAY';
     const sendMoneyUBPDirect = 'SEND_MONEY_UBP_DIRECT';
 

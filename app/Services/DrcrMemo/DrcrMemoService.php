@@ -9,6 +9,7 @@ use App\Enums\SuccessMessages;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Exports\DRCR\DRCRReport;
+use App\Exports\DRCR\DRCRReportSupervisor;
 use App\Models\UserAccount;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -278,5 +279,60 @@ class DrcrMemoService implements IDrcrMemoService
     public function s3TempUrl(string $generated_link) {
         $temp_url = Storage::disk('s3')->temporaryUrl($generated_link, Carbon::now()->addMinutes(30));
         return $temp_url;
+    }
+
+    public function reportFiltered(array $attr) {
+        $from = Carbon::now()->subDays(30)->format('Y-m-d');
+        $to = Carbon::now()->format('Y-m-d');
+        $type = 'API';
+        $filterBy = '';
+        $filterValue = '';
+        $userId = 0;
+
+        if($attr && isset($attr['from']) && isset($attr['to'])) {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+
+        if($attr && isset($attr['type'])) {
+            $type = $attr['type'];
+        }
+
+        if($attr && isset($attr['userId'])) {
+            $userId = $attr['userId'];
+        }
+
+        if($attr && isset($attr['filter_by'])) {
+            $filterBy = $attr['filter_by'];
+        }
+
+        if($attr && isset($attr['filter_value'])) {
+            $filterValue = $attr['filter_value'];
+        }
+
+        $data = [];
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+
+        if($type == 'API') {
+            $data = $this->drcrMemoRepository->reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, true);
+        } else {
+            $data = $this->drcrMemoRepository->reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, false);
+        }
+
+        if($type == 'API') {
+            return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
+        } 
+        // CSV
+        else if($type == 'CSV') {
+            Excel::store(new DRCRReportSupervisor($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        }
+        // XLSX
+        else if($type == 'XLSX') {
+            Excel::store(new DRCRReportSupervisor($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        }
     }
 }

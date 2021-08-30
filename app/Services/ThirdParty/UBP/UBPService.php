@@ -113,7 +113,7 @@ class UBPService implements IUBPService
             "senderRefId" => $refNo,
             "tranRequestDate" => $transactionDate,
             "sender" => [
-                "name" => Str::replace("-", " ", $fromFullName),
+                "name" => $this->formatName($fromFullName),
                 "address" => [
                     "line1" => "Metro Manila",
                     "line2" => " ",
@@ -125,7 +125,7 @@ class UBPService implements IUBPService
             ],
             "beneficiary" => [
                 "accountNumber" => $recipientAccountNumber,
-                "name" => Str::replace("-", " ", $recipientAccountName),
+                "name" => $this->formatName($recipientAccountName),
                 "address" => [
                     "line1" => "",
                     "line2" => "",
@@ -222,6 +222,13 @@ class UBPService implements IUBPService
         $transferUrl = $this->directUBPTransferUrl;
         $url = $this->baseUrl . $transferUrl . "/" . $senderRefId;
         return $this->apiService->get($url, $headers);
+    }
+
+    private function formatName(string $name): string
+    {
+        $formattedName = Str::replace("-", " ", $name);
+        $formattedName = Str::replace("ñ", "n", $formattedName);
+        return Str::replace("Ñ", "N", $formattedName);
     }
 
 

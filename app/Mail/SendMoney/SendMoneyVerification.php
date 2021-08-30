@@ -11,15 +11,17 @@ class SendMoneyVerification extends Mailable
     use Queueable, SerializesModels;
 
     private string $otp;
+    private string $recipientName;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(string $otp)
+    public function __construct(string $otp, string $recipientName)
     {
         $this->otp = $otp;
+        $this->recipientName = $recipientName;
     }
 
     /**
@@ -32,7 +34,8 @@ class SendMoneyVerification extends Mailable
         return $this->view('emails.sendmoney.send_money_verification')
             ->subject('SquidPay - Send Money Verification')
             ->with([
-                'code' => $this->otp
+                'code' => $this->otp,
+                'recipientName' => $this->recipientName
             ]);
     }
 }
