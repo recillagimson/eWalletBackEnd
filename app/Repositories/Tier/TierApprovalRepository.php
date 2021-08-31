@@ -75,6 +75,18 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
             else if ($filter_by === 'STATUS') {
                 $records = $records->where('status', $filter_value);
             }
+            // IF EMAIL
+            else if ($filter_by === 'EMAIL') {
+                $records = $records->whereHas('user_account', function ($query) use ($filter_value) {
+                    $query->where('email', 'LIKE', '%' . $filter_value . '%');
+                });
+            }
+            // IF MOBILE
+            else if ($filter_by === 'MOBILE') {
+                $records = $records->whereHas('user_account', function ($query) use ($filter_value) {
+                    $query->where('mobile_number', $filter_value);
+                });
+            }
         }
 
         return $records->paginate();
