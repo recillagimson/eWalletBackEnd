@@ -89,7 +89,9 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
             }
         }
 
-        return $records->paginate();
+        return $records
+            ->where('status', 'FOR APPROVAL')
+            ->paginate();
     }
 
     public function showTierApproval(TierApproval $tierApproval) {
