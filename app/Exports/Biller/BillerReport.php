@@ -37,6 +37,7 @@ class BillerReport implements FromView, WithHeadings, WithEvents
                 $record['reference_number'],
                 $record['transaction_date'],
                 $record['billers_name'],
+                $record['biller_reference_number'],
                 $record['total_amount'],
                 $record['status'],
             ]);
@@ -78,6 +79,7 @@ class BillerReport implements FromView, WithHeadings, WithEvents
                 $record['reference_number'],
                 $record['transaction_date'],
                 $record['billers_name'],
+                $record['biller_reference_number'],
                 $record['total_amount'],
                 $record['status'],
             ]);

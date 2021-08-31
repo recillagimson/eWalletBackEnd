@@ -67,15 +67,6 @@ class ReportService implements IReportService
 
             Excel::store(new BillerReport($records, $params['from'], $params['to'], $params), $fileName, 's3', \Maatwebsite\Excel\Excel::MPDF);
             $temp_url = $this->s3TempUrl($fileName);
-            // $data = $this->processData($data);
-            // $records = [
-            //     'records' => $records
-            // ];
-            // ini_set("pcre.backtrack_limit", "5000000");
-            // $file = $this->pdfService->generatePDFNoUserPassword($records, 'reports.out_pay_bills_history.out_pay_bills_history_report', true);
-            // $url = $this->storeToS3($currentUser, $file['file_name'], $fileName);
-            // unlink($file['file_name']);
-            // $temp_url = $this->s3TempUrl($url);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } 
         else if($params['type'] == 'CSV') {
