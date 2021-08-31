@@ -17,6 +17,10 @@ class CustomerListView extends Model
         'manila_time_verified_at',
     ];
 
+    protected $casts = [
+        'id' => 'string'
+    ];
+
     public function getManilaTimeCreatedAtAttribute() {
         return Carbon::parse($this->original_created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
     }
