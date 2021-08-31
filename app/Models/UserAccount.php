@@ -61,6 +61,8 @@ class UserAccount extends Authenticatable
         'last_login' => 'datetime',
     ];
 
+    protected $appends = ['manila_time_created_at'];
+
     public function tier(): HasOne
     {
         return $this->hasOne(Tier::class, 'id', 'tier_id');
@@ -137,6 +139,11 @@ class UserAccount extends Authenticatable
         return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
     }
 
+    public function lastTierApproval() {
+        return $this->hasOne(TierApproval::class, 'user_account_id', 'id')
+        ->orderBy('created_at', 'DESC');
+    }
+
     public function toggleActivation()
     {
         $this->is_active = !$this->is_active;
@@ -149,5 +156,9 @@ class UserAccount extends Authenticatable
         $this->login_failed_attempts = 0;
         $this->last_failed_attempt = null;
         $this->save();
+    }
+
+    public function getManilaTimeCreatedAtAttribute() {
+        return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
     }
 }
