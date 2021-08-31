@@ -124,7 +124,6 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
     public function getTransactionHistoryAdmin(array $attr, $isPaginated = false)
     {
-        $records = DRCRProcedure::with([]);
         $from = Carbon::now()->subDays(30)->format('Y-m-d');
         $to = Carbon::now()->format('Y-m-d');
 
@@ -132,6 +131,10 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             $from = $attr['from'];
             $to = $attr['to'];
         }
+
+        $records = DRCRProcedure::with([])
+            ->where('original_transaction_date', '>=', $from)
+            ->where('original_transaction_date', '<=', $to);
 
         if (isset($attr['filter_by']) && $attr['filter_by'] != '' && isset($attr['filter_value']) && $attr['filter_value'] != '') {
             $filter_by = $attr['filter_by'];
