@@ -24,9 +24,9 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getAdminUserBaseQuery()->get();
     }
 
-    public function getAllUsersPaginated($attributes, $perPage)
+    public function getAllUsersPaginated($attributes, $perPage, $isPaginated = true)
     {
-        $result = $this->model;
+        $result = $this->model->with(['profile', 'tier', 'lastTierApproval']);
 
         if (isset($attributes['filter_by']) && isset($attributes['filter_value'])) {
             $filter_by = $attributes['filter_by'];
@@ -48,6 +48,14 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             else if ($filter_by === 'STATUS') {
                 $result = $result->where('status', $filter_value);
             }
+            // IF EMAIL
+            else if ($filter_by === 'EMAIL') {
+                $result = $result->where('email', 'LIKE', '%' . $filter_value . '%');
+            }
+            // IF MOBILE
+            else if ($filter_by === 'MOBILE') {
+                $result = $result->where('mobile_number', $filter_value);
+            }
         }
 
         if (isset($from) && isset($to)) {
@@ -56,9 +64,15 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
         $result = $result->where('is_admin', '!=', 1);
 
-        return $result->with(['profile', 'tier', 'tierApprovals' => function ($q) {
+        $result = $result->with(['profile', 'tier', 'tierApprovals' => function ($q) {
             return $q->where('status', '!=', 'DECLINED');
-        }])->orderBy('created_at', 'DESC')->paginate($perPage);
+        }])->orderBy('created_at', 'DESC');
+
+        if($isPaginated) {
+            return $result->paginate($perPage);
+        }
+
+        return $result->get();
     }
 
     public function findById($id)
