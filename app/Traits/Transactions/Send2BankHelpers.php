@@ -91,7 +91,12 @@ trait Send2BankHelpers
                 $status = TransactionStatuses::success;
             } else {
                 Log::info('Send2Bank Transaction Failed:', $data);
-                $this->transactionFailed();
+
+                $send2Bank->status = $status;
+                $send2Bank->transaction_response = json_encode($data);
+                $send2Bank->save();
+
+                return $send2Bank;
             }
 
             $send2Bank->status = $status;
@@ -176,11 +181,11 @@ trait Send2BankHelpers
         } else {
             $data = $response->json();
             $code = $data['code'];
-            
+
             $provider = TpaProviders::ubp;
             $providerTransactionId = $data['ubpTranId'];
             $providerRemittanceId = $data['uuid'];
-            
+
             if ($code === UbpResponseCodes::successfulTransaction) {
                 $send2Bank->status = TransactionStatuses::success;
             } else if($code === UbpResponseCodes::receivedRequest || UbpResponseCodes::processing || UbpResponseCodes::forConfirmation) {
