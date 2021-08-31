@@ -43,13 +43,13 @@
                 {{ $record->email }}
             </td>
             <td>
-                {{ $record && $record->profile ? $record->profile->first_name : '' }}
+                {{ $record->first_name }}
             </td>
             <td>
-                {{ $record && $record->profile ? $record->profile->middle_name : '' }}
+                {{ $record->middle_name }}
             </td>
             <td>
-                {{ $record && $record->profile ? $record->profile->last_name : '' }}
+                {{ $record->last_name }}
             </td>
             <td>
                 {{ $record->mobile_number }}
@@ -58,16 +58,16 @@
                 {{ $record->is_active == 1 ? 'Active' : 'Inactive' }}
             </td>
             <td>
-                {{ $record && $record->profile ? $record->profile->verification_status : '' }}
+                {{ $record->account_status }}
             </td>
             <td>
-                {{ $record->tier->tier_class }}
+                {{ $record->tier_class }}
             </td>
             <td>
-                {{ $record->manila_time_created_at }}
+                {{ $record->manila_time_created_at}}
             </td>
             <td>
-                {{ $record && $record->lastTierApproval ? $record->lastTierApproval->manila_time_approved_at : '' }}
+                {{ $record->manila_time_verified_at }}
             </td>
         </tr>
 
