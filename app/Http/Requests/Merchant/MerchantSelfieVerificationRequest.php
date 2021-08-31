@@ -25,7 +25,7 @@ class MerchantSelfieVerificationRequest extends FormRequest
     {
         return [
             'account_number' => 'required|exists:user_accounts,account_number',
-            'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
+            'selfie_photo' => 'required|max:5120|mimes:jpeg,png',
         ];
     }
 }
