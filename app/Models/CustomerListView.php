@@ -22,10 +22,16 @@ class CustomerListView extends Model
     ];
 
     public function getManilaTimeCreatedAtAttribute() {
-        return Carbon::parse($this->original_created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        if($this && $this->original_created_at) {
+            return Carbon::parse($this->original_created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        }
+        return null;
     }
 
     public function getManilaTimeVerifiedAtAttribute() {
-        return Carbon::parse($this->original_verified_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        if($this && $this->original_verified_at) {
+            return Carbon::parse($this->original_verified_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        }
+        return null;
     }
 }
