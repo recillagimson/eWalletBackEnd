@@ -29,8 +29,9 @@ class CustomerListView extends Model
     }
 
     public function getManilaTimeVerifiedAtAttribute() {
-        if($this && $this->original_verified_at) {
-            return Carbon::parse($this->original_verified_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        // dd($this->original_verified_date);
+        if($this && $this->original_verified_date) {
+            return Carbon::parse($this->original_verified_date)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
         }
         return null;
     }
