@@ -226,7 +226,6 @@ class ReportService implements IReportService
             $records = $this->userTransactionHistoryRepository->getTransactionHistoryAdmin($attr, false);
         }
 
-
         if($attr && isset($attr['from']) && isset($attr['to'])) {
             $from = $attr['from'];
             $to = $attr['to'];
