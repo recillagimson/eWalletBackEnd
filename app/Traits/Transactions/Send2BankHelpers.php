@@ -73,43 +73,53 @@ trait Send2BankHelpers
     {
         if (!$response->successful()) {
             $errors = $response->json();
+
+            $send2Bank->status = TransactionStatuses::failed;
+            $send2Bank->transaction_response = json_encode($errors);
+            $send2Bank->save();
+
             Log::error('Send2Bank UBP Error: ', $errors);
-            $this->transactionFailed();
+            return $send2Bank;
+        }
+
+        $data = $response->json();
+        $state = $data['state'];
+
+        $provider = $send2Bank->provider;
+        $status = '';
+        $providerTransactionId = $data['ubpTranId'];
+        $providerRemittanceId = $provider === TpaProviders::ubpPesonet ? $data['remittanceId'] : $data['traceNo'];
+
+        if ($state === UbpResponseStates::receivedRequest || $state === UbpResponseStates::sentForProcessing
+            || $state === UbpResponseStates::forConfirmation) {
+            $status = TransactionStatuses::pending;
+        } elseif ($state === UbpResponseStates::creditedToAccount) {
+            $status = TransactionStatuses::success;
         } else {
-            $data = $response->json();
-            $state = $data['state'];
-
-            $provider = $send2Bank->provider;
-            $status = '';
-            $providerTransactionId = $data['ubpTranId'];
-            $providerRemittanceId = $provider === TpaProviders::ubpPesonet ? $data['remittanceId'] : $data['traceNo'];
-
-            if ($state === UbpResponseStates::receivedRequest || $state === UbpResponseStates::sentForProcessing
-                || $state === UbpResponseStates::forConfirmation) {
-                $status = TransactionStatuses::pending;
-            } elseif ($state === UbpResponseStates::creditedToAccount) {
-                $status = TransactionStatuses::success;
-            } else {
-                Log::info('Send2Bank Transaction Failed:', $data);
-                $this->transactionFailed();
-            }
+            Log::info('Send2Bank Transaction Failed:', $data);
 
             $send2Bank->status = $status;
-            $send2Bank->provider_transaction_id = $providerTransactionId;
-            $send2Bank->provider_remittance_id = $providerRemittanceId;
-            $send2Bank->user_updated = $send2Bank->user_account_id;
             $send2Bank->transaction_response = json_encode($data);
             $send2Bank->save();
 
-            if ($status === TransactionStatuses::success) {
-                $this->transactionHistories->log($send2Bank->user_account_id,
-                    $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
-                    $send2Bank->total_amount, $send2Bank->transaction_date,
-                    $send2Bank->user_account_id);
-            }
-
             return $send2Bank;
         }
+
+        $send2Bank->status = $status;
+        $send2Bank->provider_transaction_id = $providerTransactionId;
+        $send2Bank->provider_remittance_id = $providerRemittanceId;
+        $send2Bank->user_updated = $send2Bank->user_account_id;
+        $send2Bank->transaction_response = json_encode($data);
+        $send2Bank->save();
+
+        if ($status === TransactionStatuses::success) {
+            $this->transactionHistories->log($send2Bank->user_account_id,
+                $send2Bank->transaction_category_id, $send2Bank->id, $send2Bank->reference_number,
+                $send2Bank->total_amount, $send2Bank->transaction_date,
+                $send2Bank->user_account_id);
+        }
+
+        return $send2Bank;
     }
 
     private function handleStatusResponse(OutSend2Bank $send2Bank, Response $response)
@@ -176,11 +186,11 @@ trait Send2BankHelpers
         } else {
             $data = $response->json();
             $code = $data['code'];
-            
+
             $provider = TpaProviders::ubp;
             $providerTransactionId = $data['ubpTranId'];
             $providerRemittanceId = $data['uuid'];
-            
+
             if ($code === UbpResponseCodes::successfulTransaction) {
                 $send2Bank->status = TransactionStatuses::success;
             } else if($code === UbpResponseCodes::receivedRequest || UbpResponseCodes::processing || UbpResponseCodes::forConfirmation) {
