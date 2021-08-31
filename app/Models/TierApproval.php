@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Traits\UsesUuid;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TierApproval extends Model
 {
@@ -25,6 +26,12 @@ class TierApproval extends Model
         "declined_date",
     ];
 
+    protected $appends = [
+        'manila_time_created_at',
+        'manila_time_approved_at',
+        'manila_time_declined_at',
+    ];
+
     public function id_photos() {
         return $this->hasMany(UserPhoto::class, 'tier_approval_id', 'id');
     }
@@ -39,5 +46,17 @@ class TierApproval extends Model
 
     public function user_detail() {
         return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
+    }
+
+    public function getManilaTimeCreatedAtAttribute() {
+        return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+    }
+
+    public function getManilaTimeApprovedAtAttribute() {
+        return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+    }
+
+    public function getManilaTimeDeclinedAtAttribute() {
+        return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
     }
 }

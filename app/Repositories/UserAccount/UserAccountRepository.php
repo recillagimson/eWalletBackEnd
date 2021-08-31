@@ -24,9 +24,9 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getAdminUserBaseQuery()->get();
     }
 
-    public function getAllUsersPaginated($attributes, $perPage)
+    public function getAllUsersPaginated($attributes, $perPage, $isPaginated = true)
     {
-        $result = $this->model;
+        $result = $this->model->with(['profile', 'tier', 'lastTierApproval']);
 
         if (isset($attributes['filter_by']) && isset($attributes['filter_value'])) {
             $filter_by = $attributes['filter_by'];
@@ -64,9 +64,15 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
         $result = $result->where('is_admin', '!=', 1);
 
-        return $result->with(['profile', 'tier', 'tierApprovals' => function ($q) {
+        $result = $result->with(['profile', 'tier', 'tierApprovals' => function ($q) {
             return $q->where('status', '!=', 'DECLINED');
-        }])->orderBy('created_at', 'DESC')->paginate($perPage);
+        }])->orderBy('created_at', 'DESC');
+
+        if($isPaginated) {
+            return $result->paginate($perPage);
+        }
+
+        return $result->get();
     }
 
     public function findById($id)

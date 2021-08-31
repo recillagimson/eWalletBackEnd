@@ -9,11 +9,13 @@ use App\Exports\Biller\BillerReport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\User\FarmerListExport;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\User\CustomerListExport;
 use App\Services\Utilities\PDF\IPDFService;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Exports\TransactionReport\TransactionReport;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Exports\TransactionReport\TransactionReportAdmin;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
@@ -27,8 +29,9 @@ class ReportService implements IReportService
     private IDrcrMemoRepository $drcrRepo;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private IUserDetailRepository $userDetail;
+    private IUserAccountRepository $userAccount;
 
-    public function __construct(IOutPayBillsRepository $payBills, IPDFService $pdfService, IResponseService $responseService, IDrcrMemoRepository $drcrRepo, IUserTransactionHistoryRepository $userTransactionHistoryRepository, IUserDetailRepository $userDetail)
+    public function __construct(IOutPayBillsRepository $payBills, IPDFService $pdfService, IResponseService $responseService, IDrcrMemoRepository $drcrRepo, IUserTransactionHistoryRepository $userTransactionHistoryRepository, IUserDetailRepository $userDetail, IUserAccountRepository $userAccount)
     {
         $this->payBills = $payBills;
         $this->pdfService = $pdfService;
@@ -36,6 +39,7 @@ class ReportService implements IReportService
         $this->drcrRepo = $drcrRepo;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->userDetail = $userDetail;
+        $this->userAccount = $userAccount;
     }
 
     public function billersReport(array $params, string $currentUser) {
@@ -232,6 +236,43 @@ class ReportService implements IReportService
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         } else if($type === 'XLSX') {
             Excel::store(new TransactionReportAdmin($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+
+        } else {
+            // return $records->toArray();
+            return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
+        }
+    }
+
+    public function customerList(array $attr) {
+        
+        $from = Carbon::now()->format('Y-m-d');
+        $to = Carbon::now()->subDays(30)->format('Y-m-d');
+        $type = 'API';
+
+        $records = [];
+        if($attr && isset($attr['type']) && $attr['type'] == 'API') {
+            $records = $this->userAccount->getAllUsersPaginated($attr, 15, true);
+        } else {
+            $records = $this->userAccount->getAllUsersPaginated($attr, 15, false);
+        }
+
+        if($attr && isset($attr['from']) && isset($attr['to'])) {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+        if($attr && isset($attr['type'])) {
+            $type = $attr['type'];
+        }
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+        if($type === 'CSV') {
+            Excel::store(new CustomerListExport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        } else if($type === 'XLSX') {
+            Excel::store(new CustomerListExport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
 
