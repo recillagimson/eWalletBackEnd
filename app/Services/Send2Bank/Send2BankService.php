@@ -229,8 +229,9 @@ class Send2BankService implements ISend2BankService
 
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
-
             $this->logHistory($userId, $refNo, $currentDate, $totalAmount, $send2Bank->account_number);
+
+            if ($send2Bank->status === TransactionStatuses::failed) $this->transactionFailed();
             return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();
