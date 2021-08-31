@@ -48,6 +48,14 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             else if ($filter_by === 'STATUS') {
                 $result = $result->where('status', $filter_value);
             }
+            // IF EMAIL
+            else if ($filter_by === 'EMAIL') {
+                $result = $result->where('email', 'LIKE', '%' . $filter_value . '%');
+            }
+            // IF MOBILE
+            else if ($filter_by === 'MOBILE') {
+                $result = $result->where('mobile_number', $filter_value);
+            }
         }
 
         if (isset($from) && isset($to)) {
