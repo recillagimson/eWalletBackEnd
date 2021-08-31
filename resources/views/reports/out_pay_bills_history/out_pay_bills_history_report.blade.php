@@ -22,6 +22,7 @@
             <th>Reference Number</th>
             <th>Transactionm Date</th>
             <th>Biller</th>
+            <th>Biller Reference No</th>
             <th>Total Amount</th>
             <th>Status</th>
         </tr>
@@ -49,6 +50,9 @@
             </td>
             <td>
                 {{ $record['6'] }}
+            </td>
+            <td>
+                {{ $record['7'] }}
             </td>
         </tr>
         @endforeach
