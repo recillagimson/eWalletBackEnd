@@ -90,7 +90,7 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
         }
 
         return $records
-            ->where('status', 'FOR APPROVAL')
+            ->where('status', 'PENDING')
             ->paginate();
     }
 
