@@ -291,6 +291,15 @@ class AuthService implements IAuthService
         return $otp;
     }
 
+    public function passwordConfirmation(string $userId, string $password)
+    {
+        $user = $this->userAccounts->getUser($userId);
+        if (!$user) $this->accountDoesntExist();
+        if ($user->is_lockout) $this->accountLockedOut();
+
+        $this->tryLogin($user, $password, $user->password, false, false, true);
+    }
+
     private function validateInternalUsers(?UserAccount $user)
     {
         if (!$user) $this->loginFailed();
@@ -307,15 +316,18 @@ class AuthService implements IAuthService
         $user->resetLoginAttempts($this->daysToResetAttempts);
     }
 
-    private function tryLogin(UserAccount $user, string $key, string $hashedKey)
+    private function tryLogin(UserAccount $user, string $key, string $hashedKey, bool $updateLockout = true,
+                              bool        $resetAttempt = true, bool $forConfirmation = false)
     {
         $passwordMatched = Hash::check($key, $hashedKey);
         if (!$passwordMatched) {
-            $user->updateLockout($this->maxLoginAttempts);
-            $this->loginFailed();
+            if ($updateLockout) $user->updateLockout($this->maxLoginAttempts);
+
+            if (!$forConfirmation) $this->loginFailed();
+            $this->confirmationFailed();
         }
 
-        $user->resetLoginAttempts($this->daysToResetAttempts, true);
+        if ($resetAttempt) $user->resetLoginAttempts($this->daysToResetAttempts, true);
     }
 
     private function updateLastLogin(UserAccount $user, string $usernameField)
@@ -324,4 +336,6 @@ class AuthService implements IAuthService
         $user->is_login_email = $usernameField == UsernameTypes::Email;
         $user->save();
     }
+
+
 }

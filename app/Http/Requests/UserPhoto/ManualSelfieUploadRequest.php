@@ -25,7 +25,7 @@ class ManualSelfieUploadRequest extends FormRequest
     {
         $required_fields = [
             "tier_approval_id" => 'required|exists:tier_approvals,id',
-            'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
+            'selfie_photo' => 'required|max:5120|mimes:jpeg,png',
         ];
 
         return $required_fields;

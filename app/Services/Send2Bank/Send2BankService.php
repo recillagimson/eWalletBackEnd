@@ -4,7 +4,6 @@
 namespace App\Services\Send2Bank;
 
 
-use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TpaProviders;
@@ -185,10 +184,10 @@ class Send2BankService implements ISend2BankService
             $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
             $totalAmount = $data['amount'] + $serviceFeeAmount;
 
-            $this->transactionValidationService
-                ->validate($user, $this->transactionCategoryId, $totalAmount);
-
-            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
+//            $this->transactionValidationService
+//                ->validate($user, $this->transactionCategoryId, $totalAmount);
+//
+//            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
 
             $userFullName = ucwords($user->profile->full_name);
             $recipientFullName = ucwords($data['account_name'] ?: $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
@@ -230,8 +229,9 @@ class Send2BankService implements ISend2BankService
 
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
-
             $this->logHistory($userId, $refNo, $currentDate, $totalAmount, $send2Bank->account_number);
+
+            if ($send2Bank->status === TransactionStatuses::failed) $this->transactionFailed();
             return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();

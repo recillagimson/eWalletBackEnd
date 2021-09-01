@@ -26,6 +26,9 @@ class SuccessMessages
 
     const pinCodeUpdated = 'Account Pin Code has been updated.';
 
+    //Password confirmation
+    const passwordConfirmationSuccessful = 'Transaction Validation Successful';
+
     // Send Money Controller
     const sendMoneySuccessFul = 'Send money successful';
     const validateSendMoney = 'Send money validation successful';

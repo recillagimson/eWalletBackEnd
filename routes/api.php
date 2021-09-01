@@ -140,6 +140,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
         Route::post('/confirmation', [AuthController::class, 'confirmTransactions']);
+        Route::post('/confirmation/password', [AuthController::class, 'passwordConfirmation']);
 
         Route::post('/register', [RegisterController::class, 'register']);
         Route::post('/register/validate', [RegisterController::class, 'registerValidate']);
@@ -395,6 +396,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
 
         Route::post('/report', [DrcrMemoController::class, 'report']);
+        
+        Route::post('/report/filter', [DrcrMemoController::class, 'reportFiltered']);
+
     });
 
     Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
