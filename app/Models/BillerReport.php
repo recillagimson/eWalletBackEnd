@@ -11,7 +11,7 @@ class BillerReport extends Model
     protected $table = 'billers_report';
 
     protected $appends = [
-        'manila_time_transacation_date'
+        'manila_time_transaction_date'
     ];
 
     public function getManilaTimeTransactionDateAttribute() {
