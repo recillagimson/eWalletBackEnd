@@ -68,7 +68,6 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         if($isPaginated) {
             return $result->paginate($perPage);
         }
-
         return $result->get();
     }
 

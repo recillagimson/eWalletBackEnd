@@ -49,14 +49,23 @@ class TierApproval extends Model
     }
 
     public function getManilaTimeCreatedAtAttribute() {
-        return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        if($this && $this->created_at) {
+            return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        }
+        return null;
     }
 
     public function getManilaTimeApprovedAtAttribute() {
-        return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        if($this && $this->approved_date) {
+            return Carbon::parse($this->approved_date)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        }
+        return null;
     }
 
     public function getManilaTimeDeclinedAtAttribute() {
-        return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        if($this && $this->declined_date) {
+            return Carbon::parse($this->declined_date)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+        }
+        return null;
     }
 }
