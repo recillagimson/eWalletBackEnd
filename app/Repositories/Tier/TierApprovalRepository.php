@@ -91,6 +91,7 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
 
         return $records
             ->where('status', 'PENDING')
+            ->orderBy('created_at', 'DESC')
             ->paginate();
     }
 
