@@ -91,6 +91,7 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
 
         return $records
             ->where('status', 'PENDING')
+            ->orderBy('created_at', 'DESC')
             ->paginate();
     }
 
@@ -100,6 +101,7 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
             'selfie_photos',
             'id_photos.id_type',
             'id_photos.reviewer:user_details.id,first_name,last_name,middle_name',
+            'selfie_photos.reviewer:user_details.id,first_name,last_name,middle_name',
             'user_account',
             'user_detail'
         ])->find($tierApproval->id);
