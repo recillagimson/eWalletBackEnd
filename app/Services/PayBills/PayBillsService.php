@@ -82,7 +82,7 @@ class PayBillsService implements IPayBillsService
                $arrayResponse['data'][$x]['code'] == 'MECOR' ||
                 $arrayResponse['data'][$x]['code'] == 'MWCOM' ||
                 $arrayResponse['data'][$x]['code'] == 'MWSIN' ||
-                //$arrayResponse['data'][$x]['code'] == 'RFID1' ||
+                $arrayResponse['data'][$x]['code'] == 'RFID1' ||
                 $arrayResponse['data'][$x]['code'] == 'ETRIP' ||
                 //$arrayResponse['data'][$x]['code'] == 'SPLAN' ||
                 //$arrayResponse['data'][$x]['code'] == 'SKY01' ||
