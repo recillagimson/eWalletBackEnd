@@ -32,4 +32,14 @@ class UserSelfiePhoto extends Model
     public function getSelfieLinkAttribute() {
         return $this->getTempUrl($this->photo_location, Carbon::now()->addHour()->format('Y-m-d H:i:s'));
     }
+
+    /**
+     * Get all of the reviewer for the UserPhoto
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\hasOneThrough
+     */
+    public function reviewer()
+    {
+        return $this->hasOneThrough(UserDetail::class, UserAccount::class , 'id', 'user_account_id', 'reviewed_by', 'id');
+    }
 }

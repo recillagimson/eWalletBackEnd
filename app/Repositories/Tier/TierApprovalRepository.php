@@ -75,9 +75,24 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
             else if ($filter_by === 'STATUS') {
                 $records = $records->where('status', $filter_value);
             }
+            // IF EMAIL
+            else if ($filter_by === 'EMAIL') {
+                $records = $records->whereHas('user_account', function ($query) use ($filter_value) {
+                    $query->where('email', 'LIKE', '%' . $filter_value . '%');
+                });
+            }
+            // IF MOBILE
+            else if ($filter_by === 'MOBILE') {
+                $records = $records->whereHas('user_account', function ($query) use ($filter_value) {
+                    $query->where('mobile_number', $filter_value);
+                });
+            }
         }
 
-        return $records->paginate();
+        return $records
+            ->where('status', 'PENDING')
+            ->orderBy('created_at', 'DESC')
+            ->paginate();
     }
 
     public function showTierApproval(TierApproval $tierApproval) {
@@ -86,6 +101,7 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
             'selfie_photos',
             'id_photos.id_type',
             'id_photos.reviewer:user_details.id,first_name,last_name,middle_name',
+            'selfie_photos.reviewer:user_details.id,first_name,last_name,middle_name',
             'user_account',
             'user_detail'
         ])->find($tierApproval->id);

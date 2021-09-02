@@ -2,6 +2,7 @@
 
 namespace App\Repositories\UserAccount;
 
+use App\Models\CustomerListView;
 use App\Models\UserAccount;
 use App\Repositories\Repository;
 use App\Traits\Errors\WithUserErrors;
@@ -24,41 +25,50 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getAdminUserBaseQuery()->get();
     }
 
-    public function getAllUsersPaginated($attributes, $perPage)
+    public function getAllUsersPaginated($attributes, $perPage, $isPaginated = true)
     {
-        $result = $this->model;
+        $result = CustomerListView::with([]);
 
         if (isset($attributes['filter_by']) && isset($attributes['filter_value'])) {
             $filter_by = $attributes['filter_by'];
             $filter_value = $attributes['filter_value'];
             // IF CUSTOMER NAME
             if ($filter_by === 'CUSTOMER_NAME') {
-                $result = $result->whereHas('userDetail', function ($query) use ($filter_value) {
-                    $query->whereRaw("concat(first_name, ' ', middle_name, ' ', last_name)LIKE '%$filter_value%'");
+                $result = $result->where(function($q) use($filter_value) {
+                    $q->where('first_name', 'LIKE', '%' . $filter_value . '%')
+                      ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%')
+                      ->orWhere('middle_name', 'LIKE', '%' . $filter_value . '%');
                 });
             } // IF CUSTOMER ID
             else if ($filter_by === 'CUSTOMER_ID') {
                 $result = $result->where('account_number', $filter_value);
             } // IF TIER
             else if ($filter_by === 'TIER') {
-                $result = $result->whereHas('tier', function ($query) use ($filter_value) {
-                    $query->where('name', $filter_value);
-                });
+                $result = $result->where('tier_class', $filter_value);
             } // IF STATUS
             else if ($filter_by === 'STATUS') {
                 $result = $result->where('status', $filter_value);
             }
+            // IF EMAIL
+            else if ($filter_by === 'EMAIL') {
+                $result = $result->where('email', 'LIKE', '%' . $filter_value . '%');
+            }
+            // IF MOBILE
+            else if ($filter_by === 'MOBILE') {
+                $result = $result->where('mobile_number', $filter_value);
+            }
         }
 
         if (isset($from) && isset($to)) {
-            $result = $result->whereBetween('created_at', [$attributes['from'], $attributes['to']]);
+            $result = $result->whereBetween('original_created_at', [$attributes['from'], $attributes['to']]);
         }
 
-        $result = $result->where('is_admin', '!=', 1);
+        $result = $result->orderBy('original_created_at', 'DESC');
 
-        return $result->with(['profile', 'tier', 'tierApprovals' => function ($q) {
-            return $q->where('status', '!=', 'DECLINED');
-        }])->orderBy('created_at', 'DESC')->paginate($perPage);
+        if($isPaginated) {
+            return $result->paginate($perPage);
+        }
+        return $result->get();
     }
 
     public function findById($id)
