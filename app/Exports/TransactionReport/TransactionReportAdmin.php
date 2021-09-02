@@ -77,7 +77,7 @@ class TransactionReportAdmin implements WithHeadings, FromView, WithEvents
             AfterSheet::class => function (AfterSheet $event) use($count, $type) {
                 $i = 0;
                 while($i <= $count) {
-                    $cells = 'A' . ($i + 1) . ":G" . ($i + 1);
+                    $cells = 'A' . ($i + 1) . ":I" . ($i + 1);
                     // dd($cells);
                     $style = [
                         'borders' => [
@@ -96,14 +96,14 @@ class TransactionReportAdmin implements WithHeadings, FromView, WithEvents
                         ]
                     ];
 
-                    if($i == 0 || $i == 2) {
+                    // if($i == 0 || $i == 2) {
 
-                        // $style['font'] =;
-                        $style['fill'] = [
-                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                            'color' => ['argb' => 'e9cc8a'],
-                        ];
-                    }
+                    //     // $style['font'] =;
+                    //     $style['fill'] = [
+                    //         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    //         'color' => ['argb' => 'e9cc8a'],
+                    //     ];
+                    // }
 
                     $event->sheet->getStyle($cells)->applyFromArray($style);
                     if($type == 'PDF') {
