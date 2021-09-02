@@ -18,7 +18,7 @@ trait WithAuthErrors
 
     public function loginFailed()
     {
-        $this->validationErrorMessage(ErrorCodes::confirmationFailed, 'Login Failed');
+        $this->validationErrorMessage(ErrorCodes::loginFailed, 'Login Failed');
     }
 
     public function confirmationFailed()
