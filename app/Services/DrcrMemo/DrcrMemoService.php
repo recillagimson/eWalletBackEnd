@@ -22,6 +22,7 @@ use App\Traits\Errors\WithDrcrMemoErrors;
 use App\Traits\LogHistory\LogHistory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DrcrMemoService implements IDrcrMemoService
@@ -98,6 +99,19 @@ class DrcrMemoService implements IDrcrMemoService
         if ($data['typeOfMemo'] == ReferenceNumberTypes::DR) {
             $isEnough = $this->checkAmount($data, $customer->id);
             if (!$isEnough) $this->insuficientBalance();
+            // Trigger available to pending
+            $wallet = $this->userBalanceRepository->getByUserAccountID($user->id);
+            if($wallet) {
+                // deduct available balance
+                $wallet->available_balance = (Double) $wallet->available_balance -  (Double) $data['amount'];
+                // add pending balance
+                $wallet->pending_balance = (Double) $wallet->pending_balance +  (Double) $data['amount'];
+                $wallet->save();
+            } else {
+                throw ValidationException::withMessages([
+                    'wallet_not_found', 'Wallet not found'
+                ]);
+            }
         }
         return $this->drcrMemo($user, $data, $customer->id);
     }
