@@ -39,7 +39,8 @@ class TierUpgradeRequestApproved extends Mailable
             ->subject('SquidPay - Tier Upgrade')
             ->with([
                 'name' => $this->userDetail->first_name . " " . $this->userDetail->last_name,
-                'tier' => $this->tier->tier_class
+                'tier' => $this->tier->tier_class,
+                'first_name' => $this->userDetail->first_name,
             ]);
     }
 }
