@@ -81,9 +81,9 @@ trait PayBillsHelpers
             $username = $this->getUsernameByField($user, $usernameField);
             $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
             $notifService->payBillsNotification($username, $fillRequest, $userDetail->first_name);
+            $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
 
-
-            $description = 'Hi Squidee! Your payment of P' . $this->formatAmount($fillRequest['amount']) . ' to ' . $fillRequest['biller'] .
+            $description = 'Hi '. $firstName .' Your payment of P' . $this->formatAmount($fillRequest['amount']) . ' to ' . $fillRequest['biller'] .
                 ' with fee ' . $this->formatAmount($fillRequest['serviceFee']) . '. has been successfully processed on ' .
                 $this->formatDate(Carbon::now()) . ' with Ref No. ' . $fillRequest['refNo'] .
                 '. Visit https://my.squid.ph/ for more information or contact support@squid.ph.';

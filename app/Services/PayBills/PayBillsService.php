@@ -137,7 +137,7 @@ class PayBillsService implements IPayBillsService
     }
 
 
-    public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user)//: array
+    public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse =  (array)json_decode($response->body(), true);
