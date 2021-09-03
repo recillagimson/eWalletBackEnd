@@ -40,7 +40,11 @@ class ValidateNewUserRequest extends FormRequest
                 'different:email',
                 new IsPasswordValid()
             ],
-            'password_confirmation' => 'required',
+            'amount' => [
+                'required',
+                'numeric',
+                'between:20,100000'
+            ]
         ];
     }
 }
