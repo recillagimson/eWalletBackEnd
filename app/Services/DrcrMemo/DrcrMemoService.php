@@ -100,7 +100,10 @@ class DrcrMemoService implements IDrcrMemoService
             $isEnough = $this->checkAmount($data, $customer->id);
             if (!$isEnough) $this->insuficientBalance();
             // Trigger available to pending
-            $wallet = $this->userBalanceRepository->getByUserAccountID($user->id);
+            $wallet = $this->userBalanceRepository->getByUserAccountID($customer->id);
+            \Log::info(json_encode($wallet));
+            \Log::info(json_encode($customer));
+
             if($wallet) {
                 // deduct available balance
                 $wallet->available_balance = (Double) $wallet->available_balance -  (Double) $data['amount'];
