@@ -53,6 +53,14 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
             ->get();
     }
 
+    public function getUsersWithPending()
+    {
+        return $this->model->where('status', TransactionStatuses::pending)
+            ->groupBy('user_account_id')
+            ->select('user_account_id')
+            ->get();
+    }
+
     public function getSumOfTransactions($from, $to, $userAccountID)
     {
         return $this->model->where('transaction_date', '>=', $from)
