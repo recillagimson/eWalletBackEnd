@@ -33,7 +33,7 @@
         @foreach($records as $record)
         <tr>
             <td>
-                {{ $record['10'] }}
+                {{ Carbon\Carbon::parse($record['0'])->format('F d, Y G:i A') }}
             </td>
             <td>
                 {{ $record['1'] }}
