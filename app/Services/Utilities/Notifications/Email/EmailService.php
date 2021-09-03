@@ -104,7 +104,11 @@ class EmailService implements IEmailService
     public function sendMoneyVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Send Money Verification';
-        $template = new SendMoneyVerification($otp, $recipientName);
+        $user = $this->getUser();
+        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
+
+        $template = new SendMoneyVerification($otp, $recipientName, $firstName);
+
         $this->sendMessage($to, $subject, $template);
     }
 

@@ -88,7 +88,7 @@ class PayBillsService implements IPayBillsService
                 $arrayResponse['data'][$x]['code'] == 'ETRIP' ||
                 $arrayResponse['data'][$x]['code'] == 'SPLAN' ||
                 $arrayResponse['data'][$x]['code'] == 'SKY01' ||
-                $arrayResponse['data'][$x]['code'] == 'MCARE ' ||
+                $arrayResponse['data'][$x]['code'] == 'MCARE' ||
                 $arrayResponse['data'][$x]['code'] == 'AEON1' ||
                 $arrayResponse['data'][$x]['code'] == 'BNECO' ||
                 $arrayResponse['data'][$x]['code'] == 'PRULI' ||
@@ -97,15 +97,15 @@ class PayBillsService implements IPayBillsService
                 $arrayResponse['data'][$x]['code'] == 'SMART' ||
                 $arrayResponse['data'][$x]['code'] == 'SSS01' ||
                 $arrayResponse['data'][$x]['code'] == 'SSS02' ||
-                $arrayResponse['data'][$x]['code'] == 'SSS03'||
+                $arrayResponse['data'][$x]['code'] == 'SSS03' ||
                 $arrayResponse['data'][$x]['code'] == 'DFA01' ||
-              $arrayResponse['data'][$x]['code'] == 'POEA1'||
-               $arrayResponse['data'][$x]['code'] == 'MBCCC' ||
-               $arrayResponse['data'][$x]['code'] == 'BPI00' ||
-               $arrayResponse['data'][$x]['code'] == 'BNKRD' ||
+                $arrayResponse['data'][$x]['code'] == 'POEA1' ||
+                $arrayResponse['data'][$x]['code'] == 'MBCCC' ||
+                $arrayResponse['data'][$x]['code'] == 'BPI00' ||
+                $arrayResponse['data'][$x]['code'] == 'BNKRD' ||
                 $arrayResponse['data'][$x]['code'] == 'UNBNK' ||
-               $arrayResponse['data'][$x]['code'] == 'PILAM' ||
-               $arrayResponse['data'][$x]['code'] == 'ADMSN' ||
+                $arrayResponse['data'][$x]['code'] == 'PILAM' ||
+                $arrayResponse['data'][$x]['code'] == 'ADMSN' ||
                 $arrayResponse['data'][$x]['code'] == 'UBNK4' ||
                 $arrayResponse['data'][$x]['code'] == 'ASLNK'
             ) {
@@ -138,18 +138,18 @@ class PayBillsService implements IPayBillsService
     }
 
 
-    public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
+    public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user)//: array
     {
-        $this->firstLayerValidation($billerCode, $accountNumber, $data);
-
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
-        $arrayResponse = (array)json_decode($response->body(), true);
+        $arrayResponse =  (array)json_decode($response->body(), true);
+        
+        // 1st Layer Validation
+        if (isset($arrayResponse['exception'])) return $this->firstLayerValidation($arrayResponse['details'], $billerCode, $user);
 
-        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
-        if ($arrayResponse['data'] === "NOT_FOUND") return $this->tpaErrorCatch($arrayResponse);
-        if (isset($arrayResponse['message']) === "Internal server error") return $this->tpaErrorCatch($arrayResponse);
-        if (isset($arrayResponse['data']) === "Internal Server Error") return $this->tpaErrorCatch($arrayResponse);
-        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return $this->tpaErrorCatchMeralco($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+        // To get the DFO account or Disconnected account from MECOR
+        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return  $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+
+        // 2nd Layer Validation 
         $this->validateTransaction($billerCode, $data, $user);
         return $this->validationResponse($user, $response, $billerCode, $data);
     }
