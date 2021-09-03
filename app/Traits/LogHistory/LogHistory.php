@@ -64,7 +64,8 @@ trait LogHistory
                     strval($entry->total_amount),
                     $entry->reference_number,
                     strval($available_balance),
-                    $entry->Status
+                    $entry->Status,
+                    Carbon::parse($entry->transaction_date)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A'),
                 ];
 
                 array_push($processed_data, $proc);
