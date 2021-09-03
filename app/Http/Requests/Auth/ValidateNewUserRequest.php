@@ -40,10 +40,10 @@ class ValidateNewUserRequest extends FormRequest
                 'different:email',
                 new IsPasswordValid()
             ],
-            'referenceNumber' => [
+            'amount' => [
                 'required',
-                'max:8',
-                'min:8'
+                'numeric',
+                'between:20,100000'
             ]
         ];
     }
