@@ -175,7 +175,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         if($filterBy && $filterValue) {
             // IF CUSTOMER_ID
             if($filterBy == 'CUSTOMER_ID') {
-                $record = $record->where('user_account_id', $filterValue);
+                $record = $record->where('account_number', $filterValue);
             } 
             // IF CUSTOMER_NAME
             else if ($filterBy == 'CUSTOMER_NAME') {
