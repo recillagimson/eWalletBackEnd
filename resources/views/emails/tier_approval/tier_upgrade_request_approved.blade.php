@@ -7,17 +7,32 @@
 </head>
 
 <body>
-    <h2>Hi {{ $name }},</h2>
-    <p>Your account is now fully verified.</p>  
+<h3>
+    Hi {{ $first_name }}: 
+</h3>
 
-<p>You may now enjoy additional features.</p>   
+<br/>
+Your account is now fully verified. 
+<br/>
+<br/>
+Silver account entitles you to enjoy additional features.
+<br/>
+<br/>
+Send Money 
+<br/>
+SquidPay to SquidPay fund transfer via QR code or mobile number and email address.
+<br/>
+<br/>
+Send to Bank 
+<br/>
+Transfer funds to other bank via Instapay and Pesonet
+<br/>
+<br/>
 
+Thank you,
+<br/>
 
-Send Money<br>
-RELIABLE and FREE SquidPay-to-SquidPay money transfer.<p>
-
-Send to Bank<br> 
-24/7 online fund transfer -- anytime, anywhere.</p>  
+SquidPay Administrator
 </body>
 
 </html>
