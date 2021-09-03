@@ -12,11 +12,16 @@ class DRCRProcedure extends Model
 
     protected $table = 'running_balance';
     protected $append = [
-        'transactopn_date_manila_time'
+        'transactopn_date_manila_time',
+        'transaction_date_word_format_manila_time'
     ];
 
     public function getTransactionDateManilaTimeAttribute() {
         return Carbon::parse($this->transaction_date)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+    }
+
+    public function getTransactionDateWordFormatManilaTimeAttribute() {
+        return Carbon::parse($this->transaction_date)->setTimezone('Asia/Manila')->format('F d, Y h:i:s A');
     }
 
     public function user_details() {

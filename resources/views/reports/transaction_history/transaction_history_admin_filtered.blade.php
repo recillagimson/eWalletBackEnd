@@ -38,7 +38,7 @@
             </td>
             <td>
                 {{ 
-                    $record->transaction_date_manila_time
+                    $record->transaction_date_word_format_manila_time
                 }}
             </td>
             <td>

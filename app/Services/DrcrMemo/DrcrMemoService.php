@@ -22,6 +22,7 @@ use App\Traits\Errors\WithDrcrMemoErrors;
 use App\Traits\LogHistory\LogHistory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DrcrMemoService implements IDrcrMemoService
@@ -98,6 +99,19 @@ class DrcrMemoService implements IDrcrMemoService
         if ($data['typeOfMemo'] == ReferenceNumberTypes::DR) {
             $isEnough = $this->checkAmount($data, $customer->id);
             if (!$isEnough) $this->insuficientBalance();
+            // Trigger available to pending
+            $wallet = $this->userBalanceRepository->getByUserAccountID($user->id);
+            if($wallet) {
+                // deduct available balance
+                $wallet->available_balance = (Double) $wallet->available_balance -  (Double) $data['amount'];
+                // add pending balance
+                $wallet->pending_balance = (Double) $wallet->pending_balance +  (Double) $data['amount'];
+                $wallet->save();
+            } else {
+                throw ValidationException::withMessages([
+                    'wallet_not_found', 'Wallet not found'
+                ]);
+            }
         }
         return $this->drcrMemo($user, $data, $customer->id);
     }
@@ -134,9 +148,36 @@ class DrcrMemoService implements IDrcrMemoService
             if ($drcrMemo->type_of_memo == ReferenceNumberTypes::DR) {
                 if (!$isEnough) return $this->insuficientBalance();
                 $this->debitMemo($drcrMemo->user_account_id, $drcrMemo->amount);
+                // Trigger available to pending
+                $wallet = $this->userBalanceRepository->getByUserAccountID($user->id);
+                if($wallet) {
+                    // deduct pending balance
+                    $wallet->pending_balance = (Double) $wallet->pending_balance -  (Double) $drcrMemo->amount;
+                    $wallet->save();
+                } else {
+                    throw ValidationException::withMessages([
+                        'wallet_not_found', 'Wallet not found'
+                    ]);
+                }
             }
             if ($drcrMemo->type_of_memo == ReferenceNumberTypes::CR) {
                 $this->creditMemo($drcrMemo->user_account_id, $drcrMemo->amount);
+            }
+        } else if($status == DrcrStatus::Decline) {
+            if ($drcrMemo->type_of_memo == ReferenceNumberTypes::DR) {
+                // Trigger pending to available
+                $wallet = $this->userBalanceRepository->getByUserAccountID($user->id);
+                if($wallet) {
+                    // deduct pending balance
+                    $wallet->pending_balance = (Double) $wallet->pending_balance -  (Double) $drcrMemo->amount;
+                    // Add to available
+                    $wallet->available_balance = (Double) $wallet->available_balance +  (Double) $drcrMemo->amount;
+                    $wallet->save();
+                } else {
+                    throw ValidationException::withMessages([
+                        'wallet_not_found', 'Wallet not found'
+                    ]);
+                }
             }
         }
 
