@@ -40,7 +40,11 @@ class ValidateNewUserRequest extends FormRequest
                 'different:email',
                 new IsPasswordValid()
             ],
-            'password_confirmation' => 'required',
+            'referenceNumber' => [
+                'required',
+                'max:8',
+                'min:8'
+            ]
         ];
     }
 }
