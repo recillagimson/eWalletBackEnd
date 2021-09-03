@@ -6,8 +6,8 @@ use App\Enums\TransactionStatuses;
 use App\Models\BillerReport;
 use App\Models\OutPayBills;
 use App\Repositories\Repository;
-use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
 {
@@ -26,24 +26,35 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
 
     public function getPending(string $userId)
     {
-        return $this->model->where([ 'user_account_id' => $userId, 'status' => TransactionStatuses::pending ])->get();
+        return $this->model->where(['user_account_id' => $userId, 'status' => TransactionStatuses::pending])->get();
     }
 
-    public function getAllBillersWithPaginate() {
+    public function getUsersWithPending()
+    {
+        return $this->model->where('status', TransactionStatuses::pending)
+            ->groupBy('user_account_id')
+            ->select('user_account_id')
+            ->get();
+    }
+
+    public function getAllBillersWithPaginate()
+    {
         return $this->getAllBillersBaseQuery()->paginate();
     }
 
-    public function getAllBillers() {
+    public function getAllBillers()
+    {
         return $this->getAllBillersBaseQuery()->get();
     }
 
-    private function getAllBillersBaseQuery(): Builder {
+    private function getAllBillersBaseQuery(): Builder
+    {
         return $this->model->with(['user_detail', 'user_account']);
     }
 
     public function totalPayBills()
     {
-        return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
+        return $this->model->where('transaction_date', '<=', Carbon::now()->subDay())->where('status', '=', 'SUCCESS')->sum('total_amount');
     }
 
     public function totalamountPayBills()
@@ -70,7 +81,7 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
             // IF CUSTOMER_ID
             if($filterBy == 'CUSTOMER_ID') {
                 $records = $records->where('account_number', $filterValue);
-            } 
+            }
             // IF CUSTOMER_NAME
             else if ($filterBy == 'CUSTOMER_NAME') {
                 $records = $records->where(function($q) use($filterValue) {

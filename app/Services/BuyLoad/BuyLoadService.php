@@ -187,6 +187,16 @@ class BuyLoadService implements IBuyLoadService
         ];
     }
 
+    public function processAllPending()
+    {
+        $users = $this->buyLoads->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('Buy Load Processing User:', ['user_account_id' => $user->user_account_id]);
+            $this->processPending($user->user_account_id);
+        }
+    }
+
 
     private function handleLoadTopupResponse(OutBuyLoad $buyLoad, Response $response): OutBuyLoad
     {

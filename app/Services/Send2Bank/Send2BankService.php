@@ -272,6 +272,16 @@ class Send2BankService implements ISend2BankService
         ];
     }
 
+    public function processAllPending()
+    {
+        $users = $this->send2banks->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('S2B Processing User:', ['user_account_id' => $user->user_account_id]);
+            $this->processPending($user->user_account_id);
+        }
+    }
+
     public function updateTransaction(string $status, string $refNo)
     {
         $send2Bank = $this->send2banks->getByReferenceNo($refNo);
