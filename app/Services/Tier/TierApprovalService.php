@@ -163,4 +163,14 @@ class TierApprovalService implements ITierApprovalService
             return $e->getMessage();
         }
     }
+    
+    public function sendSMS(UserAccount $user, string $message) {
+        if (!$user->mobile_number) {
+            throw ValidationException::withMessages([
+                'mobile_number_not_fount' => 'Mobile Number not found'
+            ]);
+        }
+
+        $this->smsService->kycNotification($user, $message);
+    }
 }

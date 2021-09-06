@@ -202,6 +202,11 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
+    public function kycNotification(string $to, string $message)
+    {
+        $this->sendMessages($to, $message);
+    }
+
     private function getUser(): UserAccount
     {
         $userId = request()->user()->id;
