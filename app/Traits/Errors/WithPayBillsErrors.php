@@ -18,6 +18,10 @@ trait WithPayBillsErrors
     */
 
 
+    private function invalidErrorCode()
+    {
+        $this->validationErrorMessage(ErrorCodes::invalidErrorCode, 'Invalid error code');
+    }
 
     private function insuficientBalance()
     {

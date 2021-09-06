@@ -274,12 +274,11 @@ trait PayBillsHelpers
     }
 
 
-    private function firstLayerValidation($errorDetails, $billerCode,UserAccount $user)
+    private function catchBayadErrors($errorDetails, $billerCode,UserAccount $user)
     {
         $errorCode = $errorDetails['code'];
 
         if ($errorCode == 1) return $this->accountWithDFO($errorDetails['message'], $errorDetails['validationNumber'],$billerCode, $user);
-
         if ($errorCode == 2) return $this->disconnectedAccount($errorDetails['message']);
         if ($errorCode == 3) return $this->invalidParameter($errorDetails['message']);
         if ($errorCode == 4) return $this->parameterMissing($errorDetails['message']);
@@ -304,9 +303,9 @@ trait PayBillsHelpers
         if ($errorCode == 23) return $this->transactionAlreadyBeenPaid($errorDetails['message']);
         if ($errorCode == 24) return $this->amountIsAboveWalletLimit($errorDetails['message']);
         if ($errorCode == 25) return $this->theOtherChargesMustbePhp($errorDetails['message']);
-        if ($errorCode == 26) return $this->theAccountNumberisNotSupportedByTheBank($errorDetails['message']);
-        if ($errorCode == 27) return $this->theAccountNumberMustStartWithAnyOf($errorDetails['message']);
-        if ($errorCode == 28) return $this->possibleDuplicateDetected($errorDetails['message']);
+        if ($errorCode == 27) return $this->theAccountNumberisNotSupportedByTheBank($errorDetails['message']);
+        if ($errorCode == 28) return $this->theAccountNumberMustStartWithAnyOf($errorDetails['message']);
+        if ($errorCode == 30) return $this->possibleDuplicateDetected($errorDetails['message']);
 
 
 

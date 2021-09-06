@@ -2,6 +2,7 @@
 
 namespace App\Services\PayBills;
 
+use App\Enums\PayBillsConfig;
 use App\Enums\TransactionStatuses;
 use App\Models\UserAccount;
 use App\Repositories\LogHistory\ILogHistoryRepository;
@@ -80,34 +81,33 @@ class PayBillsService implements IPayBillsService
         //list of active billing partners
         for ($x = 0; $x < $billersCount; $x++) {
             if (
-                //$arrayResponse['data'][$x]['code'] == 'MECOR' ||
-                $arrayResponse['data'][$x]['code'] == 'MECOR' ||
-                $arrayResponse['data'][$x]['code'] == 'MWCOM' ||
-                $arrayResponse['data'][$x]['code'] == 'MWSIN' ||
-                $arrayResponse['data'][$x]['code'] == 'RFID1' ||
-                $arrayResponse['data'][$x]['code'] == 'ETRIP' ||
-                $arrayResponse['data'][$x]['code'] == 'SPLAN' ||
-                $arrayResponse['data'][$x]['code'] == 'SKY01' ||
-                $arrayResponse['data'][$x]['code'] == 'MCARE' ||
-                $arrayResponse['data'][$x]['code'] == 'AEON1' ||
-                $arrayResponse['data'][$x]['code'] == 'BNECO' ||
-                $arrayResponse['data'][$x]['code'] == 'PRULI' ||
-                $arrayResponse['data'][$x]['code'] == 'AECOR' ||
-                $arrayResponse['data'][$x]['code'] == 'CNVRG' ||
-                $arrayResponse['data'][$x]['code'] == 'SMART' ||
-                $arrayResponse['data'][$x]['code'] == 'SSS01' ||
-                $arrayResponse['data'][$x]['code'] == 'SSS02' ||
-                $arrayResponse['data'][$x]['code'] == 'SSS03' ||
-                $arrayResponse['data'][$x]['code'] == 'DFA01' ||
-                $arrayResponse['data'][$x]['code'] == 'POEA1' ||
-                $arrayResponse['data'][$x]['code'] == 'MBCCC' ||
-                $arrayResponse['data'][$x]['code'] == 'BPI00' ||
-                $arrayResponse['data'][$x]['code'] == 'BNKRD' ||
-                $arrayResponse['data'][$x]['code'] == 'UNBNK' ||
-                $arrayResponse['data'][$x]['code'] == 'PILAM' ||
-                $arrayResponse['data'][$x]['code'] == 'ADMSN' ||
-                $arrayResponse['data'][$x]['code'] == 'UBNK4' ||
-                $arrayResponse['data'][$x]['code'] == 'ASLNK'
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MECOR ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MWCOM ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MWSIN ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::RFID1 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::ETRIP ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SPLAN ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SKY01 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MCARE ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::AEON1 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BNECO ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PRULI ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::AECOR ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::CNVRG ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SMART ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SSS01 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SSS02 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SSS03 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::DFA01 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::POEA1 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MBCCC ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BPI00 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BNKRD ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::UNBNK ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PILAM ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::ADMSN ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::UBNK4 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::ASLNK
             ) {
                 $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
             } else {
@@ -138,19 +138,21 @@ class PayBillsService implements IPayBillsService
     }
 
 
-    public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user)//: array
+    public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
-        $arrayResponse =  (array)json_decode($response->body(), true);
+        $arrayResponse = (array)json_decode($response->body(), true);
         
-        // 1st Layer Validation
-        if (isset($arrayResponse['exception'])) return $this->firstLayerValidation($arrayResponse['details'], $billerCode, $user);
+ 
+        if (isset($arrayResponse['exception'])) return $this->catchBayadErrors($arrayResponse['details'], $billerCode, $user);
 
         // To get the DFO account or Disconnected account from MECOR
-        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return  $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+         if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return  $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
 
-        // 2nd Layer Validation 
+        // Check balance and monthly limit
         $this->validateTransaction($billerCode, $data, $user);
+
+        // Returns standard response
         return $this->validationResponse($user, $response, $billerCode, $data);
     }
 
