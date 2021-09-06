@@ -73,7 +73,7 @@ class TierApprovalController extends Controller
         $params = $request->all();
         $params['actioned_by'] = request()->user()->id;
         $record = $this->iTierApprovalService->updateStatus($params, $tierApproval);
-        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::recordDeleted);
     }
 
     /**
@@ -85,6 +85,13 @@ class TierApprovalController extends Controller
     public function destroy(TierApproval $tierApproval)
     {
         $this->iTierApprovalRepository->delete($tierApproval);
-        return $this->responseService->noContentResponse("", SuccessMessages::recordDeleted);
+        return $this->responseService->noContentResponse("", SuccessMessages::success);
+    }
+
+    public function sendEmail(Request $request)
+    {
+        $user = $request->user();
+        $this->iTierApprovalService->sendEmail($user, $request->message);
+        return $this->responseService->noContentResponse("", SuccessMessages::success);
     }
 }

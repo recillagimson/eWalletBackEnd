@@ -20,6 +20,7 @@ use App\Mail\SendMoney\SendMoneyVerification;
 use App\Mail\TierApproval\TierUpgradeRequestApproved;
 use App\Mail\User\AdminUserVerification;
 use App\Mail\User\OtpVerification;
+use App\Mail\TierUpgrade\UpgradeToSilverNotification;
 use App\Models\OutSend2Bank;
 use App\Models\Tier;
 use App\Models\UserAccount;
@@ -277,5 +278,12 @@ class EmailService implements IEmailService
     {
         $userId = request()->user()->id;
         return $this->userAccounts->getUser($userId);
+    }
+
+    public function kycNotification(UserAccount $user, string $text)
+    {
+        $subject = EmailSubjects::kycNotification;
+        $template = new UpgradeToSilverNotification($subject, $text);
+        $this->sendMessage($to, $subject, $template);
     }
 }

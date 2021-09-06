@@ -4,6 +4,7 @@ namespace App\Services\Tier;
 
 use App\Enums\AccountTiers;
 use App\Models\TierApproval;
+use App\Models\UserAccount;
 use App\Repositories\IdType\IIdTypeRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -162,5 +163,15 @@ class TierApprovalService implements ITierApprovalService
             \DB::rollBack();
             return $e->getMessage();
         }
+    }
+
+    public function sendEmail(UserAccount $user, string $message) {
+        if (!$user->email) {
+            throw ValidationException::withMessages([
+                'email_not_found' => 'Email not found'
+            ]);
+        }
+
+        $this->emailService->kycNotification($user, $message);
     }
 }
