@@ -19,7 +19,7 @@ class ApiService implements IApiService
             $headers = $this->defaultHeaders;
         }
 
-        return Http::withHeaders($headers)->get($url);
+        return Http::withHeaders($headers)->withOptions(['verify' => false])->get($url);
     }
 
     public function post(string $url, array $data, array $headers = null): Response
@@ -28,7 +28,7 @@ class ApiService implements IApiService
             $headers = $this->defaultHeaders;
         }
 
-        return Http::withHeaders($headers)->post($url, $data);
+        return Http::withHeaders($headers)->withOptions(['verify' => false])->post($url, $data);
     }
 
     public function postXml(string $url, string $xml, array $headers = null): Response
@@ -48,7 +48,7 @@ class ApiService implements IApiService
             $headers = $this->defaultHeaders;
         }
 
-        return Http::withHeaders($headers)->asForm()->post($url, $data);
+        return Http::withHeaders($headers)->withOptions(['verify' => false])->asForm()->post($url, $data);
     }
 
 
