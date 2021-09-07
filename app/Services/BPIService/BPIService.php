@@ -2,29 +2,30 @@
 
 namespace App\Services\BPIService;
 
+use App\Enums\ReferenceNumberTypes;
+use App\Enums\SendMoneyConfig;
+use App\Enums\TransactionCategoryIds;
+use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\BPIService\PackageExtension\Encryption;
+use App\Services\Utilities\API\IApiService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Traits\Errors\WithUserErrors;
+use Carbon\Carbon;
 use DB;
 use Exception;
-use Carbon\Carbon;
-use Tmilos\JoseJwt\Jwe;
-use Tmilos\JoseJwt\Jwt;
-use Illuminate\Support\Str;
-use App\Enums\SendMoneyConfig;
-use App\Enums\ReferenceNumberTypes;
-use Tmilos\JoseJwt\Jwe\JweAlgorithm;
-use Tmilos\JoseJwt\Jws\JwsAlgorithm;
-use App\Enums\TransactionCategoryIds;
-use App\Traits\Errors\WithUserErrors;
-use Tmilos\JoseJwt\Jwe\JweEncryption;
 use Illuminate\Support\Facades\Storage;
-use App\Services\Utilities\API\IApiService;
+use Illuminate\Support\Str;
+use Log;
 use Tmilos\JoseJwt\Context\DefaultContextFactory;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
-use App\Services\BPIService\PackageExtension\Encryption;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use Tmilos\JoseJwt\Jwe;
+use Tmilos\JoseJwt\Jwe\JweAlgorithm;
+use Tmilos\JoseJwt\Jwe\JweEncryption;
+use Tmilos\JoseJwt\Jws\JwsAlgorithm;
+use Tmilos\JoseJwt\Jwt;
 
 class BPIService implements IBPIService
 {
@@ -98,10 +99,10 @@ class BPIService implements IBPIService
         $response = $this->apiService->get($this->transactionalUrl, $token)->json();
         if($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
-            \Log::info($jwt);
+            Log::info($jwt);
             if($jwt) {
                 $val = $this->bpiDecryptionJWT($jwt);
-                \Log::info($jwt);
+                Log::info($jwt);
                 return $val;
             }
         }
@@ -127,18 +128,18 @@ class BPIService implements IBPIService
 
         // Send API request
         $response = $this->apiService->post($this->fundTopUpUrl, ['token' => $jwe], $token);
-        
-        \Log::info($response);
 
-        if($response && isset($response['token'])) {
+        Log::info($response);
+
+        if ($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
-            if($jwt) {
-                
-                
+            if ($jwt) {
+
+
                 $jwt_response = $this->bpiDecryptionJWE($response['token']);
                 $response_raw = $this->bpiDecryptionJWT($jwt_response);
-                
-                if($response_raw && isset($response_raw['status']) && $response_raw['status'] != 'error') {
+
+                if ($response_raw && isset($response_raw['status']) && $response_raw['status'] != 'error') {
                     $transactionId = $response->getHeaders()['transactionId']['0'];
                     return [
                         'response' => $response_raw,
@@ -176,7 +177,7 @@ class BPIService implements IBPIService
 
         $response = $this->apiService->post($otp_url, ['token' => $jwe], $headers);
 
-        \Log::info($response);
+        Log::info($response);
 
         if($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
@@ -237,7 +238,7 @@ class BPIService implements IBPIService
             $headers = $this->getHeaders($params['token']);
             $headers['transactionId'] = $params['transactionId'];
             $otp_url = $this->processUrl;
-    
+
             $values['otp'] = $params['otp'];
             $values['jti'] = Str::uuid()->toString();
             $values['iss'] = 'PARTNER';
@@ -270,7 +271,7 @@ class BPIService implements IBPIService
                             "user_account_id" => request()->user()->id,
                             "reference_number" => $params['refId'],
                             "amount" => $params['amount'],
-                            "service_fee_id" => $serviceFee->id,
+                            "service_fee_id" => $serviceFee ? $serviceFee->id : null,
                             "service_fee" => SendMoneyConfig::ServiceFee,
                             "total_amount" => $total,
                             "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
@@ -334,9 +335,8 @@ class BPIService implements IBPIService
 
             $payload = Jwe::decode($context, $payload, $myPrivateKey);
             return $payload;
-        }
-        catch(\Exception $e) {
-            \Log::error('BPI: Invalid Private Key');
+        } catch (Exception $e) {
+            Log::error('BPI: Invalid Private Key');
             return [];
         }
     }
