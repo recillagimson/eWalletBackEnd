@@ -2,29 +2,29 @@
 
 namespace App\Services\BPIService;
 
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\SendMoneyConfig;
-use App\Enums\TransactionCategoryIds;
-use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\BPIService\PackageExtension\Encryption;
-use App\Services\Utilities\API\IApiService;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithUserErrors;
-use Carbon\Carbon;
 use DB;
 use Exception;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Tmilos\JoseJwt\Context\DefaultContextFactory;
+use Carbon\Carbon;
 use Tmilos\JoseJwt\Jwe;
+use Tmilos\JoseJwt\Jwt;
+use Illuminate\Support\Str;
+use App\Enums\SendMoneyConfig;
+use App\Enums\ReferenceNumberTypes;
 use Tmilos\JoseJwt\Jwe\JweAlgorithm;
-use Tmilos\JoseJwt\Jwe\JweEncryption;
 use Tmilos\JoseJwt\Jws\JwsAlgorithm;
-use Tmilos\JoseJwt\JWT;
+use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithUserErrors;
+use Tmilos\JoseJwt\Jwe\JweEncryption;
+use Illuminate\Support\Facades\Storage;
+use App\Services\Utilities\API\IApiService;
+use Tmilos\JoseJwt\Context\DefaultContextFactory;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Services\BPIService\PackageExtension\Encryption;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class BPIService implements IBPIService
 {
@@ -335,7 +335,7 @@ class BPIService implements IBPIService
         $pub = Storage::disk('local')->get('keys/squid.ph.pub');
         $partyPublicKey = openssl_get_publickey($pub);
 
-        $payload = JWT::decode($context, $payload, $partyPublicKey);
+        $payload = Jwt::decode($context, $payload, $partyPublicKey);
         return $payload;
     }
 }
