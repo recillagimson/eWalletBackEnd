@@ -96,7 +96,6 @@ class BPIService implements IBPIService
 
         $token = $this->getHeaders($token);
         $response = $this->apiService->get($this->transactionalUrl, $token)->json();
-
         if($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
             \Log::info($jwt);
@@ -134,15 +133,25 @@ class BPIService implements IBPIService
         if($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
             if($jwt) {
-                $transactionId = $response->getHeaders()['transactionId']['0'];
+                
+                
                 $jwt_response = $this->bpiDecryptionJWE($response['token']);
                 $response_raw = $this->bpiDecryptionJWT($jwt_response);
-
-                return [
-                    'response' => $response_raw,
-                    'transactionId' => $transactionId,
-                    'refId' => $refNo
-                ];
+                
+                if($response_raw && isset($response_raw['status']) && $response_raw['status'] != 'error') {
+                    $transactionId = $response->getHeaders()['transactionId']['0'];
+                    return [
+                        'response' => $response_raw,
+                        'transactionId' => $transactionId,
+                        'refId' => $refNo
+                    ];
+                } else {
+                    return [
+                        'response' => $response_raw,
+                        'message' => $response_raw['description'],
+                        'status' => 'error'
+                    ];
+                }
             }
         }
 
