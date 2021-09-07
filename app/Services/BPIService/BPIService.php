@@ -129,6 +129,8 @@ class BPIService implements IBPIService
         // Send API request
         $response = $this->apiService->post($this->fundTopUpUrl, ['token' => $jwe], $token);
         
+        \Log::info($response);
+
         if($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
             if($jwt) {
@@ -164,6 +166,9 @@ class BPIService implements IBPIService
         $jwe = $this->bpiEncodeJWE($jwt);
 
         $response = $this->apiService->post($otp_url, ['token' => $jwe], $headers);
+
+        \Log::info($response);
+
         if($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
             if($jwt) {
