@@ -300,6 +300,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/otp', [BPIController::class, 'otp']);
             Route::post('/process', [BPIController::class, 'process']);
             Route::post('/status', [BPIController::class, 'status']);
+            Route::post('/login/url', [BPIController::class, 'getBPIAuthUrl']);
         });
 
     });

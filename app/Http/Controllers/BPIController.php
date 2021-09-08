@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\BPI\BPIOTPRequest;
+use App\Services\BPIService\IBPIService;
 use App\Http\Requests\BPI\BPIAuthRequest;
+use App\Http\Requests\BPI\BPIStatusRequest;
+use App\Http\Requests\BPI\BPIProcessRequest;
 use App\Http\Requests\BPI\BPIFundTopUpRequest;
 use App\Http\Requests\BPI\BPIGetAccountRequest;
-use App\Http\Requests\BPI\BPIOTPRequest;
-use App\Http\Requests\BPI\BPIProcessRequest;
-use App\Http\Requests\BPI\BPIStatusRequest;
-use App\Services\BPIService\IBPIService;
 use App\Services\Utilities\Responses\IResponseService;
-use Illuminate\Http\JsonResponse;
 
 class BPIController extends Controller
 {
@@ -64,5 +65,9 @@ class BPIController extends Controller
     {
         $response = $this->bpiService->status($request->all());
         return $this->responseService->successResponse($response, SuccessMessages::success);
+    }
+
+    public function getBPIAuthUrl(Request $request) {
+        return $this->responseService->successResponse(['login_url' => config('bpi.loginUrl')], SuccessMessages::success);
     }
 }
