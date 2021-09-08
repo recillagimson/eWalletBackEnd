@@ -33,6 +33,7 @@ use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Enums\TopupTypes;
 
 class BuyLoadService implements IBuyLoadService
 {
@@ -81,7 +82,7 @@ class BuyLoadService implements IBuyLoadService
 
     public function getEpinProducts(): array
     {
-        return array_values($this->atmService->getProductsByProvider('E-PINS')->toArray());
+        return array_values($this->atmService->getProductsByProvider(TopupTypes::atm_epin)->toArray());
     }
 
     public function getProductsByProvider(string $mobileNumber): array
