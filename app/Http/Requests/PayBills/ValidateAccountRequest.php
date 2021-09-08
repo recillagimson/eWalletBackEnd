@@ -60,9 +60,9 @@ class ValidateAccountRequest extends FormRequest
 
         // 2nd BILLERS
         //  invalid JSON string error
-        //  PayBillsConfig::SKY01 => [
+         PayBillsConfig::SKY01 => [
 
-        // ],
+        ],
         PayBillsConfig::MBCCC => [
             'account_number' => 'required|digits:16',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
@@ -158,7 +158,6 @@ class ValidateAccountRequest extends FormRequest
         //  PayBillsConfig::SSS02 => [
            
         // ], 
-
 
     ];
 
