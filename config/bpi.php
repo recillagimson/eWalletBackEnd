@@ -9,6 +9,7 @@ return [
     'fundTopUpOtpUrl' => env('BPI_FUND_TOP_UP_OTP'),
     'fundTopUpStatusUrl' => env('BPI_FUND_TOP_UP_STATUS'),
     'processUrl' => env('BPI_PROCESS_URL'),
+    'loginUrl' => env('BPI_LOGIN_URL'),
 
     'bpi_codes' => [
         'FTUBE002' => 'Your One-Time PIN has been suspended after 3 invalid attempts. Please try again after 10 minutes',
