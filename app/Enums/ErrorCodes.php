@@ -61,6 +61,8 @@ class ErrorCodes
     const noAmountProvided = 421;
     const requiredField = 422;
     const minimumAmount = 423;
+    const bpiFundTopUp = 424;
+    const bpiTransactionError = 425;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;

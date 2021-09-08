@@ -300,6 +300,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/otp', [BPIController::class, 'otp']);
             Route::post('/process', [BPIController::class, 'process']);
             Route::post('/status', [BPIController::class, 'status']);
+            Route::post('/login/url', [BPIController::class, 'getBPIAuthUrl']);
         });
 
     });
@@ -344,10 +345,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/tiers/approval')->middleware(['decrypt.request'])->group(function () {
         Route::post('/', [TierApprovalController::class, 'index']);
+        Route::post('email', [TierApprovalController::class, 'sendEmail']);
+        Route::post('sms', [TierApprovalController::class, 'sendSMS']);
         // Route::post('/', [TierApprovalController::class, 'store']);
         Route::get('/{tierApproval}', [TierApprovalController::class, 'show'])->name('show');
         Route::put('/{tierApproval}', [TierApprovalController::class, 'update'])->name('update');
         Route::delete('/{tierApproval}', [TierApprovalController::class, 'destroy'])->name('destroy');
+        
     });
 
     Route::prefix('/tiers')->middleware(['decrypt.request'])->name('tiers.')->group(function () {
