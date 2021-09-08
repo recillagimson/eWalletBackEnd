@@ -87,4 +87,11 @@ class TierApprovalController extends Controller
         $this->iTierApprovalRepository->delete($tierApproval);
         return $this->responseService->noContentResponse("", SuccessMessages::recordDeleted);
     }
+
+    public function sendSMS(Request $request)
+    {
+        $user = $request->user();
+        $this->iTierApprovalService->sendSMS($user, $request->message);
+        return $this->responseService->noContentResponse("", SuccessMessages::success);
+    }
 }
