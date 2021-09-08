@@ -111,9 +111,10 @@ class BPIService implements IBPIService
         $this->bpiTokenInvalid();
     }
 
-    public function fundTopUp(Array $array, string $token) {
+    public function fundTopUp(Array $array, string $rawToken) {
+        $array['remarks'] = 'BPI Cashin';
         $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaWebBank);
-        $token = $this->getHeaders($token);
+        $token = $this->getHeaders($rawToken);
 
         $array['merchantTransactionReference'] = $refNo;
 
@@ -141,17 +142,24 @@ class BPIService implements IBPIService
 
                 if ($response_raw && isset($response_raw['status']) && $response_raw['status'] != 'error') {
                     $transactionId = $response->getHeaders()['transactionId']['0'];
+                    $otp_response = $this->otp([
+                        'token' => $rawToken,
+                        'mobileNumberToken' => $response_raw['body']['mobileNumberToken'],
+                        'transactionId' => $transactionId,
+                    ]);
                     return [
                         'response' => $response_raw,
                         'transactionId' => $transactionId,
-                        'refId' => $refNo
+                        'refId' => $refNo,
+                        'otpResponse' => $otp_response
                     ];
                 } else {
-                    return [
-                        'response' => $response_raw,
-                        'message' => $response_raw['description'],
-                        'status' => 'error'
-                    ];
+                    return $this->accountCantBeUsed();
+                    // return [
+                    //     'response' => $response_raw,
+                    //     'message' => $response_raw['description'],
+                    //     'status' => 'error'
+                    // ];
                 }
             }
         }
@@ -161,8 +169,7 @@ class BPIService implements IBPIService
     }
 
     public function otp(array $params) {
-
-        $headers = $token = $this->getHeaders($params['token']);
+        $headers = $this->getHeaders($params['token']);
         $headers['transactionId'] = $params['transactionId'];
         $otp_url = $this->fundTopUpOtpUrl;
 
@@ -234,7 +241,9 @@ class BPIService implements IBPIService
 
     public function process(array $params) {
         DB::beginTransaction();
+        $error = '';
         try {
+            $params['remarks'] = 'BPI Cashin';
             $headers = $this->getHeaders($params['token']);
             $headers['transactionId'] = $params['transactionId'];
             $otp_url = $this->processUrl;
@@ -256,42 +265,59 @@ class BPIService implements IBPIService
                     $jwt_response = $this->bpiDecryptionJWE($response['token']);
                     $response_raw = $this->bpiDecryptionJWT($jwt_response);
 
-                    $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
-
-                    $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
-                    $cashInWithServiceFee = $params['amount'] + SendMoneyConfig::ServiceFee;
-                    $total = $cashInWithServiceFee + $balance;
-                    if($response_raw['status'] == 'success') {
-                        $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
+                    // CHECK ERRORS
+                    if($response_raw && isset($response_raw['code']) && $response_raw['status'] == 'error') {
+                        $bpi_codes = config('bpi.bpi_codes');
+                        foreach($bpi_codes as $key => $code) {
+                            if($response_raw['code'] == $key) {
+                                $error = $code;
+                            }
+                        }
+                    } else {
+                        $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
+                        
+                        $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
+                        $cashInWithServiceFee = $params['amount'] + SendMoneyConfig::ServiceFee;
+                        $total = $cashInWithServiceFee + $balance;
+                        if($response_raw['status'] == 'success') {
+                            $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
+                        }
+                        
+                        $serviceFee = $this->serviceFee->getByTierAndTransCategory(request()->user()->tier_id, TransactionCategoryIds::cashinBPI);
+                        $this->bpiRepository->create(
+                            [
+                                "user_account_id" => request()->user()->id,
+                                "reference_number" => $params['refId'],
+                                "amount" => $params['amount'],
+                                "service_fee_id" => $serviceFee ? $serviceFee->id : null,
+                                "service_fee" => SendMoneyConfig::ServiceFee,
+                                "total_amount" => $total,
+                                "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
+                                "transaction_category_id" => TransactionCategoryIds::cashinBPI,
+                                "transaction_remarks" => $params['remarks'],
+                                "status" => $response_raw['status'],
+                                "bpi_reference" => $params['transactionId'],
+                                "transaction_response" => json_encode($response_raw),
+                                "user_created" => request()->user()->id,
+                                "user_updated" => request()->user()->id,
+                            ]
+                        );
+                        DB::commit();
+                        return $response_raw;
                     }
-
-                    $serviceFee = $this->serviceFee->getByTierAndTransCategory(request()->user()->tier_id, TransactionCategoryIds::cashinBPI);
-                    $this->bpiRepository->create(
-                        [
-                            "user_account_id" => request()->user()->id,
-                            "reference_number" => $params['refId'],
-                            "amount" => $params['amount'],
-                            "service_fee_id" => $serviceFee ? $serviceFee->id : null,
-                            "service_fee" => SendMoneyConfig::ServiceFee,
-                            "total_amount" => $total,
-                            "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
-                            "transaction_category_id" => TransactionCategoryIds::cashinBPI,
-                            "transaction_remarks" => $params['remarks'],
-                            "status" => $response_raw['status'],
-                            "bpi_reference" => $params['transactionId'],
-                            "transaction_response" => json_encode($response_raw),
-                            "user_created" => request()->user()->id,
-                            "user_updated" => request()->user()->id,
-                        ]
-                    );
-
-                    DB::commit();
-                    return $response_raw;
+                    // Trigger error here then trigger again in catch for error handling
+                    if($error != '') {
+                        $this->bpiTransactionError($error);
+                    }
                 }
             }
+            return $this->bpiTokenInvalid();
         } catch (Exception $e) {
             DB::rollback();
             // THROW ERROR
+            if($error != '') {
+                $this->bpiTransactionError($error);
+            }
             $this->bpiTokenInvalid();
         }
 
