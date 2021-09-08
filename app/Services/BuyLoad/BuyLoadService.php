@@ -81,7 +81,7 @@ class BuyLoadService implements IBuyLoadService
 
     public function getEpinProducts(): array
     {
-        return array_values($this->atmService->getProductsByProvider('EPIN')->toArray());
+        return array_values($this->atmService->getProductsByProvider('E-PINS')->toArray());
     }
 
     public function getProductsByProvider(string $mobileNumber): array
