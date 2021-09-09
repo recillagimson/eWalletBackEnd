@@ -81,6 +81,12 @@ trait WithAuthErrors
             'Reached the maximum allowed attempts.');
     }
 
+    public function otpMaxedGenerationAttempts()
+    {
+        $this->validationErrorMessage(ErrorCodes::otpMaxedGenerationAttempt,
+            'Reached the maximum times to generate OTP');
+    }
+
     public function accountAlreadyTaken()
     {
         $this->validationErrorMessage(ErrorCodes::accountAlreadyTaken,
