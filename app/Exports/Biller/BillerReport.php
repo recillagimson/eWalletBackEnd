@@ -42,7 +42,7 @@ class BillerReport implements FromView, WithHeadings, WithEvents
                 $record['status'],
             ]);
         }
-
+        
         $this->records = $data;
 
         // $this->fileName = $from . "-" . $to . "." . $type;
