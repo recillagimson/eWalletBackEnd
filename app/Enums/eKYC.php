@@ -10,7 +10,7 @@ class eKYC
     const eKYC_remarks = "eKYC Approval";
 
     const returnableFields = [
-        'surname', 'name', 'middlename', 'id', 'doe', 'valid_date', 'lic_no'
+        'surname', 'name', 'middlename', 'id', 'doe', 'valid_date', 'lic_no', 'dob'
     ];
 
     const lastNameKey = [

@@ -16,7 +16,7 @@ class BillerReport extends Model
 
     public function getManilaTimeTransactionDateAttribute() {
         if($this->original_transaction_date) {
-            return Carbon::parse($this->original_transaction_date)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+            return Carbon::parse($this->original_transaction_date)->setTimezone('Asia/Manila')->format('F d, Y h:i:s A');
         }
         return null;
     }

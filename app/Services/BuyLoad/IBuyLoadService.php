@@ -17,4 +17,6 @@ interface IBuyLoadService
                           float  $amount, string $type): array;
 
     public function processPending(string $userId): array;
+
+    public function processAllPending();
 }

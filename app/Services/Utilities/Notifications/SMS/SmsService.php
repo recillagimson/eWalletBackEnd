@@ -198,8 +198,13 @@ class SmsService implements ISmsService
 
     public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier)
     {
-        $content = "Hi Squidee! Your account is now fully verified. Login to your account and enjoy additional features.";
+        $content = "Hi " . $userDetail->first_name . ", Your account is now fully verified. Login to your account to enjoy additional features. Thank you.";
         $this->sendMessages($to, $content);
+    }
+
+    public function kycNotification(string $to, string $message)
+    {
+        $this->sendMessages($to, $message);
     }
 
     private function getUser(): UserAccount

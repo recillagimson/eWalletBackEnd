@@ -118,10 +118,10 @@ class AddMoneyService implements IAddMoneyService
         if ($addMoney->status === TransactionStatuses::success) return;
         if ($addMoney->status === TransactionStatuses::failed) return;
 
-        $this->updateStatus($addMoney);;
+        $this->updateStatus($addMoney);
     }
 
-    public function processPending(string $userId)
+    public function processPending(string $userId): array
     {
         $pendingTransactions = $this->addMoney->getUserPending($userId);
         if (!$pendingTransactions) return $this->getDefaultProcessPending();
@@ -144,6 +144,17 @@ class AddMoneyService implements IAddMoneyService
             'failed_count' => $failedCount
         ];
     }
+
+    public function processAllPending()
+    {
+        $users = $this->addMoney->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('Add Money DragonPay Processing User:', ['user_account_id' => $user->user_account_id]);
+            $this->processPending($user->user_account_id);
+        }
+    }
+
 
     private function updateStatus(InAddMoneyFromBank $addMoney): InAddMoneyFromBank
     {

@@ -27,7 +27,7 @@ class BPIFundTopUpRequest extends FormRequest
             'token' => 'required',
             'amount' => 'required|min:10|integer',
             'accountNumberToken' => 'required',
-            'remarks' => 'required'
+            // 'remarks' => 'required'
         ];
     }
 }

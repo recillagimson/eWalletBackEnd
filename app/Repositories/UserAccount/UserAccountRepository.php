@@ -111,8 +111,9 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getByUsername(string $usernameField, string $username)
     {
-        return $this->getBaseQuery()->where($usernameField, '=', $username)->first();
+      return $this->getBaseQuery()->where($usernameField, '=', $username)->first();
     }
+  
 
     public function getUserInfo(string $userAccountID)
     {

@@ -21,6 +21,8 @@ class ErrorCodes
     const accountAlreadyTaken = 112;
     const confirmationFailed = 113;
     const accountDeactivated = 114;
+    const otpMaxedGenerationAttempt = 115;
+
 
     //ENCRYPTION ERRORS - 150
     const payloadInvalid = 151;
@@ -61,6 +63,8 @@ class ErrorCodes
     const noAmountProvided = 421;
     const requiredField = 422;
     const minimumAmount = 423;
+    const bpiFundTopUp = 424;
+    const bpiTransactionError = 425;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;

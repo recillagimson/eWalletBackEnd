@@ -23,6 +23,7 @@ use App\Traits\Errors\WithPayBillsErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Transactions\PayBillsHelpers;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class PayBillsService implements IPayBillsService
 {
@@ -139,10 +140,10 @@ class PayBillsService implements IPayBillsService
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $this->firstLayerValidation($billerCode, $accountNumber, $data);
-        
+
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse = (array)json_decode($response->body(), true);
-     
+
         if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
         if ($arrayResponse['data'] === "NOT_FOUND") return $this->tpaErrorCatch($arrayResponse);
         if (isset($arrayResponse['message']) === "Internal server error") return $this->tpaErrorCatch($arrayResponse);
@@ -214,6 +215,17 @@ class PayBillsService implements IPayBillsService
         ];
     }
 
+    public function processAllPending()
+    {
+        $users = $this->outPayBills->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('Pay Bills Processing User:', ['user_account_id' => $user->user_account_id]);
+            $user = $this->userAccountRepository->getUser($user->user_account_id);
+            $this->processPending($user);
+        }
+    }
+
     public function downloadListOfBillersCSV()
     {
         $billers = $this->outPayBillsRepository->getAllBillers();
@@ -222,13 +234,13 @@ class PayBillsService implements IPayBillsService
 
         foreach ($billers as $biller) {
             array_push($datas, [
-                'Customer Account ID'  => $biller->user_account_id,
+                'Customer Account ID' => $biller->user_account_id,
                 'Customer Name' => ucwords($biller->user_detail->first_name) . ' ' . ucwords($biller->user_detail->last_name),
                 'Reference Number' => $biller->reference_number,
-                'Date of Transaction'  => Carbon::parse($biller->transaction_date)->format('F d, Y g:i A'),
-                'Biller'  => $biller->billers_name,
-                'Amount'  => $biller->total_amount,
-                'Status'  => ($biller->status) ? 'Paid' : 'Not Paid',
+                'Date of Transaction' => Carbon::parse($biller->transaction_date)->format('F d, Y g:i A'),
+                'Biller' => $biller->billers_name,
+                'Amount' => $biller->total_amount,
+                'Status' => ($biller->status) ? 'Paid' : 'Not Paid',
 
             ]);
         }

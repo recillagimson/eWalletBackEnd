@@ -1,10 +1,9 @@
 <?php
 
-
 namespace App\Traits\Errors;
 
-
 use App\Enums\ErrorCodes;
+use Error;
 
 trait WithUserErrors
 {
@@ -76,5 +75,13 @@ trait WithUserErrors
 
     public function recordNotFound() {
         $this->validationErrorMessage(ErrorCodes::kycRecordNotFound, 'KYC record not found');
+    }
+
+    public function accountCantBeUsed() {
+        return $this->validationErrorMessage(ErrorCodes::bpiFundTopUp, 'Selected account cannot be used for this transaction');
+    }
+
+    public function bpiTransactionError(string $message) {
+        return $this->validationErrorMessage(ErrorCodes::bpiTransactionError, $message);
     }
 }

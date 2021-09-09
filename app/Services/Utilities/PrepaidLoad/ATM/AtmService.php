@@ -101,7 +101,8 @@ class AtmService implements IAtmService
                 $prefix = $prefixes->firstWhere('prefix', $prefix);
                 if (!$prefix) $this->prefixNotSupported();
 
-                return $prefix['provider'];
+                // return $prefix['provider'];
+                return ucfirst(strtolower($prefix['provider']));
             }
         }
 
@@ -122,7 +123,9 @@ class AtmService implements IAtmService
             $state = $data['responseCode'];
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
-                return $prefixes->where('provider', $provider)->sortBy(['provider', 'productCode', 'denominations']);
+                return ($provider == TopupTypes::atm_epin) ? 
+                $prefixes->where('productType', $provider)->sortBy(['provider', 'productCode', 'denominations']) :
+                $prefixes->where('provider', $provider)->sortBy(['provider', 'productCode', 'denominations']);
             }
         }
 
