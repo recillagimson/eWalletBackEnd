@@ -110,29 +110,29 @@ class TransactionValidationService implements ITransactionValidationService
 
             if($transactionCategory) {
                 $totalTransactionCurrentMonth = 0;
+                $sumUp = 0;
 
                 //OUT TRANSACTIONS
-                if($transactionCategory->transaction_type === 'NEGATIVE') {
+                if ($transactionCategory->transaction_type === 'NEGATIVE') {
                     $buyLoad = (double)$this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
                     $payBills = (double)$this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
                     $send2Banks = (double)$this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
                     $sendMoney = (double)$this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
                     $totalTransactionCurrentMonth = $buyLoad + $payBills + $send2Banks + $sendMoney;
-
-                } else {
+                    $sumUp = $totalTransactionCurrentMonth + $totalAmount;
+                }
+//                else {
 //                    $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 //
 //                    $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 //                    $in = $addMoneyFromBank + $receiveMoney;
-
-                    $totalTransactionCurrentMonth = 0;
-                }
+//                    $totalTransactionCurrentMonth = $in;
+//                 }
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
 
-                $sumUp = $totalTransactionCurrentMonth + $totalAmount;
                 if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
                 if (isset($customMessage) && count($customMessage) > 0) {
