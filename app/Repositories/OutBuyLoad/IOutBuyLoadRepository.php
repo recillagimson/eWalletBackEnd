@@ -10,8 +10,6 @@ interface IOutBuyLoadRepository extends IRepository
 {
     public function getPending(string $userId);
 
-    public function getUsersWithPending();
-
     public function createTransaction(string $userId, string $refNo, string $productCode, string $productName,
                                       string $recipientMobileNumber, float $amount, Carbon $transactionDate,
                                       string $transactionCategoryId, string $type, string $userCreated): OutBuyLoad;

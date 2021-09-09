@@ -148,9 +148,4 @@ class Send2BankController extends Controller
         return $this->responseService->successResponse($response,
             SuccessMessages::transactionValidationSuccessful);
     }
-
-    public function processUsersWithPending()
-    {
-        $this->send2BankService->processAllPending();
-    }
 }

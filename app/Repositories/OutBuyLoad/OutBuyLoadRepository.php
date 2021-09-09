@@ -22,15 +22,6 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
         ])->get();
     }
 
-    public function getUsersWithPending()
-    {
-        return $this->model
-            ->where('status', TransactionStatuses::pending)
-            ->groupBy('user_account_id')
-            ->select('user_account_id')
-            ->get();
-    }
-
     public function createTransaction(string $userId, string $refNo, string $productCode, string $productName,
                                       string $recipientMobileNumber, float $amount, Carbon $transactionDate,
                                       string $transactionCategoryId, string $type, string $userCreated): OutBuyLoad

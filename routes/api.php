@@ -196,7 +196,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/direct/ubp/update', [Send2BankController::class, 'verifyDirectTransactions'])->name('ubp.direct');
         Route::get('/process/pending', [Send2BankController::class, 'processPending'])->name('ubp.process.pending');
-        Route::get('/process/all/pending', [Send2BankController::class, 'processUsersWithPending'])->name('ubp.process.pending.all');
 
         Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect'])->name('direct.ubp');
         Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP'])->name('validate.ubp');
@@ -401,7 +400,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
 
         Route::post('/report', [DrcrMemoController::class, 'report']);
-
+        
         Route::post('/report/filter', [DrcrMemoController::class, 'reportFiltered']);
 
     });

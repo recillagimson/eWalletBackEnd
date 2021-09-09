@@ -127,21 +127,19 @@ trait Send2BankHelpers
         if (!$response->successful()) {
             return;
         } else {
-            if ($send2Bank->provider === TpaProviders::secBankInstapay) $data = $response->json()['records'][0];
-            else $data = $response->json()['record'];
+            $data = $response->json()['record'];
+            $state = $data['state'];
 
-            $state = $data['code'];
-
-            if ($state === UbpResponseCodes::receivedRequest || $state === UbpResponseCodes::processing
-                || $state === UbpResponseCodes::forConfirmation || $state === UbpResponseCodes::networkIssue) {
+            if ($state === UbpResponseStates::receivedRequest || $state === UbpResponseStates::sentForProcessing
+                || $state === UbpResponseStates::forConfirmation || $state === UbpResponseStates::networkIssue) {
                 return $send2Bank;
             }
 
-            if ($state === UbpResponseCodes::successfulTransaction) {
+            if ($state === UbpResponseStates::creditedToAccount) {
                 $send2Bank->status = TransactionStatuses::success;
             }
 
-            if ($state === UbpResponseCodes::failedTransaction) {
+            if ($state === UbpResponseStates::failedToCreditAccount) {
                 $send2Bank->status = TransactionStatuses::failed;
             }
 

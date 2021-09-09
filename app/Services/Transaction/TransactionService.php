@@ -3,20 +3,20 @@
 
 namespace App\Services\Transaction;
 
-use App\Exports\TransactionReport\TransactionReport;
+use PDF;
+use Carbon\Carbon;
 use App\Models\UserAccount;
-use App\Repositories\UserBalance\IUserBalanceRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\AddMoneyV2\IAddMoneyService;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
-use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
 use App\Services\Utilities\CSV\ICSVService;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
-use PDF;
+use App\Services\AddMoneyV2\IAddMoneyService;
+use App\Exports\TransactionReport\TransactionReport;
+use App\Repositories\UserBalance\IUserBalanceRepository;
+use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class TransactionService implements ITransactionService
 {
@@ -60,14 +60,6 @@ class TransactionService implements ITransactionService
 
         $buyLoadResponse = $this->buyLoadService->processPending($user->id);
         Log::info('Buy Load Process Pending Result:', $buyLoadResponse);
-    }
-
-    public function processAllPending()
-    {
-        $this->s2bService->processAllPending();
-        $this->addMoneyService->processAllPending();
-        $this->paybillsService->processAllPending();
-        $this->buyLoadService->processAllPending();
     }
 
     public function addUserBalanceInfo(string $userAccountId, string $currencyId, float $availableBalance, float $pendingBalance)
@@ -173,4 +165,5 @@ class TransactionService implements ITransactionService
         $temp_url = Storage::disk('s3')->temporaryUrl($generated_link, Carbon::now()->addMinutes(30));
         return $temp_url;
     }
+
 }
