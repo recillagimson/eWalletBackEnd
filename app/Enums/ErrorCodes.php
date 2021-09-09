@@ -21,6 +21,8 @@ class ErrorCodes
     const accountAlreadyTaken = 112;
     const confirmationFailed = 113;
     const accountDeactivated = 114;
+    const otpMaxedGenerationAttempt = 115;
+
 
     //ENCRYPTION ERRORS - 150
     const payloadInvalid = 151;
