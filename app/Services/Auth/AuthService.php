@@ -77,6 +77,7 @@ class AuthService implements IAuthService
     public function login(string $usernameField, array $creds, string $ip): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
+        if (!$user) $this->accountDoesntExist();
         $this->validateInternalUsers($user);
         $this->validateUser($user);
 
@@ -95,6 +96,7 @@ class AuthService implements IAuthService
     public function mobileLogin(string $usernameField, array $creds): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
+        if (!$user) $this->accountDoesntExist();
         $this->validateInternalUsers($user);
 
         $this->validateUser($user);
@@ -112,6 +114,7 @@ class AuthService implements IAuthService
     public function adminLogin(string $email, string $password): array
     {
         $user = $this->userAccounts->getByUsername(UsernameTypes::Email, $email);
+        if (!$user) $this->accountDoesntExist();
         if (!$user) $this->loginFailed();
         if (!$user->is_admin) $this->loginFailed();
 
@@ -128,6 +131,7 @@ class AuthService implements IAuthService
     public function partnersLogin(string $mobileNumber, string $password)
     {
         $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
+        if (!$user) $this->accountDoesntExist();
         if (!$user) $this->loginFailed();
         if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
 
@@ -140,6 +144,7 @@ class AuthService implements IAuthService
     public function partnersVerifyLogin(string $mobileNumber, string $otp): array
     {
         $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
+        if (!$user) $this->accountDoesntExist();
         if (!$user) $this->loginFailed();
         if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
 
@@ -208,6 +213,9 @@ class AuthService implements IAuthService
 
     public function generateMobileLoginOTP(string $usernameField, string $username)
     {
+        $user = $this->userAccounts->getByUsername($usernameField, $username);
+        if (!$user) $this->accountDoesntExist();
+        
         $this->sendOTP($usernameField, $username, OtpTypes::login);
     }
 
