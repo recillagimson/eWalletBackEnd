@@ -110,28 +110,29 @@ class TransactionValidationService implements ITransactionValidationService
 
             if($transactionCategory) {
                 $totalTransactionCurrentMonth = 0;
+                $sumUp = 0;
 
                 //OUT TRANSACTIONS
-                if($transactionCategory->transaction_type === 'NEGATIVE') {
-                    // $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
-                    // $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
-                    // $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
-                    // $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                if ($transactionCategory->transaction_type === 'NEGATIVE') {
+                    $buyLoad = (double)$this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
+                    $payBills = (double)$this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
+                    $send2Banks = (double)$this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
+                    $sendMoney = (double)$this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
-                    $totalTransactionCurrentMonth = 0;
-
-                } else {
-                    $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                   
-                    $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                    $in = $addMoneyFromBank + $receiveMoney;
-                    $totalTransactionCurrentMonth = $in;
-                 }
+                    $totalTransactionCurrentMonth = $buyLoad + $payBills + $send2Banks + $sendMoney;
+                    $sumUp = $totalTransactionCurrentMonth + $totalAmount;
+                }
+//                else {
+//                    $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+//
+//                    $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+//                    $in = $addMoneyFromBank + $receiveMoney;
+//                    $totalTransactionCurrentMonth = $in;
+//                 }
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
 
-                $sumUp = $totalTransactionCurrentMonth + $totalAmount;
                 if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
                 if (isset($customMessage) && count($customMessage) > 0) {
