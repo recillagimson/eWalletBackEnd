@@ -25,7 +25,7 @@ class StoreReferenceNumberRequest extends FormRequest
     {
         return [
             'user_account_id' => 'required|exists:user_accounts,id',
-            'reference_number' => 'required'
+            'reference_number' => 'required|unique:loans,reference_number'
         ];
     }
 }
