@@ -34,6 +34,7 @@ use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class BuyLoadService implements IBuyLoadService
 {
@@ -88,7 +89,7 @@ class BuyLoadService implements IBuyLoadService
     public function getProductsByProvider(string $mobileNumber): array
     {
         $provider = $this->atmService->getProvider($mobileNumber);
-        Log::info('ATM Provider:', ['provider' => $provider]);
+        $provider = Str::upper($provider);
         return array_values($this->atmService->getProductsByProvider($provider)->toArray());
     }
 
