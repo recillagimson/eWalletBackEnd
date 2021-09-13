@@ -163,4 +163,18 @@ class DrcrMemoController extends Controller
     return $this->drcrMemoService->reportFiltered($request->all());
     }
 
+    public function reportFilteredPending(Request $request) {
+        $attr = $request->all();
+        if($attr && !isset($attr['filter_by'])) {
+            $attr['filter_by'] = 'STATUS';
+            $attr['filter_value'] = 'PENDING';
+        }
+        return $this->drcrMemoService->reportFiltered($attr);
+    }
+
+    public function reportFilteredPerUser(Request $request) {
+        $attr = $request->all();
+        return $this->drcrMemoService->reportFiltered($attr);
+    }
+
 }
