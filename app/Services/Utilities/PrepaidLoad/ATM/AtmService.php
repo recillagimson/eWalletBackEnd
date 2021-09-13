@@ -117,15 +117,16 @@ class AtmService implements IAtmService
 
         $url = $this->baseUrl . $this->productsUrl;
         $response = $this->apiService->post($url, $data, $headers);
+        Log::info('ATM Product Lists', $response);
 
         if ($response->successful()) {
             $data = $response->json();
             $state = $data['responseCode'];
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
-                return ($provider == TopupTypes::atm_epin) ? 
-                $prefixes->where('productType', $provider)->sortBy(['provider', 'productCode', 'denominations']) :
-                $prefixes->where('provider', $provider)->sortBy(['provider', 'productCode', 'denominations']);
+                return ($provider == TopupTypes::atm_epin) ?
+                    $prefixes->where('productType', $provider)->sortBy(['provider', 'productCode', 'denominations']) :
+                    $prefixes->where('provider', $provider)->sortBy(['provider', 'productCode', 'denominations']);
             }
         }
 
