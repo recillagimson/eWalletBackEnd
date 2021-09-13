@@ -131,6 +131,8 @@ class AtmService implements IAtmService
                     return $product['provider'] . $product['productCode'];
                 });
 
+                Log::info('ATM Unique Products:', $uniqueProducts->values()->all());
+
                 return $uniqueProducts->values();
             }
         }
