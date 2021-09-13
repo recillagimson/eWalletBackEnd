@@ -117,7 +117,7 @@ class AtmService implements IAtmService
 
         $url = $this->baseUrl . $this->productsUrl;
         $response = $this->apiService->post($url, $data, $headers);
-        Log::info('ATM Product Lists', $response);
+        Log::info('ATM Product Lists', $response->json());
 
         if ($response->successful()) {
             $data = $response->json();
