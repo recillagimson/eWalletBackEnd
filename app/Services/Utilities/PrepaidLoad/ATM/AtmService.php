@@ -123,7 +123,7 @@ class AtmService implements IAtmService
             $state = $data['responseCode'];
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
-
+                Log::info('ATM Products:', $prefixes);
                 return $prefixes->where('provider', $provider)->sortBy(['provider', 'productCode', 'denominations']);
             }
         }
