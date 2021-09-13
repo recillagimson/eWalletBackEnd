@@ -2,6 +2,7 @@
 
 namespace App\Services\Loan;
 
+use App\Enums\ReferenceNumberTypes;
 use App\Repositories\Loan\ILoanRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 
@@ -20,7 +21,7 @@ class LoanService implements ILoanService
 
 
     public function generateReferenceNumber() {
-        $ref = $this->referenceNumberService->generate('LO');
+        $ref = $this->referenceNumberService->generate(ReferenceNumberTypes::Loan);
         return $ref;
     }
 
