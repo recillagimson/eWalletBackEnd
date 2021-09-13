@@ -7,6 +7,7 @@ namespace App\Services\BuyLoad;
 use App\Enums\AtmPrepaidResponseCodes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
+use App\Enums\TopupTypes;
 use App\Enums\TransactionCategories;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
@@ -33,7 +34,6 @@ use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Enums\TopupTypes;
 
 class BuyLoadService implements IBuyLoadService
 {
@@ -88,6 +88,7 @@ class BuyLoadService implements IBuyLoadService
     public function getProductsByProvider(string $mobileNumber): array
     {
         $provider = $this->atmService->getProvider($mobileNumber);
+        Log::info('ATM Provider:', ['provider' => $provider]);
         return array_values($this->atmService->getProductsByProvider($provider)->toArray());
     }
 
