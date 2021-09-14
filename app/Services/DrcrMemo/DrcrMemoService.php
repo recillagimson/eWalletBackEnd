@@ -387,7 +387,7 @@ class DrcrMemoService implements IDrcrMemoService
     // DRCR MEMO PER USER
     // DRCR MEMO PER USER
 
-    public function reportFilteredPerUser(array $attr, $isPerUser) {
+    public function reportFilteredPerUser(array $attr, $isPerUserStatus) {
         $from = Carbon::now()->subDays(30)->format('Y-m-d');
         $to = Carbon::now()->format('Y-m-d');
         $type = 'API';
@@ -415,6 +415,10 @@ class DrcrMemoService implements IDrcrMemoService
 
         if($attr && isset($attr['filter_value'])) {
             $filterValue = $attr['filter_value'];
+        }
+
+        if($isPerUserStatus) {
+            $isPerUser = true;
         }
 
         $data = [];
