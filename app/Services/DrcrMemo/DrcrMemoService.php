@@ -330,6 +330,7 @@ class DrcrMemoService implements IDrcrMemoService
         $filterBy = '';
         $filterValue = '';
         $userId = 0;
+        $isPending = false;
 
         if($attr && isset($attr['from']) && isset($attr['to'])) {
             $from = $attr['from'];
@@ -352,13 +353,17 @@ class DrcrMemoService implements IDrcrMemoService
             $filterValue = $attr['filter_value'];
         }
 
+        if($attr && isset($attr['is_pending_only'])) {
+            $isPending = $attr['is_pending_only'];
+        }   
+
         $data = [];
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
 
         if($type == 'API') {
-            $data = $this->drcrMemoRepository->reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, true);
+            $data = $this->drcrMemoRepository->reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, true, $isPending);
         } else {
-            $data = $this->drcrMemoRepository->reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, false);
+            $data = $this->drcrMemoRepository->reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, false, $isPending);
         }
 
         if($type == 'API') {
