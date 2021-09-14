@@ -213,4 +213,10 @@ class SmsService implements ISmsService
         return $this->userAccounts->getUser($userId);
     }
 
+    public function sendLoanConfirmation(string $to, string $firstName, string $refNo)
+    {
+        $content = "Hi " . $firstName. ", Thank you for using Squidpay My Loan. Please take note of your Squidpay Loan Application ID: " . $refNo . ". Kindly enter this in our loan partner, RFSC application page. For inquiries and concerns, you may call our 24/7 Customer Support Hotline at (632) 8521-7035 or email us at support@squidpay.ph.";
+        $this->sendMessages($to, $content);
+    }
+
 }

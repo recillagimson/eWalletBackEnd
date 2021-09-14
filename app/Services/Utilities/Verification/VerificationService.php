@@ -210,6 +210,11 @@ class VerificationService implements IVerificationService
                         $templateResponse['expiration_date'] = $entry->value;
                     }
 
+                    // CHECK IF DOB
+                    if(in_array($key, eKYC::dateOfBirth)) {
+                        $templateResponse['birth_date'] = $entry->value;
+                    }
+
                     // if($entry && $entry->value) {
                     //     $data[$key] = $entry->value;
                     // }

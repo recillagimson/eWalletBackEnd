@@ -17,4 +17,6 @@ interface IEmailService extends INotificationService
     public function updateEmailVerification(string $to, string $otp, string $recipientName);
 
     public function batchUploadNotification(UserAccount $user, string $successLink, string $failedLink);
+
+    public function sendLoanReferenceNumber(string $firstName, string $refNo, string $to);
 }

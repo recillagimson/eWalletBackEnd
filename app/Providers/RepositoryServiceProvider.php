@@ -118,6 +118,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use App\Repositories\InAddMoneyEcPay\InAddMoneyEcPayRepository;
+use App\Repositories\Loan\ILoanRepository;
+use App\Repositories\Loan\LoanRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -250,6 +252,9 @@ class RepositoryServiceProvider extends ServiceProvider
         
         // Dashboard
         $this->app->bind(IDashboardRepository::class, DashboardRepository::class);
+        
+        // Loan
+        $this->app->bind(ILoanRepository::class, LoanRepository::class);
 
     }
 

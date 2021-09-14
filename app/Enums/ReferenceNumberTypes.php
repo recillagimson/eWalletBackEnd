@@ -17,4 +17,5 @@ class ReferenceNumberTypes
     const CR = 'CR';
     const DI = 'DI';
     const ReceiveMoneyDBP = 'RF';
+    const Loan = 'LO';
 }
