@@ -244,7 +244,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 
     }
 
-    public function reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId = "", $isPaginated = false) {
+    public function reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId = "", $isPaginated = false, $isPendingOnly = false) {
         $record = DRCRView::where('transaction_date', '>=', $from)
             ->where('transaction_date', '<=', $to);
 
@@ -265,9 +265,13 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
                 $record = $record->where('Type', $filterValue );
             }
             // IF STATUS
-            else if($filterBy == 'STATUS') {
+            else if($filterBy == 'STATUS' && $isPendingOnly == false) {
                 $record = $record->where('Status', $filterValue);
             }
+        }
+
+        if($isPendingOnly) {
+            $record = $record->where('Status', 'PENDING');
         }
 
         if($userId != "") {
