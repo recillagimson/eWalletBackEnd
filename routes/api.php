@@ -442,6 +442,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/get/reference_number', [LoanController::class, 'generateReferenceNumber']);
         Route::post('/reference_number', [LoanController::class, 'storeReferenceNumber']);
     });
+
+    Route::prefix('/upb/add/money')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/oauth/redirect', [InAddMoneyUpbDirectController::class, 'addMoney']);
+    });
 });
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {

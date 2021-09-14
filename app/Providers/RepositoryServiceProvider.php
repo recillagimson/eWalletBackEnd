@@ -116,6 +116,8 @@ use App\Repositories\InReceiveFromDBP\InReceiveFromDBPRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\InAddMoneyUpbDirect\InAddMoneyUpbDirectRepository;
+use App\Repositories\InAddMoneyUpbDirect\IInAddMoneyUpbDirectRepository;
 use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use App\Repositories\InAddMoneyEcPay\InAddMoneyEcPayRepository;
 use App\Repositories\Loan\ILoanRepository;
@@ -243,13 +245,16 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // In Receive Money from DBP
         $this->app->bind(IInReceiveFromDBPRepository::class, InReceiveFromDBPRepository::class);
-        
+
+        // Add Money from UPB Direct
+        $this->app->bind(IInAddMoneyUpbDirectRepository::class, InAddMoneyUpbDirectRepository::class);
+
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
 
         //In Add Money ECPAY Repositories
         $this->app->bind(IInAddMoneyEcPayRepository::class, InAddMoneyEcPayRepository::class);
-        
+
         // Dashboard
         $this->app->bind(IDashboardRepository::class, DashboardRepository::class);
         
