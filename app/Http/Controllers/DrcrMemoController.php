@@ -177,4 +177,12 @@ class DrcrMemoController extends Controller
         return $this->drcrMemoService->reportFiltered($attr);
     }
 
+    public function updatedReportFilteredPerUser(Request $request) {
+        return $this->drcrMemoService->reportFilteredPerUser($request->all(), true);
+    }
+
+    public function updatedReportFilteredAll(Request $request) {
+        return $this->drcrMemoService->reportFilteredPerUser($request->all(), false);
+    }
+
 }
