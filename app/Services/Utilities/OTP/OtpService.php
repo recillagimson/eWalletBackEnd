@@ -127,10 +127,7 @@ class OtpService implements IOtpService
         }
 
         if ($otp->no_times_generated == $this->maximumOtpsAllowed) {
-            return (object) [
-                'status' => false,
-                'message' => "Reached the maximum times to generate OTP",
-            ];
+            $this->otpMaxedGenerationAttempts();
         }
 
         $otp->increment('no_times_generated');

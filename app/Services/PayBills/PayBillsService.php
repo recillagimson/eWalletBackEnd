@@ -82,32 +82,25 @@ class PayBillsService implements IPayBillsService
         for ($x = 0; $x < $billersCount; $x++) {
             if (
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::MECOR ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MWCOM ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MWSIN ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::RFID1 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PLDT6 ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::ETRIP ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SPLAN ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SKY01 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MCARE ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::AEON1 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BNECO ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PRULI ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::AECOR ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::CNVRG ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SMART ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::HCPHL ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::SSS01 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SSS02 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SSS03 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::DFA01 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::POEA1 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MWCOM ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SMART ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::RFID1 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MWSIN ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::CNVRG ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PWCOR ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::HDMF1 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::INEC1 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::VIECO ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::DVOLT ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::CGNAL ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SKY01 ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::MBCCC ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BPI00 ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::BNKRD ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::UNBNK ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PILAM ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::ADMSN ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::UBNK4 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::ASLNK
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BPI00 
             ) {
                 $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
             } else {

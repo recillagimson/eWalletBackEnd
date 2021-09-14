@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\BPI;
+namespace App\Http\Requests\Loan;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BPIProcessRequest extends FormRequest
+class StoreReferenceNumberRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,8 @@ class BPIProcessRequest extends FormRequest
     public function rules()
     {
         return [
-            'token' => 'required',
-            'otp' => 'required',
-            'transactionId' => 'required',
-            'amount' => 'required',
-            'refId' => 'required',
+            'user_account_id' => 'required|exists:user_accounts,id',
+            'reference_number' => 'required|unique:loans,reference_number'
         ];
     }
 }
