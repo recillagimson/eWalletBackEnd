@@ -86,7 +86,6 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user, $usernameField);
 
-
         //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
@@ -113,7 +112,7 @@ class AuthService implements IAuthService
 
     public function adminLogin(string $email, string $password): array
     {
-        $user = $this->userAccounts->getByUsername(UsernameTypes::Email, $email);
+        $user = $this->userAccounts->getAdminUserByEmail($email);
         if (!$user) $this->accountDoesntExist();
         if (!$user) $this->loginFailed();
         if (!$user->is_admin) $this->loginFailed();
@@ -215,7 +214,7 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
-        
+
         $this->sendOTP($usernameField, $username, OtpTypes::login);
     }
 
