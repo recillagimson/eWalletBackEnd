@@ -406,6 +406,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/report/filter', [DrcrMemoController::class, 'reportFiltered']);
         Route::post('/report/filter/pending/peruser', [DrcrMemoController::class, 'reportFilteredPending']);
         Route::post('/report/filter/peruser', [DrcrMemoController::class, 'reportFilteredPerUser']);
+
+        Route::post('/report/filter/run/peruser', [DrcrMemoController::class, 'updatedReportFilteredPerUser']);
+        Route::post('/report/filter/run/all', [DrcrMemoController::class, 'updatedReportFilteredAll']);
     });
 
     Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {

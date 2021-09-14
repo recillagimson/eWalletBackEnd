@@ -21,4 +21,5 @@ interface IDrcrMemoRepository extends IRepository
     public function reportData(string $from, string $to, string $filterBy, string $filterValue);
     public function reportDataFarmers(string $from, string $to, string $filterBy = '', string $filterValue = '', $type);
     public function reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId = "", $isPaginated = false);
+    public function updatedReportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId = "", $isPaginated = false);
 }

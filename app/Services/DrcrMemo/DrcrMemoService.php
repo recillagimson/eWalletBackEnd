@@ -2,28 +2,29 @@
 
 namespace App\Services\DrcrMemo;
 
+use Carbon\Carbon;
 use App\Enums\Currencies;
 use App\Enums\DrcrStatus;
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\SuccessMessages;
-use App\Enums\TransactionCategoryIds;
-use App\Enums\TransactionStatuses;
-use App\Exports\DRCR\DRCRReport;
-use App\Exports\DRCR\DRCRReportSupervisor;
 use App\Models\UserAccount;
+use App\Enums\SuccessMessages;
+use App\Exports\DRCR\DRCRReport;
+use App\Enums\TransactionStatuses;
+use App\Enums\ReferenceNumberTypes;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Enums\TransactionCategoryIds;
+use App\Traits\LogHistory\LogHistory;
+use Illuminate\Support\Facades\Storage;
+use App\Traits\Errors\WithDrcrMemoErrors;
+use App\Exports\DRCR\DRCRReportSupervisor;
+use App\Exports\DRCR\DRCRWithBalanceReport;
+use App\Services\Utilities\PDF\IPDFService;
+use Illuminate\Validation\ValidationException;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
+use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\PDF\IPDFService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Services\Utilities\Responses\IResponseService;
-use App\Traits\Errors\WithDrcrMemoErrors;
-use App\Traits\LogHistory\LogHistory;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class DrcrMemoService implements IDrcrMemoService
 {
@@ -372,6 +373,66 @@ class DrcrMemoService implements IDrcrMemoService
         // XLSX
         else if($type == 'XLSX') {
             Excel::store(new DRCRReportSupervisor($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        }
+    }
+
+    // DRCR MEMO PER USER
+    // DRCR MEMO PER USER
+    // DRCR MEMO PER USER
+
+    public function reportFilteredPerUser(array $attr, $isPerUser) {
+        $from = Carbon::now()->subDays(30)->format('Y-m-d');
+        $to = Carbon::now()->format('Y-m-d');
+        $type = 'API';
+        $filterBy = '';
+        $filterValue = '';
+        $userId = 0;
+        $isPerUser = false;
+
+        if($attr && isset($attr['from']) && isset($attr['to'])) {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+
+        if($attr && isset($attr['type'])) {
+            $type = $attr['type'];
+        }
+
+        if($attr && isset($attr['userId'])) {
+            $userId = $attr['userId'];
+        }
+
+        if($attr && isset($attr['filter_by'])) {
+            $filterBy = $attr['filter_by'];
+        }
+
+        if($attr && isset($attr['filter_value'])) {
+            $filterValue = $attr['filter_value'];
+        }
+
+        $data = [];
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+
+        if($type == 'API') {
+            $data = $this->drcrMemoRepository->updatedReportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, true, $isPerUser);
+        } else {
+            $data = $this->drcrMemoRepository->updatedReportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, false, $isPerUser);
+        }
+
+        if($type == 'API') {
+            return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
+        } 
+        // CSV
+        else if($type == 'CSV') {
+            Excel::store(new DRCRWithBalanceReport($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        }
+        // XLSX
+        else if($type == 'XLSX') {
+            Excel::store(new DRCRWithBalanceReport($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
         }
