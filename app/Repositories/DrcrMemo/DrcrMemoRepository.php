@@ -317,7 +317,7 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
         }
 
         if($isPerUser) {
-            $record = $record->where('user_created');
+            $record = $record->where('user_created', request()->user()->id);
         }
 
         $record = $record->whereIn('name', ['DR_MEMO', 'CR_MEMO']);
