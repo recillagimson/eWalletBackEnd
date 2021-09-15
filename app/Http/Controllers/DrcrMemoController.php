@@ -166,11 +166,13 @@ class DrcrMemoController extends Controller
     public function reportFilteredPending(Request $request) {
         $attr = $request->all();
         $attr['user_id'] = request()->user()->id;
+        $attr['is_pending_only'] = true;
         return $this->drcrMemoService->reportFiltered($attr);
     }
 
     public function reportFilteredPerUser(Request $request) {
         $attr = $request->all();
+        $attr['is_pending_only'] = true;
         return $this->drcrMemoService->reportFiltered($attr);
     }
 
