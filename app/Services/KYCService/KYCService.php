@@ -316,6 +316,12 @@ class KYCService implements IKYCService
         Log::info(json_encode($attr));
         if ($attr && isset($attr['result']) && isset($attr['result']['requestId'])) {
             $record = $this->kycRepository->findByRequestId($attr['result']['requestId']);
+            $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
+            if($tierApproval && $record->hv_result != 'green') {
+                $tierApproval->update([
+                    'status' => 'DECLINED'
+                ]);
+            }
             if ($record) {
                 $this->kycRepository->update($record, [
                     'hv_response' => json_encode($attr),
