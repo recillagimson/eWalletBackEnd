@@ -300,27 +300,42 @@ class UserProfileService implements IUserProfileService
                 $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id);
 
                 // WORK IN PROGRESS
-                // $dedup_responses = [];
-                // // INIT DEDUP
+                $dedup_responses = [];
+                // INIT DEDUP
                 // foreach($attr['id_photos_ids'] as $photo) {
-                //     if(isset($attr['id_selfie_ids']) && isset($attr['id_selfie_ids']['0'])) {
-                //         $idPhoto = $this->userPhotoRepository->get($photo);
-                //         $selfiePhoto = $this->selfiePhotoRepository->get($attr['id_selfie_ids']['0']);
+                    if(isset($attr['id_selfie_ids']['0']) && isset($attr['id_selfie_ids']['0'])) {
+                        $idPhoto = $this->userPhotoRepository->get($attr['id_photos_ids']['0']);
+                        $selfiePhoto = $this->selfiePhotoRepository->get($attr['id_selfie_ids']['0']);
 
-                //         $res = $this->kycService->verify([
-                //             'dob' => $attr['birth_date'],
-                //             'name' => $attr['first_name'] . " " . $attr['last_name'],
-                //             'id_number' => $idPhoto->id_number,
-                //             'user_account_id' => request()->user()->id,
-                //             'selfie' => Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30)),
-                //             'nid_front' => Storage::disk('s3')->temporaryUrl($idPhoto->photo_location, Carbon::now()->addMinutes(30))
-                //         ], false);
+                        $selfie = Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30));
+                        $nid = Storage::disk('s3')->temporaryUrl($idPhoto->photo_location, Carbon::now()->addMinutes(30));
 
-                //         array_push($dedup_responses, $res);
-                //     }
+                        if($idPhoto && $idPhoto->id_number) {
+                            $res = $this->kycService->verify([
+                                'dob' => $attr['birth_date'],
+                                'name' => $attr['first_name'] . " " . $attr['last_name'],
+                                'id_number' => $idPhoto->id_number,
+                                'user_account_id' => request()->user()->id,
+                                'selfie' => $selfie,
+                                'nid_front' => $nid
+                            ], false);
+                            $dedup_responses = $res;
+
+                            if($res->hv_result == 'failure') {
+                                $tierApproval->update([
+                                    'status' => 'DECLINED'
+                                ]);
+                            }
+
+                        } else {
+                            $dedup_responses = [
+                                'message' => 'No ID number',
+                                'user_id_photo' => $idPhoto->id,
+                            ];
+                        }
+                    }
                 // }
-                // return $dedup_responses;
-                // dd($dedup_responses);
+
 
                 $audit_remarks = request()->user()->account_number . " has requested to upgrade to Silver";
                 $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
@@ -333,7 +348,10 @@ class UserProfileService implements IUserProfileService
             // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
             DB::commit();
             // return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
-            return $addOrUpdate;
+
+            $returnableData = $addOrUpdate;
+            $returnableData['dedup_responses'] = $dedup_responses;
+            return $returnableData;
         } catch (\Exception $e) {
             throw $e;
         }
