@@ -44,6 +44,8 @@ use App\Services\FarmerProfile\FarmerProfileService;
 use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\KYCService\IKYCService;
 use App\Services\KYCService\KYCService;
+use App\Services\Loan\ILoanService;
+use App\Services\Loan\LoanService;
 use App\Services\MyTask\IMyTaskService;
 use App\Services\MyTask\MyTaskService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
@@ -245,6 +247,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IMyTaskService::class, MyTaskService::class);
         // Report
         $this->app->bind(IReportService::class, ReportService::class);
+        // Loan
+        $this->app->bind(ILoanService::class, LoanService::class);
     }
 
     /**

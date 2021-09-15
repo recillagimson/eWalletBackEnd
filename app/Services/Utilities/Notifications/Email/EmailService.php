@@ -10,6 +10,7 @@ use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
 use App\Mail\Farmers\BatchUploadNotification;
+use App\Mail\Loan\LoanRefNumber;
 use App\Mail\LoginVerification;
 use App\Mail\PayBills\PayBillsNotification;
 use App\Mail\Send2Bank\Send2BankReceipt;
@@ -277,5 +278,11 @@ class EmailService implements IEmailService
     {
         $userId = request()->user()->id;
         return $this->userAccounts->getUser($userId);
+    }
+
+    public function sendLoanReferenceNumber(string $firstName, string $refNo, string $to) {
+        $subject = 'SquidPay - Loan Confirmation';
+        $template = new LoanRefNumber($firstName, $refNo);
+        $this->sendMessage($to, $subject, $template);
     }
 }
