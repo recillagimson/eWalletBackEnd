@@ -122,6 +122,7 @@ class VerificationService implements IVerificationService
             // Init eKYC OCR
             $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
             $extractData = $this->extractData($eKYC, $idType->type);
+            dd($extractData);
 
             $params = [
                 'user_account_id' => $data['user_account_id'],
@@ -207,12 +208,21 @@ class VerificationService implements IVerificationService
 
                     // CHECK IF DOE
                     if(in_array($key, eKYC::expirationDateKey)) {
-                        $templateResponse['expiration_date'] = $entry->value;
+                        if($entry->value != '') {
+                            $templateResponse['expiration_date'] = Carbon::parse($entry->value)->toISOString();
+                        } else {
+                            $templateResponse['expiration_date'] = $entry->value;
+                        }
+                        // $templateResponse['expiration_date'] = $entry->value;
                     }
 
                     // CHECK IF DOB
                     if(in_array($key, eKYC::dateOfBirth)) {
-                        $templateResponse['birth_date'] = $entry->value;
+                        if($entry->value != '') {
+                            $templateResponse['birth_date'] = Carbon::parse($entry->value)->toISOString();
+                        } else {
+                            $templateResponse['birth_date'] = $entry->value;
+                        }
                     }
 
                     // if($entry && $entry->value) {
