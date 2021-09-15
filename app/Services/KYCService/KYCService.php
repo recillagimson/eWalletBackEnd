@@ -236,6 +236,17 @@ class KYCService implements IKYCService
             $url = $this->verifyUrl;
             $headers = $this->getAuthorizationHeaders();
 
+            $nid = $attr['nid_front'];
+            $selfie = $attr['selfie'];
+
+            if(!is_string($attr['nid_front'])) {
+                $nid = $attr['nid_front']->getPathname();
+                $selfie = $attr['selfie']->getPathname();
+            }
+
+            $selfieFile = new CURLFILE($nid);
+            $frontFile = new CURLFILE($selfie);
+
             $data = [
                 'callbackURL' => $this->callBackUrl,
                 'name' => $attr['name'],
@@ -243,8 +254,8 @@ class KYCService implements IKYCService
                 'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
                 'applicationId' => Str::uuid(),
                 'enrol' => $this->enrolId,
-                'selfie' => new CURLFILE($attr['selfie']->getPathname()),
-                'idFront' => new CURLFILE($attr['nid_front']->getPathname()),
+                'selfie' => $selfieFile,
+                'idFront' => $frontFile,
             ];
 
             $response = $this->curlService->curlPost($url, $data, $headers);
