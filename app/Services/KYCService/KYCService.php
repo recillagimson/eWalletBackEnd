@@ -268,7 +268,7 @@ class KYCService implements IKYCService
             $response = $this->curlService->curlPost($url, $data, $headers);
 
             $error = '';
-            if($response && $response['status']) {
+            if($response && isset($response['status'])) {
                 $error = $response['status'];
             }
 
