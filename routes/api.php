@@ -144,6 +144,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/confirmation/password', [AuthController::class, 'passwordConfirmation']);
 
         Route::post('/register', [RegisterController::class, 'register']);
+        Route::post('/register/validate/pin', [RegisterController::class, 'registerValidatePin']);
         Route::post('/register/validate', [RegisterController::class, 'registerValidate']);
 
         Route::post('/forgot/{keyType}', [ForgotKeyController::class, 'forgotKey']);

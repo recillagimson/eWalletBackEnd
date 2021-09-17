@@ -12,6 +12,7 @@ class SuccessMessages
     const confirmationSuccessful = 'Transaction confirmation successful';
 
     const accountRegistered = 'Account registration successful.';
+    const pinValidationPassed = 'Pin Code validation passed.';
     const accountValidationPassed = 'Account validation passed.';
     const accountVerification = 'Account verification successful.';
 
