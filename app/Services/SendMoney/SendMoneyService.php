@@ -161,7 +161,7 @@ class SendMoneyService implements ISendMoneyService
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
-
+        
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest, $user);
         $receiverDetails = $this->userDetails($receiverID);
@@ -248,6 +248,7 @@ class SendMoneyService implements ISendMoneyService
             'middle_name' => $user->middle_name,
             'name_extension' => $user->name_extension,
             'selfie_location' => $user->selfie_loction,
+            'user_account_id' => $user->user_account_id,
         ];
     }
 
