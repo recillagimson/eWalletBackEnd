@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\BPI;
+namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BPIFundTopUpRequest extends FormRequest
+class ValidatePinRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,7 @@ class BPIFundTopUpRequest extends FormRequest
     public function rules()
     {
         return [
-            'token' => 'required',
-            'amount' => 'required|min:1|max:50000|integer',
-            'accountNumberToken' => 'required',
-            // 'remarks' => 'required'
+            'pin_code' => 'required|digits:4|regex:/^(?!\b(.)\1+\b)/',
         ];
     }
 }

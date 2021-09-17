@@ -144,6 +144,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/confirmation/password', [AuthController::class, 'passwordConfirmation']);
 
         Route::post('/register', [RegisterController::class, 'register']);
+        Route::post('/register/validate/pin', [RegisterController::class, 'registerValidatePin']);
         Route::post('/register/validate', [RegisterController::class, 'registerValidate']);
 
         Route::post('/forgot/{keyType}', [ForgotKeyController::class, 'forgotKey']);
@@ -405,7 +406,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/report/filter', [DrcrMemoController::class, 'reportFiltered']);
         Route::post('/report/filter/pending/peruser', [DrcrMemoController::class, 'reportFilteredPending']);
-        Route::post('/report/filter/peruser', [DrcrMemoController::class, 'reportFilteredPerUser']);
+        Route::post('/report/filter/pending/all', [DrcrMemoController::class, 'reportFilteredPerUser']);
+
+        Route::post('/report/filter/run/peruser', [DrcrMemoController::class, 'updatedReportFilteredPerUser']);
+        Route::post('/report/filter/run/all', [DrcrMemoController::class, 'updatedReportFilteredAll']);
     });
 
     Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
@@ -438,6 +442,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/loans')->middleware(['decrypt.request'])->group(function() {
         Route::get('/get/reference_number', [LoanController::class, 'generateReferenceNumber']);
         Route::post('/reference_number', [LoanController::class, 'storeReferenceNumber']);
+    });
+
+    Route::prefix('/upb/add/money')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/oauth/redirect', [InAddMoneyUpbDirectController::class, 'addMoney']);
     });
 });
 

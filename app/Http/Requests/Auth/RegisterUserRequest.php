@@ -41,7 +41,8 @@ class RegisterUserRequest extends FormRequest
                 new IsPasswordValid()
             ],
             'password_confirmation' => 'required',
-            'pin_code' => 'required|digits:4|regex:/^(?!\b(.)\1+\b)/'
+            'pin_code' => 'required|digits:4|regex:/^(?!\b(.)\1+\b)/|confirmed',
+            'password_confirmation' => 'required'
         ];
     }
 

@@ -11,6 +11,8 @@ interface IUserAccountRepository extends IRepository
 
     public function getAdminUser(string $id);
 
+    public function getAdminUserByEmail(string $email);
+
     public function getAdminUsersByEmail(string $email): Collection;
 
     public function getAdminUsersByName(string $lastName, string $firstName): Collection;

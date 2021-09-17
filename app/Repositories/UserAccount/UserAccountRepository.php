@@ -83,6 +83,11 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getAdminUserBaseQuery()->where('id', '=', $id)->first();
     }
 
+    public function getAdminUserByEmail(string $email)
+    {
+        return $this->getAdminUserBaseQuery()->where('email', '=', $email)->first();
+    }
+
     public function getAdminUsersByEmail(string $email): Collection
     {
         return $this->getAdminUserBaseQuery()->where('email', '=', $email)->get();
@@ -101,7 +106,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             return $record;
         }
 
-        return $this->userAccountNotFound();
+        $this->userAccountNotFound();
     }
 
     public function getUser(string $id)
@@ -113,7 +118,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
     {
         return $this->getBaseQuery()->where($usernameField, '=', $username)->where('is_admin', '!=', 1)->first();
     }
-  
+
 
     public function getUserInfo(string $userAccountID)
     {
@@ -173,7 +178,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             return $record;
         }
 
-        return $this->userAccountNotFound();
+        $this->userAccountNotFound();
     }
 
     public function getUserCount()

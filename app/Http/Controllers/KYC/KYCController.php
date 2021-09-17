@@ -47,7 +47,7 @@ class KYCController extends Controller
         return $this->kycService->handleCallback($request->all());
     }
 
-    public function verifyRequest(Request $request) {
-        return $this->kycService->verifyRequest($request->requestId);
+    public function verifyRequest(string $requestId) {
+        return $this->kycService->verifyRequest($requestId);
     }
 }

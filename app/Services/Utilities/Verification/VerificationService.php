@@ -207,12 +207,21 @@ class VerificationService implements IVerificationService
 
                     // CHECK IF DOE
                     if(in_array($key, eKYC::expirationDateKey)) {
-                        $templateResponse['expiration_date'] = $entry->value;
+                        if($entry->value != '') {
+                            $templateResponse['expiration_date'] = Carbon::parse($entry->value)->toISOString();
+                        } else {
+                            $templateResponse['expiration_date'] = $entry->value;
+                        }
+                        // $templateResponse['expiration_date'] = $entry->value;
                     }
 
                     // CHECK IF DOB
                     if(in_array($key, eKYC::dateOfBirth)) {
-                        $templateResponse['birth_date'] = $entry->value;
+                        if($entry->value != '') {
+                            $templateResponse['birth_date'] = Carbon::parse($entry->value)->toISOString();
+                        } else {
+                            $templateResponse['birth_date'] = $entry->value;
+                        }
                     }
 
                     // if($entry && $entry->value) {
