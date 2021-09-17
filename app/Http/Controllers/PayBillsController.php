@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
 use App\Http\Requests\PayBills\PayBillsRequest;
+use App\Http\Requests\PayBills\ValidateAccountRequest;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\Utilities\PDF\IPDFService;
@@ -73,17 +74,17 @@ class PayBillsController extends Controller
      * @param PayBillsRequest $request
      * @return JsonResponse
      */
-    public function validateAccount(PayBillsRequest $request): JsonResponse
+    public function validateAccount(ValidateAccountRequest $request): JsonResponse
     {
-        $data = $request->post();
+        $data = $request->validated();
         $billerCode = $request->route('biller_code');
-        $accountNumber = $request->route('account_number');
+        $accountNumber = $data['account_number'];
+
         $verifyAccount = $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
-        if (isset($verifyAccount['provider_error'])) return $this->responseService->tpaErrorReponse($verifyAccount);
         return $this->responseService->successResponse($verifyAccount, SuccessMessages::transactionValidationSuccessful);
     }
 
-
+     
     /**
      * Creates Payment
      *
