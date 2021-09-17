@@ -46,11 +46,5 @@ class RegisterUserRequest extends FormRequest
         ];
     }
 
-    public function messages()
-{
-    return [
-        'pin_code.regex' => 'pin code must be unique.',
-    ];
-}
 
 }
