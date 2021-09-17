@@ -81,10 +81,11 @@ class PayBillsController extends Controller
         $accountNumber = $data['account_number'];
 
         return  $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
+        if (isset($verifyAccount['provider_error'])) return $this->responseService->tpaErrorReponse($verifyAccount);
         
     }
 
-
+     
     /**
      * Creates Payment
      *

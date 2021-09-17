@@ -15,25 +15,33 @@ class ValidateAccountRequest extends FormRequest
         // 1st BILLERS
 
         PayBillsConfig::MECOR  => [
-            'account_number' => 'required|digits:10',
+            'account_number' => 'required|digits:10',  // code 3
             'amount' => 'required|numeric|min:5.00|max:100000.00'
         ],
         PayBillsConfig::PLDT6 => [
-            'account_number' => 'required',
+            'account_number' => 'required|digits:10',  // code 26
             'amount' => 'required|numeric|min:200.00|max:100000.00',
+            'otherInfo.PhoneNumber' => 'required|digits:10',
+            'otherInfo.Service' => 'required|in:PL,PD,PU'
         ],
         PayBillsConfig::ETRIP => [
-            'account_number' => 'required|digits:12',
+            'account_number' => 'required|digits:12',  // "data": "NOT_FOUND"
             'amount' => 'required|numeric|min:500.00|max:100000.00'
         ],
+        PayBillsConfig::HCPHL => [
+            'account_number' => 'required|digits:10',  // code 26
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.Name' => "required",
+            'otherInfo.PhoneNo' => "required|digits:11",
+        ],
         PayBillsConfig::MWCOM => [
-            'account_number' => 'required|digits:8',
+            'account_number' => 'required|digits:8',    // code 26
             'amount' => 'required|numeric|min:20.00|max:100000.00'
         ],
         PayBillsConfig::SMART => [
             'account_number' => 'required|digits:10',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.Product' => 'required',
+            'otherInfo.Product' =>  'required|in:b,c',
             'otherInfo.TelephoneNumber' => 'required|digits:10'
         ],
         PayBillsConfig::MWSIN => [
@@ -43,23 +51,69 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::CNVRG => [
             'account_number' => 'required|digits:13',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.AccountName' => 'required',
+            'otherInfo.AccountName' => 'required|max:50',
         ],
         PayBillsConfig::INEC1 => [
-
+            'account_number' => 'required|digits:10',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.Name' => "required|max:100",
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y'
         ],
-        PayBillsConfig::VIECO => [],
-        PayBillsConfig::CGNAL => [],
+        PayBillsConfig::VIECO => [
+            'account_number' => 'required|between:11,13',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+        ],
+        PayBillsConfig::DVOLT => [
+            'account_number' => 'required|between:11,13',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+        ],
+        PayBillsConfig::CGNAL => [
+            'account_number' => 'required|digits:10',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.ExternalEntityName' => 'required|in:BAYAD',
+            'otherInfo.FirstName' => 'required|max:100',
+            'otherInfo.LastName' => 'required|max:100'
+        ],
         PayBillsConfig::MBCCC => [
             'account_number' => 'required|digits:16',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.ConsName' => 'required',
+            'otherInfo.ConsName' => 'required|max:100',
         ],
-        PayBillsConfig::BNKRD => [],
+        PayBillsConfig::BNKRD => [
+            'account_number' => 'required|digits:16',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => 'required|max:100',
+            'otherInfo.BillDate' => "required|date_format:m/d/Y",
+        ],
         PayBillsConfig::BPI00 => [
             'account_number' => 'required|digits:16',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.Service' => 'required',
+            'otherInfo.ConsName' => 'required|max:100',
+        ],
+        PayBillsConfig::PILAM => [
+            'account_number' => 'required|digits:10',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.DueDate' => "required|date_format:m/d/Y"
+        ],
+        PayBillsConfig::AEON1 => [
+            'account_number' => 'required|digits:10',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+        ],
+        PayBillsConfig::BNECO => [
+            'account_number' => 'required|digits:11',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.LastName' => "required",
+            'otherInfo.FirstName' => "required",
+            'otherInfo.DueDate' => "required|date_format:m/d/Y"
+        ],
+
+        PayBillsConfig::HDMF1 => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.PaymentType' => "required|in:MC,HL,MP2,ST",
+            'otherInfo.ContactNo' => "required",
+            'otherInfo.BillDate' => "required",
+            'otherInfo.DueDate' => "required",
         ],
 
     ];

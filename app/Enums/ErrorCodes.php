@@ -98,9 +98,11 @@ class ErrorCodes
     const transactionAlreadyBeenPaid = 723;
     const amountIsAboveWalletLimit = 724;
     const theOtherChargesMustbePhp = 725;
+    const randomError = 726;
     const theAccountNumberisNotSupportedByTheBank = 727;
     const theAccountNumberMustStartWithAnyOf = 728;
     const possibleDuplicateDetected  = 730;
     const invalidErrorCode = 731;
+    const invalidAccountNumber = 732;
 
 }

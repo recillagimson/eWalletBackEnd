@@ -134,13 +134,16 @@ class PayBillsService implements IPayBillsService
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
-        return (array)json_decode($response->body(), true);
-        
- 
-        if (isset($arrayResponse['exception'])) return $this->catchBayadErrors($arrayResponse['details'], $billerCode, $user);
+        $arrayResponse = (array)json_decode($response->body(), true);
 
-        // To get the DFO account or Disconnected account from MECOR
-         if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return  $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+        // To catch bayad validation for invalid accounts 
+        if (isset($arrayResponse['data']) && in_array($arrayResponse['data'], PayBillsConfig::billerInvalidMsg)) return $this->invalidAccountNumber();
+        
+        // To catch bayad general Error
+        if (isset($arrayResponse['exception'])) return $this->catchBayadErrors($arrayResponse['details'], $billerCode, $user);
+       
+        // To catch the DFO account or Disconnected account from MECOR
+        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return  $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
 
         // Check balance and monthly limit
         $this->validateTransaction($billerCode, $data, $user);

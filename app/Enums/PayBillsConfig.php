@@ -31,7 +31,10 @@ class PayBillsConfig
         PayBillsConfig::SKY01,
         PayBillsConfig::MBCCC,
         PayBillsConfig::BNKRD,
-        PayBillsConfig::BPI00
+        PayBillsConfig::BPI00,
+        PayBillsConfig::PILAM,
+        PayBillsConfig::AEON1,
+        PayBillsConfig::BNECO
     ];
 
     const MECOR = 'MECOR';
@@ -54,6 +57,56 @@ class PayBillsConfig
     const MBCCC = 'MBCCC';
     const BNKRD = 'BNKRD';
     const BPI00 = 'BPI00';
+
+    // old billers
+    const PILAM = 'PILAM';
+    const AEON1 = 'AEON1';
+    const BNECO = 'BNECO';
+
+
+    const billerInvalidMsg = [
+        PayBillsConfig::MECOR_INVALID_ACCT,
+        PayBillsConfig::PLDT6_INVALID_ACCT,
+        PayBillsConfig::ETRIP_INVALID_ACCT,
+        PayBillsConfig::HCPHL_INVALID_ACCT,
+        PayBillsConfig::MWCOM_INVALID_ACCT,
+        PayBillsConfig::SMART_INVALID_ACCT,
+        PayBillsConfig::MWSIN_INVALID_ACCT,
+        PayBillsConfig::CNVRG_INVALID_ACCT,
+        PayBillsConfig::HDMF1_INVALID_ACCT,
+        PayBillsConfig::INEC1_INVALID_ACCT,
+        PayBillsConfig::VIECO_INVALID_ACCT,
+        PayBillsConfig::DVOLT_INVALID_ACCT,
+        PayBillsConfig::CGNAL_INVALID_ACCT,
+        PayBillsConfig::MBCCC_INVALID_ACCT,
+        PayBillsConfig::BNKRD_INVALID_ACCT,
+        PayBillsConfig::BPI00_INVALID_ACCT,
+        PayBillsConfig::PILAM_INVALID_ACCT,
+        PayBillsConfig::AEON1_INVALID_ACCT,
+        PayBillsConfig::BNECO_INVALID_ACCT,
+    ];
+
+    // invalid account numbers
+
+    const MECOR_INVALID_ACCT = "Oh no! We can't find this Customer Account Number. Would you mind checking again? You'll find your 10-digit Meralco CAN on the lower left portion of your latest Meralco bill."; // code 3
+    const PLDT6_INVALID_ACCT = "AccountNo is invalid.";   // code 26
+    const ETRIP_INVALID_ACCT = "NOT_FOUND"; // "data": "NOT_FOUND"
+    const HCPHL_INVALID_ACCT = "Invalid Account Number";  // code 26
+    const MWCOM_INVALID_ACCT = "ContractAccountNumber is invalid."; // code 26
+    const SMART_INVALID_ACCT =  "AccountNo is invalid."; // code 26
+    const MWSIN_INVALID_ACCT =  "AccountNo is invalid."; // code 26
+    const CNVRG_INVALID_ACCT = "Invalid customer"; // code 26
+    const HDMF1_INVALID_ACCT = "RC002|The Reference number/ID provided is not valid."; // code 26
+    const INEC1_INVALID_ACCT = "AcountNo not found."; // code 26
+    const VIECO_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    const DVOLT_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    const CGNAL_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    const MBCCC_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
+    const BNKRD_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
+    const BPI00_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
+    const PILAM_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    const AEON1_INVALID_ACCT = "AccountNo is invalid."; //  "message": "Endpoint request timed out"
+    const BNECO_INVALID_ACCT = "AccountNo is invalid."; // code 26
 
 
 }

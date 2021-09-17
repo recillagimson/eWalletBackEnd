@@ -162,6 +162,11 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::theOtherChargesMustbePhp, $errorMessage);
     }
 
+    private function randomError($errorMessage)
+    {
+        $this->validationErrorMessage(ErrorCodes::randomError, $errorMessage);
+    }
+
     private function theAccountNumberisNotSupportedByTheBank($errorMessage)
     {
         $this->validationErrorMessage(ErrorCodes::theAccountNumberisNotSupportedByTheBank, $errorMessage);
@@ -175,6 +180,12 @@ trait WithPayBillsErrors
     private function possibleDuplicateDetected($errorMessage)
     {
         $this->validationErrorMessage(ErrorCodes::possibleDuplicateDetected, $errorMessage);
+    }
+
+    // invalid account number
+    private function invalidAccountNumber()
+    {
+        $this->validationErrorMessage(ErrorCodes::invalidAccountNumber, 'Invalid Account Number.');
     }
 
 }

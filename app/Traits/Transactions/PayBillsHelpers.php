@@ -21,6 +21,7 @@ use DB;
 use Exception;
 use Illuminate\Http\Client\Response;
 use Str;
+use Illuminate\Validation\Rule;
 
 use function GuzzleHttp\Promise\each;
 
@@ -277,37 +278,45 @@ trait PayBillsHelpers
     private function catchBayadErrors($errorDetails, $billerCode,UserAccount $user)
     {
         $errorCode = $errorDetails['code'];
+        $errorMsg = $errorDetails['message'];
+        
+        // To catch bayad validation for invalid accounts
+        if (in_array($errorMsg, PayBillsConfig::billerInvalidMsg)) return $this->invalidAccountNumber();
 
-        if ($errorCode == 1) return $this->accountWithDFO($errorDetails['message'], $errorDetails['validationNumber'],$billerCode, $user);
-        if ($errorCode == 2) return $this->disconnectedAccount($errorDetails['message']);
-        if ($errorCode == 3) return $this->invalidParameter($errorDetails['message']);
-        if ($errorCode == 4) return $this->parameterMissing($errorDetails['message']);
-        if ($errorCode == 5) return $this->invalidAccountNumberFormat($errorDetails['message']);
-        if ($errorCode == 6) return $this->insufficientAmount($errorDetails['message']);
-        if ($errorCode == 7) return $this->maximumAmountExceeded($errorDetails['message']);
-        if ($errorCode == 8) return $this->invalidNumericFormat($errorDetails['message']);
-        if ($errorCode == 9) return $this->invalidAlphaDashFormat($errorDetails['message']);
-        if ($errorCode == 10) return $this->invalidSelectedValue($errorDetails['message']);
-        if ($errorCode == 11) return $this->clientReferenceAlreadyExists($errorDetails['message']);
-        if ($errorCode == 12) return $this->callBackUrlIsInvalid($errorDetails['message']);
-        if ($errorCode == 13) return $this->transactionFrequencyLimitExceeded($errorDetails['message']);
-        if ($errorCode == 14) return $this->invalidOtherCharges($errorDetails['message']);
-        if ($errorCode == 15) return $this->invalidDateFormat($errorDetails['message']);
-        if ($errorCode == 16) return $this->invalidServiceFeeValue($errorDetails['message']);
-        if ($errorCode == 17) return $this->walletBalanceBelowThreshold($errorDetails['message']);
-        if ($errorCode == 18) return $this->invalidAlphaNumericFormat($errorDetails['message']);
-        if ($errorCode == 19) return $this->valueShouldBeSameAsValueOfX($errorDetails['message']);
-        if ($errorCode == 20) return $this->accountNumberDidNotPassCheckDigitValidation($errorDetails['message']);
-        if ($errorCode == 21) return $this->invalidAmount($errorDetails['message']);
-        if ($errorCode == 22) return $this->accountNumberAlreadyExpired($errorDetails['message']);
-        if ($errorCode == 23) return $this->transactionAlreadyBeenPaid($errorDetails['message']);
-        if ($errorCode == 24) return $this->amountIsAboveWalletLimit($errorDetails['message']);
-        if ($errorCode == 25) return $this->theOtherChargesMustbePhp($errorDetails['message']);
-        if ($errorCode == 27) return $this->theAccountNumberisNotSupportedByTheBank($errorDetails['message']);
-        if ($errorCode == 28) return $this->theAccountNumberMustStartWithAnyOf($errorDetails['message']);
-        if ($errorCode == 30) return $this->possibleDuplicateDetected($errorDetails['message']);
+        // To catch general errors
+        if ($errorCode == 1) return $this->accountWithDFO($errorMsg, $errorDetails['validationNumber'],$billerCode, $user);
+        if ($errorCode == 2) return $this->disconnectedAccount($errorMsg);
+        if ($errorCode == 3) return $this->invalidParameter($errorMsg);
+        if ($errorCode == 4) return $this->parameterMissing($errorMsg);
+        if ($errorCode == 5) return $this->invalidAccountNumberFormat($errorMsg);
+        if ($errorCode == 6) return $this->insufficientAmount($errorMsg);
+        if ($errorCode == 7) return $this->maximumAmountExceeded($errorMsg);
+        if ($errorCode == 8) return $this->invalidNumericFormat($errorMsg);
+        if ($errorCode == 9) return $this->invalidAlphaDashFormat($errorMsg);
+        if ($errorCode == 10) return $this->invalidSelectedValue($errorMsg);
+        if ($errorCode == 11) return $this->clientReferenceAlreadyExists($errorMsg);
+        if ($errorCode == 12) return $this->callBackUrlIsInvalid($errorMsg);
+        if ($errorCode == 13) return $this->transactionFrequencyLimitExceeded($errorMsg);
+        if ($errorCode == 14) return $this->invalidOtherCharges($errorMsg);
+        if ($errorCode == 15) return $this->invalidDateFormat($errorMsg);
+        if ($errorCode == 16) return $this->invalidServiceFeeValue($errorMsg);
+        if ($errorCode == 17) return $this->walletBalanceBelowThreshold($errorMsg);
+        if ($errorCode == 18) return $this->invalidAlphaNumericFormat($errorMsg);
+        if ($errorCode == 19) return $this->valueShouldBeSameAsValueOfX($errorMsg);
+        if ($errorCode == 20) return $this->accountNumberDidNotPassCheckDigitValidation($errorMsg);
+        if ($errorCode == 21) return $this->invalidAmount($errorMsg);
+        if ($errorCode == 22) return $this->accountNumberAlreadyExpired($errorMsg);
+        if ($errorCode == 23) return $this->transactionAlreadyBeenPaid($errorMsg);
+        if ($errorCode == 24) return $this->amountIsAboveWalletLimit($errorMsg);
+        if ($errorCode == 25) return $this->theOtherChargesMustbePhp($errorMsg);
+        if ($errorCode == 26) return $this->randomError($errorMsg);
+        if ($errorCode == 27) return $this->theAccountNumberisNotSupportedByTheBank($errorMsg);
+        if ($errorCode == 28) return $this->theAccountNumberMustStartWithAnyOf($errorMsg);
+        if ($errorCode == 30) return $this->possibleDuplicateDetected($errorMsg);
 
+   
 
+    
 
     }
 
