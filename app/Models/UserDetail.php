@@ -55,7 +55,7 @@ class UserDetail extends Model
         'barangay',
         'signature_photo_location',
         'id_number',
-        'government_id_tpe',
+        'government_id_type',
         'district',
         'region',
         'sex',
