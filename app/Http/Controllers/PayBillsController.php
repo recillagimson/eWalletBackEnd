@@ -74,7 +74,7 @@ class PayBillsController extends Controller
      * @param PayBillsRequest $request
      * @return JsonResponse
      */
-    public function validateAccount(ValidateAccountRequest $request)//: JsonResponse
+    public function validateAccount(ValidateAccountRequest $request): JsonResponse
     {
         $data = $request->validated();
         $billerCode = $request->route('biller_code');
