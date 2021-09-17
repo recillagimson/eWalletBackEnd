@@ -52,7 +52,15 @@ class UserDetail extends Model
         'guardian_mobile_number',
         'is_accept_parental_consent',
         'avatar_location',
-        'barangay'
+        'barangay',
+        'signature_photo_location',
+        'id_number',
+        'government_id_tpe',
+        'district',
+        'region',
+        'sex',
+        'no_of_farm_parcel',
+        'total_farm_area',
     ];
 
     public function getFullNameAttribute(): string

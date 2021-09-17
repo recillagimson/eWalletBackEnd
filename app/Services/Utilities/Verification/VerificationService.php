@@ -389,4 +389,33 @@ class VerificationService implements IVerificationService
         ];
         // return to controller all created records
     }
+
+    public function uploadSignature(array $attr) {
+        // Delete existing first
+        // Get details first
+        $userDetails = $this->userDetailRepository->getByUserId($attr['user_account_id']);
+
+        // If no user Details
+        if(!$userDetails) {
+            throw ValidationException::withMessages([
+                'user_detail_not_found' => 'User Detail not found'
+            ]);
+        }
+
+        // GET EXT NAME
+        $signaturePhotoExt = $this->getFileExtensionName($attr['signature_photo']);
+        // GENERATE NEW FILE NAME
+        $signaturePhotoName = $attr['user_account_id'] . "/" . Str::random(40) . "." . $signaturePhotoExt;
+        // PUT FILE TO STORAGE
+        $signaturePhotoPath = $this->saveFile($attr['signature_photo'], $signaturePhotoName, 'signature_photo');
+
+        // SAVE SIGNATURE LOCATION ON USER DETAILS
+        $this->userDetailRepository->update($userDetails, [
+            'signature_photo_location' => $signaturePhotoPath
+        ]);
+
+        $userDetails = $this->userDetailRepository->getByUserId($attr['user_account_id']);
+
+        return $userDetails;
+    }
 }
