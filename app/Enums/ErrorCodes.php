@@ -59,12 +59,6 @@ class ErrorCodes
     const isEmpty = 417;
     const isExisting = 418;
     const kycRecordNotFound = 419;
-    const invalidDigitsLength = 420;
-    const noAmountProvided = 421;
-    const requiredField = 422;
-    const minimumAmount = 423;
-    const bpiFundTopUp = 424;
-    const bpiTransactionError = 425;
 
     //BUY LOAD - 500
     const buyLoadMobileNumberPrefixNotSupported = 501;
@@ -77,5 +71,38 @@ class ErrorCodes
     // eKYC - 600
     const ocrMismatch = 601;
     const verifyRequestFailed = 602;
+
+    // Bayad Center 700
+    const accountWithDFO = 701;
+    const disconnectedAccount = 702;
+    const invalidParameter = 703;
+    const parameterMissing = 704;
+    const invalidAccountNumberFormat = 705;
+    const insufficientAmount = 706;
+    const maximumAmountExceeded = 707; 
+    const invalidNumericFormat = 708;
+    const invalidAlphaDashFormat = 709; 
+    const invalidSelectedValue = 710;
+    const clientReferenceAlreadyExists = 711;
+    const callBackUrlIsInvalid = 712;
+    const transactionFrequencyLimitExceeded = 713;
+    const invalidOtherCharges = 714;
+    const invalidDateFormat = 715;
+    const invalidServiceFeeValue = 716;
+    const walletBalanceBelowThreshold = 717;
+    const invalidAlphaNumericFormat = 718;
+    const valueShouldBeSameAsValueOfX = 719;
+    const accountNumberDidNotPassCheckDigitValidation = 720;
+    const invalidAmount = 721;
+    const accountNumberAlreadyExpired = 722;
+    const transactionAlreadyBeenPaid = 723;
+    const amountIsAboveWalletLimit = 724;
+    const theOtherChargesMustbePhp = 725;
+    const randomError = 726;
+    const theAccountNumberisNotSupportedByTheBank = 727;
+    const theAccountNumberMustStartWithAnyOf = 728;
+    const possibleDuplicateDetected  = 730;
+    const invalidErrorCode = 731;
+    const invalidAccountNumber = 732;
 
 }
