@@ -103,6 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::post('auth/user/verification', [UserPhotoController::class, 'createVerification']);
     Route::post('auth/user/selfie', [UserPhotoController::class, 'createSelfieVerification']);
+    Route::post('auth/user/signature', [UserPhotoController::class, 'uploadSignature']);
     Route::get('auth/user/photo/{userPhotoId}', [UserPhotoController::class, 'getImageSignedUrl']);
     Route::post('user/change_avatar', [UserProfileController::class, 'changeAvatar']);
     // Admin manual ID and selfie upload
