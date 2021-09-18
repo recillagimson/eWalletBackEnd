@@ -157,7 +157,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             //     $this->headers = $entry;
             // }
             // if($index != 0) {
-                // \DB::beginTransaction();
+                \DB::beginTransaction();
                 try {
                     if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && !$this->userAccountRepository->getAccountDetailByRSBSANumber(preg_replace("/[^0-9]/", "", $entry['rsbsa_reference_number']))) {
                         $userAccount = $this->setupUserAccount($entry);
@@ -171,14 +171,14 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                             'remarks' => 'Row ' . $row . ", Duplicate Data"
                         ];
                         $this->fails->push(array_merge($remarks, $entry->toArray()));
-                        // \DB::rollBack();
+                        \DB::rollBack();
                     }
                 } catch (\Exception $e) {
                     $remarks = [
                         'remarks' => 'Row ' . $row . ", " . $e->getMessage()
                     ];
                     $this->fails->push(array_merge($remarks, $entry->toArray()));
-                    // \DB::rollBack();
+                    \DB::rollBack();
                 }
             }
         // }
