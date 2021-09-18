@@ -28,7 +28,6 @@ class SuccessExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            "REMARKS",
             "RSBSA REFERENCE NUMBER",
             "FIRSTNAME",
             "MIDDLENAME",
