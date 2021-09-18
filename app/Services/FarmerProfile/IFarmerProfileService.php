@@ -12,4 +12,6 @@ interface IFarmerProfileService
     public function subsidyBatchUpload($file, string $authUser);
 
     public function processBatchUpload(UploadedFile $file, string $userId);
+
+    public function batchUploadV2($file, string $authUser);
 }
