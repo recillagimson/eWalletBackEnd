@@ -5,11 +5,14 @@ namespace App\Imports\Farmers;
 use App\Enums\Currencies;
 use App\Enums\AccountTiers;
 use App\Enums\DBPUploadKeys;
+use App\Rules\RSBSAUniqueRule;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Validators\Failure;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -24,11 +27,10 @@ use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailure, SkipsOnError, WithEvents, WithChunkReading, WithBatchInserts, WithHeadingRow
 {
-    use RegistersEventListeners, RemembersRowNumber, SkipsFailures;
+    use RegistersEventListeners, RemembersRowNumber, SkipsFailures, SkipsErrors;
 
     /**
     * @param Collection $collection
@@ -155,9 +157,9 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             //     $this->headers = $entry;
             // }
             // if($index != 0) {
-                \DB::beginTransaction();
+                // \DB::beginTransaction();
                 try {
-                    if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && !$this->userAccountRepository->getAccountDetailByRSBSANumber($entry['rsbsa_reference_number'])) {
+                    if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && !$this->userAccountRepository->getAccountDetailByRSBSANumber(preg_replace("/[^0-9]/", "", $entry['rsbsa_reference_number']))) {
                         $userAccount = $this->setupUserAccount($entry);
                         $this->setupUserProfile($entry, $userAccount);
                         $this->setupUserBalance($userAccount->id);
@@ -169,14 +171,14 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                             'remarks' => 'Row ' . $row . ", Duplicate Data"
                         ];
                         $this->fails->push(array_merge($remarks, $entry->toArray()));
-                        \DB::rollBack();
+                        // \DB::rollBack();
                     }
                 } catch (\Exception $e) {
                     $remarks = [
                         'remarks' => 'Row ' . $row . ", " . $e->getMessage()
                     ];
                     $this->fails->push(array_merge($remarks, $entry->toArray()));
-                    \DB::rollBack();
+                    // \DB::rollBack();
                 }
             }
         // }
@@ -186,7 +188,9 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
     public function rules(): array
     {
         return [
-            'rsbsa_reference_number' => ['required', 'exists:user_accounts,rsbsa_number'],
+            'rsbsa_reference_number' => ['required', 
+                new RSBSAUniqueRule(),
+            ],
             'firstname' => ['required'],
             'middlename' => [],
             'lastname' => ['required'],
