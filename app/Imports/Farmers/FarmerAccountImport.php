@@ -166,13 +166,12 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                         \DB::commit();
                     } else {
                         $remarks = [
-                            'remarks' => 'Row ' . $this->getRowNumber() . ", Duplicate Data"
+                            'remarks' => 'Row ' . $row . ", Duplicate Data"
                         ];
                         $this->fails->push(array_merge($remarks, $entry->toArray()));
                         \DB::rollBack();
                     }
                 } catch (\Exception $e) {
-                    dd($e->getMessage());
                     $remarks = [
                         'remarks' => 'Row ' . $row . ", " . $e->getMessage()
                     ];
