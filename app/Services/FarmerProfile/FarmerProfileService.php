@@ -5,6 +5,8 @@ namespace App\Services\FarmerProfile;
 use App\Enums\AccountTiers;
 use App\Enums\eKYC;
 use App\Enums\SquidPayModuleTypes;
+use App\Exports\Farmer\Export\FailedExport;
+use App\Exports\Farmer\Export\SuccessExport;
 use App\Exports\Farmer\FailedUploadExport;
 use App\Exports\Farmer\SubsidyFailedUploadExport;
 use App\Exports\Farmer\SubsidySuccessUploadExport;
@@ -213,12 +215,22 @@ class FarmerProfileService implements IFarmerProfileService
         $fileName = request()->user()->id . "/" . \Str::random(40) . "." . $fileExt;
         $filePath = $this->saveFile($file, $fileName, 'dbp_uploads');
 
-        $import = new FarmerAccountImport($this->userDetail);
+        $import = new FarmerAccountImport($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
         Excel::import($import, $filePath, 's3');
 
         $errors = $import->getFails();
         $success = $import->getSuccesses();
-        dd($success);
+        $headers = $import->getHeaders();
 
+        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.csv';
+        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.csv';
+
+        Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
+        Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');
+
+        return [
+            'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
+            'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30))
+        ];
     }
 }
