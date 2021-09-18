@@ -159,7 +159,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             // if($index != 0) {
                 \DB::beginTransaction();
                 try {
-                    if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && !$this->userAccountRepository->getAccountDetailByRSBSANumber(preg_replace("/[^0-9]/", "", $entry['rsbsa_reference_number']))) {
+                    if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && !$this->userAccountRepository->getAccountDetailByRSBSANumber(preg_replace("/[^0-9]/", "", $entry['rsbsa_reference_number'])) && !in_array(preg_replace("/[^0-9]/", "", $entry['rsbsa_reference_number']), $this->errorBag->toArray())){
                         $userAccount = $this->setupUserAccount($entry);
                         $this->setupUserProfile($entry, $userAccount);
                         $this->setupUserBalance($userAccount->id);
@@ -289,6 +289,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                     }
                 }
             }
+            $this->errorBag->push(preg_replace("/[^0-9]/", "", $key));
             $this->fails->push($data);
         }
     }
