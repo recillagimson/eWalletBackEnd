@@ -157,7 +157,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             // if($index != 0) {
                 \DB::beginTransaction();
                 try {
-                    if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && $this->userAccountRepository->getAccountDetailByRSBSANumber($entry['rsbsa_reference_number'])) {
+                    if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && !$this->userAccountRepository->getAccountDetailByRSBSANumber($entry['rsbsa_reference_number'])) {
                         $userAccount = $this->setupUserAccount($entry);
                         $this->setupUserProfile($entry, $userAccount);
                         $this->setupUserBalance($userAccount->id);
