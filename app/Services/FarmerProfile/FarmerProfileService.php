@@ -5,10 +5,13 @@ namespace App\Services\FarmerProfile;
 use App\Enums\AccountTiers;
 use App\Enums\eKYC;
 use App\Enums\SquidPayModuleTypes;
+use App\Exports\Farmer\Export\FailedExport;
+use App\Exports\Farmer\Export\SuccessExport;
 use App\Exports\Farmer\FailedUploadExport;
 use App\Exports\Farmer\SubsidyFailedUploadExport;
 use App\Exports\Farmer\SubsidySuccessUploadExport;
 use App\Exports\Farmer\SuccessUploadExport;
+use App\Imports\Farmers\FarmerAccountImport;
 use App\Imports\Farmers\FarmersImport;
 use App\Imports\Farmers\SubsidyImport;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
@@ -46,6 +49,7 @@ class FarmerProfileService implements IFarmerProfileService
     private IUserProfileService $userProfileService;
     private IUserAccountNumberRepository $userAccountNumbers;
     private IMaritalStatusRepository $maritalStatus;
+    private IUserDetailRepository $userDetail;
 
     private IUserAccountRepository $userAccountRepository;
     private IUserDetailRepository $userDetailRepository;
@@ -75,7 +79,8 @@ class FarmerProfileService implements IFarmerProfileService
         IInReceiveFromDBPRepository       $inReceiveFromDBP,
         IUserTransactionHistoryRepository $userTransactionHistoryRepository,
         IReferenceNumberService           $referenceNumberService,
-        IEmailService                     $emailService
+        IEmailService                     $emailService,
+        IUserDetailRepository             $userDetail
     )
     {
         $this->userApprovalRepository = $userApprovalRepository;
@@ -95,6 +100,7 @@ class FarmerProfileService implements IFarmerProfileService
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->referenceNumberService = $referenceNumberService;
         $this->emailService = $emailService;
+        $this->userDetail = $userDetail;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
@@ -197,5 +203,34 @@ class FarmerProfileService implements IFarmerProfileService
         $user = $this->userAccountRepository->getUser($userId);
         $result = $this->batchUpload($file, $userId);
         $this->emailService->batchUploadNotification($user, $result['success_file'], $result['fail_file']);
+    }
+
+    // UPLOADING V2
+    public function batchUploadV2($file, string $authUser)
+    {
+        ini_set('max_execution_time', 300);
+
+        // UPLOAD FIRST
+        $fileExt = $this->getFileExtensionName($file);
+        $fileName = request()->user()->id . "/" . \Str::random(40) . "." . $fileExt;
+        $filePath = $this->saveFile($file, $fileName, 'dbp_uploads');
+
+        $import = new FarmerAccountImport($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
+        Excel::import($import, $filePath, 's3');
+
+        $errors = $import->getFails();
+        $success = $import->getSuccesses();
+        $headers = $import->getHeaders();
+
+        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.csv';
+        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.csv';
+
+        Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
+        Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');
+
+        return [
+            'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
+            'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30))
+        ];
     }
 }
