@@ -157,7 +157,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             // if($index != 0) {
                 \DB::beginTransaction();
                 try {
-                    if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && $this->userAccountRepository->getAccountDetailByRSBSANumber($entry['rsbsa_reference_number'])) {
+                    if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && !$this->userAccountRepository->getAccountDetailByRSBSANumber($entry['rsbsa_reference_number'])) {
                         $userAccount = $this->setupUserAccount($entry);
                         $this->setupUserProfile($entry, $userAccount);
                         $this->setupUserBalance($userAccount->id);
@@ -166,13 +166,12 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                         \DB::commit();
                     } else {
                         $remarks = [
-                            'remarks' => 'Row ' . $this->getRowNumber() . ", Duplicate Data"
+                            'remarks' => 'Row ' . $row . ", Duplicate Data"
                         ];
                         $this->fails->push(array_merge($remarks, $entry->toArray()));
                         \DB::rollBack();
                     }
                 } catch (\Exception $e) {
-                    dd($e->getMessage());
                     $remarks = [
                         'remarks' => 'Row ' . $row . ", " . $e->getMessage()
                     ];
@@ -281,7 +280,9 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                 $fail = $failure->values();
                 if($fail['rsbsa_reference_number'] === $key) {
                     $data = $fail;
-                    $data = array_merge(['remarks' => "Row " . $failure->row() . ", " . $message], $data);
+                    if($failure->row() != "") {
+                        $data = array_merge(['remarks' => "Row " . $failure->row() . ", " . $message], $data);
+                    }
                 }
             }
             $this->fails->push($data);
