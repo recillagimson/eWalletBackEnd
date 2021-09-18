@@ -281,7 +281,9 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                 $fail = $failure->values();
                 if($fail['rsbsa_reference_number'] === $key) {
                     $data = $fail;
-                    $data = array_merge(['remarks' => "Row " . $failure->row() . ", " . $message], $data);
+                    if($failure->row() != "") {
+                        $data = array_merge(['remarks' => "Row " . $failure->row() . ", " . $message], $data);
+                    }
                 }
             }
             $this->fails->push($data);
