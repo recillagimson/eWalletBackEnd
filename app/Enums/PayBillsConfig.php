@@ -34,7 +34,7 @@ class PayBillsConfig
         PayBillsConfig::BPI00,
         PayBillsConfig::PILAM,
         PayBillsConfig::AEON1,
-        PayBillsConfig::BNECO
+        PayBillsConfig::BNECO,
 
         //PRULIFE
         PayBillsConfig::PRULI
