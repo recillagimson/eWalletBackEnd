@@ -47,6 +47,7 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
     private $nationality;
     private $profession;
     private $sourceOfFund;
+    private $prov;
     private IUserAccountRepository $userAccounts;
     private IUserAccountNumberRepository $userAccountNumbers;
     // private IMaritalStatusRepository $maritalStatus;
@@ -72,6 +73,7 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
         $this->nationality = Nationality::pluck('id', 'description');
         $this->profession = NatureOfWork::pluck('id', 'description');
         $this->sourceOfFund = SourceOfFund::pluck('id', 'description');
+        $this->prov = null;
     }
 
     // /**
@@ -84,6 +86,10 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
 
     public function model(array $row)
     {
+        if(!$this->prov && $row['province']) {
+            $this->prov = $row['province'];
+        }
+        
         if (!$this->userDetail->getIsExistingByNameAndBirthday(
                 $row['firstname'], 
                 $row['middlename'], 
@@ -327,5 +333,10 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
     public function getSuccesses()
     {
         return $this->successes;
+    }
+
+    public function getProv()
+    {
+        return $this->prov;
     }
 }
