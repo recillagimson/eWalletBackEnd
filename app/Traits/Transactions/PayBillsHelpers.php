@@ -12,6 +12,7 @@ use App\Enums\UsernameTypes;
 use App\Models\OutPayBills;
 use App\Models\UserAccount;
 use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
+use App\Traits\Errors\WithPayBillsErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithUserErrors;
 use App\Traits\StringHelpers;
@@ -27,7 +28,7 @@ use function GuzzleHttp\Promise\each;
 
 trait PayBillsHelpers
 {
-    use WithUserErrors, WithTpaErrors, UserHelpers, StringHelpers;
+    use WithUserErrors, WithTpaErrors, UserHelpers, StringHelpers, WithPayBillsErrors;
 
     private IBayadCenterService $bayadCenterService;
 
@@ -50,7 +51,7 @@ trait PayBillsHelpers
     private function validateTransaction(string $billerCode, array $data, UserAccount $user)
     {
         $isEnough = $this->checkAmount($user, $data, $billerCode);
-        if (!$isEnough) $this->insuficientBalance();
+        if (!$isEnough) $this->payBillsNotEnoughBalance($this->getOtherCharges($billerCode) ,$this->getServiceFee($user));
         $this->checkMonthlyLimit($user, $data);
     }
 
