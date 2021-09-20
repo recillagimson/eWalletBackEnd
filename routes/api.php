@@ -441,6 +441,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/farmers/list', [ReportController::class, 'FarmersList']);
     });
 
+    Route::prefix('/s3')->middleware(['decrypt.request'])->group(function() {
+        Route::post('/link', [ReportController::class, 'generateS3Link']);
+    });
+
     Route::prefix('/loans')->middleware(['decrypt.request'])->group(function() {
         Route::get('/get/reference_number', [LoanController::class, 'generateReferenceNumber']);
         Route::post('/reference_number', [LoanController::class, 'storeReferenceNumber']);
