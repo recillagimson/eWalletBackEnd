@@ -26,4 +26,9 @@ class DBPUploadKeys
     const region = 'region';
     const govtidtype = 'govtidtype';
     const idNumber = 'idnumber';
+    const nationality = 'nationality';
+    const profession = 'profession';
+    const sourceoffunds = 'sourceoffunds';
+    const mothermaidenname = 'mothermaidenname';
+
 }
