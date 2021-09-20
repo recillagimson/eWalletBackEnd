@@ -249,9 +249,9 @@ class KYCService implements IKYCService
             }
 
 
-            $selfieFile = new CURLFILE($nid);
+            $selfieFile = new CURLFILE($selfie);
             // $selfieFile = file_get_contents($nid);
-            $frontFile = new CURLFILE($selfie);
+            $frontFile = new CURLFILE($nid);
             // $frontFile = file_get_contents($selfie);
 
             $data = [

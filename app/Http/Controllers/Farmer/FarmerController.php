@@ -81,16 +81,24 @@ class FarmerController extends Controller
 
         return $this->responseService->successResponse($import, SuccessMessages::updateUserSuccessful);
     }
-
+    
     public function processBatchUpload(FarmerBatchUploadRequest $request): JsonResponse
     {
         $this->dispatch(new BatchUpload($request->file, $request->user()->id));
         return $this->responseService->successResponse(null, SuccessMessages::processingRequestWithEmailNotification);
     }
-
+    
     public function subsidyBatchUpload(FarmerBatchUploadRequest $request): JsonResponse
     {
         $import = $this->farmerProfileService->subsidyBatchUpload($request->file, request()->user()->id);
+        
+        return $this->responseService->successResponse($import, SuccessMessages::updateUserSuccessful);
+    }
+
+    // UPLOADING V2
+    public function batchUploadV2(FarmerBatchUploadRequest $request): JsonResponse
+    {
+        $import = $this->farmerProfileService->batchUploadV2($request->file, request()->user()->id);
 
         return $this->responseService->successResponse($import, SuccessMessages::updateUserSuccessful);
     }

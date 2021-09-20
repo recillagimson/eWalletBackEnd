@@ -196,4 +196,8 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         $this->userAccountNotFound();
     }
 
+    public function getAccountDetailByRSBSANumber(string $rsbsa_number) {
+        return $this->model->where('rsbsa_number', $rsbsa_number)->first();
+    }
+
 }

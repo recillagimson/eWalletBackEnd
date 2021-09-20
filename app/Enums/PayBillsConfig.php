@@ -34,7 +34,10 @@ class PayBillsConfig
         PayBillsConfig::BPI00,
         PayBillsConfig::PILAM,
         PayBillsConfig::AEON1,
-        PayBillsConfig::BNECO
+        PayBillsConfig::BNECO,
+
+        //PRULIFE
+        PayBillsConfig::PRULI
     ];
 
 
@@ -86,6 +89,7 @@ class PayBillsConfig
     const PILAM = 'PILAM';
     const AEON1 = 'AEON1';
     const BNECO = 'BNECO';
+    const PRULI = 'PRULI';
 
     // invalid account numbers
 
