@@ -5,6 +5,7 @@ namespace App\Traits\Errors;
 
 
 use App\Enums\ErrorCodes;
+use App\Enums\PayBillsConfig;
 use Illuminate\Validation\ValidationException;
 
 trait WithPayBillsErrors
@@ -28,6 +29,12 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::userInsufficientBalance, 'Not Enough balance.');
     }
 
+    private function payBillsNotEnoughBalance($otherCharges, $serviceFee)
+    {
+        $this->validationErrorMessage(ErrorCodes::payBillsNotEnoughBalance, 'Not Enough balance. This service has PHP '. number_format($serviceFee,2).' service fee and PHP '. number_format($otherCharges,2) .' other charges fee.');
+    }
+
+    
     private function invalidUser()
     {
         $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exists.');
@@ -188,4 +195,9 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::invalidAccountNumber, 'Invalid Account Number.');
     }
 
+    private function endpointRequestTimeOut()
+    {
+        $this->validationErrorMessage(ErrorCodes::endpointRequestTimeOut, PayBillsConfig::endpointRequestTimeOut);
+    }
+    
 }
