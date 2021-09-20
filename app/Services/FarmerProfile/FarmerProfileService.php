@@ -238,10 +238,7 @@ class FarmerProfileService implements IFarmerProfileService
         $this->notificationRepository->create([
             'user_account_id' => request()->user()->id,
             'title' => 'DBP Upload',
-            'description' => json_encode([
-                'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
-                'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30))
-            ]),
+            'description' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30))  . ", " . Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
             'status' => 1,
             'user_created' => request()->user()->id,
             'user_updated' => request()->user()->id
