@@ -167,11 +167,14 @@ class FarmerProfileService implements IFarmerProfileService
             $this->userBalanceInfo,
             $authUser);
 
-        Excel::import($import, $file);
+        $filename = date('Y-m-d') . '-' . $file->getClientOriginalName();
+        Storage::disk('s3')->putFileAs('farmers', $file, $filename);
 
-        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.csv';
-        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.csv';
+        Excel::import($import, 'farmers/' . $filename, 's3');
 
+        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadLists.csv';
+        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadLists.csv';
+        
         Excel::store(new FailedUploadExport($import->getFails()), $failFilename, 's3');
         Excel::store(new SuccessUploadExport($import->getSuccesses()), $successFilename, 's3');
 
