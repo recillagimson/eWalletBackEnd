@@ -74,14 +74,15 @@ class PayBillsController extends Controller
      * @param PayBillsRequest $request
      * @return JsonResponse
      */
-    public function validateAccount(ValidateAccountRequest $request): JsonResponse
+    public function validateAccount(ValidateAccountRequest $request)//: JsonResponse
     {
         $data = $request->validated();
         $billerCode = $request->route('biller_code');
         $accountNumber = $data['account_number'];
 
-        $verifyAccount = $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
-        return $this->responseService->successResponse($verifyAccount, SuccessMessages::transactionValidationSuccessful);
+        return  $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
+    //    if (isset($verifyAccount['provider_error'])) return $this->responseService->tpaErrorReponse($verifyAccount);
+        
     }
 
      
