@@ -28,6 +28,8 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Models\UserUtilities\UserDetail;
+use App\Http\Requests\User\DAPersonelRequest;
 
 class UserProfileController extends Controller
 {
@@ -178,6 +180,16 @@ class UserProfileController extends Controller
         // dd($request->all());
         // $record = $this->userProfileService->upgradeFarmerToSilver($request->all());
         // return $this->responseService->successResponse($record, SuccessMessages::updateUserSuccessful);
+    }
+
+    public function addDAPersonel(DAPersonelRequest $request)
+    {
+        $details = $request->validated();
+        $userdetail = $this->userDetailRepository->getByUserId($request->user()->id);
+
+        $updateRecord = $this->userDetailRepository->update($userdetail, $details);
+      
+        return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
     }
 
 }

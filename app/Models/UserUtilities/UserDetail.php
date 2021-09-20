@@ -78,6 +78,9 @@ class UserDetail extends Model
         'sex',
         'no_of_farm_parcel',
         'total_farm_area',
+        'name_of_da_personel',
+        'da_remarks',
+        'is_da_update',
     ];
 
     public function getUserAccount()
