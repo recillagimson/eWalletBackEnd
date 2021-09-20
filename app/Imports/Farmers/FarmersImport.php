@@ -238,9 +238,9 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
     private function setupUserProfile($userId, $row)
     {
         $marital = isset($row['civilstatus'])&& $row['civilstatus'] ? $this->maritalStatus[ucwords(strtolower($row['civilstatus']))] : null;
-        $national = $this->nationality[ucwords(strtolower($row['nationality']))];
-        $profession = $this->profession[ucwords(strtolower($row['profession']))];
-        $sourceoffund = $this->sourceOfFund[ucwords(strtolower($row['sourceoffunds']))];
+        $national = isset($row['nationality'])&& $row['nationality'] ? $this->nationality[ucwords(strtolower($row['nationality']))] : null;
+        $profession = isset($row['profession'])&& $row['profession'] ? $this->profession[ucwords(strtolower($row['profession']))] : null;
+        $sourceoffund = isset($row['sourceoffunds'])&& $row['sourceoffunds'] ? $this->sourceOfFund[ucwords(strtolower($row['sourceoffunds']))] : null;
         $dob = is_numeric($row['birthdateyyyy_mm_dd']) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['birthdateyyyy_mm_dd'])) : \Carbon\Carbon::parse(strtotime($row['birthdateyyyy_mm_dd']));
 
         $profile = [
