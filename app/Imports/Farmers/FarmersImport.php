@@ -34,7 +34,7 @@ use App\Models\UserUtilities\NatureOfWork;
 use App\Models\UserUtilities\SourceOfFund;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnError, WithEvents, WithChunkReading, WithBatchInserts, WithValidations
+class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnError, WithEvents, WithChunkReading, WithBatchInserts, WithValidation
 {
     use RegistersEventListeners, RemembersRowNumber;
 
