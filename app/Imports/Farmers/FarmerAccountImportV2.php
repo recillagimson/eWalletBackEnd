@@ -135,11 +135,22 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
                 $doesExist = $this->userDetail->getIsExistingByNameAndBirthday($data['firstname'], $entry['middlename'], $data['lastname'], $data['birthdateyyyy_mm_dd']);
                 $isPresent = $this->userAccountRepository->getAccountDetailByRSBSANumber($rsbsa_number);
 
-                if(!$doesExist && !$isPresent){   
-                    $userAccount = $this->setupUserAccount($entry->toArray());
-                    $this->setupUserProfile($entry->toArray(), $userAccount);
-                    $this->setupUserBalance($userAccount->id);
-                    $this->success->push(array_merge($userAccount->toArray(), $entry->toArray()));
+                if(!$doesExist && !$isPresent){
+                    \DB::beginTransaction();
+                    try{
+                        $userAccount = $this->setupUserAccount($entry->toArray());
+                        $this->setupUserProfile($entry->toArray(), $userAccount);
+                        $this->setupUserBalance($userAccount->id);
+                        $this->success->push(array_merge($userAccount->toArray(), $entry->toArray()));
+                        \DB::commit();
+                    } catch(\Exception $e) {
+                        \DB::rollBack();
+                        $dt = [
+                            'Row ' . ($key + 1)
+                        ];
+                        $message = implode(', ', array_merge($dt, [$e->getMessage() . "."]));
+                        $this->errors->push(array_merge(['remarks' => $message], $data));
+                    }
                 } else {
                     $dt = [
                         'Row ' . ($key + 1)
