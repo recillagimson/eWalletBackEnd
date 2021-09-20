@@ -35,6 +35,9 @@ class PayBillsConfig
         PayBillsConfig::PILAM,
         PayBillsConfig::AEON1,
         PayBillsConfig::BNECO
+
+        //PRULIFE
+        PayBillsConfig::PRULI
     ];
 
     const MECOR = 'MECOR';
@@ -62,6 +65,7 @@ class PayBillsConfig
     const PILAM = 'PILAM';
     const AEON1 = 'AEON1';
     const BNECO = 'BNECO';
+    const PRULI = 'PRULI';
 
 
     const billerInvalidMsg = [
