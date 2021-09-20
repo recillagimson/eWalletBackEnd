@@ -81,6 +81,10 @@ class PayBillsService implements IPayBillsService
         //list of active billing partners
         for ($x = 0; $x < $billersCount; $x++) {
             if (
+
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SSS03 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PRULI  ||
+
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::MECOR ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::PLDT6 ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::ETRIP ||
