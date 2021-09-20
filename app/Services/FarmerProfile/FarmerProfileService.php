@@ -15,6 +15,7 @@ use App\Imports\Farmers\FarmerAccountImport;
 use App\Imports\Farmers\FarmersImport;
 use App\Imports\Farmers\SubsidyImport;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
@@ -61,6 +62,7 @@ class FarmerProfileService implements IFarmerProfileService
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private IReferenceNumberService $referenceNumberService;
     private IEmailService $emailService;
+    private INotificationRepository $notificationRepository;
 
 
     public function __construct(
@@ -80,7 +82,8 @@ class FarmerProfileService implements IFarmerProfileService
         IUserTransactionHistoryRepository $userTransactionHistoryRepository,
         IReferenceNumberService           $referenceNumberService,
         IEmailService                     $emailService,
-        IUserDetailRepository             $userDetail
+        IUserDetailRepository             $userDetail,
+        INotificationRepository           $notificationRepository
     )
     {
         $this->userApprovalRepository = $userApprovalRepository;
@@ -101,6 +104,7 @@ class FarmerProfileService implements IFarmerProfileService
         $this->referenceNumberService = $referenceNumberService;
         $this->emailService = $emailService;
         $this->userDetail = $userDetail;
+        $this->notificationRepository = $notificationRepository;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
@@ -229,6 +233,19 @@ class FarmerProfileService implements IFarmerProfileService
 
         Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
         Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');
+
+        // ADD NOTIFICATION TO AUTH USER
+        $this->notificationRepository->create([
+            'user_account_id' => request()->user()->id,
+            'title' => 'DBP Upload',
+            'description' => json_encode([
+                'fail_file' => $failFilename,
+                'success_file' => $successFilename    
+            ]),
+            'status' => 1,
+            'user_created' => request()->user()->id,
+            'user_updated' => request()->user()->id
+        ]);
 
         return [
             'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
