@@ -28,8 +28,13 @@ use Maatwebsite\Excel\Concerns\RemembersRowNumber;
 use App\Rules\RSBSARule;
 use App\Rules\RSBSAUniqueRule;
 use App\Rules\MobileNumber;
+use App\Models\UserUtilities\MaritalStatus;
+use App\Models\UserUtilities\Nationality;
+use App\Models\UserUtilities\NatureOfWork;
+use App\Models\UserUtilities\SourceOfFund;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnFailure, SkipsOnError, WithEvents, WithChunkReading, WithBatchInserts
+class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnError, WithEvents, WithChunkReading, WithBatchInserts, WithValidations
 {
     use RegistersEventListeners, RemembersRowNumber;
 
@@ -38,9 +43,13 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     private $fails;
     private $successes;
     private $rsbsaNumbers;
+    private $maritalStatus;
+    private $nationality;
+    private $profession;
+    private $sourceOfFund;
     private IUserAccountRepository $userAccounts;
     private IUserAccountNumberRepository $userAccountNumbers;
-    private IMaritalStatusRepository $maritalStatus;
+    // private IMaritalStatusRepository $maritalStatus;
     private IUserBalanceInfoRepository $userBalance;
 
     public function __construct(IUserAccountRepository $userAccounts,
@@ -54,7 +63,6 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
         $this->userAccounts = $userAccounts;
         $this->userDetail = $userDetail;
         $this->userAccountNumbers = $userAccountNumbers;
-        $this->maritalStatus = $maritalStatus;
         $this->userBalance = $userBalance;
         $this->fails = collect();
         $this->successes = collect();
@@ -73,15 +81,15 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     public function model(array $row)
     {
         if (!$this->userDetail->getIsExistingByNameAndBirthday(
-                $row['vw_farmerprofile_full_wmfname'], 
-                $row['vw_farmerprofile_full_wmmname'], 
-                $row['vw_farmerprofile_full_wmlname'], 
-                $row['vw_farmerprofile_full_wmbirthdate']) &&
+                $row['firstname'], 
+                $row['middlename'], 
+                $row['lastname'], 
+                $row['birthdateyyyy_mm_dd']) &&
             !$this->isExistingInFile(
-                $row['vw_farmerprofile_full_wmfname'], 
-                $row['vw_farmerprofile_full_wmmname'], 
-                $row['vw_farmerprofile_full_wmlname'], 
-                $row['vw_farmerprofile_full_wmbirthdate'],
+                $row['firstname'], 
+                $row['middlename'], 
+                $row['lastname'], 
+                $row['birthdateyyyy_mm_dd'],
                 $this->getRowNumber(),
                 $row
             )
@@ -103,7 +111,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
     public function rules(): array
     {
         return [
-            'vw_farmerprofile_full_wmrsbsa_no' => [
+            'rsbsa_reference_number' => [
                 'required',
                 new RSBSAUniqueRule(),
                 new RSBSARule(),
@@ -114,51 +122,61 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
                     
                     $this->rsbsaNumbers->push($value);
                 }
-            ], //vw_farmerprofile_full_wmrsbsa_no = user_accounts.rsbsa_number
-            'vw_farmerprofile_full_wmfname' => [
+            ], //rsbsa_reference_number = user_accounts.rsbsa_number
+            'firstname' => [
                 'required',
                 'max:50',
-                //Rule::unique('vw_farmerprofile_full_wmfname', 'vw_farmerprofile_full_wmmname', 'vw_farmerprofile_full_wmlname', 'vw_farmerprofile_full_wmbirthdate')
-            ], //vw_farmerprofile_full_wmfname = user_details.first_name
-            'vw_farmerprofile_full_wmmname' => [
+                //Rule::unique('firstname', 'middlename', 'lastname', 'birthdateyyyy_mm_dd')
+            ], //firstname = user_details.first_name
+            'middlename' => [
                 'sometimes',
                 'max:50'
-            ], //vw_farmerprofile_full_wmmname = user_details.middle_name
-            'vw_farmerprofile_full_wmlname' => [
+            ], //middlename = user_details.middle_name
+            'lastname' => [
                 'required',
                 'max:50'
-            ], //vw_farmerprofile_full_wmlname = user_details.last_name
-            'vw_farmerprofile_full_wmext_name' => [
+            ], //lastname = user_details.last_name
+            'extensionname' => [
                 'sometimes',
                 'max:50'
-            ], //vw_farmerprofile_full_wmext_name = user_details.name_extension
-            'vw_farmerprofile_full_wmmother_maiden_name' => [
+            ], //extensionname = user_details.name_extension
+            'idnumber' => [
                 'required'
-            ], //vw_farmerprofile_full_wmmother_maiden_name = user_details.mother_maidenname
-            'vw_farmerprofile_full_wmsex' => 'nullable', //vw_farmerprofile_full_wmsex = N/A
+            ], //idnumber = user_details.id_number
+            'govtidtype' => [
+                'required'
+            ], //govtidtype = user_details.government_id_type
+            'mothermaidenname' => [
+                'required'
+            ], //mothermaidenname = user_details.mother_maidenname
+            'sex' => 'nullable', //sex = user_details.sex
             'vw_farmerprofile_full_wmhouse_no' => [
                 'max:100'
             ], //vw_farmerprofile_full_wmhouse_no = user_details.house_no_street
-            'vw_farmerprofile_full_wmstreet' => 'required', //vw_farmerprofile_full_wmstreet = user_details.house_no_street
-            'vw_farmerprofile_full_wmbgyname' => 'required', //vw_farmerprofile_full_wmbgyname = user_details.brangay
-            'vw_farmerprofile_full_wmmunname' => 'required', //vw_farmerprofile_full_wmmunname = user_details.province_state
-            'vw_farmerprofile_full_wmprovname' => 'required', //vw_farmerprofile_full_wmprovname = user_details.province_state
-            'vw_farmerprofile_full_wmregshortname' => 'nullable', //vw_farmerprofile_full_wmregshortname = N/A
-            'vw_farmerprofile_full_wmcontact_num' => 'nullable', //vw_farmerprofile_full_wmcontact_num = user_accounts.mobile_number and user_details.contact_no
-            'vw_farmerprofile_full_wmeducation' => 'nullable', //vw_farmerprofile_full_wmeducation = N/A
-            'vw_farmerprofile_full_wmbirthdate' => [
+            'streetno_purokno' => 'required', //streetno_purokno = user_details.house_no_street
+            'barangay' => 'required', //barangay = user_details.brangay
+            'citymunicipality' => 'required', //citymunicipality = user_details.province_state
+            'district' => 'nullable', //district = user_details.district
+            'province' => 'required', //province = user_details.province_state
+            'region' => 'nullable', //region = N/A
+            'mobileno' => 'nullable', //mobileno = user_accounts.mobile_number and user_details.contact_no
+            // 'vw_farmerprofile_full_wmeducation' => 'nullable', //vw_farmerprofile_full_wmeducation = N/A
+            'birthdateyyyy_mm_dd' => [
                 'required'
-            ], //vw_farmerprofile_full_wmbirthdate = user_details.birth_date
-            'birthplace' => 'max:50', //birthplace = user_details.place_of_birth
-            'vw_farmerprofile_full_wmcivil_status' => [
+            ], //birthdateyyyy_mm_dd = user_details.birth_date
+            'placeofbirth' => 'max:50', //placeofbirth = user_details.place_of_birth
+            'nationality' => [
                 'required',
-                'exists:marital_status,description'
-            ], //vw_farmerprofile_full_wmcivil_status = user_details.marital_status_id
-            'vw_farmerprofile_full_wmreligion' => 'nullable', //vw_farmerprofile_full_wmreligion = N/A
-            'vw_farmerprofile_full_wmgross_income_farming' => 'nullable', //vw_farmerprofile_full_wmgross_income_farming = N/A
-            'vw_farmerprofile_full_wmgross_income_nonfarming' => 'nullable', //vw_farmerprofile_full_wmgross_income_nonfarming = N/A
-            'govid.id_type' => 'nullable', //govid.id_type = N/A
-            'vw_farmerprofile_full_wmgov_id_num' => 'nullable', //vw_farmerprofile_full_wmgov_id_num = N/A
+                'exists:nationalities,description'
+            ],
+            'profession' => [
+                'required',
+                'exists:natures_of_work,description'
+            ],
+            'sourceoffunds' => [
+                'required',
+                'exists:source_of_funds,description'
+            ],
         ];
     }
 
@@ -200,7 +218,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
 
     private function setupUserAccount($row)
     {
-        $rsbsa = preg_replace("/[^0-9]/", "", $row['vw_farmerprofile_full_wmrsbsa_no']);
+        $rsbsa = preg_replace("/[^0-9]/", "", $row['rsbsa_reference_number']);
         $password = $rsbsa;
         $pin = substr($rsbsa, -4); //last 4 chars of rsbsa_number
         
@@ -210,7 +228,7 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             'pin_code' => bcrypt($pin),
             'tier_id' => AccountTiers::tier1,
             'account_number' => $this->userAccountNumbers->generateNo(),
-            'mobile_number' => $row['vw_farmerprofile_full_wmcontact_num'],
+            'mobile_number' => $row['mobileno'],
             'user_created' => $this->userId,
         ];
 
@@ -219,35 +237,38 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
 
     private function setupUserProfile($userId, $row)
     {
-        $marital = $this->maritalStatus->getByDescription($row['vw_farmerprofile_full_wmcivil_status'])->id;
-        $dob = is_numeric($row['vw_farmerprofile_full_wmbirthdate']) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['vw_farmerprofile_full_wmbirthdate'])) : \Carbon\Carbon::parse(strtotime($row['vw_farmerprofile_full_wmbirthdate']));
+        $marital = isset($row['civilstatus'])&& $row['civilstatus'] ? $this->maritalStatus[ucwords(strtolower($row['civilstatus']))] : null;
+        $national = $this->nationality[ucwords(strtolower($row['nationality']))];
+        $profession = $this->profession[ucwords(strtolower($row['profession']))];
+        $sourceoffund = $this->sourceOfFund[ucwords(strtolower($row['sourceoffunds']))];
+        $dob = is_numeric($row['birthdateyyyy_mm_dd']) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['birthdateyyyy_mm_dd'])) : \Carbon\Carbon::parse(strtotime($row['birthdateyyyy_mm_dd']));
 
         $profile = [
             'entity_id' => null,
             'user_account_id' => $userId,
             'title' => null,
-            'last_name' => $row['vw_farmerprofile_full_wmlname'],
-            'first_name' => $row['vw_farmerprofile_full_wmfname'],
-            'middle_name' => $row['vw_farmerprofile_full_wmmname'],
-            'name_extension' => $row['vw_farmerprofile_full_wmext_name'],
+            'last_name' => $row['lastname'],
+            'first_name' => $row['firstname'],
+            'middle_name' => $row['middlename'],
+            'name_extension' => $row['extensionname'],
             'birth_date' => $dob,
-            'place_of_birth' => $row['birthplace'],
+            'place_of_birth' => $row['placeofbirth'],
             'marital_status_id' => $marital,
-            'nationality_id' => null,
+            'nationality_id' => $national,
             'encoded_nationality' => null,
             'occupation' => null,
-            'house_no_street' => $row['vw_farmerprofile_full_wmhouse_no'] . ' ' . $row['vw_farmerprofile_full_wmstreet'],
-            'barangay' => $row['vw_farmerprofile_full_wmbgyname'],
-            'city' => $row['vw_farmerprofile_full_wmmunname'],
-            'province_state' => $row['vw_farmerprofile_full_wmprovname'],
-            'municipality' => $row['vw_farmerprofile_full_wmmunname'],
+            'house_no_street' => $row['streetno_purokno'],
+            'barangay' => $row['barangay'],
+            'city' => $row['citymunicipality'],
+            'province_state' => $row['province'],
+            'municipality' => $row['citymunicipality'],
             'country_id' => null,
             'postal_code' => null,
-            'nature_of_work_id' => null,
+            'nature_of_work_id' => $profession,
             'encoded_nature_of_work' => null,
-            'source_of_fund_id' => null,
+            'source_of_fund_id' => $sourceoffund,
             'encoded_source_of_fund' => null,
-            'mother_maidenname' => $row['vw_farmerprofile_full_wmmother_maiden_name'],
+            'mother_maidenname' => $row['mothermaidenname'],
             'currency_id' => null,
             'selfie_loction' => null,
             'signup_host_id' => null,
@@ -261,7 +282,10 @@ class FarmersImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnF
             'guardian_mobile_number' => null,
             'avatar_location' => null,
             'user_created' => $this->userId,
-            'user_updated' => $this->userId
+            'user_updated' => $this->userId,
+            'id_number' => $row['idnumber'],
+            'government_id_type' => $row['govtidtype'],
+            'district' => $row['district'],
         ];
 
         $this->userDetail->create($profile);
