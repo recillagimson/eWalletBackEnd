@@ -68,6 +68,10 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
         $this->successes = collect();
         $this->rsbsaNumbers = collect();
         $this->infos = collect();
+        $this->maritalStatus = MaritalStatus::pluck('id', 'description');
+        $this->nationality = Nationality::pluck('id', 'description');
+        $this->profession = NatureOfWork::pluck('id', 'description');
+        $this->sourceOfFund = SourceOfFund::pluck('id', 'description');
     }
 
     // /**
