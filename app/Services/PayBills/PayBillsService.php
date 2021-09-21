@@ -80,38 +80,11 @@ class PayBillsService implements IPayBillsService
 
         //list of active billing partners
         for ($x = 0; $x < $billersCount; $x++) {
-            if (
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PRULI ||
-
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MECOR ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PLDT6 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::ETRIP ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::HCPHL ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SSS01 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MWCOM ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SMART ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::RFID1 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MWSIN ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::CNVRG ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PWCOR ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::HDMF1 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::INEC1 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::VIECO ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::DVOLT ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::CGNAL ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::SKY01 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::MBCCC ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BNKRD ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BPI00 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PILAM ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::AEON1 ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BNECO
-            ) {
+            if (in_array($arrayResponse['data'][$x]['code'], PayBillsConfig::billerCodes)) {
                 $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
             } else {
                 $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $inActive);
             }
-
         }
 
         return $newResponse;
@@ -145,7 +118,7 @@ class PayBillsService implements IPayBillsService
         if (isset($arrayResponse['data']) && in_array($arrayResponse['data'], PayBillsConfig::billerInvalidMsg)) $this->invalidAccountNumber();
 
         // To catch endpointRequestTimeout
-        if(isset($arrayResponse['message']) && PayBillsConfig::endpointRequestTimeOut) $this->endpointRequestTimeOut();
+        if(isset($arrayResponse['message']) && $arrayResponse['message'] ===  PayBillsConfig::endpointRequestTimeOut) $this->endpointRequestTimeOut();
 
         // To catch bayad general Error
         if (isset($arrayResponse['exception'])) $this->catchBayadErrors($arrayResponse['details'], $billerCode, $user);

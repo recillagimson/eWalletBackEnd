@@ -102,8 +102,8 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::BNECO => [
             'account_number' => 'required|digits:11',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.LastName' => "required",
-            'otherInfo.FirstName' => "required",
+            'otherInfo.LastName' => "required|max:100",
+            'otherInfo.FirstName' => "required|max:100",
             'otherInfo.DueDate' => "required|date_format:m/d/Y"
         ],
 
@@ -111,9 +111,9 @@ class ValidateAccountRequest extends FormRequest
             'account_number' => 'required',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
             'otherInfo.PaymentType' => "required|in:MC,HL,MP2,ST",
-            'otherInfo.ContactNo' => "required",
+            'otherInfo.ContactNo' => "required|between:7,11",
             'otherInfo.BillDate' => "required",
-            'otherInfo.DueDate' => "required",
+            'otherInfo.DueDate' => "required|date_format:m/d/Y",
         ],
 
     ];

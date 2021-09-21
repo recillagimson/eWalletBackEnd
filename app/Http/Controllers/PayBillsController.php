@@ -80,9 +80,9 @@ class PayBillsController extends Controller
         $billerCode = $request->route('biller_code');
         $accountNumber = $data['account_number'];
 
-        return  $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
-    //    if (isset($verifyAccount['provider_error'])) return $this->responseService->tpaErrorReponse($verifyAccount);
-        
+        $verifyAccount =  $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
+        if (isset($verifyAccount['provider_error'])) return $this->responseService->tpaErrorReponse($verifyAccount);
+        return $this->responseService->successResponse($verifyAccount);
     }
 
      
