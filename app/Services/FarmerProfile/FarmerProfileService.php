@@ -260,6 +260,14 @@ class FarmerProfileService implements IFarmerProfileService
         $prov = $import->getProv();
 
         $seq = $this->farmerImportRepository->countSequnceByProvinceAndDateCreated($prov, Carbon::now()->format('Y-m-d'));
+        $formatSeq = $seq;
+
+        if($seq < 10) {
+            $formatSeq = "00" . $seq;
+        } else if($seq < 100) {
+            $formatSeq = "0" . $seq;
+        }
+
         $imp = $this->farmerImportRepository->create([
             'filename' => $filePath,
             'province' => $prov,
@@ -268,8 +276,8 @@ class FarmerProfileService implements IFarmerProfileService
         $province = $this->provinceRepository->getProvinceByName($prov);
         
         $date = date('ymd');
-        $failFilename = "farmers/ONBSUCRFFA{$province->da_province_code}SPTI{$date}{$seq}.csv";
-        $successFilename = "farmers/ONBEXPRFFA{$province->da_province_code}SPTI{$date}{$seq}.csv";
+        $successFilename = "farmers/ONBSUCRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.csv";
+        $failFilename = "farmers/ONBEXPRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.csv";
 
         Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
         Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');

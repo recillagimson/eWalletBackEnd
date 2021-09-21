@@ -35,6 +35,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     private IUserAccountNumberRepository $userAccountNumbers;
     private IUserBalanceInfoRepository $userBalance;
     private $province;
+    private $rsbsaNumbers;
 
 
     public function __construct(IUserDetailRepository $userDetail, string $currentUser, IMaritalStatusRepository $maritalStatus, IUserAccountNumberRepository $userAccountNumbers, IUserAccountRepository $userAccountRepository, IUserBalanceInfoRepository $userBalance)
@@ -51,6 +52,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         $this->userAccountRepository = $userAccountRepository;
         $this->userBalance = $userBalance;
         $this->province = '';
+        $this->rsbsaNumbers = array();
     }
     /**
     * @param Collection $collection
@@ -128,6 +130,13 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
 
     public function collection(Collection $collection)
     {
+        $rsbsaNumbers = collect();
+        foreach($collection as $coll) {
+            $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
+        }
+        
+        $this->rsbsaNumbers = array_count_values($rsbsaNumbers->toArray());
+
         foreach($collection as $key => $entry) {
 
             $data = $entry->toArray();
@@ -205,6 +214,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if(strlen($rsbsa_number) != 13) {
             $errors->push('Invalid RSBSA Number.');
         }
+        if($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
+            $errors->push('Multiple instance of RSBSA Reference Number ' . $attr[DBPUploadKeys::rsbsaNumber] . ".");
+        }
         if($attr[DBPUploadKeys::firstName] == '') {
             $errors->push('First Name is required.');
         }
@@ -241,6 +253,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         }
         if($attr[DBPUploadKeys::mobileNumber] == '') {
             $errors->push('Mobile Number is required.');
+        }
+        if(strlen($attr[DBPUploadKeys::mobileNumber]) != 11) {
+            $errors->push('Mobile Number must be 11 digits.');
         }
         if($attr[DBPUploadKeys::sex] == '') {
             $errors->push('Sex is required.');
