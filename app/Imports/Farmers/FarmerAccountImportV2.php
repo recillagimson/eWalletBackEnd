@@ -173,8 +173,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             'pin_code' => bcrypt($pin),
             'tier_id' => AccountTiers::tier1,
             'account_number' => $this->userAccountNumbers->generateNo(),
-            'mobile_number' => $row[DBPUploadKeys::mobileNumber],
+            'mobile_number' => "0" . $row[DBPUploadKeys::mobileNumber],
             'user_created' => $this->currentUser,
+            'user_updated' => $this->currentUser,
         ];
 
         $record = $this->userAccountRepository->create($farmer);
@@ -187,8 +188,11 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::rsbsaNumber] == '') {
             $errors->push('RSBSA Number is required.');
         }
-        if($this->userAccountRepository->getUserByAccountNumberWithRelations($rsbsa_number)) {
+        if($this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsa_number)) {
             $errors->push('RSBSA Number already exist.');
+        }
+        if(strlen($rsbsa_number) != 13) {
+            $errors->push('Invalid RSBSA Number.');
         }
         if($attr[DBPUploadKeys::firstName] == '') {
             $errors->push('First Name is required.');
@@ -217,6 +221,10 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::birthDate] == '') {
             $errors->push('Birthday is required.');
         }
+        if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $attr[DBPUploadKeys::birthDate])) {
+            $errors->push('Invalid date format for Birthday.');
+        }
+        
         if($attr[DBPUploadKeys::birthPlace] == '') {
             $errors->push('Place pf birth is required.');
         }
