@@ -158,7 +158,9 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
 
     public function collection(Collection $collection)
     {
+        // ASSIGN UUID FIRST
         foreach($collection as $index => $entry) {
+
             $row = $index;
             \DB::beginTransaction();
                 try {
@@ -174,7 +176,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                             $this->setupUserBalance($userAccount->id);
 
                             $this->successes->push(array_merge($userAccount->toArray(), $entry->toArray()));
-                            \DB::commit();
+                            // \DB::commit();
                         } else {
                             if(!$inError) {   
                                 $remarks = [
@@ -182,7 +184,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                                 ];
                                 $this->fails->push(array_merge($remarks, $entry->toArray()));
                             }
-                            \DB::rollBack();
+                            // \DB::rollBack();
                         }
                         $this->processed->push($rsbsa_number);
                     }
@@ -290,7 +292,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                 $key => $errorString
             ]);
         }
-
+        dd($errorMessages);
         foreach($errorMessages as $key => $message) {
             $data = '';
             foreach($failures as $failure) {
@@ -301,6 +303,8 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                         $data = array_merge(['remarks' => "Row " . $failure->row() . ", " . $message], $data);
                     }
                 }
+                dd($data);
+                dd($failure->row()); 
             }
             $this->errorBag->push(preg_replace("/[^0-9]/", "", $key));
             $this->fails->push($data);

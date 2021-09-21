@@ -2,43 +2,45 @@
 
 namespace App\Services\FarmerProfile;
 
-use App\Enums\AccountTiers;
-use App\Enums\eKYC;
-use App\Enums\SquidPayModuleTypes;
-use App\Exports\Farmer\Export\FailedExport;
-use App\Exports\Farmer\Export\SuccessExport;
-use App\Exports\Farmer\FailedUploadExport;
-use App\Exports\Farmer\SubsidyFailedUploadExport;
-use App\Exports\Farmer\SubsidySuccessUploadExport;
-use App\Exports\Farmer\SuccessUploadExport;
-use App\Imports\Farmers\FarmerAccountImport;
-use App\Imports\Farmers\FarmersImport;
-use App\Imports\Farmers\SubsidyImport;
-use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
-use App\Repositories\Notification\INotificationRepository;
-use App\Repositories\Tier\ITierApprovalRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserPhoto\IUserPhotoRepository;
-use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\KYCService\IKYCService;
-use App\Services\UserProfile\IUserProfileService;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Services\Utilities\Notifications\Email\IEmailService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Services\Utilities\Verification\IVerificationService;
-use App\Traits\Errors\WithUserErrors;
-use App\Traits\HasFileUploads;
 use DB;
 use Exception;
-use Illuminate\Http\UploadedFile;
+use App\Enums\eKYC;
+use App\Enums\AccountTiers;
+use App\Traits\HasFileUploads;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
+use App\Enums\SquidPayModuleTypes;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Traits\Errors\WithUserErrors;
+use App\Imports\Farmers\FarmersImport;
+use App\Imports\Farmers\SubsidyImport;
+use Illuminate\Support\Facades\Storage;
+use App\Services\KYCService\IKYCService;
+use App\Exports\Farmer\FailedUploadExport;
+use App\Exports\Farmer\Export\FailedExport;
+use App\Exports\Farmer\SuccessUploadExport;
+use App\Exports\Farmer\Export\SuccessExport;
+use App\Imports\Farmers\FarmerAccountImport;
+use App\Exports\Farmer\SubsidyFailedUploadExport;
+use App\Services\UserProfile\IUserProfileService;
+use App\Exports\Farmer\SubsidySuccessUploadExport;
+use App\Imports\Farmers\FarmerAccountImportV2;
+use App\Repositories\Tier\ITierApprovalRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Verification\IVerificationService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Models\FarmerImport;
 
 class FarmerProfileService implements IFarmerProfileService
@@ -229,41 +231,52 @@ class FarmerProfileService implements IFarmerProfileService
         $this->emailService->batchUploadNotification($user, $result['success_file'], $result['fail_file']);
     }
 
+    public function uploadFileToS3($file) {
+        $fileExt = $this->getFileExtensionName($file);
+        $fileName = request()->user()->id . "/" . \Str::random(40) . "." . $fileExt;
+        return $this->saveFile($file, $fileName, 'dbp_uploads');
+    }
+
     // UPLOADING V2
-    public function batchUploadV2($file, string $authUser)
+    public function batchUploadV2(string $filePath, string $authUser)
     {
         ini_set('max_execution_time', 300);
 
-        // UPLOAD FIRST
-        $fileExt = $this->getFileExtensionName($file);
-        $fileName = request()->user()->id . "/" . \Str::random(40) . "." . $fileExt;
-        $filePath = $this->saveFile($file, $fileName, 'dbp_uploads');
-
-        $import = new FarmerAccountImport($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
+        $import = new FarmerAccountImportV2($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
+        // $import = new FarmerAccountImportV2($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
         Excel::import($import, $filePath, 's3');
         $errors = $import->getFails();
         $success = $import->getSuccesses();
         $headers = $import->getHeaders();
 
-        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.csv';
-        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.csv';
+        $now = Carbon::now();
+        $failFilename = 'dbp/fail/ONBSUCRFFANCRSPTI21' . $now->format('m') . $now->format('d') . "001" . '.csv';
+        $successFilename = 'dbp/success/ONBEXPRFFANCRSPTI21' . $now->format('m') . $now->format('d') . "001" . '.csv';
 
         Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
         Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');
 
-        // ADD NOTIFICATION TO AUTH USER
+        // // ADD NOTIFICATION TO AUTH USER
         $this->notificationRepository->create([
             'user_account_id' => request()->user()->id,
             'title' => 'DBP Upload',
-            'description' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30))  . ", " . Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
+            'description' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
+            'status' => 1,
+            'user_created' => request()->user()->id,
+            'user_updated' => request()->user()->id
+        ]);
+        $this->notificationRepository->create([
+            'user_account_id' => request()->user()->id,
+            'title' => 'DBP Upload',
+            'description' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
             'status' => 1,
             'user_created' => request()->user()->id,
             'user_updated' => request()->user()->id
         ]);
 
-        return [
+        return new Collection([
             'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
-            'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30))
-        ];
+            'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
+        ]);
     }
 }
