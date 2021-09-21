@@ -109,6 +109,8 @@ use App\Repositories\Dashboard\DashboardRepository;
 use App\Repositories\Dashboard\IDashboardRepository;
 use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
 use App\Repositories\Disbursement\OutDisbursementDbpRepository;
+use App\Repositories\FarmerImport\FarmerImportRepository;
+use App\Repositories\FarmerImport\IFarmerImportRepository;
 use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\KYCVerification\KYCVerificationRepository;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
@@ -260,6 +262,9 @@ class RepositoryServiceProvider extends ServiceProvider
         
         // Loan
         $this->app->bind(ILoanRepository::class, LoanRepository::class);
+
+        // FarmerImport
+        $this->app->bind(IFarmerImportRepository::class, FarmerImportRepository::class);
 
     }
 
