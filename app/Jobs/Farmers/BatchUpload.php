@@ -3,11 +3,13 @@
 namespace App\Jobs\Farmers;
 
 use App\Services\FarmerProfile\IFarmerProfileService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Log;
 
 class BatchUpload implements ShouldQueue
 {
@@ -35,6 +37,10 @@ class BatchUpload implements ShouldQueue
      */
     public function handle(IFarmerProfileService $profileService)
     {
-        $profileService->batchUploadV2($this->filePath, $this->userId);
+        try {
+            $profileService->batchUploadV2($this->filePath, $this->userId);
+        } catch (Exception $e) {
+            Log::error('Farmers Batch Upload Error', $e->getTrace());
+        }
     }
 }
