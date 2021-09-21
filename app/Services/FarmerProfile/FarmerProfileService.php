@@ -242,7 +242,7 @@ class FarmerProfileService implements IFarmerProfileService
     {
         ini_set('max_execution_time', 300);
 
-        $import = new FarmerAccountImportV2($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
+        $import = new FarmerAccountImportV2($this->userDetail, $authUser, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
         // $import = new FarmerAccountImportV2($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
         Excel::import($import, $filePath, 's3');
         $errors = $import->getFails();
