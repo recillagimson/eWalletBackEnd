@@ -76,15 +76,13 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
 
         try {
             DB::beginTransaction();
-            $response = $this->createTransaction($user, $refNo, $data['amount'], $serviceFeeAmount,$serviceFeeId, 
+            return $this->createTransaction($user, $refNo, $data['amount'], $serviceFeeAmount,$serviceFeeId, 
                 $totalAmount, TransactionCategoryIds::addMoneyCebuana);
-
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Add Money Error: ', $e->getTrace());
         }
-            return $response;
 
     }
 
