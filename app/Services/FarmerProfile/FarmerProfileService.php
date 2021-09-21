@@ -267,12 +267,13 @@ class FarmerProfileService implements IFarmerProfileService
             'seq' => ($seq + 1)
         ]);
 
-        $formatSeq = ($seq + 1);
+        $seq = ($seq + 1);
+        $formatSeq = $seq;
 
         if($seq < 10) {
-            $formatSeq = "00" . ($seq + 1);
+            $formatSeq = "00" . $seq;
         } else if($seq < 100) {
-            $formatSeq = "0" . ($seq + 1);
+            $formatSeq = "0" . $seq;
         }
 
         $province = $this->provinceRepository->getProvinceByName($prov);
