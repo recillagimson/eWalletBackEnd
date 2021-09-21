@@ -258,21 +258,21 @@ class FarmerProfileService implements IFarmerProfileService
 
         // // ADD NOTIFICATION TO AUTH USER
         $this->notificationRepository->create([
-            'user_account_id' => request()->user()->id,
+            'user_account_id' => $authUser,
             'title' => 'DBP Upload',
             'description' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
             'status' => 1,
-            'user_created' => request()->user()->id,
-            'user_updated' => request()->user()->id
+            'user_created' => $authUser,
+            'user_updated' => $authUser
         ]);
 
         $this->notificationRepository->create([
-            'user_account_id' => request()->user()->id,
+            'user_account_id' => $authUser,
             'title' => 'DBP Upload',
             'description' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
             'status' => 1,
-            'user_created' => request()->user()->id,
-            'user_updated' => request()->user()->id
+            'user_created' => $authUser,
+            'user_updated' => $authUser
         ]);
 
         return new Collection([
