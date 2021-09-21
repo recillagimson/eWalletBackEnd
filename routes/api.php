@@ -53,6 +53,7 @@ use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
+use App\Http\Controllers\InAddMoneyCebuanaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -444,6 +445,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/loans')->middleware(['decrypt.request'])->group(function() {
         Route::get('/get/reference_number', [LoanController::class, 'generateReferenceNumber']);
         Route::post('/reference_number', [LoanController::class, 'storeReferenceNumber']);
+    });
+
+    Route::prefix('/cebuana')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/add/money', [InAddMoneyCebuanaController::class, 'addMoney']);
     });
 
     Route::prefix('/upb/add/money')->middleware(['decrypt.request'])->group(function () {
