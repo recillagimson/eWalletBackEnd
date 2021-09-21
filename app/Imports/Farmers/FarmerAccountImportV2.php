@@ -2,24 +2,27 @@
 
 namespace App\Imports\Farmers;
 
-use Carbon\Carbon;
+use App\Enums\AccountTiers;
 use App\Enums\Country;
 use App\Enums\Currencies;
-use App\Enums\Nationality;
-use App\Enums\AccountTiers;
-use App\Enums\NatureOfWork;
-use App\Enums\SourceOfFund;
 use App\Enums\DBPUploadKeys;
 use App\Enums\MaritalStatus;
+use App\Enums\Nationality;
+use App\Enums\NatureOfWork;
+use App\Enums\SourceOfFund;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use Carbon\Carbon;
+use DB;
+use Exception;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchInserts
 {
@@ -67,7 +70,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     private function setupUserProfile($row, $userAccount)
     {
         // $marital = $this->maritalStatus->getByDescription($row[DBPUploadKeys::maritalStatus])->id;
-        $dob = is_numeric($row[DBPUploadKeys::birthDate]) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[DBPUploadKeys::birthDate])) : \Carbon\Carbon::parse(strtotime($row[DBPUploadKeys::birthDate]));
+        $dob = is_numeric($row[DBPUploadKeys::birthDate]) ? Carbon::instance(Date::excelToDateTimeObject($row[DBPUploadKeys::birthDate])) : Carbon::parse(strtotime($row[DBPUploadKeys::birthDate]));
 
         $profile = [
             'entity_id' => null,
@@ -136,15 +139,15 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
                 $isPresent = $this->userAccountRepository->getAccountDetailByRSBSANumber($rsbsa_number);
 
                 if(!$doesExist && !$isPresent){
-                    \DB::beginTransaction();
-                    try{
+                    DB::beginTransaction();
+                    try {
                         $userAccount = $this->setupUserAccount($entry->toArray());
                         $this->setupUserProfile($entry->toArray(), $userAccount);
                         $this->setupUserBalance($userAccount->id);
                         $this->success->push(array_merge($userAccount->toArray(), $entry->toArray()));
-                        \DB::commit();
-                    } catch(\Exception $e) {
-                        \DB::rollBack();
+                        DB::commit();
+                    } catch (Exception $e) {
+                        DB::rollBack();
                         $dt = [
                             'Row ' . ($key + 1)
                         ];
@@ -226,7 +229,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         }
         
         if($attr[DBPUploadKeys::birthPlace] == '') {
-            $errors->push('Place pf birth is required.');
+            $errors->push('Place of birth is required.');
         }
         if($attr[DBPUploadKeys::mobileNumber] == '') {
             $errors->push('Mobile Number is required.');
@@ -262,7 +265,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     {
         return 50;
     }
-    
+
     public function batchSize(): int
     {
         return 50;
