@@ -38,6 +38,7 @@ class BatchUpload implements ShouldQueue
     public function handle(IFarmerProfileService $profileService)
     {
         try {
+            Log::info('Batch Upload Parameters', ['filePath' => $this->filePath, 'userId' => $this->userId]);
             $profileService->batchUploadV2($this->filePath, $this->userId);
         } catch (Exception $e) {
             Log::error('Farmers Batch Upload Error', $e->getTrace());
