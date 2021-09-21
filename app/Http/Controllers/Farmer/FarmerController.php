@@ -87,7 +87,7 @@ class FarmerController extends Controller
     public function processBatchUpload(FarmerBatchUploadRequest $request): JsonResponse
     {
         $filePath = $this->farmerProfileService->uploadFileToS3($request->file);
-        $this->dispatch(new BatchUpload($filePath, $request->user()->id));
+        BatchUpload::dispatch($filePath, $request->user()->id);
         return $this->responseService->successResponse(null, SuccessMessages::processingRequestWithEmailNotification);
     }
 
