@@ -116,7 +116,7 @@ class PayBillsService implements IPayBillsService
 
         return $newResponse;
     }
-
+//comment
 
     public function getBillerInformation(string $billerCode): array
     {
