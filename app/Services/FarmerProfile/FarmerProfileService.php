@@ -2,46 +2,46 @@
 
 namespace App\Services\FarmerProfile;
 
-use DB;
-use Exception;
-use App\Enums\eKYC;
 use App\Enums\AccountTiers;
-use App\Traits\HasFileUploads;
-use Illuminate\Support\Carbon;
-use Illuminate\Http\UploadedFile;
+use App\Enums\eKYC;
 use App\Enums\SquidPayModuleTypes;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Traits\Errors\WithUserErrors;
+use App\Exports\Farmer\Export\FailedExport;
+use App\Exports\Farmer\Export\SuccessExport;
+use App\Exports\Farmer\FailedUploadExport;
+use App\Exports\Farmer\SubsidyFailedUploadExport;
+use App\Exports\Farmer\SubsidySuccessUploadExport;
+use App\Exports\Farmer\SuccessUploadExport;
+use App\Imports\Farmers\FarmerAccountImportV2;
 use App\Imports\Farmers\FarmersImport;
 use App\Imports\Farmers\SubsidyImport;
-use Illuminate\Support\Facades\Storage;
-use App\Services\KYCService\IKYCService;
-use App\Exports\Farmer\FailedUploadExport;
-use App\Exports\Farmer\Export\FailedExport;
-use App\Exports\Farmer\SuccessUploadExport;
-use App\Exports\Farmer\Export\SuccessExport;
-use App\Imports\Farmers\FarmerAccountImport;
-use App\Exports\Farmer\SubsidyFailedUploadExport;
-use App\Services\UserProfile\IUserProfileService;
-use App\Exports\Farmer\SubsidySuccessUploadExport;
-use App\Imports\Farmers\FarmerAccountImportV2;
-use App\Repositories\Tier\ITierApprovalRepository;
-use App\Repositories\UserPhoto\IUserPhotoRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Repositories\Notification\INotificationRepository;
-use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
-use App\Services\Utilities\Notifications\Email\IEmailService;
-use App\Services\Utilities\Verification\IVerificationService;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Models\FarmerImport;
+use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
+use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\Tier\ITierApprovalRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\KYCService\IKYCService;
+use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Services\Utilities\Verification\IVerificationService;
+use App\Traits\Errors\WithUserErrors;
+use App\Traits\HasFileUploads;
+use DB;
+use Exception;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use Str;
 
 class FarmerProfileService implements IFarmerProfileService
 {
@@ -192,7 +192,7 @@ class FarmerProfileService implements IFarmerProfileService
             'prov' => $prov,
             'seq' => ++$seq
         ]);
-        
+
         $seq = str_pad($seq, 3, "0", STR_PAD_LEFT);
 
         $failFilename = "farmers/ONBSUCRFFA{$prov}SPTI{$date}{$seq}.csv";
@@ -233,7 +233,7 @@ class FarmerProfileService implements IFarmerProfileService
 
     public function uploadFileToS3($file) {
         $fileExt = $this->getFileExtensionName($file);
-        $fileName = request()->user()->id . "/" . \Str::random(40) . "." . $fileExt;
+        $fileName = request()->user()->id . "/" . Str::random(40) . "." . $fileExt;
         return $this->saveFile($file, $fileName, 'dbp_uploads');
     }
 
@@ -265,6 +265,7 @@ class FarmerProfileService implements IFarmerProfileService
             'user_created' => request()->user()->id,
             'user_updated' => request()->user()->id
         ]);
+
         $this->notificationRepository->create([
             'user_account_id' => request()->user()->id,
             'title' => 'DBP Upload',
