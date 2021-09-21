@@ -130,6 +130,8 @@ use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic;
 use App\Services\ThirdParty\ECPay\IECPayService;
 use App\Services\ThirdParty\ECPay\ECPayService;
+use App\Services\AddMoneyCebuana\AddMoneyCebuanaService;
+use App\Services\AddMoneyCebuana\IAddMoneyCebuanaService;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -249,6 +251,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IReportService::class, ReportService::class);
         // Loan
         $this->app->bind(ILoanService::class, LoanService::class);
+        
+        // CEBUANA SERVICE
+        $this->app->bind(IAddMoneyCebuanaService::class, AddMoneyCebuanaService::class);
     }
 
     /**
