@@ -15,6 +15,7 @@ use App\Imports\Farmers\FarmerAccountImportV2;
 use App\Imports\Farmers\FarmersImport;
 use App\Imports\Farmers\SubsidyImport;
 use App\Models\FarmerImport;
+use App\Repositories\FarmerImport\IFarmerImportRepository;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Tier\ITierApprovalRepository;
@@ -67,6 +68,8 @@ class FarmerProfileService implements IFarmerProfileService
     private IEmailService $emailService;
     private INotificationRepository $notificationRepository;
 
+    private IFarmerImportRepository $farmerImportRepository;
+
 
     public function __construct(
         ITierApprovalRepository           $userApprovalRepository,
@@ -86,7 +89,8 @@ class FarmerProfileService implements IFarmerProfileService
         IReferenceNumberService           $referenceNumberService,
         IEmailService                     $emailService,
         IUserDetailRepository             $userDetail,
-        INotificationRepository           $notificationRepository
+        INotificationRepository           $notificationRepository,
+        IFarmerImportRepository           $farmerImportRepository
     )
     {
         $this->userApprovalRepository = $userApprovalRepository;
@@ -108,6 +112,7 @@ class FarmerProfileService implements IFarmerProfileService
         $this->emailService = $emailService;
         $this->userDetail = $userDetail;
         $this->notificationRepository = $notificationRepository;
+        $this->farmerImportRepository = $farmerImportRepository;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
@@ -248,10 +253,19 @@ class FarmerProfileService implements IFarmerProfileService
         $errors = $import->getFails();
         $success = $import->getSuccesses();
         $headers = $import->getHeaders();
+        $prov = $import->getProv();
 
-        $now = Carbon::now();
-        $failFilename = 'dbp/fail/ONBSUCRFFANCRSPTI21' . $now->format('m') . $now->format('d') . "001" . '.csv';
-        $successFilename = 'dbp/success/ONBEXPRFFANCRSPTI21' . $now->format('m') . $now->format('d') . "001" . '.csv';
+        $seq = $this->farmerImportRepository->countSequnceByProvinceAndDateCreated($prov, Carbon::now()->format('Y-m-d'));
+
+        $imp = $this->farmerImportRepository->create([
+            'filename' => $filePath,
+            'province' => $prov,
+            'seq' => ($seq + 1)
+        ]);
+
+        $date = date('ymd');
+        $failFilename = "farmers/ONBSUCRFFA{$prov}SPTI{$date}{$seq}.csv";
+        $successFilename = "farmers/ONBEXPRFFA{$prov}SPTI{$date}{$seq}.csv";
 
         Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
         Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');
@@ -266,15 +280,6 @@ class FarmerProfileService implements IFarmerProfileService
             'user_created' => $authUser,
             'user_updated' => $authUser
         ]);
-
-//        $this->notificationRepository->create([
-//            'user_account_id' => $authUser,
-//            'title' => 'DBP Upload',
-//            'description' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
-//            'status' => 1,
-//            'user_created' => $authUser,
-//            'user_updated' => $authUser
-//        ]);
 
         return new Collection([
             'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),

@@ -34,6 +34,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     private IMaritalStatusRepository $maritalStatus;
     private IUserAccountNumberRepository $userAccountNumbers;
     private IUserBalanceInfoRepository $userBalance;
+    private $province;
 
 
     public function __construct(IUserDetailRepository $userDetail, string $currentUser, IMaritalStatusRepository $maritalStatus, IUserAccountNumberRepository $userAccountNumbers, IUserAccountRepository $userAccountRepository, IUserBalanceInfoRepository $userBalance)
@@ -49,6 +50,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         $this->userAccountNumbers = $userAccountNumbers;
         $this->userAccountRepository = $userAccountRepository;
         $this->userBalance = $userBalance;
+        $this->province = '';
     }
     /**
     * @param Collection $collection
@@ -127,13 +129,19 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     public function collection(Collection $collection)
     {
         foreach($collection as $key => $entry) {
+
+            $data = $entry->toArray();
+            // HANDLE PROVINCE
+            if(!$this->province && isset($data[DBPUploadKeys::province])) {
+                $this->province = $data[DBPUploadKeys::province];
+            }
+
             // HANDLE VALIDATION AND FAILED ENTRIES
             $isValid = $this->runValidation($entry->toArray(), ($key + 1));
             if($isValid) {
 
                 // VALIDATE IF USER DETAIL ALREADY PRESENT
                 // VALIDATE IF USER RSBSA NUMBER EXIST
-                $data = $entry->toArray();
                 $rsbsa_number = preg_replace("/[^0-9]/", "", $data[DBPUploadKeys::rsbsaNumber]);
                 $doesExist = $this->userDetail->getIsExistingByNameAndBirthday($data['firstname'], $entry['middlename'], $data['lastname'], $data['birthdateyyyy_mm_dd']);
                 $isPresent = $this->userAccountRepository->getAccountDetailByRSBSANumber($rsbsa_number);
@@ -283,5 +291,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
 
     public function getHeaders() {
         return $this->headers;
+    }
+
+    public function getProv() {
+        return $this->province;
     }
 }
