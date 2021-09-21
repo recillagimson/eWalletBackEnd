@@ -18,6 +18,8 @@ class BatchUpload implements ShouldQueue
     private string $filePath;
     private string $userId;
 
+    public int $timeout = 3600;
+
     /**
      * Create a new job instance.
      *
