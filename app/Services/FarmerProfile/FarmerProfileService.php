@@ -15,6 +15,7 @@ use App\Imports\Farmers\FarmerAccountImportV2;
 use App\Imports\Farmers\FarmersImport;
 use App\Imports\Farmers\SubsidyImport;
 use App\Models\FarmerImport;
+use App\Repositories\Address\Province\IProvinceRepository;
 use App\Repositories\FarmerImport\IFarmerImportRepository;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
 use App\Repositories\Notification\INotificationRepository;
@@ -69,6 +70,7 @@ class FarmerProfileService implements IFarmerProfileService
     private INotificationRepository $notificationRepository;
 
     private IFarmerImportRepository $farmerImportRepository;
+    private IProvinceRepository $provinceRepository;
 
 
     public function __construct(
@@ -90,7 +92,8 @@ class FarmerProfileService implements IFarmerProfileService
         IEmailService                     $emailService,
         IUserDetailRepository             $userDetail,
         INotificationRepository           $notificationRepository,
-        IFarmerImportRepository           $farmerImportRepository
+        IFarmerImportRepository           $farmerImportRepository,
+        IProvinceRepository               $provinceRepository
     )
     {
         $this->userApprovalRepository = $userApprovalRepository;
@@ -113,6 +116,7 @@ class FarmerProfileService implements IFarmerProfileService
         $this->userDetail = $userDetail;
         $this->notificationRepository = $notificationRepository;
         $this->farmerImportRepository = $farmerImportRepository;
+        $this->provinceRepository = $provinceRepository;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
@@ -256,16 +260,16 @@ class FarmerProfileService implements IFarmerProfileService
         $prov = $import->getProv();
 
         $seq = $this->farmerImportRepository->countSequnceByProvinceAndDateCreated($prov, Carbon::now()->format('Y-m-d'));
-
         $imp = $this->farmerImportRepository->create([
             'filename' => $filePath,
             'province' => $prov,
             'seq' => ($seq + 1)
         ]);
-
+        $province = $this->provinceRepository->getProvinceByName($prov);
+        
         $date = date('ymd');
-        $failFilename = "farmers/ONBSUCRFFA{$prov}SPTI{$date}{$seq}.csv";
-        $successFilename = "farmers/ONBEXPRFFA{$prov}SPTI{$date}{$seq}.csv";
+        $failFilename = "farmers/ONBSUCRFFA{$province->da_province_code}SPTI{$date}{$seq}.csv";
+        $successFilename = "farmers/ONBEXPRFFA{$province->da_province_code}SPTI{$date}{$seq}.csv";
 
         Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
         Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');
