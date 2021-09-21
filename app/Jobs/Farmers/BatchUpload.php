@@ -21,6 +21,7 @@ class BatchUpload implements ShouldQueue, ShouldBeUnique
 
     public int $timeout = 3600;
     public int $uniqueFor = 3600;
+    public int $tries = 1;
 
 
     /**
