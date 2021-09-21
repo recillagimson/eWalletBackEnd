@@ -4,7 +4,12 @@ namespace App\Imports\Farmers;
 
 use App\Enums\Currencies;
 use App\Enums\AccountTiers;
+use App\Enums\Country;
 use App\Enums\DBPUploadKeys;
+use App\Enums\MaritalStatus;
+use App\Enums\Nationality;
+use App\Enums\NatureOfWork;
+use App\Enums\SourceOfFund;
 use App\Rules\RSBSAUniqueRule;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Validators\Failure;
@@ -45,6 +50,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
     private IUserAccountRepository $userAccountRepository;
     private IUserBalanceInfoRepository $userBalance;
     private $errorBag;
+    private $processed;
     
     public function __construct(IUserDetailRepository $userDetail, string $currentUser, IMaritalStatusRepository $maritalStatus, IUserAccountNumberRepository $userAccountNumbers, IUserAccountRepository $userAccountRepository, IUserBalanceInfoRepository $userBalance)
     {
@@ -53,6 +59,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
         $this->userDetail = $userDetail;
         $this->headers = collect();
         $this->errorBag = collect();
+        $this->processed = collect();
         $this->currentUser = $currentUser;
         $this->maritalStatus = $maritalStatus;
         $this->userAccountNumbers = $userAccountNumbers;
@@ -75,12 +82,13 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             'user_created' => $this->currentUser,
         ];
 
-        return $this->userAccountRepository->create($farmer);
+        $record = $this->userAccountRepository->create($farmer);
+        return $record;
     }
 
     private function setupUserProfile($row, $userAccount)
     {
-        $marital = $this->maritalStatus->getByDescription($row[DBPUploadKeys::maritalStatus])->id;
+        // $marital = $this->maritalStatus->getByDescription($row[DBPUploadKeys::maritalStatus])->id;
         $dob = is_numeric($row[DBPUploadKeys::birthDate]) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[DBPUploadKeys::birthDate])) : \Carbon\Carbon::parse(strtotime($row[DBPUploadKeys::birthDate]));
 
         $profile = [
@@ -93,8 +101,8 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             'name_extension' => $row[DBPUploadKeys::extName],
             'birth_date' => $dob,
             'place_of_birth' => $row[DBPUploadKeys::birthPlace],
-            'marital_status_id' => $marital,
-            'nationality_id' => null,
+            'marital_status_id' => MaritalStatus::Single,
+            'nationality_id' => Nationality::filipino,
             'encoded_nationality' => null,
             'occupation' => null,
             'house_no_street' => $row[DBPUploadKeys::houseNo],
@@ -102,14 +110,14 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             'city' => $row[DBPUploadKeys::city],
             'province_state' => $row[DBPUploadKeys::province],
             'municipality' => $row[DBPUploadKeys::municipality],
-            'country_id' => null,
+            'country_id' => Country::PH,
             'postal_code' => null,
-            'nature_of_work_id' => null,
+            'nature_of_work_id' => NatureOfWork::farmer,
             'encoded_nature_of_work' => null,
-            'source_of_fund_id' => null,
+            'source_of_fund_id' => SourceOfFund::farming,
             'encoded_source_of_fund' => null,
             'mother_maidenname' => $row[DBPUploadKeys::mothersMaidenName],
-            'currency_id' => null,
+            'currency_id' => Currencies::philippinePeso,
             'selfie_loction' => null,
             'signup_host_id' => null,
             'verification_status' => null,
@@ -127,7 +135,9 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             'total_farm_area' => $row[DBPUploadKeys::totalFarmArea],
             'district' => $row[DBPUploadKeys::district],
             'region' => $row[DBPUploadKeys::region],
-            'government_id_type' => $row[DBPUploadKeys::govtidtype]
+            'government_id_type' => $row[DBPUploadKeys::govtidtype],
+            'sex' => $row[DBPUploadKeys::sex],
+            'id_number' => $row[DBPUploadKeys::idNumber]
         ];
 
         $this->userDetail->create($profile);
@@ -148,30 +158,35 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
 
     public function collection(Collection $collection)
     {
+        // ASSIGN UUID FIRST
         foreach($collection as $index => $entry) {
-            // // IF index is 0 skip because of headers
-            $row = $index;
-            // dd($index);
-            // if($index == 0) {
-            //     dd($entry);
-            //     $this->headers = $entry;
-            // }
-            // if($index != 0) {
-                \DB::beginTransaction();
-                try {
-                    if($this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']) == 0 && !$this->userAccountRepository->getAccountDetailByRSBSANumber(preg_replace("/[^0-9]/", "", $entry['rsbsa_reference_number'])) && !in_array(preg_replace("/[^0-9]/", "", $entry['rsbsa_reference_number']), $this->errorBag->toArray())){
-                        $userAccount = $this->setupUserAccount($entry);
-                        $this->setupUserProfile($entry, $userAccount);
-                        $this->setupUserBalance($userAccount->id);
 
-                        $this->successes->push(array_merge($userAccount->toArray(), $entry->toArray()));
-                        \DB::commit();
-                    } else {
-                        $remarks = [
-                            'remarks' => 'Row ' . $row . ", Duplicate Data"
-                        ];
-                        $this->fails->push(array_merge($remarks, $entry->toArray()));
-                        \DB::rollBack();
+            $row = $index;
+            \DB::beginTransaction();
+                try {
+                    $rsbsa_number = preg_replace("/[^0-9]/", "", $entry['rsbsa_reference_number']);
+                    if(!in_array($rsbsa_number, $this->processed->toArray())) {
+
+                        $doesExist = $this->userDetail->getIsExistingByNameAndBirthday($entry['firstname'], $entry['middlename'], $entry['lastname'], $entry['birthdateyyyy_mm_dd']);
+                        $inError = in_array($rsbsa_number, $this->errorBag->toArray());
+                        $isPresent = $this->userAccountRepository->getAccountDetailByRSBSANumber($rsbsa_number);
+                        if(!$doesExist && !$isPresent && !$inError){
+                            $userAccount = $this->setupUserAccount($entry);
+                            $this->setupUserProfile($entry, $userAccount);
+                            $this->setupUserBalance($userAccount->id);
+
+                            $this->successes->push(array_merge($userAccount->toArray(), $entry->toArray()));
+                            // \DB::commit();
+                        } else {
+                            if(!$inError) {   
+                                $remarks = [
+                                    'remarks' => 'Row ' . $row . ", Duplicate Data"
+                                ];
+                                $this->fails->push(array_merge($remarks, $entry->toArray()));
+                            }
+                            // \DB::rollBack();
+                        }
+                        $this->processed->push($rsbsa_number);
                     }
                 } catch (\Exception $e) {
                     $remarks = [
@@ -211,8 +226,8 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
             'profession' => ['required'],
             'sourceoffunds' => ['required'],
             'mothermaidenname' => ['required'],
-            'of_farm_parcel' => ['required'],
-            'total_farm_area_ha' => ['required'],
+            'of_farm_parcel' => [],
+            'total_farm_area_ha' => [],
         ];
     }
 
@@ -277,7 +292,7 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                 $key => $errorString
             ]);
         }
-
+        dd($errorMessages);
         foreach($errorMessages as $key => $message) {
             $data = '';
             foreach($failures as $failure) {
@@ -288,6 +303,8 @@ class FarmerAccountImport implements ToCollection, WithValidation, SkipsOnFailur
                         $data = array_merge(['remarks' => "Row " . $failure->row() . ", " . $message], $data);
                     }
                 }
+                dd($data);
+                dd($failure->row()); 
             }
             $this->errorBag->push(preg_replace("/[^0-9]/", "", $key));
             $this->fails->push($data);

@@ -53,6 +53,7 @@ use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
+use App\Http\Controllers\InAddMoneyCebuanaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +112,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/selfie/upload', [UserPhotoController::class, 'uploadSelfieManually']);
     // FARMER
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload', [FarmerController::class, 'batchUpload']);
-    Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2', [FarmerController::class, 'batchUploadV2']);
+    Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2', [FarmerController::class, 'uploadFileToS3']);
+    Route::middleware(['decrypt.request', 'auth:sanctum'])->post('/upload/process', [FarmerController::class, 'batchUploadV2']);
     Route::middleware(['require.user.token'])->post('/farmer/jobs/batch-upload', [FarmerController::class, 'processBatchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
@@ -163,6 +165,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type');
         });
     });
+
 
     Route::prefix('/admin')->middleware(['decrypt.request'])->group(function () {
         Route::prefix('/users')->group(function () {
@@ -438,12 +441,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/biller', [ReportController::class, 'billerReport']);
         Route::post('/farmers/drcr', [ReportController::class, 'DRCRMemoFarmers']);
         Route::post('/farmers/transaction', [ReportController::class, 'TransactionReportFarmers']);
-        Route::post('/farmers/list', [ReportController::class, 'FarmersList']);
+        Route::post('/farmers/list', [ReportController::class, 'FarmersList']);        
+    });
+
+    Route::prefix('/s3')->middleware(['decrypt.request'])->group(function() {
+        Route::post('/link', [ReportController::class, 'generateS3Link']);
     });
 
     Route::prefix('/loans')->middleware(['decrypt.request'])->group(function() {
         Route::get('/get/reference_number', [LoanController::class, 'generateReferenceNumber']);
         Route::post('/reference_number', [LoanController::class, 'storeReferenceNumber']);
+    });
+
+    Route::prefix('/cebuana')->middleware(['decrypt.request'])->group(function () {
+        Route::post('/add/money', [InAddMoneyCebuanaController::class, 'addMoney']);
     });
 
     Route::prefix('/upb/add/money')->middleware(['decrypt.request'])->group(function () {

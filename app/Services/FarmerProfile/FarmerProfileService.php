@@ -11,10 +11,12 @@ use App\Exports\Farmer\FailedUploadExport;
 use App\Exports\Farmer\SubsidyFailedUploadExport;
 use App\Exports\Farmer\SubsidySuccessUploadExport;
 use App\Exports\Farmer\SuccessUploadExport;
-use App\Imports\Farmers\FarmerAccountImport;
+use App\Imports\Farmers\FarmerAccountImportV2;
 use App\Imports\Farmers\FarmersImport;
 use App\Imports\Farmers\SubsidyImport;
+use App\Models\FarmerImport;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
@@ -36,8 +38,10 @@ use DB;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Str;
 
 class FarmerProfileService implements IFarmerProfileService
 {
@@ -61,6 +65,7 @@ class FarmerProfileService implements IFarmerProfileService
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private IReferenceNumberService $referenceNumberService;
     private IEmailService $emailService;
+    private INotificationRepository $notificationRepository;
 
 
     public function __construct(
@@ -80,7 +85,8 @@ class FarmerProfileService implements IFarmerProfileService
         IUserTransactionHistoryRepository $userTransactionHistoryRepository,
         IReferenceNumberService           $referenceNumberService,
         IEmailService                     $emailService,
-        IUserDetailRepository             $userDetail
+        IUserDetailRepository             $userDetail,
+        INotificationRepository           $notificationRepository
     )
     {
         $this->userApprovalRepository = $userApprovalRepository;
@@ -101,6 +107,7 @@ class FarmerProfileService implements IFarmerProfileService
         $this->referenceNumberService = $referenceNumberService;
         $this->emailService = $emailService;
         $this->userDetail = $userDetail;
+        $this->notificationRepository = $notificationRepository;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
@@ -167,10 +174,29 @@ class FarmerProfileService implements IFarmerProfileService
             $this->userBalanceInfo,
             $authUser);
 
-        Excel::import($import, $file);
+        $filename = date('Y-m-d') . '-' . $file->getClientOriginalName();
 
-        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.csv';
-        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.csv';
+        Storage::disk('s3')->putFileAs('farmers', $file, $filename);
+
+        Excel::import($import, 'farmers/' . $filename, 's3');
+
+        $date = date('ymd');
+        $prov = $import->getProv();
+        $seq = FarmerImport::where(function($q) use ($prov){
+            $q->where('province', $prov);
+            $q->whereDate('created_at', Carbon::today());
+        })->count();
+
+        $imp = FarmerImport::create([
+            "filename" => $filename,
+            'prov' => $prov,
+            'seq' => ++$seq
+        ]);
+
+        $seq = str_pad($seq, 3, "0", STR_PAD_LEFT);
+
+        $failFilename = "farmers/ONBSUCRFFA{$prov}SPTI{$date}{$seq}.csv";
+        $successFilename = "farmers/ONBEXPRFFA{$prov}SPTI{$date}{$seq}.csv";
 
         Excel::store(new FailedUploadExport($import->getFails()), $failFilename, 's3');
         Excel::store(new SuccessUploadExport($import->getSuccesses()), $successFilename, 's3');
@@ -205,31 +231,54 @@ class FarmerProfileService implements IFarmerProfileService
         $this->emailService->batchUploadNotification($user, $result['success_file'], $result['fail_file']);
     }
 
+    public function uploadFileToS3($file) {
+        $fileExt = $this->getFileExtensionName($file);
+        $fileName = request()->user()->id . "/" . Str::random(40) . "." . $fileExt;
+        return $this->saveFile($file, $fileName, 'dbp_uploads');
+    }
+
     // UPLOADING V2
-    public function batchUploadV2($file, string $authUser)
+    public function batchUploadV2(string $filePath, string $authUser)
     {
         ini_set('max_execution_time', 300);
 
-        // UPLOAD FIRST
-        $fileExt = $this->getFileExtensionName($file);
-        $fileName = request()->user()->id . "/" . \Str::random(40) . "." . $fileExt;
-        $filePath = $this->saveFile($file, $fileName, 'dbp_uploads');
-
-        $import = new FarmerAccountImport($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
+        $import = new FarmerAccountImportV2($this->userDetail, $authUser, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
+        // $import = new FarmerAccountImportV2($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
         Excel::import($import, $filePath, 's3');
         $errors = $import->getFails();
         $success = $import->getSuccesses();
         $headers = $import->getHeaders();
 
-        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.csv';
-        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.csv';
+        $now = Carbon::now();
+        $failFilename = 'dbp/fail/ONBSUCRFFANCRSPTI21' . $now->format('m') . $now->format('d') . "001" . '.csv';
+        $successFilename = 'dbp/success/ONBEXPRFFANCRSPTI21' . $now->format('m') . $now->format('d') . "001" . '.csv';
 
         Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
         Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');
 
-        return [
+        // // ADD NOTIFICATION TO AUTH USER
+        $this->notificationRepository->create([
+            'user_account_id' => $authUser,
+            'title' => 'DBP Upload',
+            'description' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)) . ', '
+                . Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
+            'status' => 1,
+            'user_created' => $authUser,
+            'user_updated' => $authUser
+        ]);
+
+//        $this->notificationRepository->create([
+//            'user_account_id' => $authUser,
+//            'title' => 'DBP Upload',
+//            'description' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
+//            'status' => 1,
+//            'user_created' => $authUser,
+//            'user_updated' => $authUser
+//        ]);
+
+        return new Collection([
             'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
-            'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30))
-        ];
+            'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
+        ]);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Enums;
 class DBPUploadKeys
 {
     const maritalStatus = 'sex';
+    const sex = 'sex';
     const birthDate = 'birthdateyyyy_mm_dd';
     const rsbsaNumber = 'rsbsa_reference_number';
     const mobileNumber = 'mobileno';
@@ -24,4 +25,10 @@ class DBPUploadKeys
     const district = 'district';
     const region = 'region';
     const govtidtype = 'govtidtype';
+    const idNumber = 'idnumber';
+    const nationality = 'nationality';
+    const profession = 'profession';
+    const sourceoffunds = 'sourceoffunds';
+    const mothermaidenname = 'mothermaidenname';
+
 }

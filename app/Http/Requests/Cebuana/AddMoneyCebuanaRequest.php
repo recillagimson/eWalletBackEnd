@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Farmer;
+namespace App\Http\Requests\Cebuana;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FarmerBatchUploadRequest extends FormRequest
+class AddMoneyCebuanaRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class FarmerBatchUploadRequest extends FormRequest
     public function rules()
     {
         return [
-            'file' => 'required'
+            'amount' => 'bail|required|numeric|min:50|regex:/^-?[0-9]+(?:.[0-9]{1,2})?$/',
         ];
     }
 }
