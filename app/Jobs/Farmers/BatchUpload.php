@@ -5,13 +5,14 @@ namespace App\Jobs\Farmers;
 use App\Services\FarmerProfile\IFarmerProfileService;
 use Exception;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 
-class BatchUpload implements ShouldQueue
+class BatchUpload implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -19,6 +20,8 @@ class BatchUpload implements ShouldQueue
     private string $userId;
 
     public int $timeout = 3600;
+    public int $uniqueFor = 3600;
+
 
     /**
      * Create a new job instance.
@@ -30,6 +33,11 @@ class BatchUpload implements ShouldQueue
         //
         $this->filePath = $filePath;
         $this->userId = $userId;
+    }
+
+    public function uniqueId(): string
+    {
+        return BatchUpload::class;
     }
 
     /**
