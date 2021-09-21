@@ -14,6 +14,7 @@ class SuccessExport implements FromCollection, WithHeadings
 
     private $headers;
     private $data;
+
     public function __construct(Collection $data, array $headers)
     {
         $this->headers = $headers;
@@ -22,7 +23,35 @@ class SuccessExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return $this->data;
+        $successData = [];
+        foreach($this->data as $entry) {
+            array_push($successData, [
+                $entry['rsbsa_number'],
+                $entry['firstname'],
+                $entry['middlename'],
+                $entry['lastname'],
+                $entry['extensionname'],
+                $entry['idnumber'],
+                $entry['govtidtype'],
+                $entry['streetno_purokno'],
+                $entry['barangay'],
+                $entry['citymunicipality'],
+                $entry['district'],
+                $entry['province'],
+                $entry['region'],
+                $entry['birthdateyyyy_mm_dd'],
+                $entry['placeofbirth'],
+                $entry['mobileno'],
+                $entry['sex'],
+                'Filipino',
+                'Farmer',
+                'Farming',
+                $entry['mothermaidenname'],
+                $entry['of_farm_parcel'],
+                $entry['total_farm_area_ha']
+            ]);
+        }
+        return new collection($successData);
     }
 
     public function headings(): array

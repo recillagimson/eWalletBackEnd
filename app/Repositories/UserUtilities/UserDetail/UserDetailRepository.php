@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class UserDetailRepository extends Repository implements IUserDetailRepository
 {
@@ -68,13 +69,16 @@ class UserDetailRepository extends Repository implements IUserDetailRepository
         return $records->where('rsbsa_number', '!=', '')->get();
     }
 
-    public function getIsExistingByNameAndBirthday($firstname, $middename, $lastname, $birthday)
+    public function getIsExistingByNameAndBirthday($firstname, $middlename, $lastname, $birthday)
     {
-        return $this->model
-                    ->where('last_name', $firstname)
-                    ->where('first_name', $middename)
-                    ->where('middle_name', $lastname)
-                    ->where('birth_date', $birthday)
-                    ->count();
+        $bday = Carbon::parse($birthday)->format('Y-m-d');
+        $record = $this->model
+                    ->where('last_name', $lastname)
+                    ->where('first_name', $firstname)
+                    ->where('middle_name', $middlename)
+                    ->where('birth_date', $bday)
+                    ->first();
+
+        return $record;
     }
 }

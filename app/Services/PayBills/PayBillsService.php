@@ -81,6 +81,8 @@ class PayBillsService implements IPayBillsService
         //list of active billing partners
         for ($x = 0; $x < $billersCount; $x++) {
             if (
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PRULI ||
+
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::MECOR ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::PLDT6 ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::ETRIP ||
@@ -100,7 +102,10 @@ class PayBillsService implements IPayBillsService
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::SKY01 ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::MBCCC ||
                 $arrayResponse['data'][$x]['code'] == PayBillsConfig::BNKRD ||
-                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BPI00 
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BPI00 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::PILAM ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::AEON1 ||
+                $arrayResponse['data'][$x]['code'] == PayBillsConfig::BNECO
             ) {
                 $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
             } else {
@@ -137,13 +142,16 @@ class PayBillsService implements IPayBillsService
         $arrayResponse = (array)json_decode($response->body(), true);
 
         // To catch bayad validation for invalid accounts 
-        if (isset($arrayResponse['data']) && in_array($arrayResponse['data'], PayBillsConfig::billerInvalidMsg)) return $this->invalidAccountNumber();
-        
+        if (isset($arrayResponse['data']) && in_array($arrayResponse['data'], PayBillsConfig::billerInvalidMsg)) $this->invalidAccountNumber();
+
+        // To catch endpointRequestTimeout
+        if(isset($arrayResponse['message']) && PayBillsConfig::endpointRequestTimeOut) $this->endpointRequestTimeOut();
+
         // To catch bayad general Error
-        if (isset($arrayResponse['exception'])) return $this->catchBayadErrors($arrayResponse['details'], $billerCode, $user);
-       
+        if (isset($arrayResponse['exception'])) $this->catchBayadErrors($arrayResponse['details'], $billerCode, $user);
+
         // To catch the DFO account or Disconnected account from MECOR
-        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return  $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
 
         // Check balance and monthly limit
         $this->validateTransaction($billerCode, $data, $user);

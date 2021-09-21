@@ -13,5 +13,7 @@ interface IFarmerProfileService
 
     public function processBatchUpload(UploadedFile $file, string $userId);
 
-    public function batchUploadV2($file, string $authUser);
+    public function batchUploadV2(string $file, string $authUser);
+    
+    public function uploadFileToS3($file);
 }

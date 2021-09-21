@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Farmer;
+namespace App\Http\Requests\S3;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FarmerBatchUploadRequest extends FormRequest
+class S3GenerateLinkRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class FarmerBatchUploadRequest extends FormRequest
     public function rules()
     {
         return [
-            'file' => 'required'
+            'file_path' => 'required'
         ];
     }
 }
