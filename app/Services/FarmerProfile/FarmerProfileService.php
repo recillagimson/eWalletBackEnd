@@ -41,6 +41,7 @@ use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Models\FarmerImport;
 
 class FarmerProfileService implements IFarmerProfileService
 {
@@ -174,13 +175,29 @@ class FarmerProfileService implements IFarmerProfileService
             $authUser);
 
         $filename = date('Y-m-d') . '-' . $file->getClientOriginalName();
+
         Storage::disk('s3')->putFileAs('farmers', $file, $filename);
 
         Excel::import($import, 'farmers/' . $filename, 's3');
 
-        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadLists.csv';
-        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadLists.csv';
+        $date = date('ymd');
+        $prov = $import->getProv();
+        $seq = FarmerImport::where(function($q) use ($prov){
+            $q->where('province', $prov);
+            $q->whereDate('created_at', Carbon::today());
+        })->count();
+
+        $imp = FarmerImport::create([
+            "filename" => $filename,
+            'prov' => $prov,
+            'seq' => ++$seq
+        ]);
         
+        $seq = str_pad($seq, 3, "0", STR_PAD_LEFT);
+
+        $failFilename = "farmers/ONBSUCRFFA{$prov}SPTI{$date}{$seq}.csv";
+        $successFilename = "farmers/ONBEXPRFFA{$prov}SPTI{$date}{$seq}.csv";
+
         Excel::store(new FailedUploadExport($import->getFails()), $failFilename, 's3');
         Excel::store(new SuccessUploadExport($import->getSuccesses()), $successFilename, 's3');
 
