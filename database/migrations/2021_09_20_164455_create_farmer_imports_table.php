@@ -10,7 +10,7 @@ class CreateFarmerImportsTable extends Migration
      * Run the migrations.
      *
      * @return void
-     */
+     */Mary Lindayag <mary.lindayag@squid.ph>
     public function up()
     {
         Schema::create('farmer_imports', function (Blueprint $table) {
