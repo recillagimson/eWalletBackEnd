@@ -323,7 +323,7 @@ class UserProfileService implements IUserProfileService
 
                             if($res->hv_result == 'failure') {
                                 $tierApproval->update([
-                                    'status' => 'DECLINED'
+                                    'status' => 'PENDING'
                                 ]);
                             }
 
