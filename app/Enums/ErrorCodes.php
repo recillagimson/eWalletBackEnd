@@ -59,8 +59,8 @@ class ErrorCodes
     const isEmpty = 417;
     const isExisting = 418;
     const kycRecordNotFound = 419; 
-    const bpiTransactionError = 420; 
-    const bpiFundTopUp = 421; 
+    const bpiTransactionError = 425; 
+    const bpiFundTopUp = 424; 
 
     
 
