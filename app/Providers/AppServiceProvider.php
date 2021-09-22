@@ -130,8 +130,8 @@ use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic;
 use App\Services\ThirdParty\ECPay\IECPayService;
 use App\Services\ThirdParty\ECPay\ECPayService;
-use App\Services\AddMoneyCebuana\AddMoneyCebuanaService;
-use App\Services\AddMoneyCebuana\IAddMoneyCebuanaService;
+use App\Services\AddmoneyCebuana\AddMoneyCebuanaService;
+use App\Services\AddmoneyCebuana\IAddMoneyCebuanaService;
 
 
 class AppServiceProvider extends ServiceProvider

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services\AddMoneyCebuana;
+namespace App\Services\AddmoneyCebuana;
 
 
 interface IAddMoneyCebuanaService
