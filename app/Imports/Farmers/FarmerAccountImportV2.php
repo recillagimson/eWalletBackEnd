@@ -132,6 +132,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     {
         $rsbsaNumbers = collect();
         foreach($collection as $coll) {
+            // dd($coll);
             $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
         }
         
