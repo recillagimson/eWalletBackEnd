@@ -239,7 +239,7 @@ class BPIService implements IBPIService
         }
     }
 
-    public function process(array $params) {
+    public function process(array $params, string $authUser) {
         DB::beginTransaction();
         $error = '';
         try {
@@ -283,7 +283,7 @@ class BPIService implements IBPIService
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
                         }
                         
-                        $serviceFee = $this->serviceFee->getByTierAndTransCategory(request()->user()->tier_id, TransactionCategoryIds::cashinBPI);
+                        $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
                         $this->bpiRepository->create(
                             [
                                 "user_account_id" => request()->user()->id,
@@ -331,7 +331,8 @@ class BPIService implements IBPIService
         $token = Encryption::encode2($context, $payload, $pub, JwsAlgorithm::RS256, [
             "alg" => "RS256"
         ]);
-
+        \Log::info('///// - BPI Encode JWT - //////');
+        \Log::info(json_encode($token));
         return $token;
     }
 
@@ -346,7 +347,8 @@ class BPIService implements IBPIService
             "enc" => "A128CBC-HS256",
             "cty" => "JWT"
         ]);
-
+        \Log::info('///// - BPI Encode JWE - //////');
+        \Log::info(json_encode($token));
         return $token;
     }
 
@@ -360,6 +362,8 @@ class BPIService implements IBPIService
             $myPrivateKey = openssl_get_privatekey($pri, '');
 
             $payload = Jwe::decode($context, $payload, $myPrivateKey);
+            \Log::info('///// - BPI DECRYPTION JWE - //////');
+            \Log::info(json_encode($payload));
             return $payload;
         } catch (Exception $e) {
             Log::error('BPI: Invalid Private Key');
@@ -376,6 +380,8 @@ class BPIService implements IBPIService
         $partyPublicKey = openssl_get_publickey($pub);
 
         $payload = Jwt::decode($context, $payload, $partyPublicKey);
+        \Log::info('///// - BPI DECRYPTION JWT - //////');
+        \Log::info(json_encode($payload));
         return $payload;
     }
 }
