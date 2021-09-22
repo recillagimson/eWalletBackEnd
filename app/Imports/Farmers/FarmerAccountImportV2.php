@@ -2,24 +2,27 @@
 
 namespace App\Imports\Farmers;
 
-use Carbon\Carbon;
+use App\Enums\AccountTiers;
 use App\Enums\Country;
 use App\Enums\Currencies;
-use App\Enums\Nationality;
-use App\Enums\AccountTiers;
-use App\Enums\NatureOfWork;
-use App\Enums\SourceOfFund;
 use App\Enums\DBPUploadKeys;
 use App\Enums\MaritalStatus;
+use App\Enums\Nationality;
+use App\Enums\NatureOfWork;
+use App\Enums\SourceOfFund;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use Carbon\Carbon;
+use DB;
+use Exception;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchInserts
 {
@@ -31,6 +34,8 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     private IMaritalStatusRepository $maritalStatus;
     private IUserAccountNumberRepository $userAccountNumbers;
     private IUserBalanceInfoRepository $userBalance;
+    private $province;
+    private $rsbsaNumbers;
 
 
     public function __construct(IUserDetailRepository $userDetail, string $currentUser, IMaritalStatusRepository $maritalStatus, IUserAccountNumberRepository $userAccountNumbers, IUserAccountRepository $userAccountRepository, IUserBalanceInfoRepository $userBalance)
@@ -46,6 +51,8 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         $this->userAccountNumbers = $userAccountNumbers;
         $this->userAccountRepository = $userAccountRepository;
         $this->userBalance = $userBalance;
+        $this->province = '';
+        $this->rsbsaNumbers = array();
     }
     /**
     * @param Collection $collection
@@ -67,7 +74,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     private function setupUserProfile($row, $userAccount)
     {
         // $marital = $this->maritalStatus->getByDescription($row[DBPUploadKeys::maritalStatus])->id;
-        $dob = is_numeric($row[DBPUploadKeys::birthDate]) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[DBPUploadKeys::birthDate])) : \Carbon\Carbon::parse(strtotime($row[DBPUploadKeys::birthDate]));
+        $dob = is_numeric($row[DBPUploadKeys::birthDate]) ? Carbon::instance(Date::excelToDateTimeObject($row[DBPUploadKeys::birthDate])) : Carbon::parse(strtotime($row[DBPUploadKeys::birthDate]));
 
         $profile = [
             'entity_id' => null,
@@ -123,28 +130,41 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
 
     public function collection(Collection $collection)
     {
+        $rsbsaNumbers = collect();
+        foreach($collection as $coll) {
+            $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
+        }
+        
+        $this->rsbsaNumbers = array_count_values($rsbsaNumbers->toArray());
+
         foreach($collection as $key => $entry) {
+
+            $data = $entry->toArray();
+            // HANDLE PROVINCE
+            if(!$this->province && isset($data[DBPUploadKeys::province])) {
+                $this->province = $data[DBPUploadKeys::province];
+            }
+
             // HANDLE VALIDATION AND FAILED ENTRIES
             $isValid = $this->runValidation($entry->toArray(), ($key + 1));
             if($isValid) {
 
                 // VALIDATE IF USER DETAIL ALREADY PRESENT
                 // VALIDATE IF USER RSBSA NUMBER EXIST
-                $data = $entry->toArray();
                 $rsbsa_number = preg_replace("/[^0-9]/", "", $data[DBPUploadKeys::rsbsaNumber]);
                 $doesExist = $this->userDetail->getIsExistingByNameAndBirthday($data['firstname'], $entry['middlename'], $data['lastname'], $data['birthdateyyyy_mm_dd']);
                 $isPresent = $this->userAccountRepository->getAccountDetailByRSBSANumber($rsbsa_number);
 
                 if(!$doesExist && !$isPresent){
-                    \DB::beginTransaction();
-                    try{
+                    DB::beginTransaction();
+                    try {
                         $userAccount = $this->setupUserAccount($entry->toArray());
                         $this->setupUserProfile($entry->toArray(), $userAccount);
                         $this->setupUserBalance($userAccount->id);
                         $this->success->push(array_merge($userAccount->toArray(), $entry->toArray()));
-                        \DB::commit();
-                    } catch(\Exception $e) {
-                        \DB::rollBack();
+                        DB::commit();
+                    } catch (Exception $e) {
+                        DB::rollBack();
                         $dt = [
                             'Row ' . ($key + 1)
                         ];
@@ -173,8 +193,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             'pin_code' => bcrypt($pin),
             'tier_id' => AccountTiers::tier1,
             'account_number' => $this->userAccountNumbers->generateNo(),
-            'mobile_number' => $row[DBPUploadKeys::mobileNumber],
+            'mobile_number' => "0" . $row[DBPUploadKeys::mobileNumber],
             'user_created' => $this->currentUser,
+            'user_updated' => $this->currentUser,
         ];
 
         $record = $this->userAccountRepository->create($farmer);
@@ -187,8 +208,14 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::rsbsaNumber] == '') {
             $errors->push('RSBSA Number is required.');
         }
-        if($this->userAccountRepository->getUserByAccountNumberWithRelations($rsbsa_number)) {
+        if($this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsa_number)) {
             $errors->push('RSBSA Number already exist.');
+        }
+        if(strlen($rsbsa_number) != 13) {
+            $errors->push('Invalid RSBSA Number.');
+        }
+        if($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
+            $errors->push('Multiple instance of RSBSA Reference Number ' . $attr[DBPUploadKeys::rsbsaNumber] . ".");
         }
         if($attr[DBPUploadKeys::firstName] == '') {
             $errors->push('First Name is required.');
@@ -217,11 +244,20 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::birthDate] == '') {
             $errors->push('Birthday is required.');
         }
+   
+        
+        //if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $attr[DBPUploadKeys::birthDate])) {
+            //$errors->push('Invalid date format for Birthday.');
+        //}
+        
         if($attr[DBPUploadKeys::birthPlace] == '') {
-            $errors->push('Place pf birth is required.');
+            $errors->push('Place of birth is required.');
         }
         if($attr[DBPUploadKeys::mobileNumber] == '') {
             $errors->push('Mobile Number is required.');
+        }
+        if(strlen($attr[DBPUploadKeys::mobileNumber]) != 11) {
+            $errors->push('Mobile Number must be 11 digits.');
         }
         if($attr[DBPUploadKeys::sex] == '') {
             $errors->push('Sex is required.');
@@ -254,7 +290,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     {
         return 50;
     }
-    
+
     public function batchSize(): int
     {
         return 50;
@@ -272,5 +308,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
 
     public function getHeaders() {
         return $this->headers;
+    }
+
+    public function getProv() {
+        return $this->province;
     }
 }
