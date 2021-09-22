@@ -250,6 +250,7 @@ class FarmerProfileService implements IFarmerProfileService
     public function batchUploadV2(string $filePath, string $authUser)
     {
         ini_set('max_execution_time', 300);
+        ini_set('memory_limit', '-1');
 
         $import = new FarmerAccountImportV2($this->userDetail, $authUser, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
         // $import = new FarmerAccountImportV2($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
