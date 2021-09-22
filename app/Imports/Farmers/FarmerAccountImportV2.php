@@ -212,7 +212,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsa_number)) {
             $errors->push('RSBSA Number already exist.');
         }
-        if(strlen($rsbsa_number) != 13) {
+        if(strlen($rsbsa_number) != 15) {
             $errors->push('Invalid RSBSA Number.');
         }
         if($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
@@ -257,7 +257,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::mobileNumber] == '') {
             $errors->push('Mobile Number is required.');
         }
-        if(strlen($attr[DBPUploadKeys::mobileNumber]) != 11) {
+        if(strlen($attr[DBPUploadKeys::mobileNumber]) > 10) {
             $errors->push('Mobile Number must be 11 digits.');
         }
         if($attr[DBPUploadKeys::sex] == '') {
