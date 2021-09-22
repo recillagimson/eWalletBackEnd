@@ -2,30 +2,31 @@
 
 namespace App\Services\BPIService;
 
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\SendMoneyConfig;
-use App\Enums\TransactionCategoryIds;
-use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\BPIService\PackageExtension\Encryption;
-use App\Services\Utilities\API\IApiService;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithUserErrors;
-use Carbon\Carbon;
 use DB;
-use Exception;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Log;
-use Tmilos\JoseJwt\Context\DefaultContextFactory;
+use Exception;
+use App\Enums\BPI;
+use Carbon\Carbon;
 use Tmilos\JoseJwt\Jwe;
-use Tmilos\JoseJwt\Jwe\JweAlgorithm;
-use Tmilos\JoseJwt\Jwe\JweEncryption;
-use Tmilos\JoseJwt\Jws\JwsAlgorithm;
 use Tmilos\JoseJwt\Jwt;
+use Illuminate\Support\Str;
+use App\Enums\SendMoneyConfig;
+use App\Enums\ReferenceNumberTypes;
+use Tmilos\JoseJwt\Jwe\JweAlgorithm;
+use Tmilos\JoseJwt\Jws\JwsAlgorithm;
+use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithUserErrors;
+use Tmilos\JoseJwt\Jwe\JweEncryption;
+use Illuminate\Support\Facades\Storage;
+use App\Services\Utilities\API\IApiService;
+use Tmilos\JoseJwt\Context\DefaultContextFactory;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Services\BPIService\PackageExtension\Encryption;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class BPIService implements IBPIService
 {
@@ -276,21 +277,22 @@ class BPIService implements IBPIService
                     } else {
                         $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
                         
+                        $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
+                        $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee;
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
-                        $cashInWithServiceFee = $params['amount'] + SendMoneyConfig::ServiceFee;
-                        $total = $cashInWithServiceFee + $balance;
+                        $cashInWithServiceFee = (Double)$params['amount'] - (Double) $serviceFeeAmount;
+                        $total = $cashInWithServiceFee - $balance;
                         if($response_raw['status'] == 'success') {
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
                         }
                         
-                        $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
                         $this->bpiRepository->create(
                             [
                                 "user_account_id" => request()->user()->id,
                                 "reference_number" => $params['refId'],
                                 "amount" => $params['amount'],
                                 "service_fee_id" => $serviceFee ? $serviceFee->id : null,
-                                "service_fee" => SendMoneyConfig::ServiceFee,
+                                "service_fee" => $serviceFeeAmount,
                                 "total_amount" => $total,
                                 "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
                                 "transaction_category_id" => TransactionCategoryIds::cashinBPI,
