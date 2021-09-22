@@ -6,11 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateFarmerImportsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+
     public function up()
     {
         Schema::create('farmer_imports', function (Blueprint $table) {
