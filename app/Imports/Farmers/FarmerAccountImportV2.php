@@ -132,7 +132,6 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     {
         $rsbsaNumbers = collect();
         foreach($collection as $coll) {
-            // dd($coll);
             $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
         }
         
@@ -153,7 +152,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
                 // VALIDATE IF USER DETAIL ALREADY PRESENT
                 // VALIDATE IF USER RSBSA NUMBER EXIST
                 $rsbsa_number = preg_replace("/[^0-9]/", "", $data[DBPUploadKeys::rsbsaNumber]);
-                $doesExist = $this->userDetail->getIsExistingByNameAndBirthday($data['firstname'], $entry['middlename'], $data['lastname'], $data['birthdateyyyy_mm_dd']);
+                $doesExist = $this->userDetail->getIsExistingByNameAndBirthday($data[DBPUploadKeys::firstName], $entry[DBPUploadKeys::middleName], $data[DBPUploadKeys::lastName], $data[DBPUploadKeys::birthDate]);
                 $isPresent = $this->userAccountRepository->getAccountDetailByRSBSANumber($rsbsa_number);
 
                 if(!$doesExist && !$isPresent){
@@ -212,7 +211,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsa_number)) {
             $errors->push('RSBSA Number already exist.');
         }
-        if(strlen($rsbsa_number) != 13) {
+        if(strlen($rsbsa_number) != 15) {
             $errors->push('Invalid RSBSA Number.');
         }
         if($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
@@ -257,8 +256,8 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::mobileNumber] == '') {
             $errors->push('Mobile Number is required.');
         }
-        if(strlen($attr[DBPUploadKeys::mobileNumber]) != 11) {
-            $errors->push('Mobile Number must be 11 digits.');
+        if(strlen($attr[DBPUploadKeys::mobileNumber]) != 10) {
+            $errors->push('Mobile Number must be 10 digits.');
         }
         if($attr[DBPUploadKeys::sex] == '') {
             $errors->push('Sex is required.');
@@ -282,6 +281,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         $data = [
             'Row ' . $row
         ];
+
         $message = implode(', ', array_merge($data, $errors->toArray()));
         $this->errors->push(array_merge(['remarks' => $message], $attr));
         return false;
