@@ -274,6 +274,9 @@ class BPIService implements IBPIService
                                 $error = $code;
                             }
                         }
+                        if(config('bpi.BPI_426') == $response_raw['code']) {
+                            $error = $response_raw['code'];
+                        }
                     } else {
                         $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
                         
@@ -318,7 +321,12 @@ class BPIService implements IBPIService
             DB::rollback();
             // THROW ERROR
             if($error != '') {
-                $this->bpiTransactionError($error);
+                if(config('bpi.BPI_426') == $response_raw['code']) {
+                    $bpi_codes = config('bpi.bpi_codes');
+                    $this->bpiInvalidError($bpi_codes[$error]);
+                }else {
+                    $this->bpiTransactionError($error);
+                }
             }
             $this->bpiTokenInvalid();
         }

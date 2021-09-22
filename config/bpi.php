@@ -20,5 +20,18 @@ return [
         'FTUBE009' => 'Source account is not eligible for this transaction',
         'FTUBE0010' => 'You have insufficient balance in your account',
         'FTUBE0011' => 'You have exceeded the maximum transaction limit set by BPI for this type of transaction',
-    ]
+        "FTUBE012" => "Invalid API Sequence",
+        "FTUVE001" => "Request body missing or invalid",
+        "FTUVE002" => "Account number token missing or invalid",
+        "FTUVE003" => "Merchant transaction reference missing or invalid",
+        "FTUVE004" => "Mobile number token missing or invalid",
+        "FTUVE005" => "Transaction Id missing or invalid",
+        "FTUVE006" => "Amount missing or invalid",
+        "FTUVE007" => "Remarks missing or invalid",
+        "FTUVE008" => "One-Time PIN missing or invalid",
+        "FTUSE999" => "We are unable to process your transaction at this time",
+        "FTUIE999" => "We are unable to process your transaction at this time",
+    ],
+
+    'BPI_426' => 'FTUBE003',
 ];
