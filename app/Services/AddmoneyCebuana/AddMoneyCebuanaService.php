@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AddMoneyCebuana;
+namespace App\Services\AddmoneyCebuana;
 
 use App\Models\InAddMoneyCebuana;
 use App\Enums\ReferenceNumberTypes;
@@ -76,9 +76,10 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
 
         try {
             DB::beginTransaction();
-            return $this->createTransaction($user, $refNo, $data['amount'], $serviceFeeAmount,$serviceFeeId, 
+            $response =$this->createTransaction($user, $refNo, $data['amount'], $serviceFeeAmount,$serviceFeeId, 
                 $totalAmount, TransactionCategoryIds::addMoneyCebuana);
             DB::commit();
+            return $response;
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Add Money Error: ', $e->getTrace());
