@@ -6,7 +6,7 @@ use App\Enums\SuccessMessages;
 use App\Http\Requests\Cebuana\AddMoneyCebuanaRequest;
 
 //Services
-use App\Services\AddMoneyCebuana\IAddMoneyCebuanaService;
+use App\Services\AddmoneyCebuana\IAddMoneyCebuanaService;
 use App\Services\Utilities\Responses\IResponseService;
 
 class InAddMoneyCebuanaController extends Controller
