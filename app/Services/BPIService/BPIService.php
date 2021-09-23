@@ -274,7 +274,7 @@ class BPIService implements IBPIService
                                 $error = $code;
                             }
                         }
-                        if(config('bpi.BPI_426') == $response_raw['code']) {
+                        if(config('bpi.BPI_426') == $response_raw['code'] || config('bpi.BPI_4262') == $response_raw['code']) {
                             $error = $response_raw['code'];
                         }
                     } else {
@@ -321,7 +321,7 @@ class BPIService implements IBPIService
             DB::rollback();
             // THROW ERROR
             if($error != '') {
-                if(config('bpi.BPI_426') == $response_raw['code']) {
+                if(config('bpi.BPI_426') == $response_raw['code'] || config('bpi.BPI_4262') == $response_raw['code']) {
                     $bpi_codes = config('bpi.bpi_codes');
                     $this->bpiInvalidError($bpi_codes[$error]);
                 }else {
