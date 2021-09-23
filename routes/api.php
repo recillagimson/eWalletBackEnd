@@ -54,6 +54,8 @@ use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\InAddMoneyCebuanaController;
+use App\Http\Controllers\v2\Auth\AuthController as AuthV2Controller;
+use App\Http\Controllers\v2\Auth\RegisterController as RegisterV2Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -166,6 +168,37 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+    Route::prefix('/auth/v2')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/user', [AuthV2Controller::class, 'getUser'])->name('user.show');
+        
+        Route::post('/register/validate', [RegisterV2Controller::class, 'registerValidate']);
+        Route::post('/register', [RegisterV2Controller::class, 'register']);
+        Route::post('/register/pin', [RegisterV2Controller::class, 'registerPin']);
+        
+        Route::post('/login', [AuthV2Controller::class, 'login']);
+        Route::post('/mobile/login', [AuthV2Controller::class, 'mobileLogin']);
+        Route::post('/admin/login', [AuthV2Controller::class, 'adminLogin']);
+        Route::post('/partners/login', [AuthV2Controller::class, 'partnersLogin']);
+
+        Route::post('/mobile/login/validate', [AuthV2Controller::class, 'mobileLoginValidate']);
+        Route::post('/confirmation', [AuthV2Controller::class, 'confirmTransactions']);
+        Route::post('/confirmation/password', [AuthV2Controller::class, 'passwordConfirmation']);
+
+        Route::post('/forgot/{keyType}', [ForgotKeyController::class, 'forgotKey']);
+        Route::post('/reset/{keyType}', [ForgotKeyController::class, 'resetKey']);
+
+        Route::post('/generate/otp', [AuthV2Controller::class, 'generateTransactionOTP']);
+        Route::post('/resend/otp', [AuthV2Controller::class, 'resendOTP']);
+
+        Route::prefix('/verify')->name('verify.')->group(function () {
+            Route::post('/otp', [AuthV2Controller::class, 'verifyTransactionOtp'])->name('otp');
+            Route::post('/account', [RegisterV2Controller::class, 'verifyAccount'])->name('account');
+            Route::post('/mobile/login', [AuthV2Controller::class, 'verifyMobileLogin'])->name('mobile.login');
+            Route::post('/partners/login', [AuthV2Controller::class, 'verifyPartnersLogin'])->name('partners.login');
+            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type');
+        });
+    });
+
 
     Route::prefix('/admin')->middleware(['decrypt.request'])->group(function () {
         Route::prefix('/users')->group(function () {
@@ -257,7 +290,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
             Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
-            Route::post('/profile/tosilver/check/manual-override', [UserProfileController::class, 'addDAPersonel']);
 
             // FARMER
             Route::middleware(['require.user.token'])->post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
@@ -324,7 +356,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [PayBillsController::class, 'getBillers']);
         Route::get('/get/biller/information/{biller_code}', [PayBillsController::class, 'getBillerInformation']);
         Route::post('/validate/account/{biller_code}', [PayBillsController::class, 'validateAccount']);
-        Route::post('/validate/account/{biller_code}/{account_number}', [PayBillsController::class, 'oldValidateAccount']);
         Route::post('/create/payment/{biller_code}', [PayBillsController::class, 'createPayment']);
         Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
