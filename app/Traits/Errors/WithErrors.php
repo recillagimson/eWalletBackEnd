@@ -53,4 +53,18 @@ trait WithErrors
 
         return array_merge($withMessages, $withError, $providerError);
     }
+
+    // requested format for FE team
+    private function validationCatchErrorMessageMeralco($errorCode, $errorMessage, $providerArrayResponse, $serviceFee, $otherCharges): array
+    {
+        $withMessages =  array('message' => 'The given data was invalid.');
+        $withError  =  array('errors' => array('error_code' => [$errorCode], 'message' => [$errorMessage]));
+        $feeAndCharges = array_merge(array('serviceFee' => $serviceFee), array('otherCharges' => $otherCharges));
+        $providerArrayResponse = array_merge($providerArrayResponse['data'], $feeAndCharges);
+        $withData = array('data' => $providerArrayResponse);
+        $providerError = array('provider_error' => [$withData]);
+
+        return array_merge($withMessages, $withError, $providerError);
+    }
+    
 }
