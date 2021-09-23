@@ -26,7 +26,8 @@ class DAPersonelRequest extends FormRequest
         return [
             'name_of_da_personel' => 'required',
             'da_remarks' => 'required',
-            "is_da_update" => 'nullable'
+            "is_da_update" => 'nullable',
+            "user_account_id" => 'required'
         ];
     }
 }
