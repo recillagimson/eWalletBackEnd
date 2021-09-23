@@ -79,7 +79,7 @@ class ErrorCodes
 
     // Bayad Center 700
     const accountWithDFO = 701;
-    const disconnectedAccount = 702;
+    const disconnectedAccount = 702; 
     const invalidParameter = 703;
     const parameterMissing = 704;
     const invalidAccountNumberFormat = 705;
