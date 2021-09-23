@@ -31,7 +31,7 @@ trait WithPayBillsErrors
 
     private function payBillsNotEnoughBalance($otherCharges, $serviceFee)
     {
-        $this->validationErrorMessage(ErrorCodes::payBillsNotEnoughBalance, 'Not Enough balance. This service has PHP '. number_format($serviceFee,2).' service fee and PHP '. number_format($otherCharges,2) .' other charges fee.');
+        $this->validationErrorMessageWithAmount(ErrorCodes::payBillsNotEnoughBalance, 'Not Enough balance. This service has PHP '. number_format($serviceFee,2).' service fee and PHP '. number_format($otherCharges,2) .' other charges fee.');
     }
 
     
@@ -47,7 +47,7 @@ trait WithPayBillsErrors
 
     public function accountWithDFO($providerArrayResponse, $serviceFee, $otherCharges)
     {
-        return $this->validationAccountWithDFO(ErrorCodes::tpaErrorCatch, 'Provider Error.', $providerArrayResponse, $serviceFee, $otherCharges);
+        return $this->validationAccountWithDFO(ErrorCodes::accountWithDFO, 'Provider Error.', $providerArrayResponse, $serviceFee, $otherCharges);
     }
 
     private function disconnectedAccount($errorMessage)

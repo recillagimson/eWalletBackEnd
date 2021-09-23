@@ -115,6 +115,16 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.BillDate' => "required",
             'otherInfo.DueDate' => "required|date_format:m/d/Y",
         ],
+        PayBillsConfig::PRULI => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => "required|max:100",
+            'otherInfo.DueDate' => "required|date_format:m/d/Y",
+        ],
+        PayBillsConfig::RFID1 => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+        ],
 
     ];
 
