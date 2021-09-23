@@ -257,6 +257,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
             Route::post('/profile/tosilver/check/pending', [UserProfileController::class, 'checkPendingTierUpgrate']);
+            Route::post('/profile/tosilver/check/manual-override', [UserProfileController::class, 'addDAPersonel']);
 
             // FARMER
             Route::middleware(['require.user.token'])->post('/farmer/tosilver', [FarmerController::class, 'updateSilver']);
