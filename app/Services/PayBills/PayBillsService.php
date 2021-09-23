@@ -109,6 +109,24 @@ class PayBillsService implements IPayBillsService
     }
 
 
+
+    public function oldValidateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
+    {
+        $this->firstLayerValidation($billerCode, $accountNumber, $data);
+
+        $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
+        $arrayResponse = (array)json_decode($response->body(), true);
+
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
+        if ($arrayResponse['data'] === "NOT_FOUND") return $this->tpaErrorCatch($arrayResponse);
+        if (isset($arrayResponse['message']) === "Internal server error") return $this->tpaErrorCatch($arrayResponse);
+        if (isset($arrayResponse['data']) === "Internal Server Error") return $this->tpaErrorCatch($arrayResponse);
+        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return $this->tpaErrorCatchMeralco($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+        $this->validateTransaction($billerCode, $data, $user);
+        return $this->validationResponse($user, $response, $billerCode, $data);
+    }
+
+
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
@@ -128,7 +146,7 @@ class PayBillsService implements IPayBillsService
 
         $this->checkAmountAndMonthlyLimit($billerCode, $data, $user);
         return $this->validationResponse($user, $response, $billerCode, $data);
-    }
+    }   
 
 
     public function createPayment(string $billerCode, array $data, UserAccount $user): array
