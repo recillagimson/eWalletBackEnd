@@ -46,4 +46,6 @@ interface IUserAccountRepository extends IRepository
     public function getAccountDetailByRSBSANumber(string $rsbsa_number);
 
     public function getUserAccountByRSBSANoV2(string $RSBSANo);
+
+    public function getAccountByMobileNumber(string $mobileNumber);
 }

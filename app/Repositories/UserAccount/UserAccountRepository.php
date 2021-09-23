@@ -213,4 +213,8 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return null;
     }
 
+    public function getAccountByMobileNumber(string $mobileNumber) {
+        return $this->model->with(['profile'])->where('mobile_number', $mobileNumber)->first();
+    }
+
 }

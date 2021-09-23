@@ -85,14 +85,13 @@ class AtmController extends Controller
     public function getProductsByProvider(GetProductsByProviderRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $userDetail = $this->accountRepository->get(request()->user()->id);
-        $avatarLink = '';
-        if($userDetail) {
-            $avatarLink = $userDetail->avatar_link;
-        }
         $mobileNumber = $data['mobile_number'];
+        $userDetail = $this->accountRepository->getAccountByMobileNumber($mobileNumber);
+        $avatarLink = '';
+        if($userDetail && isset($userDetail->profile)) {
+            $avatarLink = $userDetail->profile->avatar_link;
+        }
         $responseData = $this->buyLoadService->getProductsByProvider($mobileNumber);
-
         return $this->responseService->successResponse(array_merge(['avatar_link' => $avatarLink ], $responseData));
     }
 
