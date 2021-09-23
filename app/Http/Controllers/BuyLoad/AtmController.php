@@ -21,6 +21,7 @@ use App\Http\Requests\BuyLoad\ATM\GenerateSignatureRequest;
 use App\Http\Requests\BuyLoad\GetProductsByProviderRequest;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 
 class AtmController extends Controller
 {
@@ -29,7 +30,8 @@ class AtmController extends Controller
     public IOutBuyLoadRepository $outBuyLoadRepository;
     private IBuyLoadService $buyLoadService;
     private ISendMoneyService $sendMoneyService;
-    private IUserDetailRepository $userDetail;
+    // private IUserDetailRepository $userDetail;
+    private IUserAccountRepository $accountRepository;
 
 
     public function __construct(IAtmService $atmService,
@@ -39,14 +41,14 @@ class AtmController extends Controller
                                 IUserProfileService $userProfileService,
                                 IBuyLoadService $buyLoadService,
                                 ISendMoneyService $sendMoneyService,
-                                IUserDetailRepository $userDetail)
+                                IUserAccountRepository $accountRepository)
     {
         $this->atmService = $atmService;
         $this->responseService = $responseService;
         $this->outBuyLoadRepository = $outBuyLoadRepository;
         $this->buyLoadService = $buyLoadService;
         $this->sendMoneyService = $sendMoneyService;
-        $this->userDetail = $userDetail;
+        $this->accountRepository = $accountRepository;
     }
 
     public function generate(GenerateSignatureRequest $request): JsonResponse
@@ -83,10 +85,15 @@ class AtmController extends Controller
     public function getProductsByProvider(GetProductsByProviderRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $userDetail = $this->accountRepository->get(request()->user()->id);
+        $avatarLink = '';
+        if($userDetail) {
+            $avatarLink = $userDetail->avatar_link;
+        }
         $mobileNumber = $data['mobile_number'];
         $responseData = $this->buyLoadService->getProductsByProvider($mobileNumber);
 
-        return $this->responseService->successResponse($responseData);
+        return $this->responseService->successResponse(array_merge(['avatar_link' => $avatarLink ], $responseData));
     }
 
     private function getUsernameField(Request $request): string
@@ -100,13 +107,13 @@ class AtmController extends Controller
         $data = $request->validated();
 
         // ADD ONLY FOR CODE REUSE
-        $usernameField = $this->getUsernameField($request);
-        $review = $this->sendMoneyService->sendValidate($usernameField, $request->all(), $request->user());
-        $userDetail = $this->userDetail->getByUserId($review['user_account_id']);
-        $data = array_merge($request->all(),$review);
-        if($userDetail) {
-            $data['avatar_link'] = $userDetail->avatar_link;
-        }
+        // $usernameField = $this->getUsernameField($request);
+        // $review = $this->sendMoneyService->sendValidate($usernameField, $request->all(), $request->user());
+        // $userDetail = $this->userDetail->getByUserId($review['user_account_id']);
+        // $data = array_merge($request->all(),$review);
+        // if($userDetail) {
+        //     $data['avatar_link'] = $userDetail->avatar_link;
+        // }
 
         $this->buyLoadService->validateTopup($userId, $data['mobile_number'], $data['product_code'],
             $data['product_name'], $data['amount']);
