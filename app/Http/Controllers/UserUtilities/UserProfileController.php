@@ -185,7 +185,7 @@ class UserProfileController extends Controller
     public function addDAPersonel(DAPersonelRequest $request)
     {
         $details = $request->validated();
-        $userdetail = $this->userDetailRepository->getByUserId($request->user()->id);
+        $userdetail = $this->userDetailRepository->getByUserId($details["user_account_id"]); 
 
         $updateRecord = $this->userDetailRepository->update($userdetail, $details);
       
