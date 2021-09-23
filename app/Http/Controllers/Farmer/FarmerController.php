@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Farmer;
 
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Farmer\FarmerBatchUploadFileRequest;
 use App\Http\Requests\Farmer\FarmerBatchUploadRequest;
 use App\Http\Requests\Farmer\FarmerIdUploadRequest;
 use App\Http\Requests\Farmer\FarmerSelfieUploadRequest;
@@ -17,6 +18,7 @@ use App\Services\Utilities\Responses\IResponseService;
 use App\Services\Utilities\Verification\IVerificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Log;
 
 class FarmerController extends Controller
 {
@@ -84,7 +86,8 @@ class FarmerController extends Controller
 
     public function processBatchUpload(FarmerBatchUploadRequest $request): JsonResponse
     {
-        $this->dispatch(new BatchUpload($request->file, $request->user()->id));
+        $filePath = $this->farmerProfileService->uploadFileToS3($request->file);
+        BatchUpload::dispatch($filePath, $request->user()->id);
         return $this->responseService->successResponse(null, SuccessMessages::processingRequestWithEmailNotification);
     }
 
@@ -94,4 +97,18 @@ class FarmerController extends Controller
 
         return $this->responseService->successResponse($import, SuccessMessages::updateUserSuccessful);
     }
+
+    // UPLOADING V2
+    public function batchUploadV2(FarmerBatchUploadRequest $request)
+    {
+        $import = $this->farmerProfileService->batchUploadV2($request->file, request()->user()->id);
+        Log::info(json_encode($import));
+        return $this->responseService->successResponse($import->toArray(), SuccessMessages::success);
+    }
+
+    public function uploadFileToS3(FarmerBatchUploadFileRequest $request) {
+        $import = $this->farmerProfileService->uploadFileToS3($request->file, request()->user()->id);
+        return $this->responseService->successResponse(['path' => $import], SuccessMessages::success);
+    }
+
 }

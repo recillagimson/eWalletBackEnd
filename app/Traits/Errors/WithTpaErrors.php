@@ -43,4 +43,5 @@ trait WithTpaErrors
         return $this->validationCatchErrorMessageMeralco(ErrorCodes::tpaErrorCatch, 'Provider Error.', $providerArrayResponse, $serviceFee, $otherCharges);
     }
 
+
 }

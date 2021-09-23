@@ -5,13 +5,20 @@ namespace App\Services\FarmerProfile;
 use App\Enums\AccountTiers;
 use App\Enums\eKYC;
 use App\Enums\SquidPayModuleTypes;
+use App\Exports\Farmer\Export\FailedExport;
+use App\Exports\Farmer\Export\SuccessExport;
 use App\Exports\Farmer\FailedUploadExport;
 use App\Exports\Farmer\SubsidyFailedUploadExport;
 use App\Exports\Farmer\SubsidySuccessUploadExport;
 use App\Exports\Farmer\SuccessUploadExport;
+use App\Imports\Farmers\FarmerAccountImportV2;
 use App\Imports\Farmers\FarmersImport;
 use App\Imports\Farmers\SubsidyImport;
+use App\Models\FarmerImport;
+use App\Repositories\Address\Province\IProvinceRepository;
+use App\Repositories\FarmerImport\IFarmerImportRepository;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
@@ -33,8 +40,10 @@ use DB;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Str;
 
 class FarmerProfileService implements IFarmerProfileService
 {
@@ -46,6 +55,7 @@ class FarmerProfileService implements IFarmerProfileService
     private IUserProfileService $userProfileService;
     private IUserAccountNumberRepository $userAccountNumbers;
     private IMaritalStatusRepository $maritalStatus;
+    private IUserDetailRepository $userDetail;
 
     private IUserAccountRepository $userAccountRepository;
     private IUserDetailRepository $userDetailRepository;
@@ -57,6 +67,10 @@ class FarmerProfileService implements IFarmerProfileService
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private IReferenceNumberService $referenceNumberService;
     private IEmailService $emailService;
+    private INotificationRepository $notificationRepository;
+
+    private IFarmerImportRepository $farmerImportRepository;
+    private IProvinceRepository $provinceRepository;
 
 
     public function __construct(
@@ -75,7 +89,11 @@ class FarmerProfileService implements IFarmerProfileService
         IInReceiveFromDBPRepository       $inReceiveFromDBP,
         IUserTransactionHistoryRepository $userTransactionHistoryRepository,
         IReferenceNumberService           $referenceNumberService,
-        IEmailService                     $emailService
+        IEmailService                     $emailService,
+        IUserDetailRepository             $userDetail,
+        INotificationRepository           $notificationRepository,
+        IFarmerImportRepository           $farmerImportRepository,
+        IProvinceRepository               $provinceRepository
     )
     {
         $this->userApprovalRepository = $userApprovalRepository;
@@ -95,6 +113,10 @@ class FarmerProfileService implements IFarmerProfileService
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->referenceNumberService = $referenceNumberService;
         $this->emailService = $emailService;
+        $this->userDetail = $userDetail;
+        $this->notificationRepository = $notificationRepository;
+        $this->farmerImportRepository = $farmerImportRepository;
+        $this->provinceRepository = $provinceRepository;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
@@ -161,10 +183,29 @@ class FarmerProfileService implements IFarmerProfileService
             $this->userBalanceInfo,
             $authUser);
 
-        Excel::import($import, $file);
+        $filename = date('Y-m-d') . '-' . $file->getClientOriginalName();
 
-        $failFilename = 'farmers/' . date('Y-m-d') . '-farmerFailedUploadList.csv';
-        $successFilename = 'farmers/' . date('Y-m-d') . '-farmerSuccessUploadList.csv';
+        Storage::disk('s3')->putFileAs('farmers', $file, $filename);
+
+        Excel::import($import, 'farmers/' . $filename, 's3');
+
+        $date = date('ymd');
+        $prov = $import->getProv();
+        $seq = FarmerImport::where(function($q) use ($prov){
+            $q->where('province', $prov);
+            $q->whereDate('created_at', Carbon::today());
+        })->count();
+
+        $imp = FarmerImport::create([
+            "filename" => $filename,
+            'prov' => $prov,
+            'seq' => ++$seq
+        ]);
+
+        $seq = str_pad($seq, 3, "0", STR_PAD_LEFT);
+
+        $failFilename = "farmers/ONBSUCRFFA{$prov}SPTI{$date}{$seq}.csv";
+        $successFilename = "farmers/ONBEXPRFFA{$prov}SPTI{$date}{$seq}.csv";
 
         Excel::store(new FailedUploadExport($import->getFails()), $failFilename, 's3');
         Excel::store(new SuccessUploadExport($import->getSuccesses()), $successFilename, 's3');
@@ -197,5 +238,68 @@ class FarmerProfileService implements IFarmerProfileService
         $user = $this->userAccountRepository->getUser($userId);
         $result = $this->batchUpload($file, $userId);
         $this->emailService->batchUploadNotification($user, $result['success_file'], $result['fail_file']);
+    }
+
+    public function uploadFileToS3($file) {
+        $fileExt = $this->getFileExtensionName($file);
+        $fileName = request()->user()->id . "/" . Str::random(40) . "." . $fileExt;
+        return $this->saveFile($file, $fileName, 'dbp_uploads');
+    }
+
+    // UPLOADING V2
+    public function batchUploadV2(string $filePath, string $authUser)
+    {
+        ini_set('max_execution_time', 3000);
+        ini_set('memory_limit', '-1');
+
+        $import = new FarmerAccountImportV2($this->userDetail, $authUser, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
+        // $import = new FarmerAccountImportV2($this->userDetail, request()->user()->id, $this->maritalStatus, $this->userAccountNumbers, $this->userAccountRepository, $this->userBalanceInfo);
+        Excel::import($import, $filePath, 's3');
+        $errors = $import->getFails();
+        $success = $import->getSuccesses();
+        $headers = $import->getHeaders();
+        $prov = $import->getProv();
+
+        $seq = $this->farmerImportRepository->countSequnceByProvinceAndDateCreated($prov, Carbon::now()->format('Y-m-d'));
+
+        $imp = $this->farmerImportRepository->create([
+            'filename' => $filePath,
+            'province' => $prov,
+            'seq' => ($seq + 1)
+        ]);
+
+        $seq = ($seq + 1);
+        $formatSeq = $seq;
+
+        if($seq < 10) {
+            $formatSeq = "00" . $seq;
+        } else if($seq < 100) {
+            $formatSeq = "0" . $seq;
+        }
+
+        $province = $this->provinceRepository->getProvinceByName($prov);
+        
+        $date = date('ymd');
+        $successFilename = "farmers/ONBSUCRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.csv";
+        $failFilename = "farmers/ONBEXPRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.csv";
+
+        Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
+        Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');
+
+        // // ADD NOTIFICATION TO AUTH USER
+        $this->notificationRepository->create([
+            'user_account_id' => $authUser,
+            'title' => 'DBP Upload',
+            'description' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)) . ', '
+                . Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
+            'status' => 1,
+            'user_created' => $authUser,
+            'user_updated' => $authUser
+        ]);
+
+        return new Collection([
+            'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
+            'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
+        ]);
     }
 }

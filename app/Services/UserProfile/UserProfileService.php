@@ -10,16 +10,18 @@ use App\Enums\SquidPayModuleTypes;
 use Illuminate\Support\Facades\DB;
 use App\Enums\TempUserDetailStatuses;
 use App\Traits\Errors\WithUserErrors;
+use Illuminate\Support\Facades\Storage;
+use App\Services\KYCService\IKYCService;
 use App\Repositories\Tier\ITierRepository;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Services\Utilities\Verification\IVerificationService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
-use App\Services\KYCService\IKYCService;
 
 class UserProfileService implements IUserProfileService
 {
@@ -34,6 +36,7 @@ class UserProfileService implements IUserProfileService
     private IVerificationService $verificationService;
     private ILogHistoryService $logHistoryService;
     private IKYCService $kycService;
+    private IUserSelfiePhotoRepository $selfiePhotoRepository;
 
     public function __construct(IUserDetailRepository $userDetailRepository,
                                 IUserAccountRepository $userAccountRepository,
@@ -43,7 +46,8 @@ class UserProfileService implements IUserProfileService
                                 ITierApprovalRepository $userApprovalRepository,
                                 IVerificationService $verificationService,
                                 ILogHistoryService $logHistoryService,
-                                IKYCService $kycService)
+                                IKYCService $kycService,
+                                IUserSelfiePhotoRepository $selfiePhotoRepository)
     {
         $this->userAccountRepository = $userAccountRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -54,6 +58,7 @@ class UserProfileService implements IUserProfileService
         $this->verificationService = $verificationService;
         $this->logHistoryService = $logHistoryService;
         $this->kycService = $kycService;
+        $this->selfiePhotoRepository = $selfiePhotoRepository;
     }
 
     public function update(object $userAccount, array $details)
@@ -294,6 +299,44 @@ class UserProfileService implements IUserProfileService
 
                 $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id);
 
+                // WORK IN PROGRESS
+                $dedup_responses = [];
+                // INIT DEDUP
+                // foreach($attr['id_photos_ids'] as $photo) {
+                    if(isset($attr['id_selfie_ids']['0']) && isset($attr['id_selfie_ids']['0'])) {
+                        $idPhoto = $this->userPhotoRepository->get($attr['id_photos_ids']['0']);
+                        $selfiePhoto = $this->selfiePhotoRepository->get($attr['id_selfie_ids']['0']);
+
+                        $selfie = Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30));
+                        $nid = Storage::disk('s3')->temporaryUrl($idPhoto->photo_location, Carbon::now()->addMinutes(30));
+
+                        if($idPhoto && $idPhoto->id_number) {
+                            $res = $this->kycService->verify([
+                                'dob' => $attr['birth_date'],
+                                'name' => $attr['first_name'] . " " . $attr['last_name'],
+                                'id_number' => $idPhoto->id_number,
+                                'user_account_id' => request()->user()->id,
+                                'selfie' => $selfie,
+                                'nid_front' => $nid
+                            ], false);
+                            $dedup_responses = $res;
+
+                            if($res->hv_result == 'failure') {
+                                $tierApproval->update([
+                                    'status' => 'PENDING'
+                                ]);
+                            }
+
+                        } else {
+                            $dedup_responses = [
+                                'message' => 'No ID number',
+                                'user_id_photo' => $idPhoto->id,
+                            ];
+                        }
+                    }
+                // }
+
+
                 $audit_remarks = request()->user()->account_number . " has requested to upgrade to Silver";
                 $this->logHistoryService->logUserHistory(request()->user()->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
             }
@@ -305,7 +348,10 @@ class UserProfileService implements IUserProfileService
             // $encryptedResponse = $this->encryptionService->encrypt($addOrUpdate);
             DB::commit();
             // return $this->responseService->successResponse($addOrUpdate, SuccessMessages::success);
-            return $addOrUpdate;
+
+            $returnableData = $addOrUpdate;
+            $returnableData['dedup_responses'] = $dedup_responses;
+            return $returnableData;
         } catch (\Exception $e) {
             throw $e;
         }

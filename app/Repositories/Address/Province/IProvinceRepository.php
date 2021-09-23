@@ -7,4 +7,5 @@ use App\Repositories\IRepository;
 interface IProvinceRepository extends IRepository
 {
     public function getProvinces();
+    public function getProvinceByName(string $name);
 }

@@ -42,4 +42,8 @@ interface IUserAccountRepository extends IRepository
     public function getUserCount();
 
     public function getUserByRSBAWithRelations(string $RSBSANo);
+
+    public function getAccountDetailByRSBSANumber(string $rsbsa_number);
+
+    public function getUserAccountByRSBSANoV2(string $RSBSANo);
 }

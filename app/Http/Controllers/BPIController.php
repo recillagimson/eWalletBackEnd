@@ -57,7 +57,7 @@ class BPIController extends Controller
 
     public function process(BPIProcessRequest $request): JsonResponse
     {
-        $response = $this->bpiService->process($request->all());
+        $response = $this->bpiService->process($request->all(), request()->user()->id);
         return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 

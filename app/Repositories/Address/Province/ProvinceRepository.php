@@ -16,4 +16,9 @@ class ProvinceRepository extends Repository implements IProvinceRepository
     {
         return $this->model->get();
     }
+
+    public function getProvinceByName(string $name)
+    {
+        return $this->model->where('name', $name)->first();
+    }
 }

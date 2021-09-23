@@ -102,7 +102,7 @@ class AtmService implements IAtmService
                 if (!$prefix) $this->prefixNotSupported();
 
                 // return $prefix['provider'];
-                return ucfirst(strtolower($prefix['provider']));
+                return ucwords(strtolower($this->convertPrefixNetworkToProductListProvider($prefix['provider'])));
             }
         }
 
@@ -224,5 +224,20 @@ class AtmService implements IAtmService
             'pwd' => $this->password,
             'data' => $data
         ];
+    }
+
+    private function convertPrefixNetworkToProductListProvider(string $provider) 
+    {
+        switch($provider)
+        {
+            case 'SUN':
+                $provider = TopupTypes::atm_sun_network;
+                break;
+            
+            default:
+                $provider;
+        };
+
+        return $provider;
     }
 }

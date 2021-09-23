@@ -20,4 +20,5 @@ class TransactionCategories
     const BuyLoad = 'CXLOAD';
     const CustomerSendMoney = 'CXSEND';
     const AddMoneyWebBankUpbDirect = 'ADDMONEYUBPDIRECT';
+    const AddMoneyCebuana = 'ADDMONEYCEBUANA';
 }

@@ -207,12 +207,21 @@ class VerificationService implements IVerificationService
 
                     // CHECK IF DOE
                     if(in_array($key, eKYC::expirationDateKey)) {
-                        $templateResponse['expiration_date'] = $entry->value;
+                        if($entry->value != '') {
+                            $templateResponse['expiration_date'] = Carbon::parse($entry->value)->toISOString();
+                        } else {
+                            $templateResponse['expiration_date'] = $entry->value;
+                        }
+                        // $templateResponse['expiration_date'] = $entry->value;
                     }
 
                     // CHECK IF DOB
                     if(in_array($key, eKYC::dateOfBirth)) {
-                        $templateResponse['birth_date'] = $entry->value;
+                        if($entry->value != '') {
+                            $templateResponse['birth_date'] = Carbon::parse($entry->value)->toISOString();
+                        } else {
+                            $templateResponse['birth_date'] = $entry->value;
+                        }
                     }
 
                     // if($entry && $entry->value) {
@@ -379,5 +388,34 @@ class VerificationService implements IVerificationService
             'dedupe' => $res
         ];
         // return to controller all created records
+    }
+
+    public function uploadSignature(array $attr) {
+        // Delete existing first
+        // Get details first
+        $userDetails = $this->userDetailRepository->getByUserId($attr['user_account_id']);
+
+        // If no user Details
+        if(!$userDetails) {
+            throw ValidationException::withMessages([
+                'user_detail_not_found' => 'User Detail not found'
+            ]);
+        }
+
+        // GET EXT NAME
+        $signaturePhotoExt = $this->getFileExtensionName($attr['signature_photo']);
+        // GENERATE NEW FILE NAME
+        $signaturePhotoName = $attr['user_account_id'] . "/" . Str::random(40) . "." . $signaturePhotoExt;
+        // PUT FILE TO STORAGE
+        $signaturePhotoPath = $this->saveFile($attr['signature_photo'], $signaturePhotoName, 'signature_photo');
+
+        // SAVE SIGNATURE LOCATION ON USER DETAILS
+        $this->userDetailRepository->update($userDetails, [
+            'signature_photo_location' => $signaturePhotoPath
+        ]);
+
+        $userDetails = $this->userDetailRepository->getByUserId($attr['user_account_id']);
+
+        return $userDetails;
     }
 }
