@@ -48,7 +48,7 @@ trait PayBillsHelpers
      * @param array $response
      * @return mixed
      */
-    private function validateTransaction(string $billerCode, array $data, UserAccount $user)
+    private function checkAmountAndMonthlyLimit(string $billerCode, array $data, UserAccount $user)
     {
         $isEnough = $this->checkAmount($user, $data, $billerCode);
         if (!$isEnough) $this->payBillsNotEnoughBalance($this->getOtherCharges($billerCode) ,$this->getServiceFee($user));
@@ -278,14 +278,13 @@ trait PayBillsHelpers
 
     private function catchBayadErrors($errorDetails, $billerCode,UserAccount $user)
     {
-        $errorCode = $errorDetails['code'];
-        $errorMsg = $errorDetails['message'];
+        $errorCode = $errorDetails['details']['code'];
+        $errorMsg = $errorDetails['details']['message'];
         
         // To catch bayad validation for invalid accounts
         if (in_array($errorMsg, PayBillsConfig::billerInvalidMsg)) return $this->invalidAccountNumber();
 
         // To catch general errors
-        if ($errorCode == 1) return $this->accountWithDFO($errorMsg, $errorDetails['validationNumber'],$billerCode, $user);
         if ($errorCode == 2) return $this->disconnectedAccount($errorMsg);
         if ($errorCode == 3) return $this->invalidParameter($errorMsg);
         if ($errorCode == 4) return $this->parameterMissing($errorMsg);

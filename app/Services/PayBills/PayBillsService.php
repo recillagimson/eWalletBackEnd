@@ -114,6 +114,9 @@ class PayBillsService implements IPayBillsService
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse = (array)json_decode($response->body(), true);
 
+        // To catch the DFO account from MECOR
+        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+
         // To catch bayad validation for invalid accounts 
         if (isset($arrayResponse['data']) && in_array($arrayResponse['data'], PayBillsConfig::billerInvalidMsg)) $this->invalidAccountNumber();
 
@@ -121,15 +124,9 @@ class PayBillsService implements IPayBillsService
         if(isset($arrayResponse['message']) && $arrayResponse['message'] ===  PayBillsConfig::endpointRequestTimeOut) $this->endpointRequestTimeOut();
 
         // To catch bayad general Error
-        if (isset($arrayResponse['exception'])) $this->catchBayadErrors($arrayResponse['details'], $billerCode, $user);
+        if (isset($arrayResponse['exception'])) $this->catchBayadErrors($arrayResponse, $billerCode, $user);
 
-        // To catch the DFO account or Disconnected account from MECOR
-        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
-
-        // Check balance and monthly limit
-        $this->validateTransaction($billerCode, $data, $user);
-
-        // Returns standard response
+        $this->checkAmountAndMonthlyLimit($billerCode, $data, $user);
         return $this->validationResponse($user, $response, $billerCode, $data);
     }
 

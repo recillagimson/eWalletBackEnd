@@ -114,5 +114,5 @@ class PayBillsConfig
     const BNECO_INVALID_ACCT = "AccountNo is invalid."; // code 26
 
     // request time out
-    const endpointRequestTimeOut = 'Endpoint request timed out';
+    const endpointRequestTimeOut = 'Endpoint request timed out.';
 }

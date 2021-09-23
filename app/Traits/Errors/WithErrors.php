@@ -16,6 +16,14 @@ trait WithErrors
         ]);
     }
 
+    private function validationErrorMessageWithAmount($errorCode, $errorMessage)
+    {
+        throw ValidationException::withMessages([
+            'error_code' => $errorCode,
+            'amount' => $errorMessage
+        ]);
+    }
+
     private function validationError($field, $errorMessage)
     {
         throw ValidationException::withMessages([
