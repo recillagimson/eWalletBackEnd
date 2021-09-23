@@ -320,7 +320,7 @@ trait PayBillsHelpers
 
     }
 
-    //old Function
+    // old function
     private function firstLayerValidation(string $billerCode, $accountNumber, $data)
     {
 

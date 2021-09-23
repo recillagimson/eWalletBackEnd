@@ -109,7 +109,7 @@ class PayBillsService implements IPayBillsService
     }
 
 
-
+    // old function
     public function oldValidateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $this->firstLayerValidation($billerCode, $accountNumber, $data);
@@ -122,7 +122,7 @@ class PayBillsService implements IPayBillsService
         if (isset($arrayResponse['message']) === "Internal server error") return $this->tpaErrorCatch($arrayResponse);
         if (isset($arrayResponse['data']) === "Internal Server Error") return $this->tpaErrorCatch($arrayResponse);
         if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return $this->tpaErrorCatchMeralco($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
-        $this->validateTransaction($billerCode, $data, $user);
+        $this->checkAmountAndMonthlyLimit($billerCode, $data, $user);
         return $this->validationResponse($user, $response, $billerCode, $data);
     }
 

@@ -79,7 +79,7 @@ class PayBillsController extends Controller
         $data = $request->post();
         $billerCode = $request->route('biller_code');
         $accountNumber = $request->route('account_number');
-        $verifyAccount = $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
+        $verifyAccount = $this->payBillsService->oldValidateAccount($billerCode, $accountNumber, $data, $request->user());
         if (isset($verifyAccount['provider_error'])) return $this->responseService->tpaErrorReponse($verifyAccount);
         return $this->responseService->successResponse($verifyAccount, SuccessMessages::transactionValidationSuccessful);
     }
@@ -99,7 +99,7 @@ class PayBillsController extends Controller
 
         $verifyAccount =  $this->payBillsService->validateAccount($billerCode, $accountNumber, $data, $request->user());
         if (isset($verifyAccount['provider_error'])) return $this->responseService->tpaErrorReponse($verifyAccount);
-        return $this->responseService->successResponse($verifyAccount);
+        return $this->responseService->successResponse($verifyAccount, SuccessMessages::transactionValidationSuccessful);
     }
 
      
