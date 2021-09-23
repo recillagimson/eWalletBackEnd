@@ -278,6 +278,7 @@ class AuthService implements IAuthService
             'notify_pin_expiration' => $pinAboutToExpire,
             'pin_age' => $latestPin ? $latestPin->pin_age : 0,
             'first_login' => $firstLogin,
+            'is_require_profile_update' => !$user->profile ? true : false
         ];
     }
 

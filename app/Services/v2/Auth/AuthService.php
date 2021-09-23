@@ -278,6 +278,7 @@ class AuthService implements IAuthService
             'notify_pin_expiration' => $pinAboutToExpire,
             'pin_age' => $latestPin ? $latestPin->pin_age : 0,
             'first_login' => $firstLogin,
+            'is_require_profile_update' => !$user->profile ? true : false
         ];
     }
 
@@ -318,8 +319,15 @@ class AuthService implements IAuthService
     private function validateUser(UserAccount $user)
     {
         if (!$user->verified) $this->accountDoesntExist();
-        if ($user->is_lockout) $this->accountLockedOut();
+        if (!$user->is_active) $this->accountDeactivated();
+        if ($user->is_lockout_admin) $this->accountLockedOutAdmin();
+        if ($user->is_lockout && Carbon::now()->diffInMinutes($user->last_failed_attempt) < 60) {
+            $this->accountLockedOut();
+        }
 
+        if (Carbon::now()->diffInMinutes($user->last_failed_attempt) > 60) {
+            $user->resetLoginAttempts($this->daysToResetAttempts, true);
+        }
         $user->resetLoginAttempts($this->daysToResetAttempts);
     }
 
