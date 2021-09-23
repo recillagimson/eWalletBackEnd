@@ -2,6 +2,7 @@
 
 namespace App\Exports\Farmer\Export;
 
+use App\Enums\DBPUploadKeys;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -39,7 +40,7 @@ class SuccessExport implements FromCollection, WithHeadings
                 $entry['district'],
                 $entry['province'],
                 $entry['region'],
-                $entry['birthdateyyyy_mm_dd'],
+                $entry[DBPUploadKeys::birthDate],
                 $entry['placeofbirth'],
                 $entry['mobileno'],
                 $entry['sex'],

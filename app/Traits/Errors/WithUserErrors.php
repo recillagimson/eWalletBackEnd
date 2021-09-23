@@ -84,4 +84,8 @@ trait WithUserErrors
     public function bpiTransactionError(string $message) {
         return $this->validationErrorMessage(ErrorCodes::bpiTransactionError, $message);
     }
+
+    public function bpiInvalidError(string $message) {
+        return $this->validationErrorMessage(ErrorCodes::bpiInvalidError, $message);
+    }
 }

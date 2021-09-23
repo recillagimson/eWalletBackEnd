@@ -25,7 +25,7 @@ class TransactionCategoryIds
     
     const dbpSubsidy = 'edj4d5d0-9299-11eb-9663-1c1b0d14e211';
 
-    const addMoneyCebuana = '0ec436e0-9131-11eb-b44f-1c1b0d14e211';
+    const addMoneyCebuana = 'edj4d5d0-9255-11eb-9663-1c1b0d14e218';
 
     const cashinTransactions = [
         self::posAddFunds,

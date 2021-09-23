@@ -6,8 +6,8 @@ class DBPUploadKeys
 {
     const maritalStatus = 'sex';
     const sex = 'sex';
-    const birthDate = 'birthdateyyyy_mm_dd';
-    const rsbsaNumber = 'rsbsa_reference_number';
+    const birthDate = 'birthdate';
+    const rsbsaNumber = 'system_generated_rsbsa_number';
     const mobileNumber = 'mobileno';
     const lastName = 'lastname';
     const firstName = 'firstname';
