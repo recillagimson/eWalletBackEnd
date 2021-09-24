@@ -247,9 +247,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             $errors->push('Birthday is required.');
         }
    
-        if (!preg_match('/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/', $attr[DBPUploadKeys::birthDate])) {
-            $errors->push('Invalid date format for Birthday.');
-        }
+        //if (!preg_match('/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/', $attr[DBPUploadKeys::birthDate])) {
+          //  $errors->push('Invalid date format for Birthday.');
+        //}
         
         if($attr[DBPUploadKeys::birthPlace] == '') {
             $errors->push('Place of birth is required.');
@@ -260,9 +260,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if(strlen($attr[DBPUploadKeys::mobileNumber]) != 10) {
             $errors->push('Mobile Number must be 10 digits.');
         }
-        if(!ctype_digit($attr[DBPUploadKeys::mobileNumber])) {
-            $errors->push('Invalid Mobile Number.');
-        }
+        //if(!ctype_digit($attr[DBPUploadKeys::mobileNumber])) {
+         //   $errors->push('Invalid Mobile Number.');
+       // }
         if($attr[DBPUploadKeys::sex] == '') {
             $errors->push('Sex is required.');
         }
