@@ -284,7 +284,7 @@ class BPIService implements IBPIService
                         $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee;
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                         $cashInWithServiceFee = (Double)$params['amount'] - (Double) $serviceFeeAmount;
-                        $total = $cashInWithServiceFee - $balance;
+                        $total = $cashInWithServiceFee + $balance;
                         if($response_raw['status'] == 'success') {
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
                         }
