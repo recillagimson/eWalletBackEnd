@@ -86,16 +86,8 @@ class AtmController extends Controller
     {
         $data = $request->validated();
         $mobileNumber = $data['mobile_number'];
-        $userDetail = $this->accountRepository->getAccountByMobileNumber($mobileNumber);
-        $avatarLink = '';
-        if($userDetail && isset($userDetail->profile)) {
-            $avatarLink = $userDetail->profile->avatar_link;
-        }
         $responseData = $this->buyLoadService->getProductsByProvider($mobileNumber);
-        $data = array_merge(['avatar_link' => $avatarLink], $responseData);
-        $collection = collect($data);
-        return $this->responseService->successResponse(array_values($collection->toArray()));
-        // return $this->responseService->successResponse(array_merge(['avatar_link' => $avatarLink ], $responseData));
+        return $this->responseService->successResponse($responseData);
     }
 
     private function getUsernameField(Request $request): string

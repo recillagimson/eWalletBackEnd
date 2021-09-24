@@ -192,4 +192,14 @@ class UserProfileController extends Controller
         return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
     }
 
+    public function getAvatarLinkByMobileNumber(string $mobileNumber) {
+        $mobileNumber = $mobileNumber;
+        $userDetail = $this->userAccountRepository->getAccountByMobileNumber($mobileNumber);
+        $avatarLink = '';
+        if($userDetail && isset($userDetail->profile)) {
+            $avatarLink = $userDetail->profile->avatar_link;
+        }
+        return $this->responseService->successResponse(['link' => $avatarLink], SuccessMessages::success);
+    }
+
 }
