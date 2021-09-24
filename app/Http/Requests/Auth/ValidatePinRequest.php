@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\MobileNumber;
 
 class ValidatePinRequest extends FormRequest
 {
@@ -24,7 +25,14 @@ class ValidatePinRequest extends FormRequest
     public function rules()
     {
         return [
-            'pin_code' => 'required|digits:4|regex:/^(?!\b(.)\1+\b)/',
+            'mobile_number' => [
+                'required_without:email',
+                'max:11',
+                new MobileNumber(),
+            ],
+            'email' => 'required_without:mobile_number|max:50|email',
+            'pin_code' => 'required|digits:4|regex:/^(?!\b(.)\1+\b)/|confirmed',
+            'pin_code_confirmation' => 'required',
         ];
     }
 }

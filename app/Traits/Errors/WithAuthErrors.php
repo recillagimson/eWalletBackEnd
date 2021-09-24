@@ -42,6 +42,13 @@ trait WithAuthErrors
         $this->validationErrorMessage(ErrorCodes::invalidClient, 'Invalid client credentials.');
     }
 
+    public function accountLockedOutAdmin()
+    {
+        $this->validationErrorMessage(ErrorCodes::accountLockedOut,
+            'Your account is Locked due to suspicious activity. Please contact support@squid.ph 
+            or call (02) 85217035 to request for access.');
+    }
+
     public function accountLockedOut()
     {
         $this->validationErrorMessage(ErrorCodes::accountLockedOut,

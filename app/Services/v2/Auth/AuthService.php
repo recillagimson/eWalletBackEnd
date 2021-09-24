@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Auth;
+namespace App\Services\v2\Auth;
 
 use App\Enums\OtpTypes;
 use App\Enums\TokenNames;
@@ -319,8 +319,15 @@ class AuthService implements IAuthService
     private function validateUser(UserAccount $user)
     {
         if (!$user->verified) $this->accountDoesntExist();
-        if ($user->is_lockout) $this->accountLockedOut();
+        if (!$user->is_active) $this->accountDeactivated();
+        if ($user->is_lockout_admin) $this->accountLockedOutAdmin();
+        if ($user->is_lockout && Carbon::now()->diffInMinutes($user->last_failed_attempt) < 60) {
+            $this->accountLockedOut();
+        }
 
+        if (Carbon::now()->diffInMinutes($user->last_failed_attempt) > 60) {
+            $user->resetLoginAttempts($this->daysToResetAttempts, true);
+        }
         $user->resetLoginAttempts($this->daysToResetAttempts);
     }
 
