@@ -132,9 +132,10 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     {
         $rsbsaNumbers = collect();
         foreach($collection as $coll) {
-            $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
+            if($coll->get(DBPUploadKeys::rsbsaNumber) && $coll->get(DBPUploadKeys::rsbsaNumber) != null) {
+                $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
+            }
         }
-        
         $this->rsbsaNumbers = array_count_values($rsbsaNumbers->toArray());
 
         foreach($collection as $key => $entry) {
@@ -204,6 +205,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
 
     public function runValidation(array $attr, string $row) {
         $errors = new collection([]);
+        // dd($attr);
         $rsbsa_number = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeys::rsbsaNumber]);
         if($attr[DBPUploadKeys::rsbsaNumber] == '') {
             $errors->push('RSBSA Number is required.');
@@ -214,7 +216,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if(strlen($rsbsa_number) != 15) {
             $errors->push('Invalid RSBSA Number.');
         }
-        if($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
+        if(isset($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]]) && $this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
             $errors->push('Multiple instance of RSBSA Reference Number ' . $attr[DBPUploadKeys::rsbsaNumber] . ".");
         }
         if($attr[DBPUploadKeys::firstName] == '') {
@@ -245,10 +247,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             $errors->push('Birthday is required.');
         }
    
-        
-        //if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $attr[DBPUploadKeys::birthDate])) {
-            //$errors->push('Invalid date format for Birthday.');
-        //}
+        if (!preg_match('/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/', $attr[DBPUploadKeys::birthDate])) {
+            $errors->push('Invalid date format for Birthday.');
+        }
         
         if($attr[DBPUploadKeys::birthPlace] == '') {
             $errors->push('Place of birth is required.');
@@ -258,6 +259,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         }
         if(strlen($attr[DBPUploadKeys::mobileNumber]) != 10) {
             $errors->push('Mobile Number must be 10 digits.');
+        }
+        if(!ctype_digit($attr[DBPUploadKeys::mobileNumber])) {
+            $errors->push('Invalid Mobile Number.');
         }
         if($attr[DBPUploadKeys::sex] == '') {
             $errors->push('Sex is required.');
