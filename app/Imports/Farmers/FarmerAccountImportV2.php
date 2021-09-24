@@ -132,9 +132,11 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     {
         $rsbsaNumbers = collect();
         foreach($collection as $coll) {
-            if($coll->get(DBPUploadKeys::rsbsaNumber) && $coll->get(DBPUploadKeys::rsbsaNumber) != null) {
-                $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
-            }
+           
+            $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
+            //if($coll->get(DBPUploadKeys::rsbsaNumber) && $coll->get(DBPUploadKeys::rsbsaNumber) != null) {
+            //    $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
+           // }
         }
         $this->rsbsaNumbers = array_count_values($rsbsaNumbers->toArray());
 
@@ -216,7 +218,8 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if(strlen($rsbsa_number) != 15) {
             $errors->push('Invalid RSBSA Number.');
         }
-        if(isset($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]]) && $this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
+        if($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
+        // if(isset($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]]) && $this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
             $errors->push('Multiple instance of RSBSA Reference Number ' . $attr[DBPUploadKeys::rsbsaNumber] . ".");
         }
         if($attr[DBPUploadKeys::firstName] == '') {
