@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Auth\v2;
 
 use App\Rules\IsPasswordValid;
 use App\Rules\MobileNumber;
@@ -41,7 +41,7 @@ class RegisterUserRequest extends FormRequest
                 new IsPasswordValid()
             ],
             'password_confirmation' => 'required',
-            'pin_code' => 'required|digits:4',
+            // 'pin_code' => 'required|digits:4',
             // 'pin_code_confirmation' => 'required'
         ];
     }
