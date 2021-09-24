@@ -4,7 +4,7 @@ namespace App\Http\Controllers\v2\Auth;
 
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\RegisterUserRequest;
+use App\Http\Requests\Auth\v2\RegisterUserRequest;
 use App\Http\Requests\Auth\ValidateNewUserRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Http\Requests\Auth\ValidatePinRequest;
