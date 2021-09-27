@@ -286,10 +286,21 @@ class BPIService implements IBPIService
 
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                         $cashInWithServiceFee = (Double)$params['amount'];
-                        $total = $cashInWithServiceFee + $balance;
+                        $total = (Double)$params['amount'] + (Double)$balance->available_balance;
                         if($response_raw['status'] == 'success') {
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
                         }
+
+                        if(request()->user() && request()->user()->mobile_number) {
+                            // SMS USER FOR NOTIFICATION
+                            $this->smsService->sendBPICashInNotification(request()->user()->mobile_number, request()->user()->profile, $total, $params['transactionId']);
+                        }
+        
+                        if(request()->user() && request()->user()->email) {
+                            // EMAIL USER FOR NOTIFICATION
+                            $this->emailService->sendBPICashInNotification(request()->user()->mobile_number, request()->user()->profile, $total, $params['transactionId']);
+                        } 
+                        
                         
                         $this->bpiRepository->create(
                             [
