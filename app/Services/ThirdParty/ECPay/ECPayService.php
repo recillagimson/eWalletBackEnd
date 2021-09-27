@@ -5,6 +5,7 @@ namespace App\Services\ThirdParty\ECPay;
 
 
 use App\Enums\TpaProviders;
+use Log;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Illuminate\Http\Client\Response;
@@ -87,6 +88,8 @@ class ECPayService implements IECPayService
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->CommitPaymentResponse->CommitPaymentResult, true)[0];
 
+        \Log::info('///// - ECPAY Commit Payment - //////');
+        \Log::info(json_encode($jsondecode));
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $refNo, $expirationDate);
@@ -105,6 +108,8 @@ class ECPayService implements IECPayService
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->ConfirmPaymentResponse->ConfirmPaymentResult, true)[0];
 
+        \Log::info('///// - ECPAY Confirm Payment - //////');
+        \Log::info(json_encode($jsondecode));
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $data["referenceno"]);
