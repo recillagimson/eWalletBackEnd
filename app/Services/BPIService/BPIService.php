@@ -281,10 +281,11 @@ class BPIService implements IBPIService
                         $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
                         
                         $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
-                       // $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee;
+                       // $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee; 
+                       // Wilson please fix the amount of service fee
                         $serviceFeeAmount = 0;
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
-                        $cashInWithServiceFee = (Double)$params['amount'] - (Double) $serviceFeeAmount;
+                        $cashInWithServiceFee = (Double)$params['amount'];
                         $total = $cashInWithServiceFee + $balance;
                         if($response_raw['status'] == 'success') {
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
