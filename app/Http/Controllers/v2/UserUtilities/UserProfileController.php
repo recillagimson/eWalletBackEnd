@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\UserUtilities;
+namespace App\Http\Controllers\v2\UserUtilities;
 
 use App\Enums\AccountTiers;
 use App\Enums\SquidPayModuleTypes;
@@ -10,7 +10,7 @@ use App\Http\Requests\User\SupervisorUpdateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Requests\UserProfile\AvatarUploadRequest;
 use App\Http\Requests\UserProfile\UpdateFarmerToSilverRequest;
-use App\Http\Requests\UserProfile\UpdateProfileBronzeRequest;
+use App\Http\Requests\v2\UserProfile\UpdateProfileBronzeRequest;
 use App\Http\Requests\UserProfile\UpdateProfileRequest;
 use App\Http\Requests\UserProfile\UpdateProfileSilverRequest;
 use App\Repositories\Tier\ITierApprovalRepository;
@@ -75,7 +75,7 @@ class UserProfileController extends Controller
      */
     public function updateBronze(UpdateProfileBronzeRequest $request): JsonResponse
     {
-        // $details = $request->validated();
+        $details = $request->validated();
         $addOrUpdate = $this->userProfileService->update($request->user(), $request->all());
 
         $audit_remarks = request()->user()->account_number . "  has updated his/her profile";
@@ -190,16 +190,6 @@ class UserProfileController extends Controller
         $updateRecord = $this->userDetailRepository->update($userdetail, $details);
       
         return $this->responseService->successResponse(array($updateRecord), SuccessMessages::recordSaved);
-    }
-
-    public function getAvatarLinkByMobileNumber(string $mobileNumber) {
-        $mobileNumber = $mobileNumber;
-        $userDetail = $this->userAccountRepository->getAccountByMobileNumber($mobileNumber);
-        $avatarLink = '';
-        if($userDetail && isset($userDetail->profile)) {
-            $avatarLink = $userDetail->profile->avatar_link;
-        }
-        return $this->responseService->successResponse(['link' => $avatarLink], SuccessMessages::success);
     }
 
 }
