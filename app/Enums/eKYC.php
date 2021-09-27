@@ -30,4 +30,6 @@ class eKYC
     const Passport = '0edb764a-9131-11eb-b44f-1c1b0d14e211';
     const PRC = '0edb7c7e-9131-11eb-b44f-1c1b0d14e211';
     const DL = '0edb7b31-9131-11eb-b44f-1c1b0d14e211';
+
+    const TINDateFormat = 'd-M-y';
 }

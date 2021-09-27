@@ -122,6 +122,7 @@ class VerificationService implements IVerificationService
             // Init eKYC OCR
             $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
             $extractData = $this->extractData($eKYC, $idType->type);
+            dd($extractData);
 
             $params = [
                 'user_account_id' => $data['user_account_id'],
@@ -218,7 +219,11 @@ class VerificationService implements IVerificationService
                     // CHECK IF DOB
                     if(in_array($key, eKYC::dateOfBirth)) {
                         if($entry->value != '') {
-                            $templateResponse['birth_date'] = Carbon::parse($entry->value)->toISOString();
+                            if($idType == 'TIN ID') {
+                                $templateResponse['birth_date'] = Carbon::createFromFormat(eKYC::TINDateFormat, $entry->value)->toISOString();
+                            } else {
+                                $templateResponse['birth_date'] = Carbon::parse($entry->value)->toISOString();
+                            }
                         } else {
                             $templateResponse['birth_date'] = $entry->value;
                         }
