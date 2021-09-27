@@ -125,6 +125,17 @@ class ValidateAccountRequest extends FormRequest
             'account_number' => 'required',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
         ],
+        PayBillsConfig::SSS03 => [
+            'account_number' => 'required|between:10,13',
+            'amount' => 'required|numeric|min:1.00|max:200000.00',
+            'otherInfo.PayorType' => 'required|in:I,R',
+            'otherInfo.RelType' => 'required|in:LP',
+            'otherInfo.LoanAccountNo' => 'required|numeric|digits:10',
+            'otherInfo.LastName' => 'required|max:100',
+            'otherInfo.FirstName' => 'required|max:100',
+            'otherInfo.MI' => 'required|max:2',
+            'otherInfo.PlatformType' => 'required|in:OTC,SS'
+        ],
 
     ];
 
