@@ -142,9 +142,15 @@ class ECPayService implements IECPayService
             $amount = $isDataExisting->amount;
             $refNo = $isDataExisting->reference_number;
             $logStringResult = 'Successfully updated money from EcPay with amount of ' . $amount;
+            $resultData = json_decode($data["result"]);
+
+            \Log::info('///// - ECPAY Create or Update Payment - //////');
+            \Log::info(json_encode($data));
+            if(!$resultData) throw ValidationException::withMessages(['Message' => 'Add money Failed']);
+            
             $this->addMoneyEcPayRepository->update($isDataExisting, [
                 'transaction_response'=>$data['result'],
-                'status' => ECPayStatusTypes::Success
+                'status' => ($resultData[0]->PaymentStatus == 1) ? ECPayStatusTypes::Success : ECPayStatusTypes::Pending
             ]);
             $this->handlePostBackService->addAmountToUserBalance($user->id, $amount);
         } else {
