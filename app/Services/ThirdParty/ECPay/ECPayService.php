@@ -150,7 +150,7 @@ class ECPayService implements IECPayService
             
             $this->addMoneyEcPayRepository->update($isDataExisting, [
                 'transaction_response'=>$data['result'],
-                'status' => ($resultData[0]->PaymentStatus == 1) ? ECPayStatusTypes::Success : ECPayStatusTypes::Pending
+                'status' => ($resultData[0]->PaymentStatus == 0) ? ECPayStatusTypes::Success : ECPayStatusTypes::Pending
             ]);
             $this->handlePostBackService->addAmountToUserBalance($user->id, $amount);
         } else {
