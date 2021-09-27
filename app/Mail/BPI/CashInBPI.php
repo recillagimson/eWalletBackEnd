@@ -39,7 +39,7 @@ class CashInBPI extends Mailable
         return $this->view('emails.bpi.cashin_bpi')
             ->subject('SquidPay - Cash In BPI')
             ->with([
-                'firstName' => $this->firstName,
+                'firstName' => $this->userDetail->first_name,
                 'refNo' => $this->refNo,
                 'balance' => number_format($this->newBalance, 2),
                 'createdAt' => Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A')
