@@ -306,7 +306,7 @@ class BPIService implements IBPIService
         
                         if(request()->user() && request()->user()->email) {
                             // EMAIL USER FOR NOTIFICATION
-                            $this->emailService->sendBPICashInNotification(request()->user()->mobile_number, request()->user()->profile, $total, $params['transactionId']);
+                            $this->emailService->sendBPICashInNotification(request()->user()->email, request()->user()->profile, $total, $params['transactionId']);
                         } 
                         
                         
