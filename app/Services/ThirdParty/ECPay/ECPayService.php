@@ -131,7 +131,7 @@ class ECPayService implements IECPayService
             $refNo = $isDataExisting->reference_number;
             $logStringResult = 'Successfully updated money from EcPay with amount of ' . $amount;
             $this->addMoneyEcPayRepository->update($isDataExisting, [
-                'transaction_remarks'=>$data['result'],
+                'transaction_response'=>$data['result'],
                 'status' => ECPayStatusTypes::Success
             ]);
         } else {
@@ -175,14 +175,15 @@ class ECPayService implements IECPayService
             "reference_number"=>$refNo,
             "amount"=>$inputData['amount'],
             "total_amount"=>$inputData['amount'],
-            "ec_pay_reference_number"=>$refNo,
+            "ec_pay_reference_number"=>$data["TransID"],
             "expiry_date"=>$expirationDate,
             "transaction_date"=>Carbon::now()->format('Y-m-d H:i:s'),
             "transction_category_id"=>$transCategoryId->id,
             "transaction_remarks"=>"Send Money via Ecpay",
             "user_created"=>$user->id,
             "user_updated"=>$user->id,
-            "updated_at"=>Carbon::now()->format('Y-m-d H:i:s')
+            "updated_at"=>Carbon::now()->format('Y-m-d H:i:s'),
+            'transaction_response'=> json_encode($data)
         ];
        
         return $result;
