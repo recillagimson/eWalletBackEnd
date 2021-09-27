@@ -139,14 +139,13 @@ class ECPayService implements IECPayService
                 'transaction_response'=>$data['result'],
                 'status' => ECPayStatusTypes::Success
             ]);
+            $this->handlePostBackService->addAmountToUserBalance($user->id, $amount);
         } else {
             $amount = $inputData['amount'];
             $isDataExisting = $this->addMoneyEcPayRepository->create($this->createBodyFormat($data, $inputData, $user, $refNo, $transCategoryId, $expirationDate));
             $logStringResult = 'Successfully added money from EcPay with amount of ' . $amount;
         }
        
-        $this->handlePostBackService->addAmountToUserBalance($user->id, $amount);
-
         $this->logHistoryService->logUserHistoryUnauthenticated($user->id, $refNo, SquidPayModuleTypes::AddMoneyViaOTCECPay, __METHOD__, Carbon::now(), $logStringResult);
 
         $this->userTransactionHistoryRepository->log(
