@@ -49,6 +49,7 @@ use App\Http\Controllers\UserUtilities\SignupHostController;
 use App\Http\Controllers\Disbursement\DisbursementController;
 use App\Http\Controllers\UserUtilities\NationalityController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
+use App\Http\Controllers\v2\UserUtilities\UserProfileController as UserProfileV2Controller;
 use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
@@ -286,6 +287,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::prefix('/user')->group(function (){
             Route::get('/profile', [UserProfileController::class, 'show']);
+            Route::post('v2/profile/tobronze', [UserProfileV2Controller::class, 'updateBronze']);
             Route::post('/profile/tobronze', [UserProfileController::class, 'updateBronze']);
             Route::post('/profile/tosilver', [UserProfileController::class, 'updateSilver']);
             Route::post('/profile/tosilver/validation', [UserProfileController::class, 'updateSilverValidation']);
