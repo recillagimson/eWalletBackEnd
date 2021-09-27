@@ -13,6 +13,6 @@ class InAddMoneyEcPayRepository extends Repository implements IInAddMoneyEcPayRe
     }
 
     public function getDataByReferenceNumber(string $referenceNumber) {
-        return $this->model->where('ec_pay_reference_number', '=', $referenceNumber)->first();
+        return $this->model->where('reference_number', '=', $referenceNumber)->first();
     }
 }

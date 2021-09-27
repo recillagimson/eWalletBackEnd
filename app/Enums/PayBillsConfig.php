@@ -37,7 +37,8 @@ class PayBillsConfig
         PayBillsConfig::BNECO,
 
         //PRULIFE
-        PayBillsConfig::PRULI
+        PayBillsConfig::PRULI,
+        PayBillsConfig::SSS03
     ];
 
 
@@ -90,6 +91,7 @@ class PayBillsConfig
     const AEON1 = 'AEON1';
     const BNECO = 'BNECO';
     const PRULI = 'PRULI';
+    const SSS03 = 'SSS03';
 
     // invalid account numbers
 

@@ -219,4 +219,10 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
+    public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
+    {
+        $content = "Hi " . $userDetail->first_name . "! You have successfully added funds to your wallet via BPI on " . Carbon::now()->format('F d, Y h:i A') . " . Service fee for this transaction is PHP 0.00. Your new balance is " . $newBalance . " with reference no. " . $referenceNumber . ".";
+        $this->sendMessages($to, $content);
+    }
+
 }

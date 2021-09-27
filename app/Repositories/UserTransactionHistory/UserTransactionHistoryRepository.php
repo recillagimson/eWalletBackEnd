@@ -22,6 +22,16 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $this->model->whereBetween('created_at', [$from, $to])->sum('total_amount');
     }
 
+
+    // $this->transactionHistory->log(
+        // request()->user()->id, 
+        // TransactionCategoryIds::cashinBPI, 
+        // $params['transactionId'], 
+        // $params['refId'], 
+        // $params['amount'], 
+        // Carbon::now(), 
+        // request()->user()->id);
+
     public function log(string $userId, string $transactionCategoryId, string $transactionId, string $refNo,
                         float $totalAmount, Carbon $transactionDate, string $userCreated)
     {
