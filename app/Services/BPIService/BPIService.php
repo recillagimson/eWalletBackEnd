@@ -301,10 +301,10 @@ class BPIService implements IBPIService
 
                         if(request()->user() && request()->user()->is_login_email == 0) {
                             // SMS USER FOR NOTIFICATION
-                            $this->smsService->sendBPICashInNotification(request()->user()->mobile_number, request()->user()->profile, $total, $params['transactionId']);
+                            $this->smsService->sendBPICashInNotification(request()->user()->mobile_number, request()->user()->profile, $total, $params['refId']);
                         }else {
                             // EMAIL USER FOR NOTIFICATION
-                            $this->emailService->sendBPICashInNotification(request()->user()->email, request()->user()->profile, $total, $params['transactionId']);
+                            $this->emailService->sendBPICashInNotification(request()->user()->email, request()->user()->profile, $total, $params['refId']);
                         } 
                         
                         
