@@ -281,9 +281,11 @@ class BPIService implements IBPIService
                         $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
                         
                         $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
-                        $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee;
+                       // $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee; 
+                       // Wilson please fix the amount of service fee
+
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
-                        $cashInWithServiceFee = (Double)$params['amount'] - (Double) $serviceFeeAmount;
+                        $cashInWithServiceFee = (Double)$params['amount'];
                         $total = $cashInWithServiceFee + $balance;
                         if($response_raw['status'] == 'success') {
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
@@ -295,8 +297,8 @@ class BPIService implements IBPIService
                                 "reference_number" => $params['refId'],
                                 "amount" => $params['amount'],
                                 "service_fee_id" => $serviceFee ? $serviceFee->id : null,
-                                "service_fee" => $serviceFeeAmount,
-                                "total_amount" => $total,
+                                "service_fee" => 0,
+                                "total_amount" => $params['amount'],
                                 "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
                                 "transaction_category_id" => TransactionCategoryIds::cashinBPI,
                                 "transaction_remarks" => $params['remarks'],
