@@ -294,7 +294,7 @@ class BPIService implements IBPIService
 
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                         $cashInWithServiceFee = (Double)$params['amount'];
-                        $total = (Double)$params['amount'] + (Double)$balance->available_balance;
+                        $total = (Double)$params['amount'] + (Double)$balance;
                         if($response_raw['status'] == 'success') {
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
                         }
