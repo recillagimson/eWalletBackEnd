@@ -35,4 +35,5 @@ interface INotificationService
                                         Carbon $transactionDate, float $newBalance, string $refNo);
 
     public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier);
+    public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber);
 }
