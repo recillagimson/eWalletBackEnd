@@ -283,7 +283,7 @@ class BPIService implements IBPIService
                         $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
                        // $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee; 
                        // Wilson please fix the amount of service fee
-                        $serviceFeeAmount = 0;
+                       
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                         $cashInWithServiceFee = (Double)$params['amount'];
                         $total = $cashInWithServiceFee + $balance;
