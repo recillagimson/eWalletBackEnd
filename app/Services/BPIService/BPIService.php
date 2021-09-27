@@ -27,6 +27,8 @@ use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 
 class BPIService implements IBPIService
 {
@@ -39,6 +41,8 @@ class BPIService implements IBPIService
     private IUserBalanceInfoRepository $userBalanceInfo;
     private IInAddMoneyBPIRepository $bpiRepository;
     private IServiceFeeRepository $serviceFee;
+    private ISmsService $smsService;
+    private IEmailService $emailService;
 
     private $clientId;
     private $clientSecret;
@@ -56,7 +60,9 @@ class BPIService implements IBPIService
                                 IUserTransactionHistoryRepository $transactionHistory,
                                 IUserBalanceInfoRepository        $userBalanceInfo,
                                 IInAddMoneyBPIRepository          $bpiRepository,
-                                IServiceFeeRepository             $serviceFee)
+                                IServiceFeeRepository             $serviceFee,
+                                ISmsService                       $smsService,
+                                IEmailService                     $emailService)
     {
         $this->apiService = $apiService;
         $this->referenceNumberService = $referenceNumberService;
@@ -64,6 +70,8 @@ class BPIService implements IBPIService
         $this->userBalanceInfo = $userBalanceInfo;
         $this->bpiRepository = $bpiRepository;
         $this->serviceFee = $serviceFee;
+        $this->smsService = $smsService;
+        $this->emailService = $emailService;
 
         $this->clientId = config('bpi.clientId');
         $this->clientSecret = config('bpi.clientSecret');
@@ -324,13 +332,15 @@ class BPIService implements IBPIService
                         return $response_raw;
                     }
                     // Trigger error here then trigger again in catch for error handling
-                    if($error != '') {
+                    if($error != '')
+                     {
                         $this->bpiTransactionError($error);
                     }
                 }
             }
             return $this->bpiTokenInvalid();
         } catch (Exception $e) {
+            \Log::error($e);
             DB::rollback();
             // THROW ERROR
             if($error != '') {
