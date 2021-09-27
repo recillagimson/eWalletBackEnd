@@ -297,7 +297,7 @@ class BPIService implements IBPIService
                                 "reference_number" => $params['refId'],
                                 "amount" => $params['amount'],
                                 "service_fee_id" => $serviceFee ? $serviceFee->id : null,
-                                "service_fee" => $serviceFeeAmount,
+                                "service_fee" => 0,
                                 "total_amount" => $params['amount'],
                                 "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
                                 "transaction_category_id" => TransactionCategoryIds::cashinBPI,
