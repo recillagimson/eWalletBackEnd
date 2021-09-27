@@ -42,7 +42,7 @@ class CashInBPI extends Mailable
                 'firstName' => $this->firstName,
                 'refNo' => $this->refNo,
                 'balance' => $this->newBalance,
-                'createdAt' => Carbon::now()->format('F d, Y h:i A') 
+                'createdAt' => $date = Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A')
             ]);
     }
 }
