@@ -184,10 +184,14 @@ class Send2BankService implements ISend2BankService
             $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
             $totalAmount = $data['amount'] + $serviceFeeAmount;
 
+            $this->transactionValidationService->checkUserBalance($user, $totalAmount );
+
 //            $this->transactionValidationService
 //                ->validate($user, $this->transactionCategoryId, $totalAmount);
 //
 //            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
+
+
 
             $userFullName = ucwords($user->profile->full_name);
             $recipientFullName = ucwords($data['account_name'] ?: $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
@@ -270,6 +274,16 @@ class Send2BankService implements ISend2BankService
             'success_count' => $successCount,
             'failed_count' => $failCount
         ];
+    }
+
+    public function processAllPending()
+    {
+        $users = $this->send2banks->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('S2B Processing User:', ['user_account_id' => $user->user_account_id]);
+            $this->processPending($user->user_account_id);
+        }
     }
 
     public function updateTransaction(string $status, string $refNo)
