@@ -24,6 +24,7 @@ use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Services\BPIService\PackageExtension\Encryption;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
@@ -43,6 +44,7 @@ class BPIService implements IBPIService
     private IServiceFeeRepository $serviceFee;
     private ISmsService $smsService;
     private IEmailService $emailService;
+    private INotificationRepository $notificationRepository;
 
     private $clientId;
     private $clientSecret;
@@ -62,7 +64,8 @@ class BPIService implements IBPIService
                                 IInAddMoneyBPIRepository          $bpiRepository,
                                 IServiceFeeRepository             $serviceFee,
                                 ISmsService                       $smsService,
-                                IEmailService                     $emailService)
+                                IEmailService                     $emailService,
+                                INotificationRepository              $notificationRepository)
     {
         $this->apiService = $apiService;
         $this->referenceNumberService = $referenceNumberService;
@@ -72,6 +75,7 @@ class BPIService implements IBPIService
         $this->serviceFee = $serviceFee;
         $this->smsService = $smsService;
         $this->emailService = $emailService;
+        $this->notificationRepository = $notificationRepository;
 
         $this->clientId = config('bpi.clientId');
         $this->clientSecret = config('bpi.clientSecret');
@@ -301,11 +305,19 @@ class BPIService implements IBPIService
 
                         if(request()->user() && request()->user()->is_login_email == 0) {
                             // SMS USER FOR NOTIFICATION
-                            $this->smsService->sendBPICashInNotification(request()->user()->mobile_number, request()->user()->profile, $total, $params['transactionId']);
+                            $this->smsService->sendBPICashInNotification(request()->user()->mobile_number, request()->user()->profile, $total, $params['refId']);
                         }else {
                             // EMAIL USER FOR NOTIFICATION
-                            $this->emailService->sendBPICashInNotification(request()->user()->email, request()->user()->profile, $total, $params['transactionId']);
+                            $this->emailService->sendBPICashInNotification(request()->user()->email, request()->user()->profile, $total, $params['refId']);
                         } 
+                        $dt = Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A');
+                        $this->notificationRepository->create([
+                            'title' => "SquidPay - Cash in via BPI",
+                            'status' => '1',
+                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " . $dt . " . Service fee for this transaction is PHP 0.00. Your new balance is " . $total . " with reference no. " . $params['refId'] . ".",
+                            'user_account_id' => request()->user()->id,
+                            'user_created' => request()->user()->id
+                        ]);
                         
                         
                         $this->bpiRepository->create(
