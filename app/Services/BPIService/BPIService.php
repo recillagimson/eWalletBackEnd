@@ -314,7 +314,7 @@ class BPIService implements IBPIService
                         $this->notificationRepository->create([
                             'title' => "SquidPay - Cash in via BPI",
                             'status' => '1',
-                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " . $dt . ". Service fee for this transaction is P 0.00. Your new balance is P" . $total . " with reference no. " . $params['refId'] . ". Thank you for using SquidPay!",
+                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " . $dt . " . Service fee for this transaction is PHP 0.00. Your new balance is " . number_format($total, 2) . " with reference no. " . $params['refId'] . ".",
                             'user_account_id' => request()->user()->id,
                             'user_created' => request()->user()->id
                         ]);
