@@ -26,6 +26,7 @@ use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Enums\SuccessMessages;
 use App\Enums\ECPayStatusTypes;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class ECPayService implements IECPayService
 {
@@ -44,6 +45,7 @@ class ECPayService implements IECPayService
     private ILogHistoryService $logHistoryService;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private IResponseService $responseService;
+    private IUserDetailRepository $userDetailRepository;
 
     public function __construct(IApiService $apiService,
                                 IHandlePostBackService $handlePostBackService,
@@ -52,7 +54,8 @@ class ECPayService implements IECPayService
                                 ITransactionCategoryRepository $transactionCategoryRepository,
                                 ILogHistoryService $logHistoryService,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-                                IResponseService $responseService)
+                                IResponseService $responseService,
+                                IUserDetailRepository $userDetailRepository)
     {
 
         $this->ecpayUrl = config('ecpay.ecpay_url');
@@ -69,6 +72,7 @@ class ECPayService implements IECPayService
         $this->logHistoryService = $logHistoryService;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->responseService = $responseService;
+        $this->userDetailRepository = $userDetailRepository;
     }
 
     private function getXmlHeaders(): array
@@ -93,10 +97,11 @@ class ECPayService implements IECPayService
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $refNo, $expirationDate);
-        $data['reference_number'] = $refNo;
+
+        $res = $this->returnResponseBodyFormat($user, $result);
 
         return $this->responseService->successResponse(
-            $data,
+            $res,
             SuccessMessages::addMoneySuccess
         );
     }
@@ -114,8 +119,10 @@ class ECPayService implements IECPayService
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $data["referenceno"]);
 
+        $res = $this->returnResponseBodyFormat($user, $result);
+
         return $this->responseService->successResponse(
-            $data,
+            $res,
             SuccessMessages::addMoneySuccess
         );
     }
@@ -143,6 +150,9 @@ class ECPayService implements IECPayService
         } else {
             $amount = $inputData['amount'];
             $isDataExisting = $this->addMoneyEcPayRepository->create($this->createBodyFormat($data, $inputData, $user, $refNo, $transCategoryId, $expirationDate));
+            $this->addMoneyEcPayRepository->update($isDataExisting, [
+                'status' => ECPayStatusTypes::Pending
+            ]);
             $logStringResult = 'Successfully added money from EcPay with amount of ' . $amount;
         }
        
@@ -191,6 +201,29 @@ class ECPayService implements IECPayService
         ];
        
         return $result;
+    }
+
+    private function returnResponseBodyFormat(object $user, $data) 
+    {
+        $userDetail = $this->userDetailRepository->getByUserId($user->id);
+        $result = [
+            "email"=>$user->email,
+            "mobile_number"=>$user->mobile_number,
+            "user_account_id"=>$user->id,
+            "account_number"=>$user->account_number,
+            "last_name"=>$userDetail->last_name,
+            "first_name"=>$userDetail->first_name,
+            "middle_name"=>$userDetail->middle_name,
+            "reference_number"=>$data["reference_number"],
+            "amount"=>$data["amount"],
+            "expiry_date"=>$data["expiry_date"],
+            "ec_pay_reference_number"=>$data["ec_pay_reference_number"],
+            "transaction_date"=>$data["transaction_date"],
+            "status"=>$data["status"]
+        ];
+
+        return $result;
+       
     }
 
     private function generateXmlBody(array $data, string $title): string
