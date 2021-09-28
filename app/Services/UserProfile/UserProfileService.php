@@ -264,6 +264,7 @@ class UserProfileService implements IUserProfileService
     }
 
     public function upgradeToSilver(array $attr) {
+        $dedup_responses = [];
         DB::beginTransaction();
         try {
             // IF REQUESTING FOR TIER UPDATE
@@ -300,7 +301,6 @@ class UserProfileService implements IUserProfileService
                 $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id);
 
                 // WORK IN PROGRESS
-                $dedup_responses = [];
                 // INIT DEDUP
                 // foreach($attr['id_photos_ids'] as $photo) {
                     if(isset($attr['id_selfie_ids']['0']) && isset($attr['id_selfie_ids']['0'])) {
