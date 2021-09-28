@@ -80,6 +80,8 @@ class RegistrationService implements IRegistrationService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
+        if ($user->verified) $this->accountAlreadyVerified();
+
         $this->authService->verify($user->id, OtpTypes::registration, $otp, $user->otp_enabled);
 
         return $user;
@@ -89,6 +91,8 @@ class RegistrationService implements IRegistrationService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $data[$usernameField]);
         if (!$user) $this->accountDoesntExist();
+
+        if ($user->verified) $this->accountAlreadyVerified();
 
         $user->pin_code = Hash::make($data['pin_code']);
         $user->verified = true;
