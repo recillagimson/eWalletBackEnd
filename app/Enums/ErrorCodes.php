@@ -22,6 +22,7 @@ class ErrorCodes
     const confirmationFailed = 113;
     const accountDeactivated = 114;
     const otpMaxedGenerationAttempt = 115;
+    const accountAlreadyVerified = 116;
 
 
     //ENCRYPTION ERRORS - 150

@@ -7,6 +7,7 @@ namespace App\Services\Transaction;
 use App\Enums\TransactionCategoryIds;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
+use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
@@ -44,9 +45,12 @@ class TransactionValidationService implements ITransactionValidationService
     // ADD TRANSACTION HISTORY
     private IInAddMoneyRepository $addMoneyRepository;
     private IInReceiveMoneyRepository $receiveMoneyRepository;
+    private IInAddMoneyBPIRepository $addMoneyBPIRepository;
 
 
-    public function __construct(IUserBalanceRepository $userBalanceRepository, IUserTransactionHistoryRepository $userTransactionHistoryRepository, IUserAccountRepository $userAccountRepository, IUserDetailRepository $userDetailRepository, ITransactionCategoryRepository $transactionCategoryRepository, ITierRepository $tierRepository, IOutBuyLoadRepository $outBuyLoadRepository, IOutSend2BankRepository $outsend2BankRepository, IOutSendMoneyRepository $outSendMoneyRepository, IOutPayBillsRepository $outPayBillsRepository, IInAddMoneyRepository $addMoneyRepository, IInReceiveMoneyRepository $receiveMoneyRepository)
+    public function __construct(IUserBalanceRepository $userBalanceRepository, IUserTransactionHistoryRepository $userTransactionHistoryRepository, IUserAccountRepository $userAccountRepository, IUserDetailRepository $userDetailRepository, ITransactionCategoryRepository $transactionCategoryRepository, ITierRepository $tierRepository, IOutBuyLoadRepository $outBuyLoadRepository, IOutSend2BankRepository $outsend2BankRepository, IOutSendMoneyRepository $outSendMoneyRepository, IOutPayBillsRepository $outPayBillsRepository, IInAddMoneyRepository $addMoneyRepository, IInReceiveMoneyRepository $receiveMoneyRepository,
+    IInAddMoneyBPIRepository $iInAddMoneyBPIRepository
+    )
     {
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
@@ -54,6 +58,7 @@ class TransactionValidationService implements ITransactionValidationService
         $this->userDetailRepository = $userDetailRepository;
         $this->transactionCategoryRepository = $transactionCategoryRepository;
         $this->tierRepository = $tierRepository;
+        $this->iInAddMoneyBPIRepository = $iInAddMoneyBPIRepository;
 
 
         $this->outBuyLoadRepository = $outBuyLoadRepository;
@@ -116,9 +121,10 @@ class TransactionValidationService implements ITransactionValidationService
                 if($transactionCategory->transaction_type === 'POSITIVE') {
                      
 
-                  $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                   $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                   $sumUp = $addMoneyFromBank + $receiveMoney;
+                    $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    $bpiAddMoney = (Double) $this->iInAddMoneyBPIRepository->getSumOfTransactions($from, $to, $user->id);
+                    $sumUp = $addMoneyFromBank + $receiveMoney + $bpiAddMoney;
         
                     //$buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
                      //$payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
