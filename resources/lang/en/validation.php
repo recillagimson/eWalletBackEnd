@@ -143,6 +143,15 @@ return [
         'otherInfo.Product' => [
             'in' => "The product code selected is invalid. Please try selecting 'c' for Cellular/SUN or 'b' for Bro.",
         ],
+        'otherInfo.PayorType' => [
+            'in' => "The product code selected is invalid. Please try selecting 'I' for Individual or 'R' for Employer.",
+        ],
+        'otherInfo.RelType' => [
+            'in' => "Relation type with default value LP (Loan Payment).",
+        ],
+        'otherInfo.PlatformType' => [
+            'in' => "The product code selected is invalid. Please try selecting 'OTC' for Over the Counter or 'SS' for Self Service.",
+        ],
     ],
 
     /*

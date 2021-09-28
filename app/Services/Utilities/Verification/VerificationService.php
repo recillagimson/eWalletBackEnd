@@ -218,7 +218,11 @@ class VerificationService implements IVerificationService
                     // CHECK IF DOB
                     if(in_array($key, eKYC::dateOfBirth)) {
                         if($entry->value != '') {
-                            $templateResponse['birth_date'] = Carbon::parse($entry->value)->toISOString();
+                            if($idType == 'TIN ID') {
+                                $templateResponse['birth_date'] = Carbon::createFromFormat(eKYC::TINDateFormat, $entry->value)->toISOString();
+                            } else {
+                                $templateResponse['birth_date'] = Carbon::parse($entry->value)->toISOString();
+                            }
                         } else {
                             $templateResponse['birth_date'] = $entry->value;
                         }

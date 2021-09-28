@@ -5,6 +5,7 @@ namespace App\Services\ThirdParty\ECPay;
 
 
 use App\Enums\TpaProviders;
+use Log;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Illuminate\Http\Client\Response;
@@ -87,6 +88,8 @@ class ECPayService implements IECPayService
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->CommitPaymentResponse->CommitPaymentResult, true)[0];
 
+        \Log::info('///// - ECPAY Commit Payment - //////');
+        \Log::info(json_encode($jsondecode));
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $refNo, $expirationDate);
@@ -105,9 +108,11 @@ class ECPayService implements IECPayService
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->ConfirmPaymentResponse->ConfirmPaymentResult, true)[0];
 
+        \Log::info('///// - ECPAY Confirm Payment - //////');
+        \Log::info(json_encode($jsondecode));
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
-        $result = $this->createOrUpdateTransaction($jsondecode, $data, $user);
+        $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $data["referenceno"]);
 
         return $this->responseService->successResponse(
             $data,
@@ -122,7 +127,7 @@ class ECPayService implements IECPayService
         return $xmlData;
     }
 
-    private function createOrUpdateTransaction(array $data, array $inputData, object $user, string $refNo, string $expirationDate) {
+    private function createOrUpdateTransaction(array $data, array $inputData, object $user, string $refNo, string $expirationDate="") {
         $isDataExisting = $this->addMoneyEcPayRepository->getDataByReferenceNumber($refNo);
         $transCategoryId = $this->transactionCategoryRepository->getById(TransactionCategoryIds::sendMoneyToSquidPayAccount);
        
@@ -131,7 +136,7 @@ class ECPayService implements IECPayService
             $refNo = $isDataExisting->reference_number;
             $logStringResult = 'Successfully updated money from EcPay with amount of ' . $amount;
             $this->addMoneyEcPayRepository->update($isDataExisting, [
-                'transaction_remarks'=>$data['result'],
+                'transaction_response'=>$data['result'],
                 'status' => ECPayStatusTypes::Success
             ]);
         } else {
@@ -169,20 +174,21 @@ class ECPayService implements IECPayService
     }
 
     private function createBodyFormat(array $data, array $inputData, object $user, string $refNo, object $transCategoryId, string $expirationDate) {
-
+        $ecpayResult = explode("|", $data["result"]);
         $result = [
             "user_account_id"=>$user->id,
             "reference_number"=>$refNo,
             "amount"=>$inputData['amount'],
             "total_amount"=>$inputData['amount'],
-            "ec_pay_reference_number"=>$refNo,
+            "ec_pay_reference_number"=>$ecpayResult[0],
             "expiry_date"=>$expirationDate,
             "transaction_date"=>Carbon::now()->format('Y-m-d H:i:s'),
             "transction_category_id"=>$transCategoryId->id,
             "transaction_remarks"=>"Send Money via Ecpay",
             "user_created"=>$user->id,
             "user_updated"=>$user->id,
-            "updated_at"=>Carbon::now()->format('Y-m-d H:i:s')
+            "updated_at"=>Carbon::now()->format('Y-m-d H:i:s'),
+            'transaction_response'=> json_encode($data)
         ];
        
         return $result;
