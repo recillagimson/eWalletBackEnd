@@ -32,6 +32,11 @@ trait WithAuthErrors
         $this->validationErrorMessage(ErrorCodes::unverifiedAccount, 'Unverified Account.');
     }
 
+    public function accountAlreadyVerified()
+    {
+        $this->validationErrorMessage(ErrorCodes::accountAlreadyVerified, 'Already Verified Account.');
+    }
+
     public function accountDoesntExist()
     {
         $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exist.');

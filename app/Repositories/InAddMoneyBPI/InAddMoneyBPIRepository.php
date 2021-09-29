@@ -11,4 +11,13 @@ class InAddMoneyBPIRepository extends Repository implements IInAddMoneyBPIReposi
     {
         parent::__construct($model);
     }
+
+    public function getSumOfTransactions(string $from, string $to, string $userId) {
+        return $this->model->where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to)
+            ->where('status', '!=', 'error')
+            ->where('user_account_id', $userId)
+            ->sum('amount');
+    }
+
 }
