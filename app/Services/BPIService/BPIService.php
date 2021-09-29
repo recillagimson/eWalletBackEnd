@@ -106,29 +106,23 @@ class BPIService implements IBPIService
         return $this->apiService->postAsForm($this->authUrl, $body, ['accept' => 'application/json', 'content-type' => 'application/x-www-form-urlencoded'])->json();
     }
 
- public function getAccounts(string $token) {
+    public function getAccounts(string $token) {
+
         $token = $this->getHeaders($token);
         $response = $this->apiService->get($this->transactionalUrl, $token)->json();
-
-        try {
-            if($response && isset($response['token'])) {
-                $jwt = $this->bpiDecryptionJWE($response['token']);
+        if($response && isset($response['token'])) {
+            $jwt = $this->bpiDecryptionJWE($response['token']);
+            Log::info($jwt);
+            if($jwt) {
+                $val = $this->bpiDecryptionJWT($jwt);
                 Log::info($jwt);
-                if($jwt) {
-                    $val = $this->bpiDecryptionJWT($jwt);
-                    Log::info($jwt);
-                    return $val;
-                }
-
+                return $val;
             }
-
-        } catch (Exception $e) {
-        // THROW ERROR
-        \Log::error($e);
-        $this->bpiTokenInvalid();
         }
-    }
 
+        // THROW ERROR
+        $this->bpiTokenInvalid();
+    }
 
     public function fundTopUp(Array $array, string $rawToken) {
         $array['remarks'] = 'BPI Cashin';
@@ -188,7 +182,6 @@ class BPIService implements IBPIService
     }
 
     public function otp(array $params) {
-       
         $headers = $this->getHeaders($params['token']);
         $headers['transactionId'] = $params['transactionId'];
         $otp_url = $this->fundTopUpOtpUrl;
