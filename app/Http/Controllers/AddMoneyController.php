@@ -18,6 +18,8 @@ use Illuminate\Http\Request;
 use App\Services\ThirdParty\ECPay\IECPayService;
 use App\Http\Requests\EcPayRequest\CommitPaymentRequest;
 use App\Http\Requests\EcPayRequest\ConfirmPaymentRequest;
+use App\Services\Transaction\ITransactionValidationService;
+use App\Enums\TransactionCategoryIds;
 
 class AddMoneyController extends Controller
 {
@@ -27,6 +29,7 @@ class AddMoneyController extends Controller
     private IInAddMoneyRepository $addMoneys;
     private IAddMoneyService $addMoneyServiceV2;
     private IECPayService $ecpayService;
+    private ITransactionValidationService $transactionValidationService;
 
     public function __construct(IHandlePostBackService $postBackService,
                                 IEncryptionService $encryptionService,
@@ -34,7 +37,8 @@ class AddMoneyController extends Controller
                                 IResponseService $responseService,
                                 IInAddMoneyRepository $addMoneys,
                                 IAddMoneyService $addMoneyServiceV2,
-                                IECPayService $ecpayService)
+                                IECPayService $ecpayService,
+                                ITransactionValidationService $transactionValidationService)
     {
 
         $this->postBackService = $postBackService;
@@ -44,6 +48,7 @@ class AddMoneyController extends Controller
         $this->addMoneys = $addMoneys;
         $this->addMoneyServiceV2 = $addMoneyServiceV2;
         $this->ecpayService = $ecpayService;
+        $this->transactionValidationService = $transactionValidationService;
     }
 
     public function addMoney(AddMoneyRequest $request): JsonResponse
@@ -103,6 +108,7 @@ class AddMoneyController extends Controller
     public function commitPayment(CommitPaymentRequest $request): JsonResponse {
 
         $data = $request->validated();
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($request->user(), (float)$data["amount"], TransactionCategoryIds::sendMoneyToSquidPayAccount);
         return $this->ecpayService->commitPayment($data, $request->user());
     }
 

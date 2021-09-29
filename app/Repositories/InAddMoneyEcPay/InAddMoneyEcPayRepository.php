@@ -15,4 +15,12 @@ class InAddMoneyEcPayRepository extends Repository implements IInAddMoneyEcPayRe
     public function getDataByReferenceNumber(string $referenceNumber) {
         return $this->model->where('reference_number', '=', $referenceNumber)->first();
     }
+
+    public function getSumOfTransactions(string $from, string $to, string $userId) {
+        return $this->model->where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to)
+            ->where('status', '!=', 'error')
+            ->where('user_account_id', $userId)
+            ->sum('amount');
+    }
 }
