@@ -24,6 +24,7 @@ use App\Traits\Errors\WithUserErrors;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 
 class TransactionValidationService implements ITransactionValidationService
 {
@@ -46,10 +47,11 @@ class TransactionValidationService implements ITransactionValidationService
     private IInAddMoneyRepository $addMoneyRepository;
     private IInReceiveMoneyRepository $receiveMoneyRepository;
     private IInAddMoneyBPIRepository $addMoneyBPIRepository;
+    private IInAddMoneyEcPayRepository $addMoneyEcPayRepository;
 
 
     public function __construct(IUserBalanceRepository $userBalanceRepository, IUserTransactionHistoryRepository $userTransactionHistoryRepository, IUserAccountRepository $userAccountRepository, IUserDetailRepository $userDetailRepository, ITransactionCategoryRepository $transactionCategoryRepository, ITierRepository $tierRepository, IOutBuyLoadRepository $outBuyLoadRepository, IOutSend2BankRepository $outsend2BankRepository, IOutSendMoneyRepository $outSendMoneyRepository, IOutPayBillsRepository $outPayBillsRepository, IInAddMoneyRepository $addMoneyRepository, IInReceiveMoneyRepository $receiveMoneyRepository,
-    IInAddMoneyBPIRepository $iInAddMoneyBPIRepository
+    IInAddMoneyBPIRepository $iInAddMoneyBPIRepository, IInAddMoneyEcPayRepository $addMoneyEcPayRepository
     )
     {
         $this->userBalanceRepository = $userBalanceRepository;
@@ -59,6 +61,7 @@ class TransactionValidationService implements ITransactionValidationService
         $this->transactionCategoryRepository = $transactionCategoryRepository;
         $this->tierRepository = $tierRepository;
         $this->iInAddMoneyBPIRepository = $iInAddMoneyBPIRepository;
+        $this->addMoneyEcPayRepository = $addMoneyEcPayRepository;
 
 
         $this->outBuyLoadRepository = $outBuyLoadRepository;
@@ -124,7 +127,8 @@ class TransactionValidationService implements ITransactionValidationService
                     $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
                     $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
                     $bpiAddMoney = (Double) $this->iInAddMoneyBPIRepository->getSumOfTransactions($from, $to, $user->id);
-                    $sumUp = $addMoneyFromBank + $receiveMoney + $bpiAddMoney;
+                    $ecpayAddMoney = (Double) $this->addMoneyEcPayRepository->getSumOfTransactions($from, $to, $user->id);
+                    $sumUp = $addMoneyFromBank + $receiveMoney + $bpiAddMoney + $ecpayAddMoney;
         
                     //$buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
                      //$payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
