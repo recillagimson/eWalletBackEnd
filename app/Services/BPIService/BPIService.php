@@ -17,9 +17,9 @@ use App\Traits\Errors\WithUserErrors;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Log;
 use Tmilos\JoseJwt\Context\DefaultContextFactory;
 use Tmilos\JoseJwt\Jwe;
 use Tmilos\JoseJwt\Jwe\JweAlgorithm;
@@ -107,6 +107,7 @@ class BPIService implements IBPIService
             }
         }
 
+        Log::error('BPI Authentication Failed:', $response);
         // THROW ERROR
         $this->bpiTokenInvalid();
     }
@@ -275,14 +276,14 @@ class BPIService implements IBPIService
                         }
                     } else {
                         $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
-                        
+
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                         $cashInWithServiceFee = $params['amount'] + SendMoneyConfig::ServiceFee;
                         $total = $cashInWithServiceFee + $balance;
                         if($response_raw['status'] == 'success') {
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
                         }
-                        
+
                         $serviceFee = $this->serviceFee->getByTierAndTransCategory(request()->user()->tier_id, TransactionCategoryIds::cashinBPI);
                         $this->bpiRepository->create(
                             [
