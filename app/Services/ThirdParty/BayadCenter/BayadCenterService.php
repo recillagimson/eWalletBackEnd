@@ -3,6 +3,7 @@
 
 namespace App\Services\ThirdParty\BayadCenter;
 
+use App\Enums\PayBillsConfig;
 use App\Enums\TpaProviders;
 use App\Models\UserAccount;
 use App\Services\Utilities\API\IApiService;
@@ -120,15 +121,29 @@ class BayadCenterService implements IBayadCenterService
     }
 
 
+    // For MECOP only
+    private function getOtherChargesMECOP(string $billerCode, $amount)
+    {
+        $headers = $this->getAuthorizationHeaders();
+        $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->otherChargesUrl) . '?amount='.$amount;
+        return $this->apiService->get($url, $headers);
+    }
+
+    
     public function validateAccount(string $billerCode, string $accountNumber,  $data): Response
     {
         $headers = $this->getAuthorizationHeaders();
         $otherCharges = $this->getOtherCharges($billerCode);
 
+        // To catch MECOP biller and use another way to get the otherCharges
+        if($billerCode === PayBillsConfig::MECOP) {
+            $otherCharges = $this->getOtherChargesMECOP($billerCode, $data['amount']);
+        } 
+
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->verifyAccountUrl);
         $url = str_replace(':ACCOUNT-NUMBER', $accountNumber, $url);
 
-        if (!$otherCharges->successful()) return $otherCharges;    
+       // if (!$otherCharges->successful()) return $otherCharges;    
         $data += array('paymentMethod' => 'CASH');
         $data += array('otherCharges' => $otherCharges['data']['otherCharges']);
 

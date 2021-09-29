@@ -156,7 +156,10 @@ trait PayBillsHelpers
     private function getOtherCharges(string $billerCode)
     {
         $otherCharges = $this->bayadCenterService->getOtherCharges($billerCode);
-        return $otherCharges['data']['otherCharges'];
+        if ($billerCode === PayBillsConfig::MECOP) {
+           
+        }
+        return $otherCharges['data']['otherCharges'];       
     }
 
 
@@ -313,10 +316,6 @@ trait PayBillsHelpers
         if ($errorCode == 27) return $this->theAccountNumberisNotSupportedByTheBank($errorMsg);
         if ($errorCode == 28) return $this->theAccountNumberMustStartWithAnyOf($errorMsg);
         if ($errorCode == 30) return $this->possibleDuplicateDetected($errorMsg);
-
-   
-
-    
 
     }
 

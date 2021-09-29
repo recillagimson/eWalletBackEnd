@@ -152,6 +152,9 @@ return [
         'otherInfo.PlatformType' => [
             'in' => "The product code selected is invalid. Please try selecting 'OTC' for Over the Counter or 'SS' for Self Service.",
         ],
+        'amount' => [
+            'in' => "The amount selected is invalid. Please try selecting '100.00' or '200.00' or '300.00' or '400.00' or '500' or '1000'"
+        ],
     ],
 
     /*
