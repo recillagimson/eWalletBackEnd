@@ -40,7 +40,7 @@ class CashInBPI extends Mailable
             ->subject('SquidPay - Cash In BPI')
             ->with([
                 'firstName' => $this->userDetail->first_name,
-                'refNo' => $this->referenceNumber,
+                'referenceNumber' => $this->referenceNumber,
                 'newBalance' => number_format($this->newBalance, 2),
                 'createdAt' => Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A')
             ]);
