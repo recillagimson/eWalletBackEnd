@@ -107,22 +107,29 @@ class BPIService implements IBPIService
     }
 
     public function getAccounts(string $token) {
-
         $token = $this->getHeaders($token);
         $response = $this->apiService->get($this->transactionalUrl, $token)->json();
-        if($response && isset($response['token'])) {
-            $jwt = $this->bpiDecryptionJWE($response['token']);
-            Log::info($jwt);
-            if($jwt) {
-                $val = $this->bpiDecryptionJWT($jwt);
-                Log::info($jwt);
-                return $val;
-            }
-        }
+        try {
 
-        // THROW ERROR
+            if($response && isset($response['token'])) {
+                $jwt = $this->bpiDecryptionJWE($response['token']);
+                Log::info($jwt);
+                if($jwt) {
+                    $val = $this->bpiDecryptionJWT($jwt);
+                    Log::info($jwt);
+                    return $val;
+                }
+            }
+
+        } catch (Exception $e) {
+                 // THROW ERROR
+         \Log::error($e);
         $this->bpiTokenInvalid();
+
+
+        }
     }
+
 
     public function fundTopUp(Array $array, string $rawToken) {
         $array['remarks'] = 'BPI Cashin';
