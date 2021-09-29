@@ -6,6 +6,6 @@
 </head>
 <body>
 <h2>Hi {{ $recipientName }}!,</h2>
-<p>This is your {{ $pinOrPassword }} recovery verification code: {{ $code }} . DO NOT SHARE this OTP.</p>
+<p>This is your {{ $pinOrPassword }} verification code: {{ $code }} . DO NOT SHARE this OTP.</p>
 </body>
 </html>
