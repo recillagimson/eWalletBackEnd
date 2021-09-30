@@ -334,6 +334,7 @@ class BPIService implements IBPIService
                                 "status" => $response_raw['status'],
                                 "bpi_reference" => $params['transactionId'],
                                 "transaction_response" => json_encode($response_raw),
+                                "account_number" => $params['accountNumber'],
                                 "user_created" => request()->user()->id,
                                 "user_updated" => request()->user()->id,
                             ]

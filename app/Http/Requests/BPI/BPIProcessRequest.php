@@ -29,6 +29,7 @@ class BPIProcessRequest extends FormRequest
             'transactionId' => 'required',
             'amount' => 'required',
             'refId' => 'required',
+            'accountNumber' => 'required'
         ];
     }
 }
