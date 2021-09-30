@@ -35,7 +35,7 @@ class MerchantService implements IMerchantService
         if($clientTokenResponse && $clientTokenResponse->status() == 200) {
             $clientToken = $clientTokenResponse->json()['access_token'];
             // GENERATE REQUEST ID
-            $requestPayload = $this->getRequestId();
+            $requestPayload = $this->getRequestId($clientToken);
             if($requestPayload && $requestPayload->status() ==200 && $requestPayload->json() && isset($requestPayload->json()['passPhrase'])) {
     
                 $encrypted = $this->encryptionService->encrypt(json_encode($attr), $requestPayload->json()['passPhrase']);
@@ -46,13 +46,13 @@ class MerchantService implements IMerchantService
                 ];
     
                 $merchantListResponse = $this->apiService->post($getListUrl, $build, [
-                    'Authorization' => 'Bearer 127890|hUJbQA84ykfVHfGXVtyEwCGcVkd8iG92pcOBVxup',
+                    'Authorization' => 'Bearer ' . $clientToken,
                     'Accept' => 'application/json'
                 ]);
     
                 // HANDLE RESPONSE OF MERCHANT LIST
                 if($merchantListResponse && $merchantListResponse->status() == 200) {
-                    $decryptionResponse = $this->decryptResponse($merchantListResponse->json()['data']);
+                    $decryptionResponse = $this->decryptResponse($merchantListResponse->json()['data'], $clientToken);
                     if($decryptionResponse && $decryptionResponse->status() == 200){
                         return $decryptionResponse->json();
                     }
@@ -70,18 +70,18 @@ class MerchantService implements IMerchantService
     }
 
     // REQUEST ID
-    public function getRequestId() {
+    public function getRequestId(string $clientToken) {
         $requestIdUrl = $this->merchantUrl . "/payloads/generate";
         return $this->apiService->get($requestIdUrl, [
-            'Authorization' => 'Bearer 127890|hUJbQA84ykfVHfGXVtyEwCGcVkd8iG92pcOBVxup',
+            'Authorization' => 'Bearer ' . $clientToken,
             'Accept' => 'application/json'
         ]);
     }
     // DECRYPT RESPONSE
-    public function decryptResponse(array $response) {
+    public function decryptResponse(array $response, string $clientToken) {
         $requestIdUrl = $this->merchantUrl . "/utils/decrypt";
         return $this->apiService->post($requestIdUrl, $response, [
-            'Authorization' => 'Bearer 127890|hUJbQA84ykfVHfGXVtyEwCGcVkd8iG92pcOBVxup',
+            'Authorization' => 'Bearer '. $clientToken,
             'Accept' => 'application/json'
         ]);
     }
