@@ -29,5 +29,6 @@ class InAddMoneyBPI extends Model
         "transaction_response",
         "user_created",
         "user_updated",
+        "account_number"
     ];
 }
