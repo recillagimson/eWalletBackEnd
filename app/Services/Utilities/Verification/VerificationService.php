@@ -57,7 +57,8 @@ class VerificationService implements IVerificationService
     {
         // Delete existing first
         // Get details first
-        $userDetails = $this->userDetailRepository->getByUserId($userAccountId ? $userAccountId : request()->user()->id);
+        $userId = $userAccountId ? $userAccountId : request()->user()->id;
+        $userDetails = $this->userDetailRepository->getByUserId($userId);
 
         // If no user Details
         if(!$userDetails) {
