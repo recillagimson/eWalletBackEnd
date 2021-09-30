@@ -337,6 +337,7 @@ class BPIService implements IBPIService
                                 "account_number" => $params['accountNumber'],
                                 "user_created" => request()->user()->id,
                                 "user_updated" => request()->user()->id,
+                                "bank_name" => $response_raw['iss'],
                             ]
                         );
                         DB::commit();
