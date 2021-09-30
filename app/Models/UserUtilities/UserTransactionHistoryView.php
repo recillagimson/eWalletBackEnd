@@ -13,6 +13,7 @@ class UserTransactionHistoryView extends Model
 
     protected $table = 'transaction_hitories_view';
     protected $appends = ['signed_total_amount', 'transaction_type'];
+    // protected $dates = ['original_transaction_date'];
 
     public function transaction_category()
     {
