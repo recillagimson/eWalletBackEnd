@@ -112,4 +112,10 @@ class ErrorCodes
     const invalidAccountNumber = 732;
     const endpointRequestTimeOut = 734;
     const payBillsNotEnoughBalance = 735;
+
+    // Merchant 800
+    const merchantClientToken = 801;
+    const merchantRequestId = 802;
+    const merchantDecryption = 803;
+    const merchantList = 804;
 }

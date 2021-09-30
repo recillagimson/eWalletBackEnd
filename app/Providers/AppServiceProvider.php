@@ -132,7 +132,8 @@ use App\Services\ThirdParty\ECPay\IECPayService;
 use App\Services\ThirdParty\ECPay\ECPayService;
 use App\Services\AddmoneyCebuana\AddMoneyCebuanaService;
 use App\Services\AddmoneyCebuana\IAddMoneyCebuanaService;
-
+use App\Services\Merchant\IMerchantService;
+use App\Services\Merchant\MerchantService;
 use App\Services\v2\Auth\AuthService as AuthV2Service;
 use App\Services\v2\Auth\IAuthService as IAuthV2Service;
 use App\Services\v2\Auth\Registration\IRegistrationService as IRegistrationV2Service;
@@ -264,6 +265,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IAuthV2Service::class, AuthV2Service::class);
         // Registration v2 SERVICE
         $this->app->bind(IRegistrationV2Service::class, RegistrationV2Service::class);
+
+        // Merchant
+        $this->app->bind(IMerchantService::class, MerchantService::class);
     }
 
     /**

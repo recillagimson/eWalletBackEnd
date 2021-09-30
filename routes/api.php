@@ -498,6 +498,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/upb/add/money')->middleware(['decrypt.request'])->group(function () {
         Route::post('/oauth/redirect', [InAddMoneyUpbDirectController::class, 'addMoney']);
     });
+    
+    // MERCHANT
+    Route::prefix('/merchant')->middleware(['decrypt.request'])->group(function() {
+        Route::post('/list', [MerchantController::class, 'list']);
+    });
 });
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
