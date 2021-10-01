@@ -122,10 +122,10 @@ class BayadCenterService implements IBayadCenterService
 
 
     // For MECOP only
-    private function getOtherChargesMECOP(string $billerCode, $amount)
+    public function getOtherChargesMECOP(string $billerCode, $data)
     {
         $headers = $this->getAuthorizationHeaders();
-        $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->otherChargesUrl) . '?amount='.$amount;
+        $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->otherChargesUrl) . '?amount='. $data['amount'];
         return $this->apiService->get($url, $headers);
     }
 
@@ -137,7 +137,7 @@ class BayadCenterService implements IBayadCenterService
 
         // To catch MECOP biller and use another way to get the otherCharges
         if($billerCode === PayBillsConfig::MECOP) {
-            $otherCharges = $this->getOtherChargesMECOP($billerCode, $data['amount']);
+            $otherCharges = $this->getOtherChargesMECOP($billerCode, $data);
         } 
 
         $url = str_replace(':BILLER-CODE', $billerCode, $this->baseUrl . $this->verifyAccountUrl);

@@ -63,6 +63,7 @@ class PayBillsConfig
         PayBillsConfig::PILAM_INVALID_ACCT,
         PayBillsConfig::AEON1_INVALID_ACCT,
         PayBillsConfig::BNECO_INVALID_ACCT,
+        PayBillsConfig::SSS03_INVALID_ACCT,
         PayBillsConfig::MECOP_INVALID_ACCT
     ];
 
@@ -117,6 +118,7 @@ class PayBillsConfig
     const PILAM_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const AEON1_INVALID_ACCT = "AccountNo is invalid."; //  "message": "Endpoint request timed out"
     const BNECO_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    const SSS03_INVALID_ACCT = "SS # is invalid."; // code 26
     const MECOP_INVALID_ACCT = 'Subscriber not found'; // code 26
     // request time out
     const endpointRequestTimeOut = 'Endpoint request timed out.';
