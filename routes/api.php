@@ -361,6 +361,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [PayBillsController::class, 'getBillers']);
         Route::get('/get/biller/information/{biller_code}', [PayBillsController::class, 'getBillerInformation']);
         Route::post('/validate/account/{biller_code}', [PayBillsController::class, 'validateAccount']);
+        Route::post('/validate/account/{biller_code}/{account_number}', [PayBillsController::class, 'oldValidateAccount']);
         Route::post('/create/payment/{biller_code}', [PayBillsController::class, 'createPayment']);
         Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
