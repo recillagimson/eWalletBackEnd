@@ -22,6 +22,16 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $this->model->whereBetween('created_at', [$from, $to])->sum('total_amount');
     }
 
+
+    // $this->transactionHistory->log(
+        // request()->user()->id, 
+        // TransactionCategoryIds::cashinBPI, 
+        // $params['transactionId'], 
+        // $params['refId'], 
+        // $params['amount'], 
+        // Carbon::now(), 
+        // request()->user()->id);
+
     public function log(string $userId, string $transactionCategoryId, string $transactionId, string $refNo,
                         float $totalAmount, Carbon $transactionDate, string $userCreated)
     {
@@ -98,16 +108,17 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
     }
 
     public function getByAuthUserViaViews(string $status) {
+        // dd(request()->user()->id);
         if($status == 'ALL') {
             return UserTransactionHistoryView::with(['transaction_category'])
                 ->where('user_account_id', request()->user()->id)
-                ->orderBy('transaction_date', 'DESC')
+                ->orderBy('original_transaction_date', 'desc')
                 ->paginate();
         }
         return UserTransactionHistoryView::with(['transaction_category'])
             ->where('user_account_id', request()->user()->id)
             ->where('status', $status)
-            ->orderBy('transaction_date', 'DESC')
+            ->orderBy('original_transaction_date', 'desc')
             ->paginate();
     }
 

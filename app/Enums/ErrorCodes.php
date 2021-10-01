@@ -22,6 +22,7 @@ class ErrorCodes
     const confirmationFailed = 113;
     const accountDeactivated = 114;
     const otpMaxedGenerationAttempt = 115;
+    const accountAlreadyVerified = 116;
 
 
     //ENCRYPTION ERRORS - 150
@@ -111,4 +112,10 @@ class ErrorCodes
     const invalidAccountNumber = 732;
     const endpointRequestTimeOut = 734;
     const payBillsNotEnoughBalance = 735;
+
+    // Merchant 800
+    const merchantClientToken = 801;
+    const merchantRequestId = 802;
+    const merchantDecryption = 803;
+    const merchantList = 804;
 }

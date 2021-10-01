@@ -61,7 +61,7 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
     {
         $user = $this->users->getUser($userId);
         if (!$user) $this->userAccountNotFound();
-        $this->transactionValidationService->validateUser($user);
+        //$this->transactionValidationService->validateUser($user);
 
         $serviceFee = $this->serviceFees->getByTierAndTransCategory($user->tier_id,
             TransactionCategoryIds::addMoneyCebuana);

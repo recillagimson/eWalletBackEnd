@@ -24,9 +24,12 @@ use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Services\BPIService\PackageExtension\Encryption;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 
 class BPIService implements IBPIService
 {
@@ -39,6 +42,9 @@ class BPIService implements IBPIService
     private IUserBalanceInfoRepository $userBalanceInfo;
     private IInAddMoneyBPIRepository $bpiRepository;
     private IServiceFeeRepository $serviceFee;
+    private ISmsService $smsService;
+    private IEmailService $emailService;
+    private INotificationRepository $notificationRepository;
 
     private $clientId;
     private $clientSecret;
@@ -56,7 +62,10 @@ class BPIService implements IBPIService
                                 IUserTransactionHistoryRepository $transactionHistory,
                                 IUserBalanceInfoRepository        $userBalanceInfo,
                                 IInAddMoneyBPIRepository          $bpiRepository,
-                                IServiceFeeRepository             $serviceFee)
+                                IServiceFeeRepository             $serviceFee,
+                                ISmsService                       $smsService,
+                                IEmailService                     $emailService,
+                                INotificationRepository              $notificationRepository)
     {
         $this->apiService = $apiService;
         $this->referenceNumberService = $referenceNumberService;
@@ -64,6 +73,9 @@ class BPIService implements IBPIService
         $this->userBalanceInfo = $userBalanceInfo;
         $this->bpiRepository = $bpiRepository;
         $this->serviceFee = $serviceFee;
+        $this->smsService = $smsService;
+        $this->emailService = $emailService;
+        $this->notificationRepository = $notificationRepository;
 
         $this->clientId = config('bpi.clientId');
         $this->clientSecret = config('bpi.clientSecret');
@@ -286,10 +298,27 @@ class BPIService implements IBPIService
 
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                         $cashInWithServiceFee = (Double)$params['amount'];
-                        $total = $cashInWithServiceFee + $balance;
+                        $total = (Double)$params['amount'] + (Double)$balance;
                         if($response_raw['status'] == 'success') {
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
                         }
+
+                        if(request()->user() && request()->user()->is_login_email == 0) {
+                            // SMS USER FOR NOTIFICATION
+                            $this->smsService->sendBPICashInNotification(request()->user()->mobile_number, request()->user()->profile, $total, $params['refId']);
+                        }else {
+                            // EMAIL USER FOR NOTIFICATION
+                            $this->emailService->sendBPICashInNotification(request()->user()->email, request()->user()->profile, $total, $params['refId']);
+                        } 
+                        $dt = Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A');
+                        $this->notificationRepository->create([
+                            'title' => "SquidPay - Cash in via BPI",
+                            'status' => '1',
+                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " . $dt . " . Service fee for this transaction is P 0.00. Your new balance is P " . number_format($total, 2) . " with reference no. " . $params['refId'] . ". Thank you for using SquidPay!",
+                            'user_account_id' => request()->user()->id,
+                            'user_created' => request()->user()->id
+                        ]);
+                        
                         
                         $this->bpiRepository->create(
                             [
@@ -305,21 +334,25 @@ class BPIService implements IBPIService
                                 "status" => $response_raw['status'],
                                 "bpi_reference" => $params['transactionId'],
                                 "transaction_response" => json_encode($response_raw),
+                                "account_number" => $params['accountNumber'],
                                 "user_created" => request()->user()->id,
                                 "user_updated" => request()->user()->id,
+                                "bank_name" => isset($response_raw['iss']) ? $response_raw['iss'] : '',
                             ]
                         );
                         DB::commit();
                         return $response_raw;
                     }
                     // Trigger error here then trigger again in catch for error handling
-                    if($error != '') {
+                    if($error != '')
+                     {
                         $this->bpiTransactionError($error);
                     }
                 }
             }
             return $this->bpiTokenInvalid();
         } catch (Exception $e) {
+            \Log::error($e);
             DB::rollback();
             // THROW ERROR
             if($error != '') {

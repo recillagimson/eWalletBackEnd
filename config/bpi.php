@@ -19,6 +19,7 @@ return [
         'FTUBE007' => 'Transaction already processed but encountered an error',
         'FTUBE009' => 'Source account is not eligible for this transaction',
         'FTUBE0010' => 'You have insufficient balance in your account',
+        'FTUBE010' => 'You have insufficient balance in your account',
         'FTUBE0011' => 'You have exceeded the maximum transaction limit set by BPI for this type of transaction',
         "FTUBE012" => "Invalid API Sequence",
         "FTUVE001" => "Request body missing or invalid",
