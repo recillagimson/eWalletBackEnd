@@ -222,6 +222,21 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
+    public function getQr(UserAccount $user)
+    {
+        $qr = $this->qrTransactions->getQrWithZeroAmount($user);
+        if($qr) return $qr;
+    
+        return $this->qrTransactions->create([
+            'user_account_id' => $user->id,
+            'amount' => 0,
+            'status' => 1,
+            'user_created' => $user->id
+        ]);
+       
+    }
+
+
     private function hasMobileOrEmail($user, $amount)
     {
         if ($user->mobile_number) {
