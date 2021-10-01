@@ -40,6 +40,8 @@ class SuccessMessages
     const recordSaved = 'Record has been saved.';
     const recordDeleted = 'Record has been deleted';
 
+    const getQRMessage = 'QR code generation successful';
+
     // Add Money Controller
     const URLGenerated = 'Generate URL Successful';
     const addMoneySuccess = 'Added money Successfully';
