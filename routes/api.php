@@ -55,6 +55,7 @@ use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\InAddMoneyCebuanaController;
+use App\Http\Controllers\PreferredCashOutPartner\PreferredCashOutPartnerController;
 use App\Http\Controllers\v2\Auth\AuthController as AuthV2Controller;
 use App\Http\Controllers\v2\Auth\RegisterController as RegisterV2Controller;
 
@@ -304,6 +305,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::middleware(['require.user.token'])->post('/farmer/verification/account-number', [FarmerController::class, 'farmerVerificationUserAccountNumberOnly']);
             Route::middleware(['require.user.token'])->post('/farmer/print', [ReportController::class, 'print']);
             Route::middleware(['require.user.token'])->post('/farmer/tosilver/manual-override', [UserProfileController::class, 'addDAPersonel']);
+            Route::middleware(['require.user.token'])->post('/farmer/report', [FarmerController::class, 'report']);
+
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
@@ -507,6 +510,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // MERCHANT
     Route::prefix('/merchant')->middleware(['decrypt.request'])->group(function() {
         Route::post('/list', [MerchantController::class, 'list']);
+    });
+
+    Route::prefix('/preferred/cashout/partner')->middleware(['decrypt.request'])->group(function() {
+        Route::get('/list', [PreferredCashOutPartnerController::class, 'list']);
+        Route::post('/store', [PreferredCashOutPartnerController::class, 'store']);
     });
 });
 

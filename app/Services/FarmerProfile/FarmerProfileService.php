@@ -8,6 +8,7 @@ use Exception;
 use App\Enums\eKYC;
 use App\Enums\AccountTiers;
 use App\Models\FarmerImport;
+use App\Enums\SuccessMessages;
 use App\Traits\HasFileUploads;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
@@ -19,6 +20,7 @@ use App\Imports\Farmers\FarmersImport;
 use App\Imports\Farmers\SubsidyImport;
 use Illuminate\Support\Facades\Storage;
 use App\Services\KYCService\IKYCService;
+use App\Exports\DBP\DBPTransactionExport;
 use App\Exports\Farmer\FailedUploadExport;
 use App\Exports\Farmer\Export\FailedExport;
 use App\Exports\Farmer\SuccessUploadExport;
@@ -347,6 +349,47 @@ class FarmerProfileService implements IFarmerProfileService
             'fail_file' => Storage::disk('s3')->temporaryUrl($failFilename, Carbon::now()->addMinutes(30)),
             'success_file' => Storage::disk('s3')->temporaryUrl($successFilename, Carbon::now()->addMinutes(30)),
         ]);
+    }
+
+    public function DBPTransactionReport(array $attr) {
+        $from = Carbon::now()->format('Y-m-d');
+        $to = Carbon::now()->subDays(30)->format('Y-m-d');
+        $type = 'API';
+        
+        $records = [];
+        if($attr && isset($attr['type']) && $attr['type'] == 'API') {
+            $records = $this->userTransactionHistoryRepository->getDBPTransactionHistory($attr, 15, true);
+        } else {
+            $records = $this->userTransactionHistoryRepository->getDBPTransactionHistory($attr, 15, false);
+        }
+        if($attr && isset($attr['from']) && isset($attr['to'])) {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+        if($attr && isset($attr['type'])) {
+            $type = $attr['type'];
+        }
+
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+        if($type === 'CSV') {
+            Excel::store(new DBPTransactionExport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        } else if($type === 'XLSX') {
+            Excel::store(new DBPTransactionExport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+
+        } else {
+            // return $records->toArray();
+            return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
+        }
+    }
+
+    public function s3TempUrl(string $generated_link) {
+        $temp_url = Storage::disk('s3')->temporaryUrl($generated_link, Carbon::now()->addMinutes(30));
+        return $temp_url;
     }
 
 }

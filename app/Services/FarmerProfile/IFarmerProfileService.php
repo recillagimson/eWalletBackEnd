@@ -18,4 +18,6 @@ interface IFarmerProfileService
     public function uploadFileToS3($file);
 
     public function subsidyProcess(string $filePath, string $authUser);
+
+    public function DBPTransactionReport(array $attr);
 }

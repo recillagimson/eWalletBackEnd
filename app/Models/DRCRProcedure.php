@@ -11,8 +11,8 @@ class DRCRProcedure extends Model
     use HasFactory;
 
     protected $table = 'running_balance';
-    protected $append = [
-        'transactopn_date_manila_time',
+    protected $appends = [
+        'transaction_date_manila_time',
         'transaction_date_word_format_manila_time'
     ];
 

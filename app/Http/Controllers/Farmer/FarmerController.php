@@ -122,5 +122,9 @@ class FarmerController extends Controller
         return $this->responseService->successResponse($import->toArray(), SuccessMessages::updateUserSuccessful);
     }
 
+    public function report(Request $request) {
+        return $this->farmerProfileService->DBPTransactionReport($request->all());
+    }
+
 
 }

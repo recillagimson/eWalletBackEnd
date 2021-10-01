@@ -81,6 +81,7 @@ class UserDetail extends Model
         'name_of_da_personel',
         'da_remarks',
         'is_da_update',
+        'preferred_cash_out_partner'
     ];
 
     public function getUserAccount()
