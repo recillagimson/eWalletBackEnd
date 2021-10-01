@@ -16,4 +16,8 @@ interface IFarmerProfileService
     public function batchUploadV2(string $file, string $authUser);
     
     public function uploadFileToS3($file);
+
+    public function subsidyProcess(string $filePath, string $authUser);
+
+    public function DBPTransactionReport(array $attr);
 }

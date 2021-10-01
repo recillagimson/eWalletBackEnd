@@ -124,6 +124,8 @@ use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use App\Repositories\InAddMoneyEcPay\InAddMoneyEcPayRepository;
 use App\Repositories\Loan\ILoanRepository;
 use App\Repositories\Loan\LoanRepository;
+use App\Repositories\PreferredCashOutPartner\IPreferredCashOutPartnerRepository;
+use App\Repositories\PreferredCashOutPartner\PreferredCashOutPartnerRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -265,6 +267,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // FarmerImport
         $this->app->bind(IFarmerImportRepository::class, FarmerImportRepository::class);
+
+        // 
+        $this->app->bind(IPreferredCashOutPartnerRepository::class, PreferredCashOutPartnerRepository::class);
 
     }
 

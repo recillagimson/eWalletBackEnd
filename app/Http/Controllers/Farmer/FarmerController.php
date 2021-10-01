@@ -8,6 +8,7 @@ use App\Http\Requests\Farmer\FarmerBatchUploadFileRequest;
 use App\Http\Requests\Farmer\FarmerBatchUploadRequest;
 use App\Http\Requests\Farmer\FarmerIdUploadRequest;
 use App\Http\Requests\Farmer\FarmerSelfieUploadRequest;
+use App\Http\Requests\Farmer\FarmerSubsidyProcessRequest;
 use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
 use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
@@ -107,18 +108,23 @@ class FarmerController extends Controller
     }
 
     public function uploadFileToS3(FarmerBatchUploadFileRequest $request) {
-        $import = $this->farmerProfileService->uploadFileToS3($request->file, request()->user()->id);
+        $import = $this->farmerProfileService->uploadFileToS3($request->file);
         return $this->responseService->successResponse(['path' => $import], SuccessMessages::success);
-    }
-
-    public function subsidyBatchUploadV3(FarmerBatchUploadRequest $request) {
-        $import = $this->farmerProfileService->subsidyBatchUpload($request->file, request()->user()->id);
-        return $this->responseService->successResponse($import, SuccessMessages::updateUserSuccessful);
     }
 
     public function uploadSubsidyFileToS3(FarmerBatchUploadFileRequest $request) {
-        $import = $this->farmerProfileService->uploadFileToS3($request->file, request()->user()->id);
+        $import = $this->farmerProfileService->uploadFileToS3($request->file);
         return $this->responseService->successResponse(['path' => $import], SuccessMessages::success);
     }
+
+    public function subsidyBatchUploadV2(FarmerSubsidyProcessRequest $request) {
+        $import = $this->farmerProfileService->subsidyProcess($request->s3Url, request()->user()->id);
+        return $this->responseService->successResponse($import->toArray(), SuccessMessages::updateUserSuccessful);
+    }
+
+    public function report(Request $request) {
+        return $this->farmerProfileService->DBPTransactionReport($request->all());
+    }
+
 
 }
