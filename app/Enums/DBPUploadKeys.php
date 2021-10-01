@@ -31,4 +31,12 @@ class DBPUploadKeys
     const sourceoffunds = 'sourceoffunds';
     const mothermaidenname = 'mothermaidenname';
 
+    // SUBSIDY KEYS
+    const userAccountNumber = 'user_account_number';
+    const rsbsaNumberSubsidy = 'vw_farmerprofile_full_wmrsbsa_no';
+    const amount = 'amount';
+    const batchCode = 'batch_code';
+    const programCode = 'program_code';
+    const subsidyAmount = 5000;
+
 }
