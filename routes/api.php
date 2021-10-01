@@ -116,6 +116,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // FARMER
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload', [FarmerController::class, 'batchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2', [FarmerController::class, 'uploadFileToS3']);
+    Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload/v2', [FarmerController::class, 'subsidyBatchUploadV3']);
     Route::middleware(['decrypt.request', 'auth:sanctum'])->post('/upload/process', [FarmerController::class, 'batchUploadV2']);
     Route::middleware(['require.user.token'])->post('/farmer/jobs/batch-upload', [FarmerController::class, 'processBatchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);

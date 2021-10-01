@@ -111,4 +111,14 @@ class FarmerController extends Controller
         return $this->responseService->successResponse(['path' => $import], SuccessMessages::success);
     }
 
+    public function subsidyBatchUploadV3(FarmerBatchUploadRequest $request) {
+        $import = $this->farmerProfileService->subsidyBatchUpload($request->file, request()->user()->id);
+        return $this->responseService->successResponse($import, SuccessMessages::updateUserSuccessful);
+    }
+
+    public function uploadSubsidyFileToS3(FarmerBatchUploadFileRequest $request) {
+        $import = $this->farmerProfileService->uploadFileToS3($request->file, request()->user()->id);
+        return $this->responseService->successResponse(['path' => $import], SuccessMessages::success);
+    }
+
 }
