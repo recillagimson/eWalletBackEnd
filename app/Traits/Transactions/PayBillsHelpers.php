@@ -113,8 +113,14 @@ trait PayBillsHelpers
     private function checkAmount(UserAccount $user, array $data, string $billerCode)
     {
         $balance = $this->getUserBalance($user);
-        $totalAmount = $data['amount'] + $this->getServiceFee($user) + $this->getOtherCharges($billerCode);
 
+        // To catch MECOP biller and use another way to get the otherCharges
+        if($billerCode === PayBillsConfig::MECOP) {
+            $totalAmount = $data['amount'] + $this->getServiceFee($user) + $this->getOtherChargesMECOP($billerCode, $data);
+        } else {
+            $totalAmount = $data['amount'] + $this->getServiceFee($user) + $this->getOtherCharges($billerCode);
+        }
+       
         if ($balance >= $totalAmount) return true;
     }
 
@@ -156,7 +162,14 @@ trait PayBillsHelpers
     private function getOtherCharges(string $billerCode)
     {
         $otherCharges = $this->bayadCenterService->getOtherCharges($billerCode);
-        return $otherCharges['data']['otherCharges'];
+        return $otherCharges['data']['otherCharges'];       
+    }
+
+
+    private function getOtherChargesMECOP($billerCode, $data)
+    {
+        $mecopOtherCharges = $this->bayadCenterService->getOtherChargesMECOP($billerCode, $data);
+        return $mecopOtherCharges['data']['otherCharges'];
     }
 
 
@@ -198,13 +211,19 @@ trait PayBillsHelpers
     }
 
 
-    private function validationResponse(UserAccount $user, $response, string $billerCode)
+    private function validationResponse(UserAccount $user, $response, string $billerCode, $oldData)
     {
         $data = array();
         $data += array('serviceFee' => (string)$this->getServiceFee($user));
-        $data += array('otherCharges' => $this->getOtherCharges($billerCode));
-        $data += array('validationNumber' => $response['data']['validationNumber']);
 
+        // To catch MECOP biller and use another way to get the otherCharges
+        if($billerCode === PayBillsConfig::MECOP) {
+            $data +=  array('otherCharges' => $this->getOtherChargesMECOP($billerCode, $oldData));
+        } else {
+            $data += array('otherCharges' => $this->getOtherCharges($billerCode));
+        }
+
+        $data += array('validationNumber' => $response['data']['validationNumber']);
         return $data;
     }
 
@@ -313,10 +332,6 @@ trait PayBillsHelpers
         if ($errorCode == 27) return $this->theAccountNumberisNotSupportedByTheBank($errorMsg);
         if ($errorCode == 28) return $this->theAccountNumberMustStartWithAnyOf($errorMsg);
         if ($errorCode == 30) return $this->possibleDuplicateDetected($errorMsg);
-
-   
-
-    
 
     }
 

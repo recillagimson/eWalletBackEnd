@@ -136,6 +136,11 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.MI' => 'required|max:2',
             'otherInfo.PlatformType' => 'required|in:OTC,SS'
         ],
+        PayBillsConfig::MECOP => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|in:100.00,200.00,300.00,500.00,1000.00',
+        ]
+            
 
     ];
 
