@@ -98,10 +98,10 @@ class SendMoneyController extends Controller
      *
      * @return JsonResponse
      */
-    public function getQr(GetQrRequest $request)//: JsonResponse
+    public function getQr(GetQrRequest $request): JsonResponse
     {   
-        return $this->sendMoneyService->getQr($request->user());
-    //    return $this->responseService->successResponse($request->user(), SuccessMessages::sendMoneySuccessFul);
+      $getQr = $this->sendMoneyService->getQr($request->user());
+      return $this->responseService->successResponse($getQr, SuccessMessages::sendMoneySuccessFul);
     }
 
     /**
