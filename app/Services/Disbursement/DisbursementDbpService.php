@@ -88,8 +88,8 @@ class DisbursementDbpService implements IDisbursementDbpService
             $merchant = $this->userAccountRepository->get($merchantId);
             if(!$merchant) $this->invalidUser();
             $this->addBalance($merchant, $fillRequest);
-            $fillRequest['out_disbursement_dbps_reference_number'] = $outDisbursementDbp->id;
-            $inDisbursementDbp = $this->inDisbursementDbp($user, $clientUser, $fillRequest, "DI");
+            $fillRequest['out_disbursement_dbps_reference_number'] = $outDisbursementDbp->reference_number;
+            $inDisbursementDbp = $this->inDisbursementDbp($user, $merchant, $fillRequest, "DI");
             $this->logHistories($user, $merchant, $inDisbursementDbp, "DI");
             $this->userTransactionHistory($clientUser, $merchant, $inDisbursementDbp);
             DB::commit();
@@ -150,7 +150,7 @@ class DisbursementDbpService implements IDisbursementDbpService
             'total_amount' => $fillRequest['amount'],
             'status' => TransactionStatuses::success,
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transaction_category_id' => DisbursementConfig::DI,
+            'transaction_category_id' => DisbursementConfig::DO,
             'transaction_remarks' => 'Cash Disbursement',
             'disbursed_by' => $user->id,
             'user_created' => $user->id,
