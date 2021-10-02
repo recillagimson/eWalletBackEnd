@@ -50,6 +50,7 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\Responses\IResponseService;
 
 class FarmerProfileService implements IFarmerProfileService
 {
@@ -80,6 +81,7 @@ class FarmerProfileService implements IFarmerProfileService
     private IProvinceRepository $provinceRepository;
 
     private IInReceiveFromDBPRepository $dboRepository;
+    private IResponseService $responseService;
 
 
     public function __construct(
@@ -104,7 +106,8 @@ class FarmerProfileService implements IFarmerProfileService
         IFarmerImportRepository           $farmerImportRepository,
         IProvinceRepository               $provinceRepository,
         ITransactionCategoryRepository    $transactionCategoryRepository,
-        IInReceiveFromDBPRepository       $dbpRepository
+        IInReceiveFromDBPRepository       $dbpRepository,
+        IResponseService                  $responseService
     )
     {
         $this->userApprovalRepository = $userApprovalRepository;
@@ -130,6 +133,7 @@ class FarmerProfileService implements IFarmerProfileService
         $this->provinceRepository = $provinceRepository;
         $this->transactionCategoryRepository = $transactionCategoryRepository;
         $this->dbpRepository = $dbpRepository;
+        $this->responseService = $responseService;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
