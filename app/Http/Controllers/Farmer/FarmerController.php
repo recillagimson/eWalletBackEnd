@@ -123,7 +123,7 @@ class FarmerController extends Controller
     }
 
     public function report(Request $request) {
-        return $this->farmerProfileService->DBPTransactionReport($request->all());
+        return $this->farmerProfileService->DBPTransactionReport($request->all(), request()->user()->id);
     }
 
 

@@ -355,16 +355,16 @@ class FarmerProfileService implements IFarmerProfileService
         ]);
     }
 
-    public function DBPTransactionReport(array $attr) {
+    public function DBPTransactionReport(array $attr, string $authUser) {
         $from = Carbon::now()->format('Y-m-d');
         $to = Carbon::now()->subDays(30)->format('Y-m-d');
         $type = 'API';
         
         $records = [];
         if($attr && isset($attr['type']) && $attr['type'] == 'API') {
-            $records = $this->userTransactionHistoryRepository->getDBPTransactionHistory($attr, 15, true);
+            $records = $this->userTransactionHistoryRepository->getDBPTransactionHistory($attr, $authUser);
         } else {
-            $records = $this->userTransactionHistoryRepository->getDBPTransactionHistory($attr, 15, false);
+            $records = $this->userTransactionHistoryRepository->getDBPTransactionHistory($attr, $authUser);
         }
         if($attr && isset($attr['from']) && isset($attr['to'])) {
             $from = $attr['from'];
