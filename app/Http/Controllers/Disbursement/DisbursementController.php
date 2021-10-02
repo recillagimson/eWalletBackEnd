@@ -32,7 +32,7 @@ class DisbursementController extends Controller
     public function transaction(TransactionRequest $request): JsonResponse
     {
         $fillRequest = $request->validated();
-        $transaction = $this->disbursementService->transaction($request->user(), $fillRequest); 
+        $transaction = $this->disbursementService->transaction($request->user(), $fillRequest, request()->user()->id); 
         return $this->responseService->successResponse($transaction);
     }
 
