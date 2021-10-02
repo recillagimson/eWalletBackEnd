@@ -32,5 +32,5 @@ interface IUserTransactionHistoryRepository extends IRepository
 
     public function getTransactionHistoryAdminFarmer(array $attr);
 
-    public function getDBPTransactionHistory(array $attr);
+    public function getDBPTransactionHistory(array $attr, string $authUser);
 }

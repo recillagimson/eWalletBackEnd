@@ -19,5 +19,5 @@ interface IFarmerProfileService
 
     public function subsidyProcess(string $filePath, string $authUser);
 
-    public function DBPTransactionReport(array $attr);
+    public function DBPTransactionReport(array $attr, string $authUser);
 }

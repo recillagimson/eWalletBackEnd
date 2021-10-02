@@ -237,7 +237,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $records->get();
     }
 
-    public function getDBPTransactionHistory(array $attr)
+    public function getDBPTransactionHistory(array $attr, string $authUser)
     {
         $records = DRCRProcedure::with([]);
         $from = Carbon::now()->subDays(30)->format('Y-m-d');
@@ -288,6 +288,10 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
         $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE')
         ->where('rsbsa_number', '!=', '');
+
+        if($authUser && $authUser != "") {
+            $records = $records->where('user_Account_id', $authUser);
+        }
 
         if($attr && $attr['type'] == 'API') {
             return $records->paginate();
