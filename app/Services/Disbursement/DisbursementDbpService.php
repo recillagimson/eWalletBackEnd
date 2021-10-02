@@ -150,7 +150,7 @@ class DisbursementDbpService implements IDisbursementDbpService
             'total_amount' => $fillRequest['amount'],
             'status' => TransactionStatuses::success,
             'transaction_date' => date('Y-m-d H:i:s'),
-            'transaction_category_id' => DisbursementConfig::DI,
+            'transaction_category_id' => DisbursementConfig::DO,
             'transaction_remarks' => 'Cash Disbursement',
             'disbursed_by' => $user->id,
             'user_created' => $user->id,
