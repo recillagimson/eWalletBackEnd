@@ -239,7 +239,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
     public function getDBPTransactionHistory(array $attr, string $authUser)
     {
-        $records = DRCRProcedure::with([]);
+        $records = UserTransactionHistoryView::with(['user_detail']);
         $from = Carbon::now()->subDays(30)->format('Y-m-d');
         $to = Carbon::now()->format('Y-m-d');
 
@@ -257,22 +257,24 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             $filter_value = $attr['filter_value'];
 
             // IF CUSTOMER NAME
-            if ($filter_by == 'CUSTOMER_NAME') {
-                $records = $records->where(function ($q) use ($filter_value) {
-                    $q->where('first_name', 'LIKE', '%' . $filter_value . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%');
-                });
-            } // IF CUSTOMER ACCOUNT NUMBER
-            else if ($filter_by == 'CUSTOMER_ID') {
+            // if ($filter_by == 'CUSTOMER_NAME') {
+            //     $records = $records->where(function ($q) use ($filter_value) {
+            //         $q->where('first_name', 'LIKE', '%' . $filter_value . '%')
+            //             ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%');
+            //     });
+            // } 
+            // IF CUSTOMER ACCOUNT NUMBER
+            if ($filter_by == 'CUSTOMER_ID') {
                 $records = $records->where('account_number', $filter_value);
             }
 
             // IF TYPE
-            else if ($filter_by == 'TYPE') {
-                $records = $records->where('Type', $filter_value);
-            } // IF STATUS
+            // else if ($filter_by == 'TYPE') {
+            //     $records = $records->where('Type', $filter_value);
+            // } 
+            // IF STATUS
             else if ($filter_by == 'STATUS') {
-                $records = $records->where('Status', $filter_value);
+                $records = $records->where('status', $filter_value);
             }
 
             // IF RSBSA_NUMBER
@@ -290,7 +292,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         ->where('rsbsa_number', '!=', '');
 
         if($authUser && $authUser != "") {
-            $records = $records->where('user_Account_id', $authUser);
+            $records = $records->where('user_updated', $authUser);
         }
 
         if($attr && $attr['type'] == 'API') {
