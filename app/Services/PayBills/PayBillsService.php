@@ -219,6 +219,7 @@ class PayBillsService implements IPayBillsService
             $user = $this->userAccountRepository->getUser($user->user_account_id);
             $this->processPending($user);
         }
+
     }
 
     public function downloadListOfBillersCSV()

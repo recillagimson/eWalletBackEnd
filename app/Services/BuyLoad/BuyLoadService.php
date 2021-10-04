@@ -34,7 +34,6 @@ use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class BuyLoadService implements IBuyLoadService
 {
@@ -188,6 +187,17 @@ class BuyLoadService implements IBuyLoadService
             'success_count' => $successCount,
             'failed_count' => $failCount
         ];
+    }
+
+    public function processAllPending()
+    {
+        $users = $this->buyLoads->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('Buy Load Processing User:', ['user_account_id' => $user->user_account_id]);
+            $this->processPending($user->user_account_id);
+        }
+
     }
 
 
