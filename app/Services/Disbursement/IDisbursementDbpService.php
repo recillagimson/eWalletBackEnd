@@ -11,5 +11,5 @@ use App\Models\UserAccount;
  */
 interface IDisbursementDbpService
 {
-    public function transaction(UserAccount $user, $fillRequest);
+    public function transaction(UserAccount $user, $fillRequest, string $merchantId);
 }

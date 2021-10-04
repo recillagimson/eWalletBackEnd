@@ -165,13 +165,27 @@ class TierApprovalService implements ITierApprovalService
         }
     }
 
-    public function sendEmail(UserAccount $user, string $message) {
-        if (!$user->email) {
+    public function sendEmail($email, string $message) {
+        $user = $this->userAccountRepository->getByEmail('email', $email);
+
+        if (!$user) {
             throw ValidationException::withMessages([
                 'email_not_found' => 'Email not found'
             ]);
         }
 
         $this->emailService->kycNotification($user, $message);
+    }
+    
+    public function sendSMS($mobile_number, string $message) {
+        $user = $this->userAccountRepository->getAccountByMobileNumber($mobile_number);
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'mobile_number_not_found' => 'Mobile Number not found'
+            ]);
+        }
+
+        $this->smsService->kycNotification($user, $message);
     }
 }

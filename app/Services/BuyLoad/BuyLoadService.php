@@ -7,6 +7,7 @@ namespace App\Services\BuyLoad;
 use App\Enums\AtmPrepaidResponseCodes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
+use App\Enums\TopupTypes;
 use App\Enums\TransactionCategories;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
@@ -81,7 +82,7 @@ class BuyLoadService implements IBuyLoadService
 
     public function getEpinProducts(): array
     {
-        return array_values($this->atmService->getProductsByProvider('EPIN')->toArray());
+        return array_values($this->atmService->getProductsByProvider(TopupTypes::atm_epin)->toArray());
     }
 
     public function getProductsByProvider(string $mobileNumber): array
@@ -195,6 +196,7 @@ class BuyLoadService implements IBuyLoadService
             Log::info('Buy Load Processing User:', ['user_account_id' => $user->user_account_id]);
             $this->processPending($user->user_account_id);
         }
+
     }
 
 

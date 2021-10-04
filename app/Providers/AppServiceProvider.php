@@ -44,6 +44,8 @@ use App\Services\FarmerProfile\FarmerProfileService;
 use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\KYCService\IKYCService;
 use App\Services\KYCService\KYCService;
+use App\Services\Loan\ILoanService;
+use App\Services\Loan\LoanService;
 use App\Services\MyTask\IMyTaskService;
 use App\Services\MyTask\MyTaskService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
@@ -128,6 +130,14 @@ use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic;
 use App\Services\ThirdParty\ECPay\IECPayService;
 use App\Services\ThirdParty\ECPay\ECPayService;
+use App\Services\AddmoneyCebuana\AddMoneyCebuanaService;
+use App\Services\AddmoneyCebuana\IAddMoneyCebuanaService;
+use App\Services\Merchant\IMerchantService;
+use App\Services\Merchant\MerchantService;
+use App\Services\v2\Auth\AuthService as AuthV2Service;
+use App\Services\v2\Auth\IAuthService as IAuthV2Service;
+use App\Services\v2\Auth\Registration\IRegistrationService as IRegistrationV2Service;
+use App\Services\v2\Auth\Registration\RegistrationService as RegistrationV2Service;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -245,6 +255,19 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IMyTaskService::class, MyTaskService::class);
         // Report
         $this->app->bind(IReportService::class, ReportService::class);
+        // Loan
+        $this->app->bind(ILoanService::class, LoanService::class);
+        
+        // CEBUANA SERVICE
+        $this->app->bind(IAddMoneyCebuanaService::class, AddMoneyCebuanaService::class);
+        
+        // Auth v2 SERVICE
+        $this->app->bind(IAuthV2Service::class, AuthV2Service::class);
+        // Registration v2 SERVICE
+        $this->app->bind(IRegistrationV2Service::class, RegistrationV2Service::class);
+
+        // Merchant
+        $this->app->bind(IMerchantService::class, MerchantService::class);
     }
 
     /**

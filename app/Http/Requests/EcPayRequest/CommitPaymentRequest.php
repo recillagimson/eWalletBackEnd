@@ -24,7 +24,7 @@ class CommitPaymentRequest extends FormRequest
     public function rules()
     {
         return [
-            'amount' => 'required|min:10|integer',
+            'amount' => 'required|regex:/^-?[0-9]+(?:.[0-9]{1,3})?$/'
         ];
     }
 }

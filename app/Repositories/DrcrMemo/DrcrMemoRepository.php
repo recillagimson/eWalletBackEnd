@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\DrcrMemo;
 use App\Models\DRCRView;
 use App\Enums\DrcrStatus;
+use App\Models\DRCRBalance;
 use App\Models\UserAccount;
 use App\Models\DRCRProcedure;
 use App\Repositories\Repository;
@@ -243,14 +244,14 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
 
     }
 
-    public function reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId = "", $isPaginated = false) {
+    public function reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId = "", $isPaginated = false, $isPendingOnly = false) {
         $record = DRCRView::where('transaction_date', '>=', $from)
             ->where('transaction_date', '<=', $to);
 
         if($filterBy && $filterValue) {
             // IF CUSTOMER_ID
             if($filterBy == 'CUSTOMER_ID') {
-                $record = $record->where('user_account_id', $filterValue);
+                $record = $record->where('account_number', $filterValue);
             } 
             // IF CUSTOMER_NAME
             else if ($filterBy == 'CUSTOMER_NAME') {
@@ -264,14 +265,62 @@ class DrcrMemoRepository extends Repository implements IDrcrMemoRepository
                 $record = $record->where('Type', $filterValue );
             }
             // IF STATUS
-            else if($filterBy == 'STATUS') {
+            else if($filterBy == 'STATUS' && $isPendingOnly == false) {
                 $record = $record->where('Status', $filterValue);
+            }
+        }
+
+        if($isPendingOnly) {
+            $record = $record->where('Status', 'PENDING');
+        }
+
+        if($userId != "") {
+            $record = $record->where('user_created', $userId);
+        }
+
+        if($isPaginated) {
+            return $record->paginate();
+        }
+
+        return $record->get();
+
+    }
+
+    public function updatedReportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId = "", $isPaginated = false, $isPerUser = false) {
+        $record = DRCRBalance::where('transaction_date', '>=', $from)
+            ->where('transaction_date', '<=', $to);
+
+        if($filterBy && $filterValue) {
+            // IF CUSTOMER_ID
+            if($filterBy == 'CUSTOMER_ID') {
+                $record = $record->where('account_number', $filterValue);
+            } 
+            // IF CUSTOMER_NAME
+            else if ($filterBy == 'CUSTOMER_NAME') {
+                $record = $record->where(function($q) use($filterValue) {
+                    $q->where('first_name', 'LIKE', '%' . $filterValue . '%')
+                      ->orWhere('last_name', 'LIKE', '%' . $filterValue . '%');
+                });
+            }
+            // IF TYPE
+            else if($filterBy == 'TYPE') {
+                $record = $record->where('transaction_type', $filterValue );
+            }
+            // IF STATUS
+            else if($filterBy == 'STATUS') {
+                $record = $record->where('status', $filterValue);
             }
         }
 
         if($userId != "") {
             $record = $record->where('user_created', $userId);
         }
+
+        if($isPerUser) {
+            $record = $record->where('user_created', request()->user()->id);
+        }
+
+        $record = $record->whereIn('name', ['DR_MEMO', 'CR_MEMO']);
 
         if($isPaginated) {
             return $record->paginate();

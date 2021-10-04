@@ -24,7 +24,7 @@ class FarmerBatchUploadRequest extends FormRequest
     public function rules()
     {
         return [
-            'file' => 'file'
+            'file' => 'required'
         ];
     }
 }

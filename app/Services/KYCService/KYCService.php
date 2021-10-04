@@ -4,6 +4,7 @@ namespace App\Services\KYCService;
 
 use App\Enums\SuccessMessages;
 use App\Repositories\KYCVerification\IKYCVerificationRepository;
+use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Services\Utilities\CurlService\ICurlService;
@@ -29,6 +30,7 @@ class KYCService implements IKYCService
     private IUserAccountRepository $userAccountRepository;
     private IResponseService $responseService;
     private IKYCVerificationRepository $kycRepository;
+    private ITierApprovalRepository $tierApproval;
 
     private $appId;
     private $appKey;
@@ -36,16 +38,18 @@ class KYCService implements IKYCService
     private $ocrUrl;
     private $ocrPassportUrl;
     private $verifyUrl;
+    private $verifyUrlV2;
     private $callBackUrl;
     private $enrolId;
 
-    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository)
+    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository, ITierApprovalRepository $tierApproval)
     {
         $this->curlService = $curlService;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
         $this->userAccountRepository = $userAccountRepository;
         $this->responseService = $responseService;
         $this->kycRepository = $kycRepository;
+        $this->tierApproval = $tierApproval;
 
         $this->appId = config('ekyc.appId');
         $this->appKey = config('ekyc.appKey');
@@ -55,6 +59,7 @@ class KYCService implements IKYCService
         $this->verifyUrl = config('ekyc.verifyUrl');
         $this->callBackUrl = config('ekyc.callbackUrl');
         $this->enrolId = config('ekyc.enrolId');
+        $this->verifyUrlV2 = config('ekyc.verifyUrlV2');
 
     }
 
@@ -163,7 +168,7 @@ class KYCService implements IKYCService
     public function matchOCR(array $attr) {
         if(isset($attr['manual_input']) && isset($attr['ocr_response'])) {
             if(isset($attr['manual_input']['full_name']) && isset($attr['ocr_response']['full_name'])) {
-                if($attr['ocr_response']['full_name'] == $attr['manual_input']['full_name']) {
+                if(strtolower($attr['ocr_response']['full_name']) == strtolower($attr['manual_input']['full_name'])) {
                     // return [
                     //     'message' => 'OCR and Input data match'
                     // ];
@@ -174,7 +179,7 @@ class KYCService implements IKYCService
             }
 
             if(isset($attr['manual_input']['first_name']) && isset($attr['ocr_response']['first_name']) && isset($attr['manual_input']['last_name']) && isset($attr['ocr_response']['last_name'])) {
-                if($attr['ocr_response']['first_name'] == $attr['manual_input']['first_name'] && $attr['ocr_response']['last_name'] == $attr['manual_input']['last_name']) {
+                if(strtolower($attr['ocr_response']['first_name']) == strtolower($attr['manual_input']['first_name']) && strtolower($attr['ocr_response']['last_name']) == strtolower($attr['manual_input']['last_name'])) {
                     // return [
                     //     'message' => 'OCR and Input data match'
                     // ];
@@ -232,38 +237,51 @@ class KYCService implements IKYCService
 
     public function verify(array $attr, $from_api = true) {
         DB::beginTransaction();
+
         try {
-            $url = $this->verifyUrl;
+            $url = $this->verifyUrlV2;
             $headers = $this->getAuthorizationHeaders();
 
+            $nid = $attr['nid_front'];
+            $selfie = $attr['selfie'];
+
+            if(!is_string($attr['nid_front'])) {
+                $nid = $attr['nid_front']->getPathname();
+                $selfie = $attr['selfie']->getPathname();
+            }
+
+
+            $selfieFile = new CURLFILE($selfie);
+            // $selfieFile = file_get_contents($nid);
+            $frontFile = new CURLFILE($nid);
+            // $frontFile = file_get_contents($selfie);
+
+            $transactionId = $this->generateApplicationId();
             $data = [
                 'callbackURL' => $this->callBackUrl,
                 'name' => $attr['name'],
-                'idNumber' => $attr['id_number'],
+                // 'idNumber' => $attr['id_number'],
+                'rsbsaNumber' => $attr['id_number'],
                 'dob' => Carbon::parse($attr['dob'])->format('d-m-Y'),
-                'applicationId' => Str::uuid(),
+                // 'applicationId' => Str::uuid(),
+                'transactionId' => $transactionId,
                 'enrol' => $this->enrolId,
-                'selfie' => new CURLFILE($attr['selfie']->getPathname()),
-                'idFront' => new CURLFILE($attr['nid_front']->getPathname()),
+                'selfie' => $selfieFile,
+                'idFront' => $frontFile,
             ];
 
             $response = $this->curlService->curlPost($url, $data, $headers);
-
-            // Log::debug('eKYC Response', [
-            //     'verifyURL' => $url,
-            //     'callbackURL' => env('KYC_APP_CALLBACK_URL'),
-            //     'response' => $response
-            // ]);
-            // dd($this->callBackUrl);
-
-            // dd($response);
+            $error = '';
+            if($response && isset($response['status'])) {
+                $error = $response['status'];
+            }
 
             $record = $this->kycRepository->create([
                 'user_account_id' => $attr['user_account_id'],
                 'request_id' => isset($response['result']) ? $response['result']->requestId : $response['requestId'],
-                'application_id' => isset($response['result']) ? $response['result']->applicationId : $response['applicationId'],
-                'hv_response' => '',
-                'hv_result' => '',
+                'transaction_id' => $transactionId,
+                'hv_response' => json_encode($response),
+                'hv_result' => $error,
             ]);
 
             if ($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
@@ -300,12 +318,22 @@ class KYCService implements IKYCService
     public function handleCallback(array $attr): JsonResponse
     {
         Log::info(json_encode($attr));
-        if ($attr && isset($attr['result']) && isset($attr['result']['requestId'])) {
-            $record = $this->kycRepository->findByRequestId($attr['result']['requestId']);
+        if ($attr && isset($attr['statusCode']) && isset($attr['statusCode']) == 200 && isset($attr['result']) && isset($attr['result']['summary'])) {
+            $record = $this->kycRepository->findByRequestId($attr['result']['data']['requestId']);
+            $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
+            if($tierApproval && $attr['result']['summary']['action'] != 'Pass') {
+                $tierApproval->update([
+                    'status' => 'PENDING'
+                ]);
+            } else {
+                $tierApproval->update([
+                    'status' => 'APPROVED'
+                ]);
+            }
             if ($record) {
                 $this->kycRepository->update($record, [
                     'hv_response' => json_encode($attr),
-                    'hv_result' => isset($attr['result']['unifiedResult']['channel']) ? $attr['result']['unifiedResult']['channel'] : $attr['error'],
+                    'hv_result' => $attr['result']['summary']['action'],
                     'status' => 'CALLBACK_RECEIVED'
                 ]);
             }
@@ -331,9 +359,42 @@ class KYCService implements IKYCService
     {
         $record = $this->kycRepository->findByRequestId($requestId);
         if($record) {
+            $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
+            if($tierApproval && $record->hv_result != 'Pass') {
+                $tierApproval->update([
+                    'status' => 'PENDING'
+                ]);
+            } else {
+                $tierApproval->update([
+                    'status' => 'APPROVED'
+                ]);
+            }
             return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
         }
         $this->recordNotFound();
     }
 
+    private function generateApplicationId() {
+        $count = $this->kycRepository->count();
+        $transactionId = $count;
+        if($count < 10) {
+            $transactionId = "DUP0000000" . $count;
+        } else if($count < 100) {
+            $transactionId = "DUP000000" . $count;
+        } else if($count < 1000) {
+            $transactionId = "DUP00000" . $count;
+        } else if($count < 10000) {
+            $transactionId = "DUP0000" . $count;
+        } else if($count < 100000) {
+            $transactionId = "DUP000" . $count;
+        } else if($count < 1000000) {
+            $transactionId = "DUP00" . $count;
+        } else if($count < 10000000) {
+            $transactionId = "DUP0" . $count;
+        } else if($count < 100000000) {
+            $transactionId = "DUP" . $count;
+        }
+
+        return $transactionId;
+    }
 }

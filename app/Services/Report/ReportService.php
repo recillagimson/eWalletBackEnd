@@ -257,7 +257,6 @@ class ReportService implements IReportService
         } else {
             $records = $this->userAccount->getAllUsersPaginated($attr, 15, false);
         }
-
         if($attr && isset($attr['from']) && isset($attr['to'])) {
             $from = $attr['from'];
             $to = $attr['to'];

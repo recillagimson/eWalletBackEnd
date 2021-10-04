@@ -5,6 +5,7 @@ namespace App\Services\ThirdParty\ECPay;
 
 
 use App\Enums\TpaProviders;
+use Log;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Illuminate\Http\Client\Response;
@@ -25,6 +26,7 @@ use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Enums\SuccessMessages;
 use App\Enums\ECPayStatusTypes;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class ECPayService implements IECPayService
 {
@@ -43,6 +45,7 @@ class ECPayService implements IECPayService
     private ILogHistoryService $logHistoryService;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private IResponseService $responseService;
+    private IUserDetailRepository $userDetailRepository;
 
     public function __construct(IApiService $apiService,
                                 IHandlePostBackService $handlePostBackService,
@@ -51,7 +54,8 @@ class ECPayService implements IECPayService
                                 ITransactionCategoryRepository $transactionCategoryRepository,
                                 ILogHistoryService $logHistoryService,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-                                IResponseService $responseService)
+                                IResponseService $responseService,
+                                IUserDetailRepository $userDetailRepository)
     {
 
         $this->ecpayUrl = config('ecpay.ecpay_url');
@@ -68,6 +72,7 @@ class ECPayService implements IECPayService
         $this->logHistoryService = $logHistoryService;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->responseService = $responseService;
+        $this->userDetailRepository = $userDetailRepository;
     }
 
     private function getXmlHeaders(): array
@@ -87,13 +92,16 @@ class ECPayService implements IECPayService
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->CommitPaymentResponse->CommitPaymentResult, true)[0];
 
+        \Log::info('///// - ECPAY Commit Payment - //////');
+        \Log::info(json_encode($jsondecode));
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $refNo, $expirationDate);
-        $data['reference_number'] = $refNo;
+
+        $res = $this->returnResponseBodyFormat($user, $result);
 
         return $this->responseService->successResponse(
-            $data,
+            $res,
             SuccessMessages::addMoneySuccess
         );
     }
@@ -105,12 +113,16 @@ class ECPayService implements IECPayService
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->ConfirmPaymentResponse->ConfirmPaymentResult, true)[0];
 
+        \Log::info('///// - ECPAY Confirm Payment - //////');
+        \Log::info(json_encode($jsondecode));
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
-        $result = $this->createOrUpdateTransaction($jsondecode, $data, $user);
+        $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $data["referenceno"]);
+
+        $res = $this->returnResponseBodyFormat($user, $result);
 
         return $this->responseService->successResponse(
-            $data,
+            $res,
             SuccessMessages::addMoneySuccess
         );
     }
@@ -122,7 +134,7 @@ class ECPayService implements IECPayService
         return $xmlData;
     }
 
-    private function createOrUpdateTransaction(array $data, array $inputData, object $user, string $refNo, string $expirationDate) {
+    private function createOrUpdateTransaction(array $data, array $inputData, object $user, string $refNo, string $expirationDate="") {
         $isDataExisting = $this->addMoneyEcPayRepository->getDataByReferenceNumber($refNo);
         $transCategoryId = $this->transactionCategoryRepository->getById(TransactionCategoryIds::sendMoneyToSquidPayAccount);
        
@@ -130,18 +142,26 @@ class ECPayService implements IECPayService
             $amount = $isDataExisting->amount;
             $refNo = $isDataExisting->reference_number;
             $logStringResult = 'Successfully updated money from EcPay with amount of ' . $amount;
+            $resultData = json_decode($data["result"]);
+
+            \Log::info('///// - ECPAY Create or Update Payment - //////');
+            \Log::info(json_encode($data));
+            if(!$resultData) throw ValidationException::withMessages(['Message' => 'Add money Failed']);
+            
             $this->addMoneyEcPayRepository->update($isDataExisting, [
-                'transaction_remarks'=>$data['result'],
-                'status' => ECPayStatusTypes::Success
+                'transaction_response'=>$data['result'],
+                'status' => ($resultData[0]->PaymentStatus == 0) ? ECPayStatusTypes::Success : ECPayStatusTypes::Pending
             ]);
+            $this->handlePostBackService->addAmountToUserBalance($user->id, $amount);
         } else {
             $amount = $inputData['amount'];
             $isDataExisting = $this->addMoneyEcPayRepository->create($this->createBodyFormat($data, $inputData, $user, $refNo, $transCategoryId, $expirationDate));
+            $this->addMoneyEcPayRepository->update($isDataExisting, [
+                'status' => ECPayStatusTypes::Pending
+            ]);
             $logStringResult = 'Successfully added money from EcPay with amount of ' . $amount;
         }
        
-        $this->handlePostBackService->addAmountToUserBalance($user->id, $amount);
-
         $this->logHistoryService->logUserHistoryUnauthenticated($user->id, $refNo, SquidPayModuleTypes::AddMoneyViaOTCECPay, __METHOD__, Carbon::now(), $logStringResult);
 
         $this->userTransactionHistoryRepository->log(
@@ -169,23 +189,47 @@ class ECPayService implements IECPayService
     }
 
     private function createBodyFormat(array $data, array $inputData, object $user, string $refNo, object $transCategoryId, string $expirationDate) {
-
+        $ecpayResult = explode("|", $data["result"]);
         $result = [
             "user_account_id"=>$user->id,
             "reference_number"=>$refNo,
             "amount"=>$inputData['amount'],
             "total_amount"=>$inputData['amount'],
-            "ec_pay_reference_number"=>$refNo,
+            "ec_pay_reference_number"=>$ecpayResult[0],
             "expiry_date"=>$expirationDate,
             "transaction_date"=>Carbon::now()->format('Y-m-d H:i:s'),
             "transction_category_id"=>$transCategoryId->id,
             "transaction_remarks"=>"Send Money via Ecpay",
             "user_created"=>$user->id,
             "user_updated"=>$user->id,
-            "updated_at"=>Carbon::now()->format('Y-m-d H:i:s')
+            "updated_at"=>Carbon::now()->format('Y-m-d H:i:s'),
+            'transaction_response'=> json_encode($data)
         ];
        
         return $result;
+    }
+
+    private function returnResponseBodyFormat(object $user, $data) 
+    {
+        $userDetail = $this->userDetailRepository->getByUserId($user->id);
+        $result = [
+            "email"=>$user->email,
+            "mobile_number"=>$user->mobile_number,
+            "user_account_id"=>$user->id,
+            "account_number"=>$user->account_number,
+            "last_name"=>$userDetail->last_name,
+            "first_name"=>$userDetail->first_name,
+            "middle_name"=>$userDetail->middle_name,
+            "reference_number"=>$data["reference_number"],
+            "amount"=>$data["amount"],
+            "expiry_date"=>$data["expiry_date"],
+            "ec_pay_reference_number"=>$data["ec_pay_reference_number"],
+            "transaction_date"=>$data["transaction_date"],
+            "status"=>$data["status"]
+        ];
+
+        return $result;
+       
     }
 
     private function generateXmlBody(array $data, string $title): string

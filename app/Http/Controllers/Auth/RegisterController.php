@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Http\Requests\Auth\ValidateNewUserRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
+use App\Http\Requests\Auth\ValidatePinRequest;
 use App\Services\Auth\Registration\IRegistrationService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
@@ -40,6 +41,18 @@ class RegisterController extends Controller
         $user = $this->registrationService->register($newUser, $usernameField);
 
         return $this->responseService->createdResponse($user->toArray(), SuccessMessages::accountRegistered);
+    }
+
+    /**
+     * Validates User Registration Inputs
+     *
+     * @param ValidateNewUserRequest $request
+     * @return JsonResponse
+     * @throws ValidationException
+     */
+    public function registerValidatePin(ValidatePinRequest $request): JsonResponse
+    {
+        return $this->responseService->createdResponse($request->validated(), SuccessMessages::pinValidationPassed);
     }
 
     /**

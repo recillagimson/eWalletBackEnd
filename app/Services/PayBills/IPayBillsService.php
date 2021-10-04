@@ -15,6 +15,8 @@ interface IPayBillsService
 
     public function getBillerInformation(string $billerCode);
 
+    public function oldValidateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user);
+
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user);
 
     public function createPayment(string $billerCode, array $data, UserAccount $user);
@@ -28,4 +30,5 @@ interface IPayBillsService
     public function processAllPending();
 
     public function downloadListOfBillersCSV();
+
 }

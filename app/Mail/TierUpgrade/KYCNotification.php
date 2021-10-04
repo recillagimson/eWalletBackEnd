@@ -11,8 +11,6 @@ class KYCNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private $text;
-    private $subject;
     /**
      * Create a new message instance.
      *

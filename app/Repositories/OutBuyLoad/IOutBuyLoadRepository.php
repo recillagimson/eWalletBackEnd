@@ -19,4 +19,5 @@ interface IOutBuyLoadRepository extends IRepository
     public function getSumOfTransactions(string $from, string $to, string $userAccountId);
 
     public function totalBuyload();
+
 }

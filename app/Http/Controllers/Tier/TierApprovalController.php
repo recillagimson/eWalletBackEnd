@@ -12,6 +12,8 @@ use App\Http\Requests\Tier\TierUpgradeRequest;
 use App\Http\Requests\Tier\TierApprovalRequest;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Services\Utilities\Responses\IResponseService;
+use App\Http\Requests\User\SendEmailRequest;
+use App\Http\Requests\User\SendSMSRequest;
 
 class TierApprovalController extends Controller
 {
@@ -88,10 +90,17 @@ class TierApprovalController extends Controller
         return $this->responseService->noContentResponse("", SuccessMessages::success);
     }
 
-    public function sendEmail(Request $request)
+    public function sendEmail(SendEmailRequest $request)
     {
-        $user = $request->user();
-        $this->iTierApprovalService->sendEmail($user, $request->message);
+        $email = $request->email;
+        $this->iTierApprovalService->sendEmail($email, $request->message);
+        return $this->responseService->noContentResponse("", SuccessMessages::success);
+    }
+
+    public function sendSMS(SendSMSRequest $request)
+    {
+        $user = $request->mobile_number;
+        $this->iTierApprovalService->sendSMS($user, $request->message);
         return $this->responseService->noContentResponse("", SuccessMessages::success);
     }
 }

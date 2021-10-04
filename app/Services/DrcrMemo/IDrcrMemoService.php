@@ -15,4 +15,6 @@ interface IDrcrMemoService
     public function approval(UserAccount $user, $data);
     public function report(array $params, string $currentUser = '');
     public function reportFiltered(array $attr);
+
+    public function reportFilteredPerUser(array $attr, $isPerUser);
 }

@@ -16,5 +16,8 @@ class ReferenceNumberTypes
     const DR = 'DR';
     const CR = 'CR';
     const DI = 'DI';
+    const DO = 'DO';
     const ReceiveMoneyDBP = 'RF';
+    const Loan = 'LO';
+    const AddMoneyCebuana = 'CEB';
 }

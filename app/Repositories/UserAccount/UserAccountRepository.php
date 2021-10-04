@@ -83,6 +83,11 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getAdminUserBaseQuery()->where('id', '=', $id)->first();
     }
 
+    public function getAdminUserByEmail(string $email)
+    {
+        return $this->getAdminUserBaseQuery()->where('email', '=', $email)->first();
+    }
+
     public function getAdminUsersByEmail(string $email): Collection
     {
         return $this->getAdminUserBaseQuery()->where('email', '=', $email)->get();
@@ -101,7 +106,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             return $record;
         }
 
-        return $this->userAccountNotFound();
+        $this->userAccountNotFound();
     }
 
     public function getUser(string $id)
@@ -111,8 +116,9 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getByUsername(string $usernameField, string $username)
     {
-        return $this->getBaseQuery()->where($usernameField, '=', $username)->first();
+      return $this->getBaseQuery()->where($usernameField, '=', $username)->first();
     }
+
 
     public function getUserInfo(string $userAccountID)
     {
@@ -172,7 +178,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             return $record;
         }
 
-        return $this->userAccountNotFound();
+        $this->userAccountNotFound();
     }
 
     public function getUserCount()
@@ -188,6 +194,27 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         }
 
         $this->userAccountNotFound();
+    }
+
+    public function getAccountDetailByRSBSANumber(string $rsbsa_number) {
+        return $this->model->where('rsbsa_number', $rsbsa_number)->first();
+    }
+
+    public function getUserAccountByRSBSANoV2(string $RSBSANo) {
+        $record = $this->model->with(['profile', 'user_balance_info'])
+            // ->where('account_number', $accountNumber)
+            ->where('rsbsa_number', $RSBSANo)
+            ->first();
+
+        if($record) {
+            return $record;
+        }
+
+        return null;
+    }
+
+    public function getAccountByMobileNumber(string $mobileNumber) {
+        return $this->model->with(['profile'])->where('mobile_number', $mobileNumber)->first();
     }
 
 }
