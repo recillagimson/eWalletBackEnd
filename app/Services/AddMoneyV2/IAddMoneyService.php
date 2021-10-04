@@ -13,4 +13,5 @@ interface IAddMoneyService
     public function processPending(string $userId);
 
     public function processAllPending();
+
 }

@@ -57,4 +57,5 @@ interface ISend2BankService
     public function updateTransaction(string $status, string $refNo);
 
     public function processAllPending();
+
 }
