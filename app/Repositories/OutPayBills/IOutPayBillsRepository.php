@@ -15,4 +15,5 @@ interface IOutPayBillsRepository extends IRepository
     public function totalotherchargesPayBills();
     public function totalservicefeePayBills();
     public function reportData(string $from, string $to, string $filterBy = '', string $filterValue = '');
+
 }

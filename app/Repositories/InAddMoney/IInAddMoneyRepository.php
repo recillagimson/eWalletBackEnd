@@ -22,4 +22,6 @@ interface IInAddMoneyRepository extends IRepository
     public function getSumOfTransactions($from, $to, $userAccountID);
 
     public function getTotalAddMoney();
+
+    public function getUsersWithPending();
 }
