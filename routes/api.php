@@ -55,6 +55,7 @@ use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
 use App\Http\Controllers\InAddMoneyCebuanaController;
+use App\Http\Controllers\PreferredCashOutPartner\PreferredCashOutPartnerController;
 use App\Http\Controllers\v2\Auth\AuthController as AuthV2Controller;
 use App\Http\Controllers\v2\Auth\RegisterController as RegisterV2Controller;
 
@@ -116,6 +117,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // FARMER
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload', [FarmerController::class, 'batchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2', [FarmerController::class, 'uploadFileToS3']);
+    Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2/subsidy', [FarmerController::class, 'uploadSubsidyFileToS3']);
+    Route::middleware(['require.user.token', 'decrypt.request'])->post('/farmer/batch-upload/v2/subsidy/process', [FarmerController::class, 'subsidyBatchUploadV2']);
     Route::middleware(['decrypt.request', 'auth:sanctum'])->post('/upload/process', [FarmerController::class, 'batchUploadV2']);
     Route::middleware(['require.user.token'])->post('/farmer/jobs/batch-upload', [FarmerController::class, 'processBatchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);
@@ -145,6 +148,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/mobile/login', [AuthController::class, 'mobileLogin']);
         Route::post('/admin/login', [AuthController::class, 'adminLogin']);
         Route::post('/partners/login', [AuthController::class, 'partnersLogin']);
+        Route::post('/partners/verify-pin', [AuthController::class, 'onBorderLogin']);
 
         Route::post('/mobile/login/validate', [AuthController::class, 'mobileLoginValidate']);
         Route::post('/confirmation', [AuthController::class, 'confirmTransactions']);
@@ -301,6 +305,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::middleware(['require.user.token'])->post('/farmer/verification/account-number', [FarmerController::class, 'farmerVerificationUserAccountNumberOnly']);
             Route::middleware(['require.user.token'])->post('/farmer/print', [ReportController::class, 'print']);
             Route::middleware(['require.user.token'])->post('/farmer/tosilver/manual-override', [UserProfileController::class, 'addDAPersonel']);
+            Route::middleware(['require.user.token'])->post('/farmer/report', [FarmerController::class, 'report']);
+
 
             // TRANSACTION LOG HISTORY
             Route::get('/transaction/histories', [UserTransactionHistoryController::class, 'index']);
@@ -354,6 +360,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
         Route::post('/validate', [SendMoneyController::class, 'sendValidate'])->name('send.validate');
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr'])->name('generate.qr');
+        Route::get('/get/qr', [SendMoneyController::class, 'getQr']);
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr'])->name('scan.qr');
     });
 
@@ -361,6 +368,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [PayBillsController::class, 'getBillers']);
         Route::get('/get/biller/information/{biller_code}', [PayBillsController::class, 'getBillerInformation']);
         Route::post('/validate/account/{biller_code}', [PayBillsController::class, 'validateAccount']);
+        Route::post('/validate/account/{biller_code}/{account_number}', [PayBillsController::class, 'oldValidateAccount']);
         Route::post('/create/payment/{biller_code}', [PayBillsController::class, 'createPayment']);
         Route::get('/inquire/payment/{biller_code}/{client_reference}', [PayBillsController::class, 'inquirePayment']);
         Route::get('/get/wallet', [PayBillsController::class, 'getWalletBalance']);
@@ -502,6 +510,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // MERCHANT
     Route::prefix('/merchant')->middleware(['decrypt.request'])->group(function() {
         Route::post('/list', [MerchantController::class, 'list']);
+    });
+
+    Route::prefix('/preferred/cashout/partner')->middleware(['decrypt.request'])->group(function() {
+        Route::get('/list', [PreferredCashOutPartnerController::class, 'list']);
+        Route::post('/store', [PreferredCashOutPartnerController::class, 'store']);
     });
 });
 

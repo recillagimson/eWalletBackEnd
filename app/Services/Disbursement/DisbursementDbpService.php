@@ -8,6 +8,7 @@ use App\Enums\TransactionStatuses;
 use App\Models\OutDisbursementDbp;
 use App\Models\User;
 use App\Models\UserAccount;
+use App\Repositories\Disbursement\IInDisbursementDbpRepository;
 use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\Notification\INotificationRepository;
@@ -45,8 +46,9 @@ class DisbursementDbpService implements IDisbursementDbpService
     private ISmsService $smsService;
     private INotificationRepository $notificationRepository;
     private IOutDisbursementDbpRepository $outDisbursementDbpRepository;
+    private IInDisbursementDbpRepository $inDisbursementDbpRepository;
 
-    public function __construct(IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService, ILogHistoryRepository $logHistory, IEmailService $emailService, ISmsService $smsService, INotificationRepository $notificationRepository, IOutDisbursementDbpRepository $outDisbursementDbpRepository)
+    public function __construct(IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService, ILogHistoryRepository $logHistory, IEmailService $emailService, ISmsService $smsService, INotificationRepository $notificationRepository, IOutDisbursementDbpRepository $outDisbursementDbpRepository, IInDisbursementDbpRepository $inDisbursementDbpRepository)
     {
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
@@ -62,11 +64,12 @@ class DisbursementDbpService implements IDisbursementDbpService
         $this->smsService = $smsService;
         $this->notificationRepository = $notificationRepository;
         $this->outDisbursementDbpRepository = $outDisbursementDbpRepository;
+        $this->inDisbursementDbpRepository = $inDisbursementDbpRepository;
     }
 
 
 
-    public function transaction(UserAccount $user,$fillRequest): array
+    public function transaction(UserAccount $user, $fillRequest, string $merchantId): array
     {
         $clientUser = $this->getClientUser($fillRequest);
         if (!$clientUser) $this->invalidUser();
@@ -75,14 +78,24 @@ class DisbursementDbpService implements IDisbursementDbpService
 
         DB::beginTransaction();
         try {
+            // DEDUCT FROM FARMER
             $this->subtractBalance($clientUser, $fillRequest);
-            $outDisbursementDbp = $this->outDisbursementDbp($user, $clientUser, $fillRequest);
-            $this->logHistories($user, $clientUser, $outDisbursementDbp);
+            $outDisbursementDbp = $this->outDisbursementDbp($user, $clientUser, $fillRequest, "DO");
+            $this->logHistories($user, $clientUser, $outDisbursementDbp, "DO");
             $this->userTransactionHistory($user, $clientUser, $outDisbursementDbp);
-
+            
+            // ADD TO MERCHANT
+            $merchant = $this->userAccountRepository->get($merchantId);
+            if(!$merchant) $this->invalidUser();
+            $this->addBalance($merchant, $fillRequest);
+            $fillRequest['out_disbursement_dbps_reference_number'] = $outDisbursementDbp->reference_number;
+            $inDisbursementDbp = $this->inDisbursementDbp($user, $merchant, $fillRequest, "DI");
+            $this->logHistories($user, $merchant, $inDisbursementDbp, "DI");
+            $this->userTransactionHistory($clientUser, $merchant, $inDisbursementDbp);
             DB::commit();
-            return [$outDisbursementDbp];
+            return [$outDisbursementDbp, $inDisbursementDbp];
         } catch (Exception $e) {
+            // dd($e);
             DB::rollBack();
             $this->errorEncountered();
         }
@@ -113,16 +126,43 @@ class DisbursementDbpService implements IDisbursementDbpService
         $this->userBalanceInfo->updateUserBalance($user->id, $newBalance);
     }
 
-    private function getReference()
+    private function addBalance(UserAccount $user, $fillRequest)
     {
-        return $this->referenceNumberService->generate(ReferenceNumberTypes::DI);
+        $balance = $this->userBalanceInfo->getUserBalance($user->id);
+        $newBalance = $balance + $fillRequest['amount'];
+        $this->userBalanceInfo->updateUserBalance($user->id, $newBalance);
     }
 
-    private function outDisbursementDbp(UserAccount $user, UserAccount $clientUser,$fillRequest)
+    private function getReference(string $refTransaction)
+    {
+        if($refTransaction == 'DI') {
+            return $this->referenceNumberService->generate(ReferenceNumberTypes::DI);
+        } else {
+            return $this->referenceNumberService->generate(ReferenceNumberTypes::DO);
+        }
+    }
+
+    private function outDisbursementDbp(UserAccount $user, UserAccount $clientUser,$fillRequest, string $refTransaction)
     {
         return $this->outDisbursementDbpRepository->create([
             'user_account_id' => $clientUser->id,
-            'reference_number' => $this->getReference(),
+            'reference_number' => $this->getReference($refTransaction),
+            'total_amount' => $fillRequest['amount'],
+            'status' => TransactionStatuses::success,
+            'transaction_date' => date('Y-m-d H:i:s'),
+            'transaction_category_id' => DisbursementConfig::DO,
+            'transaction_remarks' => 'Cash Disbursement',
+            'disbursed_by' => $user->id,
+            'user_created' => $user->id,
+            'user_updated' => $user->id
+        ]);
+    }
+
+    private function inDisbursementDbp(UserAccount $user, UserAccount $clientUser,$fillRequest, string $refTransaction)
+    {
+        return $this->inDisbursementDbpRepository->create([
+            'user_account_id' => $clientUser->id,
+            'reference_number' => $this->getReference($refTransaction),
             'total_amount' => $fillRequest['amount'],
             'status' => TransactionStatuses::success,
             'transaction_date' => date('Y-m-d H:i:s'),
@@ -130,22 +170,23 @@ class DisbursementDbpService implements IDisbursementDbpService
             'transaction_remarks' => 'Cash Disbursement',
             'disbursed_by' => $user->id,
             'user_created' => $user->id,
-            'user_updated' => ''
+            'user_updated' => $user->id,
+            'out_disbursement_dbps_reference_number' => $fillRequest['out_disbursement_dbps_reference_number']
         ]);
     }
 
-    private function logHistories(UserAccount $user, UserAccount $clientUser, $outDisbursementDbp)
+    private function logHistories(UserAccount $user, UserAccount $clientUser, $outDisbursementDbp, $namespace)
     {
-        $this->logHistory->create([
+        $record = $this->logHistory->create([
             'user_account_id' => $clientUser->id,
             'reference_number' => $outDisbursementDbp->reference_number,
             'squidpay_module' => 'Disbursement',
-            'namespace' => 'DI',
+            'namespace' => $namespace,
             'transaction_date' => $outDisbursementDbp->transaction_date,
             'remarks' => 'Cash Disbursement',
-            'operation' => 'Add',
-            'user_created' => $user->id,
-            'user_updated' => ''
+            'operation' => $namespace == 'DI' ? 'Add' : 'Subtract',
+            'user_created' => $user->id, 
+            'user_updated' => $user->id
         ]);
     }
 

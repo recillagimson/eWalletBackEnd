@@ -19,4 +19,6 @@ interface ISendMoneyService
     public function generateQR(object $user, array $fillRequest);
 
     public function scanQr(string $id);
+
+    public function getQr(UserAccount $user);
 }

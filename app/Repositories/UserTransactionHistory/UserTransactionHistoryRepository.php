@@ -2,13 +2,14 @@
 
 namespace App\Repositories\UserTransactionHistory;
 
-use App\Models\DRCRProcedure;
-use App\Models\UserTransactionHistory;
-use App\Models\UserUtilities\UserTransactionHistoryView;
-use App\Repositories\Repository;
 use Carbon\Carbon;
+use App\Enums\DBPUploadKeys;
+use App\Models\DRCRProcedure;
+use App\Repositories\Repository;
+use App\Models\UserTransactionHistory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\ValidationException;
+use App\Models\UserUtilities\UserTransactionHistoryView;
 
 class UserTransactionHistoryRepository extends Repository implements IUserTransactionHistoryRepository
 {
@@ -229,6 +230,70 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
         $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE')
         ->where('rsbsa_number', '!=', '');
+
+        if($attr && $attr['type'] == 'API') {
+            return $records->paginate();
+        }
+        return $records->get();
+    }
+
+    public function getDBPTransactionHistory(array $attr, string $authUser)
+    {
+        $records = UserTransactionHistoryView::with(['user_detail']);
+        $from = Carbon::now()->subDays(30)->format('Y-m-d');
+        $to = Carbon::now()->format('Y-m-d');
+
+        if (isset($attr['from']) && isset($attr['to']) && $attr['from'] != '' && $attr['to'] != '') {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+
+        $records = $records->where('original_transaction_date', '>=', $from)
+        ->where('original_transaction_date', '<=', $to)
+        ->where('transaction_category_id', DBPUploadKeys::DBPTransactionId);
+
+        if (isset($attr['filter_by']) && $attr['filter_by'] != '' && isset($attr['filter_value']) && $attr['filter_value'] != '') {
+            $filter_by = $attr['filter_by'];
+            $filter_value = $attr['filter_value'];
+
+            // IF CUSTOMER NAME
+            // if ($filter_by == 'CUSTOMER_NAME') {
+            //     $records = $records->where(function ($q) use ($filter_value) {
+            //         $q->where('first_name', 'LIKE', '%' . $filter_value . '%')
+            //             ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%');
+            //     });
+            // } 
+            // IF CUSTOMER ACCOUNT NUMBER
+            if ($filter_by == 'CUSTOMER_ID') {
+                $records = $records->where('account_number', $filter_value);
+            }
+
+            // IF TYPE
+            // else if ($filter_by == 'TYPE') {
+            //     $records = $records->where('Type', $filter_value);
+            // } 
+            // IF STATUS
+            else if ($filter_by == 'STATUS') {
+                $records = $records->where('status', $filter_value);
+            }
+
+            // IF RSBSA_NUMBER
+            else if($filter_by == 'RSBSA_NUMBER') {
+                $records = $records->where('rsbsa_number', $filter_value);
+            }
+
+            // IF TRANSACTION_DESCRIPTION
+            else if($filter_by == 'TRANSACTION_DESCRIPTION') {
+                $records = $records->where('Description', 'LIKE', '%'. $filter_value .'%');
+            }
+        }
+
+        $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE')
+        ->where('rsbsa_number', '!=', '');
+
+        if($authUser && $authUser != "") {
+            $records = $records->where('user_updated', $authUser);
+        }
 
         if($attr && $attr['type'] == 'API') {
             return $records->paginate();

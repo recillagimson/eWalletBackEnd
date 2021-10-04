@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\SuccessMessages;
 use App\Enums\UsernameTypes;
 use App\Http\Requests\SendMoney\GenerateQrRequest;
+use App\Http\Requests\SendMoney\GetQrRequest;
 use App\Http\Requests\SendMoney\ScanQrRequest;
 use App\Http\Requests\SendMoney\SendMoneyRequest;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
@@ -90,6 +91,17 @@ class SendMoneyController extends Controller
         $qrTransaction = $this->sendMoneyService->scanQr($fillRequest['id']);
 
         return $this->responseService->successResponse($qrTransaction, SuccessMessages::scanQrSuccessful);
+    }
+
+    /**
+     * get QR request
+     *
+     * @return JsonResponse
+     */
+    public function getQr(GetQrRequest $request): JsonResponse
+    {   
+      $getQr = $this->sendMoneyService->getQr($request->user());
+      return $this->responseService->successResponse($getQr, SuccessMessages::getQRMessage);
     }
 
     /**

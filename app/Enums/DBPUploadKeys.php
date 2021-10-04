@@ -31,4 +31,14 @@ class DBPUploadKeys
     const sourceoffunds = 'sourceoffunds';
     const mothermaidenname = 'mothermaidenname';
 
+    // SUBSIDY KEYS
+    const userAccountNumber = 'user_account_number';
+    const rsbsaNumberSubsidy = 'vw_farmerprofile_full_wmrsbsa_no';
+    const amount = 'amount';
+    const batchCode = 'batch_code';
+    const programCode = 'program_code';
+    const subsidyAmount = 5000;
+
+    const DBPTransactionId = "65742462-fb3e-11eb-9a03-0242ac130003";
+
 }

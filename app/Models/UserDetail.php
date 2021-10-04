@@ -61,6 +61,7 @@ class UserDetail extends Model
         'sex',
         'no_of_farm_parcel',
         'total_farm_area',
+        'preferred_cash_out_partner'
     ];
 
     public function getFullNameAttribute(): string
