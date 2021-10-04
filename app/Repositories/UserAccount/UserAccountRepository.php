@@ -217,4 +217,8 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->model->with(['profile'])->where('mobile_number', $mobileNumber)->first();
     }
 
+    public function getAccountsWithRSBSANumberCount() {
+        return $this->model->where('rsbsa_number', '!=', '')->count();
+    }
+
 }
