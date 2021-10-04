@@ -54,34 +54,37 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     public function collection(Collection $collection)
     {
         foreach($collection as $key => $entry) {
-            $errors = $this->runValidation($entry->toArray());
-            if(count($errors) == 0) {
-                // PROCESS INFO
-                try {
-                    \DB::beginTransaction();
-                    $attr = $entry->toArray();
-                    $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeys::rsbsaNumberSubsidy]);
-                    $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoneyDBP);
-                    $user = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
-                    $transaction = $this->addReceiveFromDBP($user, $referenceNumber, $attr);
-                    $this->addTransaction($user, $referenceNumber, $transaction, $attr);
-                    $this->addUserBalance($user, $referenceNumber, $attr[DBPUploadKeys::amount]);
-                    \DB::commit();
-                    $this->success->push($entry);
-                } 
-                catch(\Exception $errrr) {
-                    \DB::rollBack();
+            $attr = $entry->toArray();
+            $st = trim(implode("", $attr));
+            if($st != "") {
+                $errors = $this->runValidation($entry->toArray());
+                if(count($errors) == 0) {
+                    // PROCESS INFO
+                    try {
+                        \DB::beginTransaction();
+                        $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeys::rsbsaNumberSubsidy]);
+                        $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoneyDBP);
+                        $user = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
+                        $transaction = $this->addReceiveFromDBP($user, $referenceNumber, $attr);
+                        $this->addTransaction($user, $referenceNumber, $transaction, $attr);
+                        $this->addUserBalance($user, $referenceNumber, $attr[DBPUploadKeys::amount]);
+                        \DB::commit();
+                        $this->success->push($entry);
+                    } 
+                    catch(\Exception $errrr) {
+                        \DB::rollBack();
+                        $err = ['Row ' . ($key + 1)];
+                        $errorString = implode(', ', array_merge($err, [$errrr->getMessage()]));
+                        $remarks = ['remark' => $errorString];
+                        $this->errors->push(array_merge($remarks, $entry->toArray()));
+                    }
+                } else {
+                    // HANDLE ERROR
                     $err = ['Row ' . ($key + 1)];
-                    $errorString = implode(', ', array_merge($err, [$errrr->getMessage()]));
+                    $errorString = implode(', ', array_merge($err, $errors));
                     $remarks = ['remark' => $errorString];
                     $this->errors->push(array_merge($remarks, $entry->toArray()));
                 }
-            } else {
-                // HANDLE ERROR
-                $err = ['Row ' . ($key + 1)];
-                $errorString = implode(', ', array_merge($err, $errors));
-                $remarks = ['remark' => $errorString];
-                $this->errors->push(array_merge($remarks, $entry->toArray()));
             }
         }
     }
@@ -100,7 +103,7 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             'transaction_id' => $transaction->id,
             'reference_number' => $referenceId,
             'total_amount' => (float)$row[DBPUploadKeys::amount],
-            'transaction_category_id' => $row[DBPUploadKeys::DBPTransactionId],
+            'transaction_category_id' => $row[DBPUploadKeys::transactionCategoryId],
             'user_created' => $this->authUser,
             'user_updated' => $this->authUser,
             'transaction_date' => $transaction->transaction_date,
@@ -130,7 +133,7 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             "reference_number" => $referenceId,
             "total_amount" => (float)$row[DBPUploadKeys::amount],
             "transaction_date" => date('Y-m-d H:i:s'),
-            "transaction_category_id" => $row[DBPUploadKeys::DBPTransactionId],
+            "transaction_category_id" => $row[DBPUploadKeys::transactionCategoryId],
             "transaction_remarks" => '',
             "file_name" => $this->filePath,
             "status" => 'SUCCESS',
