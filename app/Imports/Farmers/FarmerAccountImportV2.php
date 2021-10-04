@@ -2,27 +2,28 @@
 
 namespace App\Imports\Farmers;
 
-use App\Enums\AccountTiers;
-use App\Enums\Country;
-use App\Enums\Currencies;
-use App\Enums\DBPUploadKeys;
-use App\Enums\MaritalStatus;
-use App\Enums\Nationality;
-use App\Enums\NatureOfWork;
-use App\Enums\SourceOfFund;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use Carbon\Carbon;
 use DB;
 use Exception;
+use Carbon\Carbon;
+use App\Enums\Country;
+use App\Enums\Currencies;
+use App\Enums\Nationality;
+use App\Enums\AccountTiers;
+use App\Enums\NatureOfWork;
+use App\Enums\SourceOfFund;
+use Illuminate\Support\Str;
+use App\Enums\DBPUploadKeys;
+use App\Enums\MaritalStatus;
 use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithBatchInserts;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
 
 class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchInserts
 {
@@ -133,10 +134,10 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         $rsbsaNumbers = collect();
         foreach($collection as $coll) {
            
-            $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
-            //if($coll->get(DBPUploadKeys::rsbsaNumber) && $coll->get(DBPUploadKeys::rsbsaNumber) != null) {
-            //    $rsbsaNumbers->push($coll->get(DBPUploadKeys::rsbsaNumber));
-           // }
+            $rsbsa = $coll->get(DBPUploadKeys::rsbsaNumber);
+            if($rsbsa) {
+                $rsbsaNumbers->push($rsbsa);
+            }
         }
         $this->rsbsaNumbers = array_count_values($rsbsaNumbers->toArray());
 
@@ -195,7 +196,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             'password' => bcrypt($password),
             'pin_code' => bcrypt($pin),
             'tier_id' => AccountTiers::tier1,
-            'account_number' => $this->userAccountNumbers->generateNo(),
+            'account_number' => $this->generateFarmerAccountNumber(),
             'mobile_number' => "0" . $row[DBPUploadKeys::mobileNumber],
             'user_created' => $this->currentUser,
             'user_updated' => $this->currentUser,
@@ -218,7 +219,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if(strlen($rsbsa_number) != 15) {
             $errors->push('Invalid RSBSA Number.');
         }
-        if($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
+        if(isset($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]]) && $this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
         // if(isset($this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]]) && $this->rsbsaNumbers[$attr[DBPUploadKeys::rsbsaNumber]] > 1) {
             $errors->push('Multiple instance of RSBSA Reference Number ' . $attr[DBPUploadKeys::rsbsaNumber] . ".");
         }
@@ -292,6 +293,13 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         $message = implode(', ', array_merge($data, $errors->toArray()));
         $this->errors->push(array_merge(['remarks' => $message], $attr));
         return false;
+    }
+
+    private function generateFarmerAccountNumber() {
+        $carbon = Carbon::now();
+        $currentCount = $this->userAccountRepository->getAccountsWithRSBSANumberCount();
+        $strNo = "F" . $carbon->format('ymd') . Str::padLeft(($currentCount + 1), 6, '0');
+        return $strNo;
     }
 
     public function chunkSize(): int
