@@ -126,7 +126,7 @@ class PayBillsService implements IPayBillsService
         return $this->validationResponse($user, $response, $billerCode, $data);
     }
 
- 
+
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
@@ -135,7 +135,7 @@ class PayBillsService implements IPayBillsService
         // To catch the DFO account from MECOR
         if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
 
-        // To catch bayad validation for invalid accounts 
+        // To catch bayad validation for invalid accounts
         if (isset($arrayResponse['data']) && in_array($arrayResponse['data'], PayBillsConfig::billerInvalidMsg)) $this->invalidAccountNumber();
 
         // To catch endpointRequestTimeout
@@ -146,7 +146,7 @@ class PayBillsService implements IPayBillsService
 
         $this->checkAmountAndMonthlyLimit($billerCode, $data, $user);
         return $this->validationResponse($user, $response, $billerCode, $data);
-    }   
+    }
 
 
     public function createPayment(string $billerCode, array $data, UserAccount $user): array
@@ -219,6 +219,7 @@ class PayBillsService implements IPayBillsService
             $user = $this->userAccountRepository->getUser($user->user_account_id);
             $this->processPending($user);
         }
+
     }
 
     public function downloadListOfBillersCSV()

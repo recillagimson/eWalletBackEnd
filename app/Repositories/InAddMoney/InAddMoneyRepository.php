@@ -59,6 +59,7 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
             ->groupBy('user_account_id')
             ->select('user_account_id')
             ->get();
+
     }
 
     public function getSumOfTransactions($from, $to, $userAccountID)

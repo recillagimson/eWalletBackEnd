@@ -155,14 +155,14 @@ class Send2BankService implements ISend2BankService
 
         $serviceFee = $this->serviceFees
             ->getByTierAndTransCategory($user->tier_id, $this->transactionCategoryId);
-            
+
 
         $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
         $totalAmount = $recipient['amount'] + $serviceFeeAmount;
 
 
         $this->transactionValidationService->checkUserBalance($user, $totalAmount );
-        
+
         $this->transactionValidationService
             ->validate($user, $this->transactionCategoryId, $totalAmount);
 

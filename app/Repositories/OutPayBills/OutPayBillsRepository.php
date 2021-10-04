@@ -35,6 +35,7 @@ class OutPayBillsRepository extends Repository implements IOutPayBillsRepository
             ->groupBy('user_account_id')
             ->select('user_account_id')
             ->get();
+
     }
 
     public function getAllBillersWithPaginate()
