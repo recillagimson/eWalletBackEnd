@@ -19,4 +19,6 @@ class TransactionCategories
     const POSFormat = 'POSFORMAT';
     const BuyLoad = 'CXLOAD';
     const CustomerSendMoney = 'CXSEND';
+    const AddMoneyWebBankUpbDirect = 'ADDMONEYUBPDIRECT';
+    const AddMoneyCebuana = 'ADDMONEYCEBUANA';
 }

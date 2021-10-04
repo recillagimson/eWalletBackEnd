@@ -11,6 +11,8 @@ interface IUserAccountRepository extends IRepository
 
     public function getAdminUser(string $id);
 
+    public function getAdminUserByEmail(string $email);
+
     public function getAdminUsersByEmail(string $email): Collection;
 
     public function getAdminUsersByName(string $lastName, string $firstName): Collection;
@@ -40,4 +42,10 @@ interface IUserAccountRepository extends IRepository
     public function getUserCount();
 
     public function getUserByRSBAWithRelations(string $RSBSANo);
+
+    public function getAccountDetailByRSBSANumber(string $rsbsa_number);
+
+    public function getUserAccountByRSBSANoV2(string $RSBSANo);
+
+    public function getAccountByMobileNumber(string $mobileNumber);
 }

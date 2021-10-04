@@ -4,36 +4,38 @@
 namespace App\Services\Utilities\Notifications\Email;
 
 
-use App\Enums\EmailSubjects;
+use SendGrid;
+use Carbon\Carbon;
+use App\Models\Tier;
 use App\Enums\OtpTypes;
+use SendGrid\Mail\Mail;
+use App\Mail\BPI\CashInBPI;
+use App\Models\UserAccount;
+use Illuminate\Support\Str;
+use App\Enums\EmailSubjects;
+use App\Models\OutSend2Bank;
+use App\Traits\StringHelpers;
+use Illuminate\Mail\Mailable;
+use App\Mail\LoginVerification;
+use App\Mail\Loan\LoanRefNumber;
+use App\Mail\User\OtpVerification;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
-use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
-use App\Mail\Farmers\BatchUploadNotification;
-use App\Mail\LoginVerification;
-use App\Mail\PayBills\PayBillsNotification;
 use App\Mail\Send2Bank\Send2BankReceipt;
-use App\Mail\Send2Bank\SenderNotification;
-use App\Mail\SendMoney\SendMoneyRecipientNotification;
-use App\Mail\SendMoney\SendMoneySenderNotification;
-use App\Mail\SendMoney\SendMoneyVerification;
-use App\Mail\TierApproval\TierUpgradeRequestApproved;
 use App\Mail\User\AdminUserVerification;
-use App\Mail\User\OtpVerification;
-use App\Models\OutSend2Bank;
-use App\Models\Tier;
-use App\Models\UserAccount;
 use App\Models\UserUtilities\UserDetail;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Traits\StringHelpers;
+use App\Mail\Send2Bank\SenderNotification;
+use App\Mail\PayBills\PayBillsNotification;
+use App\Mail\Farmers\BatchUploadNotification;
+use App\Mail\SendMoney\SendMoneyVerification;
 use App\Traits\Transactions\Send2BankHelpers;
-use Carbon\Carbon;
-use Illuminate\Mail\Mailable;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use SendGrid;
-use SendGrid\Mail\Mail;
+use App\Mail\SendMoney\SendMoneySenderNotification;
+use App\Mail\TierApproval\TierUpgradeRequestApproved;
+use App\Mail\SendMoney\SendMoneyRecipientNotification;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
 
 class EmailService implements IEmailService
 {
@@ -277,5 +279,18 @@ class EmailService implements IEmailService
     {
         $userId = request()->user()->id;
         return $this->userAccounts->getUser($userId);
+    }
+
+    public function sendLoanReferenceNumber(string $firstName, string $refNo, string $to) {
+        $subject = 'SquidPay - Loan Confirmation';
+        $template = new LoanRefNumber($firstName, $refNo);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
+    {
+        $subject = "Cash In via BPI";
+        $template = new CashInBPI($userDetail, $newBalance, $referenceNumber);
+        $this->sendMessage($to, $subject, $template);
     }
 }

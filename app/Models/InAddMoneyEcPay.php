@@ -37,6 +37,7 @@ class InAddMoneyEcPay extends Model
         "status",
         "user_created",
         "user_updated",
-        "updated_at"
+        "updated_at",
+        'transaction_response',
     ];
 }

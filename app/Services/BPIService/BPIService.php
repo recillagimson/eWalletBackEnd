@@ -2,34 +2,34 @@
 
 namespace App\Services\BPIService;
 
+use DB;
+use Log;
+use Exception;
 use App\Enums\BPI;
-use App\Enums\ReferenceNumberTypes;
+use Carbon\Carbon;
+use Tmilos\JoseJwt\Jwe;
+use Tmilos\JoseJwt\Jwt;
+use Illuminate\Support\Str;
 use App\Enums\SendMoneyConfig;
+use App\Enums\ReferenceNumberTypes;
+use Tmilos\JoseJwt\Jwe\JweAlgorithm;
+use Tmilos\JoseJwt\Jws\JwsAlgorithm;
 use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithUserErrors;
+use Tmilos\JoseJwt\Jwe\JweEncryption;
+use Illuminate\Support\Facades\Storage;
+use App\Services\Utilities\API\IApiService;
+use Tmilos\JoseJwt\Context\DefaultContextFactory;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Services\BPIService\PackageExtension\Encryption;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
 use App\Repositories\Notification\INotificationRepository;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\BPIService\PackageExtension\Encryption;
-use App\Services\Utilities\API\IApiService;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Traits\Errors\WithUserErrors;
-use Carbon\Carbon;
-use DB;
-use Exception;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Log;
-use Tmilos\JoseJwt\Context\DefaultContextFactory;
-use Tmilos\JoseJwt\Jwe;
-use Tmilos\JoseJwt\Jwe\JweAlgorithm;
-use Tmilos\JoseJwt\Jwe\JweEncryption;
-use Tmilos\JoseJwt\Jws\JwsAlgorithm;
-use Tmilos\JoseJwt\Jwt;
 
 class BPIService implements IBPIService
 {
@@ -73,9 +73,6 @@ class BPIService implements IBPIService
         $this->userBalanceInfo = $userBalanceInfo;
         $this->bpiRepository = $bpiRepository;
         $this->serviceFee = $serviceFee;
-        $this->smsService = $smsService;
-        $this->emailService = $emailService;
-        $this->notificationRepository = $notificationRepository;
 
         $this->clientId = config('bpi.clientId');
         $this->clientSecret = config('bpi.clientSecret');
@@ -183,7 +180,6 @@ class BPIService implements IBPIService
     }
 
     public function otp(array $params) {
-
         $headers = $this->getHeaders($params['token']);
         $headers['transactionId'] = $params['transactionId'];
         $otp_url = $this->fundTopUpOtpUrl;
@@ -293,9 +289,11 @@ class BPIService implements IBPIService
                         }
                     } else {
                         $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
-$serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
+
+                        $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
                        // $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee;
                        // Wilson please fix the amount of service fee
+
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                         $cashInWithServiceFee = (Double)$params['amount'];
                         $total = (Double)$params['amount'] + (Double)$balance;
@@ -314,7 +312,7 @@ $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, Transactio
                         $this->notificationRepository->create([
                             'title' => "SquidPay - Cash in via BPI",
                             'status' => '1',
-                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " . $dt . " . Service fee for this transaction is PHP 0.00. Your new balance is " . number_format($total, 2) . " with reference no. " . $params['refId'] . ".",
+                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " . $dt . " . Service fee for this transaction is P 0.00. Your new balance is P " . number_format($total, 2) . " with reference no. " . $params['refId'] . ". Thank you for using SquidPay!",
                             'user_account_id' => request()->user()->id,
                             'user_created' => request()->user()->id
                         ]);
@@ -334,8 +332,10 @@ $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, Transactio
                                 "status" => $response_raw['status'],
                                 "bpi_reference" => $params['transactionId'],
                                 "transaction_response" => json_encode($response_raw),
+                                "account_number" => $params['accountNumber'],
                                 "user_created" => request()->user()->id,
                                 "user_updated" => request()->user()->id,
+                                "bank_name" => isset($response_raw['iss']) ? $response_raw['iss'] : '',
                             ]
                         );
                         DB::commit();
@@ -391,6 +391,7 @@ $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, Transactio
             "enc" => "A128CBC-HS256",
             "cty" => "JWT"
         ]);
+
         Log::info('///// - BPI Encode JWE - //////');
         Log::info(json_encode($token));
         return $token;
@@ -406,6 +407,7 @@ $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, Transactio
             $myPrivateKey = openssl_get_privatekey($pri, '');
 
             $payload = Jwe::decode($context, $payload, $myPrivateKey);
+
             Log::info('///// - BPI DECRYPTION JWE - //////');
             Log::info(json_encode($payload));
             return $payload;
@@ -424,6 +426,7 @@ $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, Transactio
         $partyPublicKey = openssl_get_publickey($pub);
 
         $payload = Jwt::decode($context, $payload, $partyPublicKey);
+
         Log::info('///// - BPI DECRYPTION JWT - //////');
         Log::info(json_encode($payload));
         return $payload;

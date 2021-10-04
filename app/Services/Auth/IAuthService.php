@@ -146,4 +146,6 @@ interface IAuthService
      * @return mixed
      */
     public function passwordConfirmation(string $userId, string $password);
+
+    public function onBorderLogin(string $usernameField, array $creds): array;
 }

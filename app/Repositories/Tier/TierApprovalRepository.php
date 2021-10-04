@@ -118,4 +118,8 @@ class TierApprovalRepository extends Repository implements ITierApprovalReposito
     {
         return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('status','=','pending')->count('status');
     }
+
+    public function getLatestRequestByUserAccountId(string $userAccountId) {
+        return $this->model->where('user_account_id', $userAccountId)->orderBy('created_at', 'DESC')->first();
+    }
 }

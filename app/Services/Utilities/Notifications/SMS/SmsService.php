@@ -213,4 +213,17 @@ class SmsService implements ISmsService
         return $this->userAccounts->getUser($userId);
     }
 
+    public function sendLoanConfirmation(string $to, string $firstName, string $refNo)
+    {
+        $content = "Hi " . $firstName. ", Thank you for using Squidpay My Loan. Please take note of your Squidpay Loan Application ID: " . $refNo . ". Kindly enter this in our loan partner, RFSC application page. For inquiries and concerns, you may call our 24/7 Customer Support Hotline at (632) 8521-7035 or email us at support@squidpay.ph.";
+        $this->sendMessages($to, $content);
+    }
+
+    public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
+    {
+        $date = Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A');
+        $content = "Hi " . $userDetail->first_name . "! You have successfully added funds to your wallet via BPI on " . $date . " . Service fee for this transaction is P 0.00. Your new balance is P " . number_format($newBalance, 2) . " with reference no. " . $referenceNumber . ". Thank you for using SquidPay!" ;
+        $this->sendMessages($to, $content);
+    }
+
 }

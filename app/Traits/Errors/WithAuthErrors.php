@@ -32,6 +32,11 @@ trait WithAuthErrors
         $this->validationErrorMessage(ErrorCodes::unverifiedAccount, 'Unverified Account.');
     }
 
+    public function accountAlreadyVerified()
+    {
+        $this->validationErrorMessage(ErrorCodes::accountAlreadyVerified, 'Already Verified Account.');
+    }
+
     public function accountDoesntExist()
     {
         $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exist.');
@@ -40,6 +45,13 @@ trait WithAuthErrors
     public function invalidCredentials()
     {
         $this->validationErrorMessage(ErrorCodes::invalidClient, 'Invalid client credentials.');
+    }
+
+    public function accountLockedOutAdmin()
+    {
+        $this->validationErrorMessage(ErrorCodes::accountLockedOut,
+            'Your account is Locked due to suspicious activity. Please contact support@squid.ph 
+            or call (02) 85217035 to request for access.');
     }
 
     public function accountLockedOut()

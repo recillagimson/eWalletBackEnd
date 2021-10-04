@@ -86,7 +86,6 @@ class AuthService implements IAuthService
         $firstLogin = !$user->last_login;
         $this->updateLastLogin($user, $usernameField);
 
-
         //$this->transactionService->processUserPending($user);
 
         $user->deleteAllTokens();
@@ -113,7 +112,7 @@ class AuthService implements IAuthService
 
     public function adminLogin(string $email, string $password): array
     {
-        $user = $this->userAccounts->getByUsername(UsernameTypes::Email, $email);
+        $user = $this->userAccounts->getAdminUserByEmail($email);
         if (!$user) $this->accountDoesntExist();
         if (!$user) $this->loginFailed();
         if (!$user->is_admin) $this->loginFailed();
@@ -215,7 +214,7 @@ class AuthService implements IAuthService
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
-        
+
         $this->sendOTP($usernameField, $username, OtpTypes::login);
     }
 
@@ -279,6 +278,7 @@ class AuthService implements IAuthService
             'notify_pin_expiration' => $pinAboutToExpire,
             'pin_age' => $latestPin ? $latestPin->pin_age : 0,
             'first_login' => $firstLogin,
+            'is_require_profile_update' => !$user->profile ? true : false
         ];
     }
 
@@ -345,5 +345,30 @@ class AuthService implements IAuthService
         $user->save();
     }
 
+    public function onBorderLogin(string $usernameField, array $creds): array
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
+        if (!$user) $this->accountDoesntExist();
+        $this->validateAllowOnborderUsersOnly($user);
+
+        $this->validateUser($user);
+        $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
+
+        $firstLogin = !$user->last_login;
+        $this->updateLastLogin($user, $usernameField);
+
+        //$this->transactionService->processUserPending($user);
+
+        $user->deleteAllTokens();
+        return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
+    }
+
+    private function validateAllowOnborderUsersOnly(?UserAccount $user)
+    {
+        if (!$user) $this->loginFailed();
+        if ($user->is_admin) $this->loginFailed();
+        if (!$user->is_merchant) $this->loginFailed();
+        if (!$user->is_onboarder) $this->loginFailed();
+    }
 
 }

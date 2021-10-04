@@ -23,4 +23,7 @@ class SquidPayModuleTypes
 
     const uploadSelfiePhoto = 'UPLOAD_SELFIE_PHOTO';
     const uploadIdPhoto = 'UPLOAD_ID_PHOTO';
+
+    const AddMoneyViaWebBanksUpbDirect = 'ADD_MONEY_WEB_BANK_UPB_DIRECT';
+    const AddMoneyViaCebuana = 'ADD_MONEY_WEB_BANK_CEBUANA';
 }

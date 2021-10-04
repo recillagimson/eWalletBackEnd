@@ -161,7 +161,7 @@ class SendMoneyService implements ISendMoneyService
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
-
+        
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest, $user);
         $receiverDetails = $this->userDetails($receiverID);
@@ -221,6 +221,41 @@ class SendMoneyService implements ISendMoneyService
         return  array_merge($mobileOrEmail, $review);
     }
 
+    //c00375fe-0409-415a-b3fe-c3229535adc9
+
+    public function getQr(UserAccount $user)
+    {
+        $userDetails = $this->userDetails($user->id);
+        $qr = $this->qrTransactions->getQrWithZeroAmount($user);
+        if($qr) {
+            return [
+                'qr_code' => $qr->id,
+                'email' => $user->email,
+                'mobile_number' => $user->mobile_number,
+                'last_name' => $userDetails->last_name,
+                'first_name' => $userDetails->first_name,
+                'middle_name' => $userDetails->middle_name
+            ];
+        } 
+         
+        $qr = $this->qrTransactions->create([
+            'user_account_id' => $user->id,
+            'amount' => 0,
+            'status' => 1,
+            'user_created' => $user->id
+        ]);
+
+        return [
+            'qr_code' => $qr->id,
+            'email' => $user->email,
+            'mobile_number' => $user->mobile_number,
+            'last_name' => $userDetails->last_name,
+            'first_name' => $userDetails->first_name,
+            'middle_name' => $userDetails->middle_name
+        ];
+       
+    }
+
 
     private function hasMobileOrEmail($user, $amount)
     {
@@ -248,6 +283,7 @@ class SendMoneyService implements ISendMoneyService
             'middle_name' => $user->middle_name,
             'name_extension' => $user->name_extension,
             'selfie_location' => $user->selfie_loction,
+            'user_account_id' => $user->user_account_id,
         ];
     }
 
