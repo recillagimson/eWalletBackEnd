@@ -130,7 +130,7 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             "reference_number" => $referenceId,
             "total_amount" => (float)$row[DBPUploadKeys::amount],
             "transaction_date" => date('Y-m-d H:i:s'),
-            "transaction_category_id" => $row[DBPUploadKeys::batchCode],
+            "transaction_category_id" => $row[DBPUploadKeys::DBPTransactionId],
             "transaction_remarks" => '',
             "file_name" => $this->filePath,
             "status" => 'SUCCESS',
@@ -144,9 +144,9 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     public function runValidation(array $attr) {
         $errors = [];
         // VALIDATE User Account Number
-        if($attr && !isset($attr[DBPUploadKeys::userAccountNumber])) {
-            array_push($errors, 'User Account Number is required');
-        }
+        // if($attr && !isset($attr[DBPUploadKeys::userAccountNumber])) {
+        //     array_push($errors, 'User Account Number is required');
+        // }
 
         // if($attr && isset($attr[DBPUploadKeys::userAccountNumber])) {
         //     $userAccount = $this->userAccountRepository->getUserByAccountNumber($attr[DBPUploadKeys::userAccountNumber]);
@@ -168,11 +168,11 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
                 array_push($errors, 'User Account does not exist');
             }
 
-            if($account) {
-                if(!$account->verified) {
-                    array_push($errors, 'Unverified Account');
-                }
-            }
+            // if($account) {
+            //     if(!$account->verified) {
+            //         array_push($errors, 'Unverified Account');
+            //     }
+            // }
         }
 
         if($attr && isset($attr[DBPUploadKeys::rsbsaNumberSubsidy]) && isset($attr[DBPUploadKeys::userAccountNumber])) {
@@ -190,6 +190,10 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             }
         }
 
+        if($attr && !isset($attr[DBPUploadKeys::transactionCategoryId])) {
+            array_push($errors, 'Transaction Category Id is required');
+        }
+
         // VALIDATE Amount
         if($attr && !isset($attr[DBPUploadKeys::amount])) {
             array_push($errors, 'Amount is required');
@@ -202,9 +206,9 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         }
 
         // VALIDATE BAtch Code
-        if($attr && !isset($attr[DBPUploadKeys::batchCode])) {
-            array_push($errors, 'Batch Code is required');
-        }
+        // if($attr && !isset($attr[DBPUploadKeys::batchCode])) {
+        //     array_push($errors, 'Batch Code is required');
+        // }
 
         // if($attr && isset($attr[DBPUploadKeys::batchCode])) {
         //     $batchCode = $this->transactionCategory->get($attr[DBPUploadKeys::batchCode]);
