@@ -21,4 +21,8 @@ interface IUBPService
     public function verifyPendingDirectTransaction(string $senderRefId);
 
     public function updateTransaction(string $status, string $remittanceId): Response;
+
+    public function generateAuthorizeUrl(): string;
+
+    public function generateAccountToken(string $code): Response;
 }

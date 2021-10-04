@@ -5,9 +5,11 @@ namespace App\Services\ThirdParty\UBP;
 
 
 use App\Enums\TpaProviders;
+use App\Repositories\UBPAccountToken\IUBPAccountTokenRepository;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class UBPService implements IUBPService
@@ -15,7 +17,12 @@ class UBPService implements IUBPService
     use WithTpaErrors;
 
     private string $baseUrl;
-    private string $tokenUrl;
+    private string $partnerTokenUrl;
+
+    private string $customerAuthorizeUrl;
+    private string $customerTokenUrl;
+    private string $customerRedirectUrl;
+    private string $customerScopes;
 
     private string $pesonetTransferUrl;
     private string $pesonetTransactionUpdateUrl;
@@ -33,12 +40,19 @@ class UBPService implements IUBPService
     private string $scopes;
 
     private IApiService $apiService;
+    private IUBPAccountTokenRepository $ubpTokens;
+
     private array $defaultHeaders;
 
-    public function __construct(IApiService $apiService)
+    public function __construct(IApiService $apiService, IUBPAccountTokenRepository $ubpTokens)
     {
         $this->baseUrl = config('ubp.base_url');
-        $this->tokenUrl = config('ubp.token_url');
+        $this->partnerTokenUrl = config('ubp.partner_token_url');
+
+        $this->customerAuthorizeUrl = config('ubp.customer_authorize_url');
+        $this->customerTokenUrl = config('ubp.customer_token_url');
+        $this->customerRedirectUrl = config('ubp.customer_redirect_url');
+        $this->customerScopes = config('ubp.customer_scopes');
 
         $this->pesonetTransferUrl = config('ubp.pesonet_transfer_url');
         $this->pesonetTransactionUpdateUrl = config('ubp.pesonet_transaction_update_url');
@@ -58,6 +72,7 @@ class UBPService implements IUBPService
         $this->scopes = config('ubp.scopes');
 
         $this->apiService = $apiService;
+        $this->ubpTokens = $ubpTokens;
 
         $this->defaultHeaders = [
             'Accept' => 'application/json',
@@ -66,6 +81,7 @@ class UBPService implements IUBPService
             'x-ibm-client-secret' => $this->clientSecret,
             'x-partner-id' => $this->partnerId
         ];
+
     }
 
     /**
@@ -83,7 +99,7 @@ class UBPService implements IUBPService
             'scope' => $this->scopes
         ];
 
-        $url = $this->baseUrl . $this->tokenUrl;
+        $url = $this->baseUrl . $this->partnerTokenUrl;
         $response = $this->apiService->postAsForm($url, $data);
 
         if (!$response->successful()) $this->tpaFailedAuthentication(TpaProviders::ubp);
@@ -183,7 +199,6 @@ class UBPService implements IUBPService
         return $headers;
     }
 
-
     public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName): Response
     {
         $token = $this->getToken();
@@ -224,11 +239,52 @@ class UBPService implements IUBPService
         return $this->apiService->get($url, $headers);
     }
 
+    public function generateAuthorizeUrl(): string
+    {
+        $url = $this->baseUrl . $this->customerAuthorizeUrl . '?';
+        $url .= 'client_id=' . urlencode($this->clientId) . '&';
+        $url .= 'response_type=' . urlencode('code') . '&';
+        $url .= 'redirect_url=' . urlencode($this->customerRedirectUrl) . '&';
+        $url .= 'scope=' . urlencode($this->customerScopes) . '&';
+        $url .= 'type=linking&';
+        $url .= 'partnerId=' . urlencode($this->partnerId);
+
+        return $url;
+    }
+
+    public function generateAccountToken(string $code): Response
+    {
+        $data = [
+            'grant_type' => 'authorization_code',
+            'client_id' => $this->clientId,
+            'code' => $code,
+            'redirect_uri' => $this->customerRedirectUrl
+        ];
+
+        $url = $this->baseUrl . $this->customerTokenUrl;
+        $response = $this->apiService->postAsForm($url, $data);
+        $data = $response->json();
+
+        if (!$response->successful()) {
+            Log::error('UBP Customer Token Error:', $data);
+            $this->tpaFailedAuthentication(TpaProviders::ubp);
+        } else {
+
+        }
+
+        return $response;
+    }
+
+
     private function formatName(string $name): string
     {
         $formattedName = Str::replace("-", " ", $name);
         $formattedName = Str::replace("ñ", "n", $formattedName);
         return Str::replace("Ñ", "N", $formattedName);
+    }
+
+    private function createUbpToken(array $data): string
+    {
     }
 
 

@@ -6,7 +6,6 @@ use App\Services\FarmerProfile\IFarmerProfileService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
@@ -14,7 +13,7 @@ class BatchUpload implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private UploadedFile $file;
+    private string $filePath;
     private string $userId;
 
     /**
@@ -22,10 +21,10 @@ class BatchUpload implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(UploadedFile $file, string $userId)
+    public function __construct(string $filePath, string $userId)
     {
         //
-        $this->file = $file;
+        $this->filePath = $filePath;
         $this->userId = $userId;
     }
 
@@ -36,6 +35,6 @@ class BatchUpload implements ShouldQueue
      */
     public function handle(IFarmerProfileService $profileService)
     {
-        $profileService->processBatchUpload($this->file, $this->userId);
+        $profileService->batchUploadV2($this->filePath, $this->userId);
     }
 }

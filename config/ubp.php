@@ -2,7 +2,11 @@
 
 return [
     'base_url' => env('UBP_BASE_URL'),
-    'token_url' => env('UBP_TOKEN_URL'),
+    'partner_token_url' => env('UBP_PARTNER_TOKEN_URL'),
+    'customer_authorize_url' => env('UBP_CUSTOMER_AUTHORIZE_URL'),
+    'customer_token_url' => env('UBP_CUSTOMER_TOKEN_URL'),
+    'customer_redirect_url' => env('UBP_CUSTOMER_REDIRECT_URL'),
+    'customer_scopes' => env('UBP_CUSTOMER_SCOPES'),
 
     'pesonet_transfer_url' => env('UBP_PESONET_TRANSFER_URL'),
     'pesonet_transaction_update_url' => env('UBP_PESONET_TRANSACTION_UPDATE_URL'),
