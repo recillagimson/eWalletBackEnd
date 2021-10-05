@@ -256,7 +256,7 @@ class DBPReportService implements IDBPReportService
             'First Name',
             'Middle Name',
             'Last Name',
-            'Name Extension',
+            'Name',
             'Total Amount',
             'Status',
             'Transaction Type',
