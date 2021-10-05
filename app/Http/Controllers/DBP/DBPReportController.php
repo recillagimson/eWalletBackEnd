@@ -14,6 +14,22 @@ class DBPReportController extends Controller
     }
 
     public function customerList(Request $request) {
-        $result = $this->dbpReportService->customerList($request->all());
+        return $this->dbpReportService->customerList($request->all());
+    }
+
+    public function disbursement(Request $request) {
+        return $this->dbpReportService->disbursement($request->all());
+    }
+
+    public function memo(Request $request) {
+        return $this->dbpReportService->memo($request->all());
+    }
+    
+    public function onBoarding(Request $request) {
+        return $this->dbpReportService->onBoardingList($request->all());
+    }
+
+    public function transactionHistories(Request $request) {
+        return $this->dbpReportService->transactionHistories($request->all());
     }
 }

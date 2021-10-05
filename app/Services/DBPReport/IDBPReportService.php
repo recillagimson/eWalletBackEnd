@@ -10,4 +10,8 @@ namespace App\Services\DBPReport;
 interface IDBPReportService
 {
     public function customerList(array $attr);
+    public function disbursement(array $attr);
+    public function memo(array $attr);
+    public function onBoardingList(array $attr);
+    public function transactionHistories(array $attr);
 }

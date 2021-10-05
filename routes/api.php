@@ -523,6 +523,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/dbp/reports')->middleware(['decrypt.request'])->group(function() {
         Route::post('/customer/list', [DBPReportController::class, 'customerList']);
+        Route::post('/disbursement', [DBPReportController::class, 'disbursement']);
+        Route::post('/memo', [DBPReportController::class, 'memo']);
+        Route::post('/onboarding', [DBPReportController::class, 'onBoarding']);
+        Route::post('/transaction/histories', [DBPReportController::class, 'transactionHistories']);
     });
 
 });

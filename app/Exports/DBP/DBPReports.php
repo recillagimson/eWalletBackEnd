@@ -31,11 +31,13 @@ class DBPReports implements FromView, WithEvents
     public function registerEvents(): array
     {
         $count = count($this->data);
+        $headerCount = count($this->headers);
         return [
-            AfterSheet::class => function (AfterSheet $event) use($count) {
+            AfterSheet::class => function (AfterSheet $event) use($count, $headerCount) {
                 $i = 0;
+                $upperArr = range('A', 'Z') ;
                 while($i <= $count) {
-                    $cells = 'A' . ($i + 1) . ":J" . ($i + 1);
+                    $cells = 'A' . ($i + 1) . ":" . $upperArr[($headerCount - 1)] . ($i + 1);
                     // dd($cells);
                     $style = [
                         'borders' => [
@@ -68,17 +70,11 @@ class DBPReports implements FromView, WithEvents
                     $i++;
                 }
 
-                $event->sheet->getDelegate()->getColumnDimension('A')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('B')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('D')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('E')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('F')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('G')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('H')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('I')->setWidth(50);
-                $event->sheet->getDelegate()->getColumnDimension('J')->setWidth(50);
-                
+                $i = 0;
+                while($i < $headerCount) {
+                    $event->sheet->getDelegate()->getColumnDimension($upperArr[$i])->setWidth(50);
+                    $i++;
+                }
             },
         ];
     }
