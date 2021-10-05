@@ -59,7 +59,7 @@ class DBPReportService implements IDBPReportService
         ];
     }
 
-    private function reportGeneration(Collection $records, $headers, $reportView, $fileName, $type) {
+    private function reportGeneration($records, $headers, $reportView, $fileName, $type) {
         if($type === 'CSV') {
             Excel::store(new DBPReports($records, $headers, $reportView), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
             $temp_url = $this->s3TempUrl($fileName);
