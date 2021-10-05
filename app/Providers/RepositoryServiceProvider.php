@@ -107,6 +107,8 @@ use App\Repositories\Address\Barangay\BarangayRepository;
 use App\Repositories\Address\Barangay\IBarangayRepository;
 use App\Repositories\Dashboard\DashboardRepository;
 use App\Repositories\Dashboard\IDashboardRepository;
+use App\Repositories\DBP\DBPRepository;
+use App\Repositories\DBP\IDBPRepository;
 use App\Repositories\Disbursement\IInDisbursementDbpRepository;
 use App\Repositories\Disbursement\InDisbursementDbpRepository;
 use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
@@ -271,8 +273,11 @@ class RepositoryServiceProvider extends ServiceProvider
         // FarmerImport
         $this->app->bind(IFarmerImportRepository::class, FarmerImportRepository::class);
 
-        // 
+        // PREFERRED CASHOUT PARTNER
         $this->app->bind(IPreferredCashOutPartnerRepository::class, PreferredCashOutPartnerRepository::class);
+        
+        // DBP REPOSITORY
+        $this->app->bind(IDBPRepository::class, DBPRepository::class);
 
     }
 
