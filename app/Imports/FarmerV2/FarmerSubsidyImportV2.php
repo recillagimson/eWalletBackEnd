@@ -133,7 +133,7 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             "reference_number" => $referenceId,
             "total_amount" => (float)$row[DBPUploadKeys::amount],
             "transaction_date" => date('Y-m-d H:i:s'),
-            "transaction_category_id" => $row[DBPUploadKeys::addReceiveFromDBP],
+            "transaction_category_id" => $row[DBPUploadKeys::transactionCategoryId],
             "transaction_remarks" => '',
             "file_name" => $this->filePath,
             "status" => 'SUCCESS',
