@@ -149,38 +149,42 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
                 $this->province = $data[DBPUploadKeys::province];
             }
 
-            // HANDLE VALIDATION AND FAILED ENTRIES
-            $isValid = $this->runValidation($entry->toArray(), ($key + 1));
-            if($isValid) {
+            $st = trim(implode("", $data));
+            if($st != "") {
 
-                // VALIDATE IF USER DETAIL ALREADY PRESENT
-                // VALIDATE IF USER RSBSA NUMBER EXIST
-                $rsbsa_number = preg_replace("/[^0-9]/", "", $data[DBPUploadKeys::rsbsaNumber]);
-                $doesExist = $this->userDetail->getIsExistingByNameAndBirthday($data[DBPUploadKeys::firstName], $entry[DBPUploadKeys::middleName], $data[DBPUploadKeys::lastName], $data[DBPUploadKeys::birthDate]);
-                $isPresent = $this->userAccountRepository->getAccountDetailByRSBSANumber($rsbsa_number);
+                // HANDLE VALIDATION AND FAILED ENTRIES
+                $isValid = $this->runValidation($entry->toArray(), ($key + 1));
+                if($isValid) {
 
-                if(!$doesExist && !$isPresent){
-                    DB::beginTransaction();
-                    try {
-                        $userAccount = $this->setupUserAccount($entry->toArray());
-                        $this->setupUserProfile($entry->toArray(), $userAccount);
-                        $this->setupUserBalance($userAccount->id);
-                        $this->success->push(array_merge($userAccount->toArray(), $entry->toArray()));
-                        DB::commit();
-                    } catch (Exception $e) {
-                        DB::rollBack();
+                    // VALIDATE IF USER DETAIL ALREADY PRESENT
+                    // VALIDATE IF USER RSBSA NUMBER EXIST
+                    $rsbsa_number = preg_replace("/[^0-9]/", "", $data[DBPUploadKeys::rsbsaNumber]);
+                    $doesExist = $this->userDetail->getIsExistingByNameAndBirthday($data[DBPUploadKeys::firstName], $entry[DBPUploadKeys::middleName], $data[DBPUploadKeys::lastName], $data[DBPUploadKeys::birthDate]);
+                    $isPresent = $this->userAccountRepository->getAccountDetailByRSBSANumber($rsbsa_number);
+
+                    if(!$doesExist && !$isPresent){
+                        DB::beginTransaction();
+                        try {
+                            $userAccount = $this->setupUserAccount($entry->toArray());
+                            $this->setupUserProfile($entry->toArray(), $userAccount);
+                            $this->setupUserBalance($userAccount->id);
+                            $this->success->push(array_merge($userAccount->toArray(), $entry->toArray()));
+                            DB::commit();
+                        } catch (Exception $e) {
+                            DB::rollBack();
+                            $dt = [
+                                'Row ' . ($key + 1)
+                            ];
+                            $message = implode(', ', array_merge($dt, [$e->getMessage() . "."]));
+                            $this->errors->push(array_merge(['remarks' => $message], $data));
+                        }
+                    } else {
                         $dt = [
                             'Row ' . ($key + 1)
                         ];
-                        $message = implode(', ', array_merge($dt, [$e->getMessage() . "."]));
+                        $message = implode(', ', array_merge($dt, ['User already exist.']));
                         $this->errors->push(array_merge(['remarks' => $message], $data));
                     }
-                } else {
-                    $dt = [
-                        'Row ' . ($key + 1)
-                    ];
-                    $message = implode(', ', array_merge($dt, ['User already exist.']));
-                    $this->errors->push(array_merge(['remarks' => $message], $data));
                 }
             }
         }
