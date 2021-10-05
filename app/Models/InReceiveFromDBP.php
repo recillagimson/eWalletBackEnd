@@ -29,6 +29,23 @@ class InReceiveFromDBP extends Model
         "status",
         "user_created",
         "user_updated",
+        "funding_currency",
+        "remittance_date",
+        "service_code",
+        "total_amount",
+        "outlet_name",
+        "beneficiary_name_1",
+        "beneficiary_name_2",
+        "beneficiary_name_3",
+        "beneficiary_address_1",
+        "beneficiary_address_2",
+        "beneficiary_address_3",
+        "mobile_number",
+        "message",
+        "remitter_name_1",
+        "remitter_name_2",
+        "remitter_address_1",
+        "remitter_address_2",
     ];
 
     public function sender() {

@@ -116,7 +116,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getByUsername(string $usernameField, string $username)
     {
-        return $this->getBaseQuery()->where($usernameField, '=', $username)->where('is_admin', '!=', 1)->first();
+      return $this->getBaseQuery()->where($usernameField, '=', $username)->first();
     }
 
 
@@ -215,6 +215,10 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getAccountByMobileNumber(string $mobileNumber) {
         return $this->model->with(['profile'])->where('mobile_number', $mobileNumber)->first();
+    }
+
+    public function getAccountsWithRSBSANumberCount() {
+        return $this->model->where('rsbsa_number', '!=', '')->count();
     }
 
 }

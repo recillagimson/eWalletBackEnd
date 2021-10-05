@@ -54,34 +54,37 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
     public function collection(Collection $collection)
     {
         foreach($collection as $key => $entry) {
-            $errors = $this->runValidation($entry->toArray());
-            if(count($errors) == 0) {
-                // PROCESS INFO
-                try {
-                    \DB::beginTransaction();
-                    $attr = $entry->toArray();
-                    $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeys::rsbsaNumberSubsidy]);
-                    $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoneyDBP);
-                    $user = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
-                    $transaction = $this->addReceiveFromDBP($user, $referenceNumber, $attr);
-                    $this->addTransaction($user, $referenceNumber, $transaction, $attr);
-                    $this->addUserBalance($user, $referenceNumber, $attr[DBPUploadKeys::amount]);
-                    \DB::commit();
-                    $this->success->push($entry);
-                } 
-                catch(\Exception $errrr) {
-                    \DB::rollBack();
+            $attr = $entry->toArray();
+            $st = trim(implode("", $attr));
+            if($st != "") {
+                $errors = $this->runValidation($entry->toArray());
+                if(count($errors) == 0) {
+                    // PROCESS INFO
+                    try {
+                        \DB::beginTransaction();
+                        $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeys::rsbsaNumberSubsidy]);
+                        $referenceNumber = $this->referenceNumberService->generate(ReferenceNumberTypes::ReceiveMoneyDBP);
+                        $user = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
+                        $transaction = $this->addReceiveFromDBP($user, $referenceNumber, $attr);
+                        $this->addTransaction($user, $referenceNumber, $transaction, $attr);
+                        $this->addUserBalance($user, $referenceNumber, $attr[DBPUploadKeys::amount]);
+                        \DB::commit();
+                        $this->success->push($entry);
+                    } 
+                    catch(\Exception $errrr) {
+                        \DB::rollBack();
+                        $err = ['Row ' . ($key + 1)];
+                        $errorString = implode(', ', array_merge($err, [$errrr->getMessage()]));
+                        $remarks = ['remark' => $errorString];
+                        $this->errors->push(array_merge($remarks, $entry->toArray()));
+                    }
+                } else {
+                    // HANDLE ERROR
                     $err = ['Row ' . ($key + 1)];
-                    $errorString = implode(', ', array_merge($err, [$errrr->getMessage()]));
-                    $remarks = ['remarks' => $errorString];
+                    $errorString = implode(', ', array_merge($err, $errors));
+                    $remarks = ['remark' => $errorString];
                     $this->errors->push(array_merge($remarks, $entry->toArray()));
                 }
-            } else {
-                // HANDLE ERROR
-                $err = ['Row ' . ($key + 1)];
-                $errorString = implode(', ', array_merge($err, $errors));
-                $remarks = ['remarks' => $errorString];
-                $this->errors->push(array_merge($remarks, $entry->toArray()));
             }
         }
     }
@@ -100,10 +103,26 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             'transaction_id' => $transaction->id,
             'reference_number' => $referenceId,
             'total_amount' => (float)$row[DBPUploadKeys::amount],
-            'transaction_category_id' => $row[DBPUploadKeys::batchCode],
+            'transaction_category_id' => $row[DBPUploadKeys::transactionCategoryId],
             'user_created' => $this->authUser,
             'user_updated' => $this->authUser,
-            'transaction_date' => $transaction->transaction_date
+            'transaction_date' => $transaction->transaction_date,
+            'funding_currency' => isset($row[DBPUploadKeys::fundingCurrency]) ? $row[DBPUploadKeys::fundingCurrency] : "",
+            'remittance_date' => isset($row[DBPUploadKeys::remittanceDate]) ? $row[DBPUploadKeys::remittanceDate] : "",
+            'service_code' => isset($row[DBPUploadKeys::serviceCode]) ? $row[DBPUploadKeys::serviceCode] : "",
+            'outlet_name' => isset($row[DBPUploadKeys::outletName]) ? $row[DBPUploadKeys::outletName] : "",
+            'beneficiary_name_1' => isset($row[DBPUploadKeys::beneficiaryName1]) ? $row[DBPUploadKeys::beneficiaryName1] : "",
+            'beneficiary_name_2' => isset($row[DBPUploadKeys::beneficiaryName2]) ? $row[DBPUploadKeys::beneficiaryName2] : "",
+            'beneficiary_name_3' => isset($row[DBPUploadKeys::beneficiaryName3]) ? $row[DBPUploadKeys::beneficiaryName3] : "",
+            'beneficiary_address_1' => isset($row[DBPUploadKeys::beneficiaryAddress1]) ? $row[DBPUploadKeys::beneficiaryAddress1] : "",
+            'beneficiary_address_2' => isset($row[DBPUploadKeys::beneficiaryAddress2]) ? $row[DBPUploadKeys::beneficiaryAddress2] : "",
+            'beneficiary_address_3' => isset($row[DBPUploadKeys::beneficiaryAddress3]) ? $row[DBPUploadKeys::beneficiaryAddress3] : "",
+            'mobile_number' => isset($row[DBPUploadKeys::mobileNumberSubsidy]) ? $row[DBPUploadKeys::mobileNumberSubsidy] : "",
+            'message' => isset($row[DBPUploadKeys::message]) ? $row[DBPUploadKeys::message] : "",
+            'remitter_name_1' => isset($row[DBPUploadKeys::remitterName1]) ? $row[DBPUploadKeys::remitterName1] : "",
+            'remitter_name_2' => isset($row[DBPUploadKeys::remitterName2]) ? $row[DBPUploadKeys::remitterName2] : "",
+            'remitter_address_1' => isset($row[DBPUploadKeys::remitterAddress1]) ? $row[DBPUploadKeys::remitterAddress1] : "",
+            'remitter_address_2' => isset($row[DBPUploadKeys::remitterAddress2]) ? $row[DBPUploadKeys::remitterAddress2] : "",
         ]);
     }
 
@@ -114,7 +133,7 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             "reference_number" => $referenceId,
             "total_amount" => (float)$row[DBPUploadKeys::amount],
             "transaction_date" => date('Y-m-d H:i:s'),
-            "transaction_category_id" => $row[DBPUploadKeys::batchCode],
+            "transaction_category_id" => $row[DBPUploadKeys::addReceiveFromDBP],
             "transaction_remarks" => '',
             "file_name" => $this->filePath,
             "status" => 'SUCCESS',
@@ -122,28 +141,19 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             'user_updated' => $this->authUser,
         ];
 
-        return $this->dbpRepository->create($data);
+    return $this->dbpRepository->create($data);
     }
 
     public function runValidation(array $attr) {
         $errors = [];
         // VALIDATE User Account Number
-        if($attr && !isset($attr[DBPUploadKeys::userAccountNumber])) {
-            array_push($errors, 'User Account Number is required');
-        }
+        // if($attr && !isset($attr[DBPUploadKeys::userAccountNumber])) {
+        //     array_push($errors, 'User Account Number is required');
+        // }
 
-        if($attr && isset($attr[DBPUploadKeys::userAccountNumber])) {
-            $userAccount = $this->userAccountRepository->getUserByAccountNumber($attr[DBPUploadKeys::userAccountNumber]);
-            if(!$userAccount) {
-                array_push($errors, 'User Account does not exist');
-            }
-
-            if($userAccount) {
-                if(!$userAccount->verified) {
-                    array_push($errors, 'Unverified Account');
-                }
-            }
-        }
+        // if($attr && isset($attr[DBPUploadKeys::userAccountNumber])) {
+        //     $userAccount = $this->userAccountRepository->getUserByAccountNumber($attr[DBPUploadKeys::userAccountNumber]);
+        // }
 
         // VALIDATE RSBSA Number
         if($attr && !isset($attr[DBPUploadKeys::rsbsaNumberSubsidy])) {
@@ -156,6 +166,16 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             if(!$account) {
                 array_push($errors, 'RSBSA Number doesn\'t exist in record(s)');
             }
+
+            if(!$account) {
+                array_push($errors, 'User Account does not exist');
+            }
+
+            // if($account) {
+            //     if(!$account->verified) {
+            //         array_push($errors, 'Unverified Account');
+            //     }
+            // }
         }
 
         if($attr && isset($attr[DBPUploadKeys::rsbsaNumberSubsidy]) && isset($attr[DBPUploadKeys::userAccountNumber])) {
@@ -164,6 +184,17 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             if((Integer)$exists > 1) {
                 array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
             }
+        }
+
+        if($attr && isset($attr[DBPUploadKeys::transactionCategoryId])) {
+            $transactionCategory = $this->transactionCategory->get($attr[DBPUploadKeys::transactionCategoryId]);
+            if(!$transactionCategory) {
+                array_push($errors, 'Invalid Transaction Category Id');
+            }
+        }
+
+        if($attr && !isset($attr[DBPUploadKeys::transactionCategoryId])) {
+            array_push($errors, 'Transaction Category Id is required');
         }
 
         // VALIDATE Amount
@@ -178,16 +209,16 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         }
 
         // VALIDATE BAtch Code
-        if($attr && !isset($attr[DBPUploadKeys::batchCode])) {
-            array_push($errors, 'Batch Code is required');
-        }
+        // if($attr && !isset($attr[DBPUploadKeys::batchCode])) {
+        //     array_push($errors, 'Batch Code is required');
+        // }
 
-        if($attr && isset($attr[DBPUploadKeys::batchCode])) {
-            $batchCode = $this->transactionCategory->get($attr[DBPUploadKeys::batchCode]);
-            if(!$batchCode) {
-                array_push($errors, 'Batch Code is invalid');
-            }
-        }
+        // if($attr && isset($attr[DBPUploadKeys::batchCode])) {
+        //     $batchCode = $this->transactionCategory->get($attr[DBPUploadKeys::batchCode]);
+        //     if(!$batchCode) {
+        //         array_push($errors, 'Batch Code is invalid');
+        //     }
+        // }
 
         return $errors;
     }

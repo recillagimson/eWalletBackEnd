@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\MyTaskController;
 use App\Http\Controllers\MunicipalityController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\DBP\DBPReportController;
 use App\Http\Controllers\Farmer\FarmerController;
 use App\Http\Controllers\NewsAndUpdateController;
 use App\Http\Controllers\Report\ReportController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\Log\LogHistoryController;
 use App\Http\Controllers\User\AdminUserController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\User\UserAccountController;
+use App\Http\Controllers\InAddMoneyCebuanaController;
 use App\Http\Controllers\Merchant\MerchantController;
 use App\Http\Controllers\Tier\TierApprovalController;
 use App\Http\Controllers\UserUtilities\CountryController;
@@ -49,15 +51,14 @@ use App\Http\Controllers\UserUtilities\SignupHostController;
 use App\Http\Controllers\Disbursement\DisbursementController;
 use App\Http\Controllers\UserUtilities\NationalityController;
 use App\Http\Controllers\UserUtilities\UserProfileController;
-use App\Http\Controllers\v2\UserUtilities\UserProfileController as UserProfileV2Controller;
 use App\Http\Controllers\UserUtilities\NatureOfWorkController;
 use App\Http\Controllers\UserUtilities\SourceOfFundController;
 use App\Http\Controllers\UserUtilities\MaritalStatusController;
 use App\Http\Controllers\UserUtilities\TempUserDetailController;
-use App\Http\Controllers\InAddMoneyCebuanaController;
-use App\Http\Controllers\PreferredCashOutPartner\PreferredCashOutPartnerController;
 use App\Http\Controllers\v2\Auth\AuthController as AuthV2Controller;
 use App\Http\Controllers\v2\Auth\RegisterController as RegisterV2Controller;
+use App\Http\Controllers\PreferredCashOutPartner\PreferredCashOutPartnerController;
+use App\Http\Controllers\v2\UserUtilities\UserProfileController as UserProfileV2Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,11 +118,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // FARMER
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload', [FarmerController::class, 'batchUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2', [FarmerController::class, 'uploadFileToS3']);
-    Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2/subsidy', [FarmerController::class, 'uploadSubsidyFileToS3']);
-    Route::middleware(['require.user.token', 'decrypt.request'])->post('/farmer/batch-upload/v2/subsidy/process', [FarmerController::class, 'subsidyBatchUploadV2']);
     Route::middleware(['decrypt.request', 'auth:sanctum'])->post('/upload/process', [FarmerController::class, 'batchUploadV2']);
     Route::middleware(['require.user.token'])->post('/farmer/jobs/batch-upload', [FarmerController::class, 'processBatchUpload']);
+    
     Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);
+    
+    Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2/subsidy', [FarmerController::class, 'uploadSubsidyFileToS3']);
+    Route::middleware(['require.user.token', 'decrypt.request'])->post('/farmer/batch-upload/v2/subsidy/process', [FarmerController::class, 'subsidyBatchUploadV2']);
+
     Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
     Route::middleware(['require.user.token'])->post('/farmer/selfie/verification', [FarmerController::class, 'farmerSelfieUpload']);
     // Merchat Verification of Selfie
@@ -516,6 +520,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/list', [PreferredCashOutPartnerController::class, 'list']);
         Route::post('/store', [PreferredCashOutPartnerController::class, 'store']);
     });
+
+    Route::prefix('/dbp/reports')->middleware(['decrypt.request'])->group(function() {
+        Route::post('/customer/list', [DBPReportController::class, 'customerList']);
+        Route::post('/disbursement', [DBPReportController::class, 'disbursement']);
+        Route::post('/memo', [DBPReportController::class, 'memo']);
+        Route::post('/onboarding', [DBPReportController::class, 'onBoarding']);
+        Route::post('/transaction/histories', [DBPReportController::class, 'transactionHistories']);
+    });
+
 });
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {

@@ -27,11 +27,26 @@ class SubsidyFailedExport implements FromCollection, WithHeadings
     {
         return [
             "REMARKS",
-            "USER ACCOUNT NUMBER",
-            "RSBSA NUMBER",
-            "AMOUNT",
-            "BATCH CODE",
-            "PROGRAM CODE"
+            "FUNDING CURRENCY",
+            "REMITTANCE DATE",
+            "SERVICE CODE",
+            "APPLICATION NUMBER",
+            "REMITTANCE NUMBER",
+            "REMARKS (RSBSA NUMBER)",
+            "OUTLET NAME",
+            "Beneficiary Name 1",
+            "Beneficiary Name2",
+            "Beneficiary Name3",
+            "Beneficiary Address1",
+            "Beneficiary Address2",
+            "Beneficiary Address3",
+            "Beneficiary Mobile Number",
+            "Message",
+            "Remitter Name1",
+            "Remitter Name_2",
+            "Remitter Address 1",
+            "Remitter Address 2",
+            "Transaction Category Id",
         ];
     }
 }

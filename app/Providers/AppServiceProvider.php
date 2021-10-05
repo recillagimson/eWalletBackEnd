@@ -132,6 +132,8 @@ use App\Services\ThirdParty\ECPay\IECPayService;
 use App\Services\ThirdParty\ECPay\ECPayService;
 use App\Services\AddmoneyCebuana\AddMoneyCebuanaService;
 use App\Services\AddmoneyCebuana\IAddMoneyCebuanaService;
+use App\Services\DBPReport\DBPReportService;
+use App\Services\DBPReport\IDBPReportService;
 use App\Services\Merchant\IMerchantService;
 use App\Services\Merchant\MerchantService;
 use App\Services\v2\Auth\AuthService as AuthV2Service;
@@ -268,6 +270,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Merchant
         $this->app->bind(IMerchantService::class, MerchantService::class);
+
+        // DBP
+        $this->app->bind(IDBPReportService::class, DBPReportService::class);
     }
 
     /**

@@ -27,4 +27,15 @@ class ReferenceNumberService implements IReferenceNumberService
 
         return $referenceType . Str::padLeft($ref->counter, 7, '0');
     }
+
+    public function generateRefNoWithThirteenLength(string $referenceType): string
+    {
+        $ref = $this->refCounters->getByCode($referenceType);
+        if (!$ref) $this->transactionInvalid();
+
+        $ref->counter += 1;
+        $ref->save();
+
+        return $referenceType . Str::padLeft($ref->counter, 11, '0');
+    }
 }

@@ -36,4 +36,5 @@ class UserAccountNumberRepository extends Repository implements IUserAccountNumb
         $strNo = Str::padLeft($accountCounter->counter, 6, '0');
         return $prefix . $strAccountDate . $strNo;
     }
+
 }
