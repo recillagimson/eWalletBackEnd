@@ -32,4 +32,8 @@ class DBPReportController extends Controller
     public function transactionHistories(Request $request) {
         return $this->dbpReportService->transactionHistories($request->all());
     }
+
+    public function claims(Request $request) {
+        return $this->dbpReportService->claims($request->all());
+    }
 }
