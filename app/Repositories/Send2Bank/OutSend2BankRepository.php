@@ -88,5 +88,7 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
             ->groupBy('user_account_id')
             ->select('user_account_id')
             ->get();
+
+
     }
 }

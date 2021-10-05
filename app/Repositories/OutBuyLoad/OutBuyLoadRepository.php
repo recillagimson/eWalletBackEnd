@@ -29,6 +29,7 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
             ->groupBy('user_account_id')
             ->select('user_account_id')
             ->get();
+        
     }
 
     public function createTransaction(string $userId, string $refNo, string $productCode, string $productName,
