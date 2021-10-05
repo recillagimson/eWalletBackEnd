@@ -58,5 +58,6 @@ class DBPUploadKeys
     const remitterAddress2 = 'remitter_address_2';
 
     const DBPTransactionId = "65742462-fb6e-11eb-9a03-0242ac130003";
+    const addReceiveFromDBP = "65742462-fb6e-11eb-9a03-0242ac130003";
 
 }
