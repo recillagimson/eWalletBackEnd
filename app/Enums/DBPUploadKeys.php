@@ -32,7 +32,7 @@ class DBPUploadKeys
     const mothermaidenname = 'mothermaidenname';
 
     // SUBSIDY KEYS
-    const userAccountNumber = 'user_account_number';
+    const userAccountNumber = 'application_number';
     const rsbsaNumberSubsidy = 'remarks';
     const amount = 'remittance_amount';
     const batchCode = 'batch_code';
