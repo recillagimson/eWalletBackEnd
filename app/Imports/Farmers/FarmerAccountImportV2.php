@@ -147,10 +147,10 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             if(!$this->province && isset($data[DBPUploadKeys::province])) {
                 $this->province = $data[DBPUploadKeys::province];
             }
-
+            
             $st = trim(implode("", $data));
             if($st != "") {
-
+                
                 // HANDLE VALIDATION AND FAILED ENTRIES
                 $isValid = $this->runValidation($entry->toArray(), ($key + 1));
                 if($isValid) {
