@@ -14,4 +14,5 @@ interface IDBPReportService
     public function memo(array $attr);
     public function onBoardingList(array $attr);
     public function transactionHistories(array $attr);
+    public function claims(array $attr);
 }

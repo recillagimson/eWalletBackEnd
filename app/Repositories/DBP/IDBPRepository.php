@@ -11,4 +11,5 @@ interface IDBPRepository extends IRepository
     public function memo($from, $to, $filterBy, $filterValue, $isPaginated = false);
     public function onBoardingList($from, $to, $filterBy, $filterValue, $isPaginated = false);
     public function transactionHistories($from, $to, $filterBy, $filterValue, $isPaginated = false);
+    public function claims($from, $to, $filterBy, $filterValue, $isPaginated = false);
 }
