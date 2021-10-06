@@ -200,7 +200,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             'pin_code' => bcrypt($pin),
             'tier_id' => AccountTiers::tier1,
             'account_number' => $this->generateFarmerAccountNumber(),
-            'mobile_number' => "0" . $row[DBPUploadKeys::mobileNumber],
+            'mobile_number' => "0" . trim(strlen((Integer)$row[DBPUploadKeys::mobileNumber])),
             'user_created' => $this->currentUser,
             'user_updated' => $this->currentUser,
         ];
@@ -232,6 +232,22 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::lastName] == '') {
             $errors->push('Last Name is required.');
         }
+
+        if($attr[DBPUploadKeys::lastName] && $attr[DBPUploadKeys::middleName] && $attr[DBPUploadKeys::firstName] && $attr[DBPUploadKeys::birthDate]) {
+            $dob = is_numeric($attr[DBPUploadKeys::birthDate]) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($attr[DBPUploadKeys::birthDate])) : \Carbon\Carbon::parse(strtotime($attr[DBPUploadKeys::birthDate]));
+
+            $result = $this->userDetail->getIsExistingByNameAndBirthday(
+                $attr[DBPUploadKeys::firstName],
+                $attr[DBPUploadKeys::middleName],
+                $attr[DBPUploadKeys::lastName],
+                $dob
+            );
+
+            if($result) {
+                $errors->push('User Account already exists.');
+            }
+        }
+
         if($attr[DBPUploadKeys::idNumber] == '') {
             $errors->push('ID Number is required.');
         }
