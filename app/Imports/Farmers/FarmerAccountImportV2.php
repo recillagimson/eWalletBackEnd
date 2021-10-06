@@ -245,9 +245,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::city] == '') {
             $errors->push('City is required.');
         }
-        if($attr[DBPUploadKeys::district] == '') {
-            $errors->push('District is required.');
-        }
+        // if($attr[DBPUploadKeys::district] == '') {
+        //     $errors->push('District is required.');
+        // }
         if($attr[DBPUploadKeys::province] == '') {
             $errors->push('Province is required.');
         }
@@ -265,7 +265,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::mobileNumber] == '') {
             $errors->push('Mobile Number is required.');
         }
-        if(strlen($attr[DBPUploadKeys::mobileNumber]) != 10) {
+        if(trim(strlen($attr[DBPUploadKeys::mobileNumber])) != 10) {
             $errors->push('Mobile Number must be 10 digits.');
         }
         //if(!ctype_digit($attr[DBPUploadKeys::mobileNumber])) {
