@@ -142,7 +142,6 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         $this->rsbsaNumbers = array_count_values($rsbsaNumbers->toArray());
 
         foreach($collection as $key => $entry) {
-
             $data = $entry->toArray();
             // HANDLE PROVINCE
             if(!$this->province && isset($data[DBPUploadKeys::province])) {

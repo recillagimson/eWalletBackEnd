@@ -7,7 +7,7 @@ class DBPUploadKeys
     const maritalStatus = 'sex';
     const sex = 'sex';
     const birthDate = 'birthdate';
-    const rsbsaNumber = 'RSBSASYSTEMGENERATEDNUMBER';
+    const rsbsaNumber = 'rsbsasystemgeneratednumber';
     const mobileNumber = 'mobileno';
     const lastName = 'lastname';
     const firstName = 'firstname';
@@ -20,7 +20,7 @@ class DBPUploadKeys
     const province = 'province';
     const municipality = 'citymunicipality';
     const mothersMaidenName = 'mothermaidenname';
-    const farmParcel = 'NOOFFARMPARCEL';
+    const farmParcel = 'nooffarmparcel';
     const totalFarmArea = 'total_farm_area_ha';
     const district = 'district';
     const region = 'region';
