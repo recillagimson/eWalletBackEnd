@@ -264,8 +264,12 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::mobileNumber] == '') {
             $errors->push('Mobile Number is required.');
         }
-        if(trim(strlen($attr[DBPUploadKeys::mobileNumber])) != 10) {
-            $errors->push('Mobile Number must be 10 digits.');
+        if(is_numeric($attr[DBPUploadKeys::mobileNumber])) {
+            if(trim(strlen((Integer)$attr[DBPUploadKeys::mobileNumber])) != 10) {
+                $errors->push('Mobile Number must be 10 digits.');
+            }
+        } else {
+            $errors->push('Invalid Mobile Number.');
         }
         //if(!ctype_digit($attr[DBPUploadKeys::mobileNumber])) {
          //   $errors->push('Invalid Mobile Number.');
