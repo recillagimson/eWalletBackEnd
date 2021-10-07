@@ -77,6 +77,7 @@ class UbpAddMoneyService implements IUbpAddMoneyService
             $user = $this->userAccounts->getUser($userId);
             if (!$user) $this->userAccountNotFound();
 
+            Log::info('UBP Add Money User', $user->toArray());
             $this->transactionValidationService->validateUser($user);
 
             $serviceFee = $this->serviceFees
