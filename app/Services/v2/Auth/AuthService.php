@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\NewAccessToken;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 
 class AuthService implements IAuthService
 {
@@ -43,6 +44,7 @@ class AuthService implements IAuthService
     private IEmailService $emailService;
     private ISmsService $smsService;
     private ITransactionService $transactionService;
+    private ILogHistoryService $logHistories;
 
 
     public function __construct(IUserAccountRepository $userAccts,
@@ -53,7 +55,8 @@ class AuthService implements IAuthService
                                 ISmsService $smsService,
                                 INotificationService $notificationService,
                                 IOtpService $otpService,
-                                ITransactionService $transactionService)
+                                ITransactionService $transactionService,
+                                ILogHistoryService $logHistories)
     {
         $this->maxLoginAttempts = config('auth.account_lockout_attempt');
         $this->daysToResetAttempts = config('auth.account_lockout_attempt_reset');
@@ -72,6 +75,7 @@ class AuthService implements IAuthService
         $this->smsService = $smsService;
 
         $this->transactionService = $transactionService;
+        $this->logHistories = $logHistories;
     }
 
     public function login(string $usernameField, array $creds, string $ip): array
@@ -336,7 +340,10 @@ class AuthService implements IAuthService
     {
         $passwordMatched = Hash::check($key, $hashedKey);
         if (!$passwordMatched) {
-            if ($updateLockout) $user->updateLockout($this->maxLoginAttempts);
+            if ($updateLockout) {
+                $this->logHistory($user->id);
+                $user->updateLockout($this->maxLoginAttempts);
+            }; 
 
             if (!$forConfirmation) $this->loginFailed();
             $this->confirmationFailed();
@@ -350,6 +357,20 @@ class AuthService implements IAuthService
         $user->last_login = Carbon::now();
         $user->is_login_email = $usernameField == UsernameTypes::Email;
         $user->save();
+    }
+
+    public function logHistory(string $userId)
+    {
+        $remarks = "Account locked for User Account ID $userId.";  
+        $currentDate = Carbon::now();
+
+        $this->logHistoryService->logUserHistory($userId,
+                null,
+                SquidPayModuleTypes::AccountLocked,
+                __NAMESPACE__,
+                $currentDate,
+                $remarks,
+                null);
     }
 
 
