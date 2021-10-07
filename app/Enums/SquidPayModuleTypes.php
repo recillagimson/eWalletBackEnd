@@ -27,4 +27,6 @@ class SquidPayModuleTypes
 
     const AddMoneyViaWebBanksUpbDirect = 'ADD_MONEY_WEB_BANK_UPB_DIRECT';
     const AddMoneyViaCebuana = 'ADD_MONEY_WEB_BANK_CEBUANA';
+
+    const AccountLocked = 'USER_ACCOUNT_LOCKED';
 }
