@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\NewAccessToken;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Enums\SquidPayModuleTypes;
 
 class AuthService implements IAuthService
 {
