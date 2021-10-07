@@ -17,15 +17,15 @@ use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Enums\ReferenceNumberTypes;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
-use App\Enums\TransactionCategoryIds;
-use App\Enums\SquidPayModuleTypes;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\Responses\IResponseService;
-use App\Enums\SuccessMessages;
 use App\Enums\ECPayStatusTypes;
+use App\Enums\ReferenceNumberTypes;
+use App\Enums\SquidPayModuleTypes;
+use App\Enums\SuccessMessages;
+use App\Enums\TransactionCategoryIds;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class ECPayService implements IECPayService
@@ -137,7 +137,7 @@ class ECPayService implements IECPayService
     private function createOrUpdateTransaction(array $data, array $inputData, object $user, string $refNo, string $expirationDate="") {
         $isDataExisting = $this->addMoneyEcPayRepository->getDataByReferenceNumber($refNo);
         $transCategoryId = $this->transactionCategoryRepository->getById(TransactionCategoryIds::sendMoneyToSquidPayAccount);
-       
+
         if($isDataExisting) {
             $amount = $isDataExisting->amount;
             $refNo = $isDataExisting->reference_number;
@@ -147,7 +147,7 @@ class ECPayService implements IECPayService
             \Log::info('///// - ECPAY Create or Update Payment - //////');
             \Log::info(json_encode($data));
             if(!$resultData) throw ValidationException::withMessages(['Message' => 'Add money Failed']);
-            
+
             $this->addMoneyEcPayRepository->update($isDataExisting, [
                 'transaction_response'=>$data['result'],
                 'status' => ($resultData[0]->PaymentStatus == 0) ? ECPayStatusTypes::Success : ECPayStatusTypes::Pending
@@ -161,7 +161,7 @@ class ECPayService implements IECPayService
             ]);
             $logStringResult = 'Successfully added money from EcPay with amount of ' . $amount;
         }
-       
+
         $this->logHistoryService->logUserHistoryUnauthenticated($user->id, $refNo, SquidPayModuleTypes::AddMoneyViaOTCECPay, __METHOD__, Carbon::now(), $logStringResult);
 
         $this->userTransactionHistoryRepository->log(
@@ -173,16 +173,17 @@ class ECPayService implements IECPayService
             Carbon::parse($isDataExisting->transaction_date),
             $isDataExisting->user_account_id
         );
-        
+
         return $isDataExisting;
     }
 
-    private function createBodyCommitPaymentFormat($refNo, $expirationDate, $data) {
+    private function createBodyCommitPaymentFormat($refNo, $expirationDate, $data): array
+    {
         $result = [
-            "referenceno"=>$refNo,
-            "amount"=>$data['amount'],
-            "expirydate"=>$expirationDate,
-            "remarks"=>"Send Money via Ecpay",
+            "referenceno" => $refNo,
+            "amount" => $data['amount'],
+            "expirydate" => $expirationDate,
+            "remarks" => "Send Money via Ecpay",
         ];
 
         return $result;
@@ -205,11 +206,11 @@ class ECPayService implements IECPayService
             "updated_at"=>Carbon::now()->format('Y-m-d H:i:s'),
             'transaction_response'=> json_encode($data)
         ];
-       
+
         return $result;
     }
 
-    private function returnResponseBodyFormat(object $user, $data) 
+    private function returnResponseBodyFormat(object $user, $data)
     {
         $userDetail = $this->userDetailRepository->getByUserId($user->id);
         $result = [
@@ -229,7 +230,7 @@ class ECPayService implements IECPayService
         ];
 
         return $result;
-       
+
     }
 
     private function generateXmlBody(array $data, string $title): string
@@ -248,7 +249,7 @@ class ECPayService implements IECPayService
         <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
         ';
-    
+
         return $str;
     }
 
@@ -261,7 +262,7 @@ class ECPayService implements IECPayService
         </AuthHeader>
         </soap:Header>
         ';
-    
+
         return $str;
     }
 
@@ -269,7 +270,7 @@ class ECPayService implements IECPayService
         $str = '
         <soap:Body>
         <'.$title.' xmlns="https://ecpay.ph/eclink">';
-        
+
         foreach($data as $key=>$val) {
             $str .= "<{$key}>{$val}</{$key}>";
         }
@@ -285,7 +286,7 @@ class ECPayService implements IECPayService
         $str = '
         </soap:Envelope>
         ';
-    
+
         return $str;
     }
 }
