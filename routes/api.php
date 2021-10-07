@@ -525,6 +525,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // MERCHANT
     Route::prefix('/merchant')->middleware(['decrypt.request'])->group(function() {
         Route::post('/list', [MerchantController::class, 'list']);
+        Route::post('/toggle/active', [MerchantController::class, 'toggleMerchantStatus']);
+        Route::post('/verify', [MerchantController::class, 'verifyMerchant']);
+        Route::get('/{id}/documents', [MerchantController::class, 'showDocument']);
+        Route::post('/documents/update/status', [MerchantController::class, 'updateDocumentStatus']);
+        Route::get('/documents/update/status', [MerchantController::class, 'updateDocumentStatus']);
     });
 
     Route::prefix('/preferred/cashout/partner')->middleware(['decrypt.request'])->group(function() {
