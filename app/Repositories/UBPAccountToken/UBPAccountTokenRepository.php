@@ -12,7 +12,7 @@ class UBPAccountTokenRepository extends Repository implements IUBPAccountTokenRe
         parent::__construct($model);
     }
 
-    public function getByUser(string $userId): UbpAccountToken
+    public function getByUser(string $userId)
     {
         return $this->model->where('user_account_id', $userId)->first();
     }
