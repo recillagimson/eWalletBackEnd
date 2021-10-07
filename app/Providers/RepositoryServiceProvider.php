@@ -33,6 +33,8 @@ use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
 use App\Repositories\InAddMoneyBPI\InAddMoneyBPIRepository;
 use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use App\Repositories\InAddMoneyEcPay\InAddMoneyEcPayRepository;
+use App\Repositories\InAddMoneyUbp\IInAddMoneyUbpRepository;
+use App\Repositories\InAddMoneyUbp\InAddMoneyUbpRepository;
 use App\Repositories\InAddMoneyUpbDirect\IInAddMoneyUpbDirectRepository;
 use App\Repositories\InAddMoneyUpbDirect\InAddMoneyUpbDirectRepository;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
@@ -235,9 +237,6 @@ class RepositoryServiceProvider extends ServiceProvider
         //Drcr Memos Repositories
         $this->app->bind(IDrcrMemoRepository::class, DrcrMemoRepository::class);
 
-        //In Add Money BPI Repositories
-        $this->app->bind(IInAddMoneyBPIRepository::class, InAddMoneyBPIRepository::class);
-
         // KYC Verification
         $this->app->bind(IKYCVerificationRepository::class, KYCVerificationRepository::class);
 
@@ -248,13 +247,15 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IInReceiveFromDBPRepository::class, InReceiveFromDBPRepository::class);
 
         // Add Money from UPB Direct
-        $this->app->bind(IInAddMoneyUpbDirectRepository::class, InAddMoneyUpbDirectRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
 
-        //In Add Money ECPAY Repositories
+        //Add Money Repositories
         $this->app->bind(IInAddMoneyEcPayRepository::class, InAddMoneyEcPayRepository::class);
+        $this->app->bind(IInAddMoneyUpbDirectRepository::class, InAddMoneyUpbDirectRepository::class);
+        $this->app->bind(IInAddMoneyBPIRepository::class, InAddMoneyBPIRepository::class);
+        $this->app->bind(IInAddMoneyUbpRepository::class, InAddMoneyUbpRepository::class);
 
         // Dashboard
         $this->app->bind(IDashboardRepository::class, DashboardRepository::class);

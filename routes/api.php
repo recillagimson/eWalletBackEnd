@@ -37,7 +37,8 @@ use App\Http\Controllers\ServiceFeeController;
 use App\Http\Controllers\Tier\TierApprovalCommentController;
 use App\Http\Controllers\Tier\TierApprovalController;
 use App\Http\Controllers\TierController;
-use App\Http\Controllers\UBP\OAuthController;
+use App\Http\Controllers\UBP\UBPAddmoneyController;
+use App\Http\Controllers\UBP\UBPOAuthController;
 use App\Http\Controllers\User\AdminUserController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\User\UserAccountController;
@@ -309,8 +310,8 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         Route::prefix('/ubp')->group(function () {
-            Route::get('/auth/generate', [OAuthController::class, 'generateAuthorizeUrl']);
-            Route::post('/auth/generate', [OAuthController::class, 'generateAuthorizeUrl']);
+            Route::get('/auth/generate', [UBPOAuthController::class, 'generateAuthorizeUrl']);
+            Route::post('/auth/account/link', [UBPOAuthController::class, 'linkAccount']);
         });
 
     });
@@ -380,12 +381,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{serviceFee}', [ServiceFeeController::class, 'destroy']);
     });
 
-    Route::prefix('/cashin')->middleware(['decrypt.request'])->name('cashin.')->group(function (){
+    Route::prefix('/cashin')->middleware(['decrypt.request'])->name('cashin.')->group(function () {
         Route::post('/', [AddMoneyController::class, 'addMoney'])->name('add.money');
         Route::post('/cancel', [AddMoneyController::class, 'cancel'])->name('cancel');
         Route::post('/status', [AddMoneyController::class, 'getStatus'])->name('get.status');
         Route::get('/latest/pending', [AddMoneyController::class, 'getLatestPendingTrans'])->name('get.latest.pending.transactions');
         Route::post('/update/transactions', [AddMoneyController::class, 'updateUserTrans'])->name('update.user.transactions');
+
+        Route::post('/ubp', [UBPAddmoneyController::class, 'addMoney']);
+        Route::get('/ubp/process/pending', [UBPAddmoneyController::class, 'processPending']);
     });
 
     Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function () {

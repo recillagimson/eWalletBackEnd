@@ -5,9 +5,11 @@ namespace App\Services\ThirdParty\UBP;
 
 
 use App\Enums\TpaProviders;
+use App\Models\UBP\UbpAccountToken;
 use App\Repositories\UBPAccountToken\IUBPAccountTokenRepository;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
+use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -31,6 +33,8 @@ class UBPService implements IUBPService
     private string $instaPayTransferUrl;
     private string $instaPayBanksUrl;
     private string $instapayLibUrl;
+
+    private string $merchantPaymentUrl;
 
     private string $clientId;
     private string $clientSecret;
@@ -62,6 +66,7 @@ class UBPService implements IUBPService
         $this->instaPayTransferUrl = config('ubp.instapay_transfer_url');
         $this->instapayLibUrl = config('ubp.instapay_lib_url');
 
+        $this->merchantPaymentUrl = config('ubp.merchant_payment_url');
         $this->directUBPTransferUrl = config('ubp.direct_ubp_transfer_url');
 
         $this->clientId = config('ubp.client_id');
@@ -199,7 +204,8 @@ class UBPService implements IUBPService
         return $headers;
     }
 
-    public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount, string $remarks, string $particulars, string $recipientName): Response
+    public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount,
+                                       string $remarks, string $particulars, string $recipientName): Response
     {
         $token = $this->getToken();
         $headers = $this->defaultHeaders;
@@ -239,6 +245,49 @@ class UBPService implements IUBPService
         return $this->apiService->get($url, $headers);
     }
 
+    public function merchantPayment(string $userToken, array $data): Response
+    {
+        $headers = $this->defaultHeaders;
+        $headers['Authorization'] = 'Bearer ' . $userToken;
+
+        $data = [
+            'senderRefId' => $data['reference_number'],
+            'tranRequestDate' => $data['transaction_date'],
+            'amount' => [
+                'currency' => 'PHP',
+                'value' => $data['amount']
+            ],
+            "remarks" => 'SquidPay Add Money Transaction',
+            "particulars" => "SquidPay Add Money Transaction",
+            "info" => [
+                [
+                    "index" => 1,
+                    "name" => "SquidPayAccountId",
+                    "value" => $data['user_account_id'],
+                ],
+                [
+                    "index" => 2,
+                    "name" => "Name",
+                    "value" => $data['user_full_name'],
+                ],
+                [
+                    "index" => 3,
+                    "name" => "ReferenceNumber",
+                    "value" => $data['reference_number'],
+                ],
+            ]
+        ];
+
+        $url = $this->baseUrl . $this->merchantPaymentUrl;
+        return $this->apiService->post($url, $data, $headers);
+    }
+
+    public function checkMerchantPaymentStatus(string $refNo): Response
+    {
+        $url = $this->baseUrl . $this->merchantPaymentUrl . "/$refNo";
+        return $this->apiService->get($url, $this->defaultHeaders);
+    }
+
     public function generateAuthorizeUrl(): string
     {
         $url = $this->baseUrl . $this->customerAuthorizeUrl . '?';
@@ -252,7 +301,7 @@ class UBPService implements IUBPService
         return $url;
     }
 
-    public function generateAccountToken(string $code): Response
+    public function generateAccountToken(string $userId, string $code): array
     {
         $data = [
             'grant_type' => 'authorization_code',
@@ -268,13 +317,11 @@ class UBPService implements IUBPService
         if (!$response->successful()) {
             Log::error('UBP Customer Token Error:', $data);
             $this->tpaFailedAuthentication(TpaProviders::ubp);
-        } else {
-
         }
 
-        return $response;
+        $token = $this->createUbpToken($userId, $data);
+        return $token->toArray();
     }
-
 
     private function formatName(string $name): string
     {
@@ -283,9 +330,28 @@ class UBPService implements IUBPService
         return Str::replace("Ñ", "N", $formattedName);
     }
 
-    private function createUbpToken(array $data): string
+    private function createUbpToken($userId, array $data): UbpAccountToken
     {
+        $token = $this->ubpTokens->getByUser($userId);
+        $this->ubpTokens->delete($token);
+
+        $token = [
+            'user_account_id' => $userId,
+            'token_type' => $data['token_type'],
+            'access_token' => $data['access_token'],
+            'metadata' => $data['metadata'],
+            'expires_in' => Carbon::createFromTimestamp($data['consented_on'])->addSeconds($data['expires_in']),
+            'consented_on' => Carbon::createFromTimestamp($data['consented_on']),
+            'scope' => $data['scope'],
+            'refresh_token' => $data['refresh_token'],
+            'refresh_token_expiration' => Carbon::createFromTimestamp($data['consented_on'])
+                ->addSeconds($data['refresh_token_expires_in'])
+        ];
+
+        return $this->ubpTokens->create($token);
     }
+
+
 
 
 }

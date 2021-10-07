@@ -16,6 +16,8 @@ return [
     'instapay_banks_url' => env('UBP_INSTAPAY_BANKS_URL'),
     'instapay_lib_url' => env('UBP_INSTAPAY_LIBRARIES'),
 
+    'merchant_payment_url' => env('UBP_MERCHANT_PAYMENT_URL'),
+
     'direct_ubp_transfer_url' => env('UBP_PARTNER_TRANSFER_URL'),
 
     'client_id' => env('UBP_CLIENT_ID'),

@@ -24,5 +24,9 @@ interface IUBPService
 
     public function generateAuthorizeUrl(): string;
 
-    public function generateAccountToken(string $code): Response;
+    public function generateAccountToken(string $userId, string $code): array;
+
+    public function merchantPayment(string $userToken, array $data): Response;
+
+    public function checkMerchantPaymentStatus(string $refNo): Response;
 }

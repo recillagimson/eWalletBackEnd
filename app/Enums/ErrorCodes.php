@@ -79,9 +79,9 @@ class ErrorCodes
     const parameterMissing = 704;
     const invalidAccountNumberFormat = 705;
     const insufficientAmount = 706;
-    const maximumAmountExceeded = 707; 
+    const maximumAmountExceeded = 707;
     const invalidNumericFormat = 708;
-    const invalidAlphaDashFormat = 709; 
+    const invalidAlphaDashFormat = 709;
     const invalidSelectedValue = 710;
     const clientReferenceAlreadyExists = 711;
     const callBackUrlIsInvalid = 712;
@@ -101,8 +101,13 @@ class ErrorCodes
     const randomError = 726;
     const theAccountNumberisNotSupportedByTheBank = 727;
     const theAccountNumberMustStartWithAnyOf = 728;
-    const possibleDuplicateDetected  = 730;
+    const possibleDuplicateDetected = 730;
     const invalidErrorCode = 731;
     const invalidAccountNumber = 732;
+
+    //UBP Errors
+    const ubpNoAccountLinked = 801;
+    const ubpAccountLinkedExpired = 802;
+
 
 }

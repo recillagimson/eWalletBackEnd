@@ -22,4 +22,10 @@ class UbpAccountToken extends Model
         'refresh_token_expiration'
     ];
 
+    protected $casts = [
+        'expires_in' => 'datetime',
+        'consented_on' => 'datetime',
+        'refresh_token_expiration' => 'datetime',
+    ];
+
 }
