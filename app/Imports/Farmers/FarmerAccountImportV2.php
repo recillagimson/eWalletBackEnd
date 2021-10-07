@@ -142,16 +142,15 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         $this->rsbsaNumbers = array_count_values($rsbsaNumbers->toArray());
 
         foreach($collection as $key => $entry) {
-
             $data = $entry->toArray();
             // HANDLE PROVINCE
             if(!$this->province && isset($data[DBPUploadKeys::province])) {
                 $this->province = $data[DBPUploadKeys::province];
             }
-
+            
             $st = trim(implode("", $data));
             if($st != "") {
-
+                
                 // HANDLE VALIDATION AND FAILED ENTRIES
                 $isValid = $this->runValidation($entry->toArray(), ($key + 1));
                 if($isValid) {
@@ -201,7 +200,7 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             'pin_code' => bcrypt($pin),
             'tier_id' => AccountTiers::tier1,
             'account_number' => $this->generateFarmerAccountNumber(),
-            'mobile_number' => "0" . $row[DBPUploadKeys::mobileNumber],
+            'mobile_number' => "0" . trim(strlen((Integer)$row[DBPUploadKeys::mobileNumber])),
             'user_created' => $this->currentUser,
             'user_updated' => $this->currentUser,
         ];
@@ -233,6 +232,22 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::lastName] == '') {
             $errors->push('Last Name is required.');
         }
+
+        if($attr[DBPUploadKeys::lastName] && $attr[DBPUploadKeys::middleName] && $attr[DBPUploadKeys::firstName] && $attr[DBPUploadKeys::birthDate]) {
+            $dob = is_numeric($attr[DBPUploadKeys::birthDate]) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($attr[DBPUploadKeys::birthDate])) : \Carbon\Carbon::parse(strtotime($attr[DBPUploadKeys::birthDate]));
+
+            $result = $this->userDetail->getIsExistingByNameAndBirthday(
+                $attr[DBPUploadKeys::firstName],
+                $attr[DBPUploadKeys::middleName],
+                $attr[DBPUploadKeys::lastName],
+                $dob
+            );
+
+            if($result) {
+                $errors->push('User Account already exists.');
+            }
+        }
+
         if($attr[DBPUploadKeys::idNumber] == '') {
             $errors->push('ID Number is required.');
         }
@@ -245,9 +260,9 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::city] == '') {
             $errors->push('City is required.');
         }
-        if($attr[DBPUploadKeys::district] == '') {
-            $errors->push('District is required.');
-        }
+        // if($attr[DBPUploadKeys::district] == '') {
+        //     $errors->push('District is required.');
+        // }
         if($attr[DBPUploadKeys::province] == '') {
             $errors->push('Province is required.');
         }
@@ -265,8 +280,12 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         if($attr[DBPUploadKeys::mobileNumber] == '') {
             $errors->push('Mobile Number is required.');
         }
-        if(strlen($attr[DBPUploadKeys::mobileNumber]) != 10) {
-            $errors->push('Mobile Number must be 10 digits.');
+        if(is_numeric($attr[DBPUploadKeys::mobileNumber])) {
+            if(trim(strlen((Integer)$attr[DBPUploadKeys::mobileNumber])) != 10) {
+                $errors->push('Mobile Number must be 10 digits.');
+            }
+        } else {
+            $errors->push('Invalid Mobile Number.');
         }
         //if(!ctype_digit($attr[DBPUploadKeys::mobileNumber])) {
          //   $errors->push('Invalid Mobile Number.');

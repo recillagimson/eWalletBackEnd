@@ -3,6 +3,7 @@
 namespace App\Imports\FarmerV2;
 
 use App\Enums\DBPUploadKeys;
+use App\Enums\DisbursementConfig;
 use Illuminate\Support\Collection;
 use App\Enums\ReferenceNumberTypes;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -57,7 +58,7 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             $attr = $entry->toArray();
             $st = trim(implode("", $attr));
             if($st != "") {
-                $errors = $this->runValidation($entry->toArray());
+                $errors = $this->runValidation($attr);
                 if(count($errors) == 0) {
                     // PROCESS INFO
                     try {
@@ -178,8 +179,8 @@ class FarmerSubsidyImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
             // }
         }
 
-        if($attr && isset($attr[DBPUploadKeys::rsbsaNumberSubsidy]) && isset($attr[DBPUploadKeys::userAccountNumber])) {
-            $exists = $this->dbpRepository->getExistByTransactionCategory($attr[DBPUploadKeys::userAccountNumber], $attr[DBPUploadKeys::rsbsaNumberSubsidy]);
+        if($attr && isset($attr[DBPUploadKeys::userAccountNumber])) {
+            $exists = $this->dbpRepository->getExistByTransactionCategory($attr[DBPUploadKeys::userAccountNumber], DisbursementConfig::DI);
 
             if((Integer)$exists > 1) {
                 array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');

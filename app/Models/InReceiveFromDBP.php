@@ -55,4 +55,8 @@ class InReceiveFromDBP extends Model
     public function sender_details() {
         return $this->hasOne(UserDetail::class, 'user_account_id', 'sender_id');
     }
+
+    public function user_account() {
+        return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
+    }
 }

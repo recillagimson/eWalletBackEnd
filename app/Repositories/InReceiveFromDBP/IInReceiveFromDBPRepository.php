@@ -6,5 +6,5 @@ use App\Models\InReceiveFromDBP;
 
 interface IInReceiveFromDBPRepository extends IRepository
 {
-    public function getExistByTransactionCategory($user, $transactionCategory);
+    public function getExistByTransactionCategory($rsbsaNumber, $transactionCategory);
 }

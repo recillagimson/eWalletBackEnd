@@ -7,7 +7,7 @@ class DBPUploadKeys
     const maritalStatus = 'sex';
     const sex = 'sex';
     const birthDate = 'birthdate';
-    const rsbsaNumber = 'system_generated_rsbsa_number';
+    const rsbsaNumber = 'rsbsasystemgeneratednumber';
     const mobileNumber = 'mobileno';
     const lastName = 'lastname';
     const firstName = 'firstname';
@@ -20,7 +20,7 @@ class DBPUploadKeys
     const province = 'province';
     const municipality = 'citymunicipality';
     const mothersMaidenName = 'mothermaidenname';
-    const farmParcel = 'of_farm_parcel';
+    const farmParcel = 'nooffarmparcel';
     const totalFarmArea = 'total_farm_area_ha';
     const district = 'district';
     const region = 'region';
@@ -32,7 +32,7 @@ class DBPUploadKeys
     const mothermaidenname = 'mothermaidenname';
 
     // SUBSIDY KEYS
-    const userAccountNumber = 'user_account_number';
+    const userAccountNumber = 'application_number';
     const rsbsaNumberSubsidy = 'remarks';
     const amount = 'remittance_amount';
     const batchCode = 'batch_code';

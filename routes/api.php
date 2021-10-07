@@ -538,6 +538,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/memo', [DBPReportController::class, 'memo']);
         Route::post('/onboarding', [DBPReportController::class, 'onBoarding']);
         Route::post('/transaction/histories', [DBPReportController::class, 'transactionHistories']);
+        Route::post('/claims', [DBPReportController::class, 'claims']);
     });
 
 });

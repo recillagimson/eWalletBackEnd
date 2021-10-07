@@ -94,13 +94,13 @@ class TierApprovalController extends Controller
     {
         $email = $request->email;
         $this->iTierApprovalService->sendEmail($email, $request->message);
-        return $this->responseService->noContentResponse("", SuccessMessages::success);
+        return $this->responseService->successResponse([], SuccessMessages::success);
     }
 
     public function sendSMS(SendSMSRequest $request)
     {
         $user = $request->mobile_number;
         $this->iTierApprovalService->sendSMS($user, $request->message);
-        return $this->responseService->noContentResponse("", SuccessMessages::success);
+        return $this->responseService->successResponse([], SuccessMessages::success);
     }
 }

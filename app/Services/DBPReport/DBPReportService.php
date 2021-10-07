@@ -289,4 +289,42 @@ class DBPReportService implements IDBPReportService
 
         return $this->reportGeneration($records, $headers, 'reports.dbp.transaction_histories', $fileName, $type);
     }
+
+    // Claims
+    public function claims(array $attr) {
+        
+        $headers = [
+            'Reference Number',
+            'Transaction Date',
+            'RSBSA umber',
+            'Amount Claimed',
+            'City/Municipality',
+            'province_State',
+            'Cash out Partner',
+        ];
+        $from = Carbon::now()->format('Y-m-d');
+        $to = Carbon::now()->subDays(30)->format('Y-m-d');
+        $type = 'API';
+        $filterBy = '';
+        $filterValue = '';
+
+        $payload = $this->paramsGeneration($attr);
+        $from = $payload['from'];
+        $to = $payload['to'];
+        $type = $payload['type'];
+        $filterBy = $payload['filterBy'];
+        $filterValue = $payload['filterValue'];
+
+        $records = [];
+
+        $records = [];
+        if($attr && isset($attr['type']) && $attr['type'] == 'API') {
+            $records = $this->dbpRepository->claims($from, $to, $filterBy, $filterValue, true);
+        } else {
+            $records = $this->dbpRepository->claims($from, $to, $filterBy, $filterValue, false);
+        }
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+
+        return $this->reportGeneration($records, $headers, 'reports.dbp.claims', $fileName, $type);
+    }
 }

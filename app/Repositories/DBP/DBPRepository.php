@@ -3,6 +3,7 @@
 namespace App\Repositories\DBP;
 
 use App\Enums\DBPReport;
+use App\Models\DBP\DBPClaimReport;
 use App\Repositories\Repository;
 use App\Models\DBP\DBPCustomerList;
 use App\Models\DBP\DBPDisbursement;
@@ -183,6 +184,29 @@ class DBPRepository extends Repository implements IDBPRepository
             // STATUS
             if($filterBy == DBPReport::status) {
                 $result = $result->where('status', $filterValue);
+            }
+
+            // REFERENCE NUMBER
+            if($filterBy == DBPReport::referenceNumber) {
+                $result = $result->where('reference_number', $filterValue);
+            }
+        }
+
+        if($isPaginated) {
+            return $result->paginate();
+        }
+        return $result->get();
+    }
+
+    public function claims($from, $to, $filterBy, $filterValue, $isPaginated = false) {
+        $result = DBPClaimReport::with([]);
+        $result = $result->where('original_transaction_date', '>=', $from)
+        ->whereDate('original_transaction_date', '<=', $to);
+
+        if($filterBy && $filterValue) {
+            // RSBSA NUMBER
+            if($filterBy == DBPReport::rsbsaNumber) {
+                $result = $result->where('rsbsa_number', $filterValue);
             }
 
             // REFERENCE NUMBER
