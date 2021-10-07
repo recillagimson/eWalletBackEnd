@@ -3,13 +3,24 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
-use App\Models\OutDisbursementDbp;
+use App\Repositories\Address\Barangay\BarangayRepository;
+use App\Repositories\Address\Barangay\IBarangayRepository;
+use App\Repositories\Address\Municipality\IMunicipalityRepository;
+use App\Repositories\Address\Municipality\MunicipalityRepository;
+use App\Repositories\Address\Province\IProvinceRepository;
+use App\Repositories\Address\Province\ProvinceRepository;
+use App\Repositories\Address\Region\IRegionRepository;
+use App\Repositories\Address\Region\RegionRepository;
 use App\Repositories\Admin\Permission\IPermissionRepository;
 use App\Repositories\Admin\Permission\PermissionRepository;
 use App\Repositories\Admin\Role\IRoleRepository;
 use App\Repositories\Admin\Role\RoleRepository;
 use App\Repositories\Client\ClientRepository;
 use App\Repositories\Client\IClientRepository;
+use App\Repositories\Dashboard\DashboardRepository;
+use App\Repositories\Dashboard\IDashboardRepository;
+use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
+use App\Repositories\Disbursement\OutDisbursementDbpRepository;
 use App\Repositories\DrcrMemo\DrcrMemoRepository;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
@@ -20,8 +31,20 @@ use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\InAddMoney\InAddMoneyRepository;
 use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
 use App\Repositories\InAddMoneyBPI\InAddMoneyBPIRepository;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
+use App\Repositories\InAddMoneyEcPay\InAddMoneyEcPayRepository;
+use App\Repositories\InAddMoneyUbp\IInAddMoneyUbpRepository;
+use App\Repositories\InAddMoneyUbp\InAddMoneyUbpRepository;
+use App\Repositories\InAddMoneyUpbDirect\IInAddMoneyUpbDirectRepository;
+use App\Repositories\InAddMoneyUpbDirect\InAddMoneyUpbDirectRepository;
+use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
+use App\Repositories\InReceiveFromDBP\InReceiveFromDBPRepository;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\InReceiveMoney\InReceiveMoneyRepository;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
+use App\Repositories\KYCVerification\KYCVerificationRepository;
+use App\Repositories\Loan\ILoanRepository;
+use App\Repositories\Loan\LoanRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\LogHistory\LogHistoryRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
@@ -58,6 +81,8 @@ use App\Repositories\Tier\TierApprovalRepository;
 use App\Repositories\Tier\TierRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\TransactionCategory\TransactionCategoryRepository;
+use App\Repositories\UBPAccountToken\IUBPAccountTokenRepository;
+use App\Repositories\UBPAccountToken\UBPAccountTokenRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccount\UserAccountRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
@@ -242,9 +267,6 @@ class RepositoryServiceProvider extends ServiceProvider
         //Drcr Memos Repositories
         $this->app->bind(IDrcrMemoRepository::class, DrcrMemoRepository::class);
 
-        //In Add Money BPI Repositories
-        $this->app->bind(IInAddMoneyBPIRepository::class, InAddMoneyBPIRepository::class);
-
         // KYC Verification
         $this->app->bind(IKYCVerificationRepository::class, KYCVerificationRepository::class);
 
@@ -256,17 +278,19 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IInReceiveFromDBPRepository::class, InReceiveFromDBPRepository::class);
 
         // Add Money from UPB Direct
-        $this->app->bind(IInAddMoneyUpbDirectRepository::class, InAddMoneyUpbDirectRepository::class);
 
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
 
-        //In Add Money ECPAY Repositories
+        //Add Money Repositories
         $this->app->bind(IInAddMoneyEcPayRepository::class, InAddMoneyEcPayRepository::class);
+        $this->app->bind(IInAddMoneyUpbDirectRepository::class, InAddMoneyUpbDirectRepository::class);
+        $this->app->bind(IInAddMoneyBPIRepository::class, InAddMoneyBPIRepository::class);
+        $this->app->bind(IInAddMoneyUbpRepository::class, InAddMoneyUbpRepository::class);
 
         // Dashboard
         $this->app->bind(IDashboardRepository::class, DashboardRepository::class);
-        
+
         // Loan
         $this->app->bind(ILoanRepository::class, LoanRepository::class);
 
@@ -275,9 +299,13 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // PREFERRED CASHOUT PARTNER
         $this->app->bind(IPreferredCashOutPartnerRepository::class, PreferredCashOutPartnerRepository::class);
-        
+
         // DBP REPOSITORY
         $this->app->bind(IDBPRepository::class, DBPRepository::class);
+
+        //UBP Account Tokens
+        $this->app->bind(IUBPAccountTokenRepository::class, UBPAccountTokenRepository::class);
+
 
     }
 
