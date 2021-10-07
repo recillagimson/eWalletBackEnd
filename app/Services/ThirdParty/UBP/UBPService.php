@@ -333,7 +333,7 @@ class UBPService implements IUBPService
     private function createUbpToken($userId, array $data): UbpAccountToken
     {
         $token = $this->ubpTokens->getByUser($userId);
-        $this->ubpTokens->delete($token);
+        if ($token) $this->ubpTokens->delete($token);
 
         $token = [
             'user_account_id' => $userId,
