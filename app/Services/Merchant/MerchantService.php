@@ -144,7 +144,7 @@ class MerchantService implements IMerchantService
                     return $this->decryptionError();
                 }
                 // THROW ERROR GETTING MERCHANT LIST
-                return $this->getMerchantListError();
+                return $this->verifyMerchantError();
             }
             // THROW ERROR GENERATE REQUEST ID
             return $this->requestIdError();
@@ -186,7 +186,7 @@ class MerchantService implements IMerchantService
                     return $this->decryptionError();
                 }
                 // THROW ERROR GETTING MERCHANT LIST
-                return $this->getMerchantListError();
+                return $this->showDocumentError();
             }
             // THROW ERROR GENERATE REQUEST ID
             return $this->requestIdError();
@@ -228,7 +228,7 @@ class MerchantService implements IMerchantService
                     return $this->decryptionError();
                 }
                 // THROW ERROR GETTING MERCHANT LIST
-                return $this->getMerchantListError();
+                return $this->updateDocumentStatusError();
             }
             // THROW ERROR GENERATE REQUEST ID
             return $this->requestIdError();

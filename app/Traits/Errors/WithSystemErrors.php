@@ -36,4 +36,19 @@ trait WithSystemErrors
         $this->validationErrorMessage(ErrorCodes::merchantList,
             'Get Merchant List Error.');
     }
+    public function verifyMerchantError()
+    {
+        $this->validationErrorMessage(ErrorCodes::verifyMerchant,
+            'Verify Merchant Error.');
+    }
+    public function showDocumentError()
+    {
+        $this->validationErrorMessage(ErrorCodes::showDocument,
+            'Merchant Show Document Error.');
+    }
+    public function updateDocumentStatusError()
+    {
+        $this->validationErrorMessage(ErrorCodes::updateDocumentStatus,
+            'Merchant Update Document Error.');
+    }
 }
