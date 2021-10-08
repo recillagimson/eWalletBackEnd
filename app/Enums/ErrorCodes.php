@@ -118,6 +118,9 @@ class ErrorCodes
     const merchantRequestId = 802;
     const merchantDecryption = 803;
     const merchantList = 804;
+    const verifyMerchant = 805;
+    const showDocument = 806;
+    const updateDocumentStatus = 807;
 
     //UBP Errors
     const ubpNoAccountLinked = 901;
