@@ -145,6 +145,17 @@ class AddMoneyService implements IAddMoneyService
         ];
     }
 
+    public function processAllPending()
+    {
+        $users = $this->addMoney->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('Add Money DragonPay Processing User:', ['user_account_id' => $user->user_account_id]);
+            $this->processPending($user->user_account_id);
+        }
+    }
+
+
     private function updateStatus(InAddMoneyFromBank $addMoney): InAddMoneyFromBank
     {
         $response = $this->dragonPayService->checkStatus($addMoney->reference_number);
