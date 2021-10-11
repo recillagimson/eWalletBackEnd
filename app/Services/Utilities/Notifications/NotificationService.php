@@ -13,33 +13,27 @@ class NotificationService implements INotificationService
     {
     }
 
-
-    public function sendLoginVerification(string $to, string $otp, string $recipientName)
+    public function sendLoginVerification(string $to, string $otp)
     {
         // TODO: Implement sendLoginVerification() method.
     }
 
-    public function sendAccountVerification(string $to, string $otp, string $recipientName)
+    public function sendAccountVerification(string $to, string $otp)
     {
         // TODO: Implement sendAccountVerification() method.
     }
 
-    public function sendPasswordVerification(string $to, string $otp, string $otpType, string $recipientName)
+    public function sendPasswordVerification(string $to, string $otp, string $otpType)
     {
         // TODO: Implement sendPasswordVerification() method.
     }
 
-    public function sendMoneyVerification(string $to, string $otp, string $recipientName)
+    public function sendMoneyVerification(string $to, string $otp)
     {
         // TODO: Implement sendMoneyVerification() method.
     }
 
-    public function sendS2BVerification(string $to, string $otp, string $recipientName)
-    {
-        // TODO: Implement sendS2BVerification() method.
-    }
-
-    public function updateProfileVerification(string $to, string $otp, string $recipientName)
+    public function updateProfileVerification(string $to, string $otp)
     {
         // TODO: Implement updateProfileVerification() method.
     }
@@ -74,7 +68,8 @@ class NotificationService implements INotificationService
         // TODO: Implement tierUpgradeNotification() method.
     }
 
-    public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber) {
-        // TODO: Implement sendBPICashInNotification() method.
+    public function sendS2BVerification(string $to, string $otp)
+    {
+        // TODO: Implement sendS2BVerification() method.
     }
 }

@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\MobileNumber;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
-use App\Enums\AccountTiers;
 
 class SupervisorUpdateUserRequest extends FormRequest
 {
@@ -75,29 +74,29 @@ class SupervisorUpdateUserRequest extends FormRequest
                 'max:100'
             ],
             'marital_status_id' => [
-                'required_unless:tier_id,' . AccountTiers::tier1,
+                'required',
                 'exists:marital_status,id'
             ],
             'occupation' => [
-                'required_unless:tier_id,' . AccountTiers::tier1,
+                'required',
                 'max:50'
             ],
             'nature_of_work_id' => [
-                'required_unless:tier_id,' . AccountTiers::tier1,
+                'required',
                 'exists:natures_of_work,id'
             ],
             'encoded_nature_of_work' => [
                 Rule::requiredIf($this->nature_of_work_id === '0ed96f01-9131-11eb-b44f-1c1b0d14e211')
             ],
             'source_of_fund_id' => [
-                'required_unless:tier_id,' . AccountTiers::tier1,
+                'required',
                 'exists:source_of_funds,id'
             ],
             'encoded_source_of_fund' => [
                 Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211')
             ],
             'employer' => [
-                'required_unless:tier_id,' . AccountTiers::tier1
+                'required'
             ],
             'mobile_number' => [
                 Rule::requiredIf(!$this->email),

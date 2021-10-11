@@ -381,6 +381,7 @@ class DragonPayService implements IAddMoneyService
                 $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe, $squidPayAddMoney->amount);
                 break;
 
+            case 'A':
             case 'V':
             case 'K':
             case 'R':
@@ -390,7 +391,6 @@ class DragonPayService implements IAddMoneyService
                 $sureStatus = $this->validateStatus($squidPayAddMoney, $statusShouldBe);
                 break;
 
-            case 'A':
             case 'U':
             case 'P':
                 $statusShouldBe = DragonPayStatusTypes::Pending;
@@ -563,15 +563,14 @@ class DragonPayService implements IAddMoneyService
                     $statusShouldBe = DragonPayStatusTypes::Success;
                     break;
 
-
+                case 'A':
                 case 'V':
                 case 'K':
                 case 'R':
                 case 'F':
                     $statusShouldBe = DragonPayStatusTypes::Failure;
                     break;
-                    
-                case 'A':
+
                 case 'U':
                 case 'P':
                     $statusShouldBe = DragonPayStatusTypes::Pending;

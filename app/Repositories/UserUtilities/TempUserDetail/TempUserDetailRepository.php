@@ -5,7 +5,6 @@ namespace App\Repositories\UserUtilities\TempUserDetail;
 use App\Models\TempUserDetail;
 use App\Repositories\Repository;
 use Carbon\Carbon;
-use App\Enums\TempUserDetailStatuses;
 
 class TempUserDetailRepository extends Repository implements ITempUserDetailRepository
 {
@@ -46,6 +45,6 @@ class TempUserDetailRepository extends Repository implements ITempUserDetailRepo
 
     public function getTempUserDetails()
     {
-        return $this->model->where('status', TempUserDetailStatuses::pending)->count();
+        return $this->model->where('status','=','pending')->where('created_at','<=',Carbon::now()->subDay())->count('status');
     }
 }

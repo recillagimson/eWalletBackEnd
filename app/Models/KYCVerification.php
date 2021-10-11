@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Traits\UsesUuid;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class KYCVerification extends Model
 {
@@ -19,6 +19,5 @@ class KYCVerification extends Model
         'hv_response',
         'hv_result',
         'status',
-        'transaction_id'
     ];
 }

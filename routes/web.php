@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\KYC\KYCController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,9 +10,3 @@ use App\Http\Controllers\KYC\KYCController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-// Route::post('/', [KYCController::class, 'callback']);
-// Route::get('/', function() {
-//     return view('emails.tier_approval.tier_upgrade_request_approved', [
-//         'first_name' => 'Wilson'
-//     ]);
-// });

@@ -20,7 +20,6 @@ use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\NewAccessToken;
 
 class AuthService implements IAuthService
@@ -77,14 +76,13 @@ class AuthService implements IAuthService
     public function login(string $usernameField, array $creds, string $ip): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        if (!$user) $this->accountDoesntExist();
         $this->validateInternalUsers($user);
         $this->validateUser($user);
 
         $this->tryLogin($user, $creds['password'], $user->password);
 
         $firstLogin = !$user->last_login;
-        $this->updateLastLogin($user, $usernameField);
+        $this->updateLastLogin($user);
 
         //$this->transactionService->processUserPending($user);
 
@@ -95,14 +93,13 @@ class AuthService implements IAuthService
     public function mobileLogin(string $usernameField, array $creds): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        if (!$user) $this->accountDoesntExist();
         $this->validateInternalUsers($user);
 
         $this->validateUser($user);
         $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
 
         $firstLogin = !$user->last_login;
-        $this->updateLastLogin($user, $usernameField);
+        $this->updateLastLogin($user);
 
         //$this->transactionService->processUserPending($user);
 
@@ -112,8 +109,7 @@ class AuthService implements IAuthService
 
     public function adminLogin(string $email, string $password): array
     {
-        $user = $this->userAccounts->getAdminUserByEmail($email);
-        if (!$user) $this->accountDoesntExist();
+        $user = $this->userAccounts->getByUsername(UsernameTypes::Email, $email);
         if (!$user) $this->loginFailed();
         if (!$user->is_admin) $this->loginFailed();
 
@@ -121,7 +117,7 @@ class AuthService implements IAuthService
         $this->tryLogin($user, $password, $user->password);
 
         $firstLogin = !$user->last_login;
-        $this->updateLastLogin($user, UsernameTypes::Email);
+        $this->updateLastLogin($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
@@ -130,20 +126,17 @@ class AuthService implements IAuthService
     public function partnersLogin(string $mobileNumber, string $password)
     {
         $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
-        if (!$user) $this->accountDoesntExist();
         if (!$user) $this->loginFailed();
         if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
 
         $this->validateUser($user);
         $this->tryLogin($user, $password, $user->password);
-
         $this->generateMobileLoginOTP(UsernameTypes::MobileNumber, $mobileNumber);
     }
 
     public function partnersVerifyLogin(string $mobileNumber, string $otp): array
     {
         $user = $this->userAccounts->getByUsername(UsernameTypes::MobileNumber, $mobileNumber);
-        if (!$user) $this->accountDoesntExist();
         if (!$user) $this->loginFailed();
         if (!$user->is_onboarder && !$user->is_merchant) $this->loginFailed();
 
@@ -151,7 +144,7 @@ class AuthService implements IAuthService
         $this->verifyLogin(UsernameTypes::MobileNumber, $mobileNumber, $otp);
 
         $firstLogin = !$user->last_login;
-        $this->updateLastLogin($user, UsernameTypes::MobileNumber);
+        $this->updateLastLogin($user);
 
         $user->deleteAllTokens();
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
@@ -187,7 +180,6 @@ class AuthService implements IAuthService
             else $this->otpInvalid('Invalid OTP.');
         }
 
-
         $identifier = $verificationType . ':' . $userId;
         $otpValidity = $this->otpService->validate($identifier, $otp);
         if (!$otpValidity->status) $this->otpInvalid($otpValidity->message);
@@ -203,18 +195,20 @@ class AuthService implements IAuthService
 
     public function generateTransactionOTP(UserAccount $user, string $otpType, ?string $type)
     {
-        $usernameField = $user->is_login_email ? UsernameTypes::Email : UsernameTypes::MobileNumber;
-        $username = $user->is_login_email ? $user->email : $user->mobile_number;
-        $notifService = $user->is_login_email ? $this->emailService : $this->smsService;
+        $usernameField = $this->getUsernameFieldByAvailability($user);
+
+        if ($type) {
+            $usernameField = $type;
+        }
+
+        $username = $this->getUsernameByField($user, $usernameField);
+        $notifService = $usernameField === UsernameTypes::MobileNumber ? $this->smsService : $this->emailService;
 
         $this->sendOTP($usernameField, $username, $otpType, $notifService);
     }
 
     public function generateMobileLoginOTP(string $usernameField, string $username)
     {
-        $user = $this->userAccounts->getByUsername($usernameField, $username);
-        if (!$user) $this->accountDoesntExist();
-
         $this->sendOTP($usernameField, $username, OtpTypes::login);
     }
 
@@ -223,31 +217,23 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $recipientName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
         $otp = $this->generateOTP($otpType, $user->id, $user->otp_enabled);
-
-        Log::debug('Generated OTP For User: ', [
-            'recipientName' => $recipientName,
-            'userId' => $user->id,
-            'otp' => $otp
-        ]);
-
         if (App::environment('local') || !$user->otp_enabled) return;
 
         $notif = $notifService == null ? $this->notificationService : $notifService;
 
         if ($otpType === OtpTypes::registration)
-            $notif->sendAccountVerification($username, $otp->token, $recipientName);
+            $notif->sendAccountVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::login)
-            $notif->sendLoginVerification($username, $otp->token, $recipientName);
+            $notif->sendLoginVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::passwordRecovery || $otpType === OtpTypes::pinRecovery)
-            $notif->sendPasswordVerification($username, $otp->token, $otpType, $recipientName);
+            $notif->sendPasswordVerification($username, $otp->token, $otpType);
         elseif ($otpType === OtpTypes::sendMoney)
-            $notif->sendMoneyVerification($username, $otp->token, $recipientName);
+            $notif->sendMoneyVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::send2Bank)
-            $notif->sendS2BVerification($username, $otp->token, $recipientName);
+            $notif->sendS2BVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::updateProfile)
-            $notif->updateProfileVerification($username, $otp->token, $recipientName);
+            $notif->updateProfileVerification($username, $otp->token);
         else
             $this->otpTypeInvalid();
     }
@@ -278,7 +264,6 @@ class AuthService implements IAuthService
             'notify_pin_expiration' => $pinAboutToExpire,
             'pin_age' => $latestPin ? $latestPin->pin_age : 0,
             'first_login' => $firstLogin,
-            'is_require_profile_update' => !$user->profile ? true : false
         ];
     }
 
@@ -299,15 +284,6 @@ class AuthService implements IAuthService
         return $otp;
     }
 
-    public function passwordConfirmation(string $userId, string $password)
-    {
-        $user = $this->userAccounts->getUser($userId);
-        if (!$user) $this->accountDoesntExist();
-        if ($user->is_lockout) $this->accountLockedOut();
-
-        $this->tryLogin($user, $password, $user->password, false, false, true);
-    }
-
     private function validateInternalUsers(?UserAccount $user)
     {
         if (!$user) $this->loginFailed();
@@ -324,51 +300,20 @@ class AuthService implements IAuthService
         $user->resetLoginAttempts($this->daysToResetAttempts);
     }
 
-    private function tryLogin(UserAccount $user, string $key, string $hashedKey, bool $updateLockout = true,
-                              bool        $resetAttempt = true, bool $forConfirmation = false)
+    private function tryLogin(UserAccount $user, string $key, string $hashedKey)
     {
         $passwordMatched = Hash::check($key, $hashedKey);
         if (!$passwordMatched) {
-            if ($updateLockout) $user->updateLockout($this->maxLoginAttempts);
-
-            if (!$forConfirmation) $this->loginFailed();
-            $this->confirmationFailed();
+            $user->updateLockout($this->maxLoginAttempts);
+            $this->loginFailed();
         }
 
-        if ($resetAttempt) $user->resetLoginAttempts($this->daysToResetAttempts, true);
+        $user->resetLoginAttempts($this->daysToResetAttempts, true);
     }
 
-    private function updateLastLogin(UserAccount $user, string $usernameField)
+    private function updateLastLogin(UserAccount $user)
     {
         $user->last_login = Carbon::now();
-        $user->is_login_email = $usernameField == UsernameTypes::Email;
         $user->save();
     }
-
-    public function onBorderLogin(string $usernameField, array $creds): array
-    {
-        $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
-        if (!$user) $this->accountDoesntExist();
-        $this->validateAllowOnborderUsersOnly($user);
-
-        $this->validateUser($user);
-        $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
-
-        $firstLogin = !$user->last_login;
-        $this->updateLastLogin($user, $usernameField);
-
-        //$this->transactionService->processUserPending($user);
-
-        $user->deleteAllTokens();
-        return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
-    }
-
-    private function validateAllowOnborderUsersOnly(?UserAccount $user)
-    {
-        if (!$user) $this->loginFailed();
-        if ($user->is_admin) $this->loginFailed();
-        if (!$user->is_merchant) $this->loginFailed();
-        if (!$user->is_onboarder) $this->loginFailed();
-    }
-
 }

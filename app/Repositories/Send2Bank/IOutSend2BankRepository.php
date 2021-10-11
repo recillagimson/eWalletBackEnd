@@ -20,5 +20,4 @@ interface IOutSend2BankRepository extends IRepository
                                       string $transactionCategoryId, string $provider, string $sendReceiptTo, string $userCreated, ?string $remarks ="", ?string $particulars = "");
     public function getSumOfTransactions($from, $to, string $userAccountId);
     public function totalSend2Bank();
-
 }

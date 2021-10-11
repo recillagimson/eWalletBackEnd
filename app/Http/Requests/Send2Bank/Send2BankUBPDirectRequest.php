@@ -11,7 +11,7 @@ class Send2BankUBPDirectRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
@@ -21,10 +21,10 @@ class Send2BankUBPDirectRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            "recipient_account_no" => "required|max:12",
+            "recipient_account_no" => "required",
             "recipient_name" => "required",
             "remarks" => "required",
             "particulars" => "required",

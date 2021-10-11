@@ -18,7 +18,6 @@ class SenderNotification extends Mailable
     private string $provider;
     private string $refNo;
     private string $remittanceId;
-    private string $firstName;
 
     /**
      * Create a new message instance.
@@ -26,8 +25,7 @@ class SenderNotification extends Mailable
      * @return void
      */
     public function __construct(string $accountNo, string $amount, string $serviceFee, string $newBalance,
-                                string $transactionDate, string $provider, string $refNo, string $remittanceId,
-                                string $firstName)
+                                string $transactionDate, string $provider, string $refNo, string $remittanceId)
     {
         //
         $this->accountNo = $accountNo;
@@ -38,7 +36,6 @@ class SenderNotification extends Mailable
         $this->provider = $provider;
         $this->refNo = $refNo;
         $this->remittanceId = $remittanceId;
-        $this->firstName = $firstName;
     }
 
     /**
@@ -59,7 +56,6 @@ class SenderNotification extends Mailable
                 'provider' => $this->provider,
                 'refNo' => $this->refNo,
                 'remittanceId' => $this->remittanceId,
-                'firstName' => $this->firstName
             ]);
     }
 }

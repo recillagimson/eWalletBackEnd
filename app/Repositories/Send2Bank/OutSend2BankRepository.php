@@ -81,14 +81,4 @@ class OutSend2BankRepository extends Repository implements IOutSend2BankReposito
     {
         return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
     }
-
-    public function getUsersWithPending()
-    {
-        return $this->model->where('status', TransactionStatuses::pending)
-            ->groupBy('user_account_id')
-            ->select('user_account_id')
-            ->get();
-
-
-    }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Repositories\UserAccount;
 
-use App\Models\CustomerListView;
 use App\Models\UserAccount;
 use App\Repositories\Repository;
 use App\Traits\Errors\WithUserErrors;
@@ -25,50 +24,39 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getAdminUserBaseQuery()->get();
     }
 
-    public function getAllUsersPaginated($attributes, $perPage, $isPaginated = true)
+    public function getAllUsersPaginated($attributes, $perPage)
     {
-        $result = CustomerListView::with([]);
+        $result = $this->model;
 
         if (isset($attributes['filter_by']) && isset($attributes['filter_value'])) {
             $filter_by = $attributes['filter_by'];
             $filter_value = $attributes['filter_value'];
             // IF CUSTOMER NAME
             if ($filter_by === 'CUSTOMER_NAME') {
-                $result = $result->where(function($q) use($filter_value) {
-                    $q->where('first_name', 'LIKE', '%' . $filter_value . '%')
-                      ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%')
-                      ->orWhere('middle_name', 'LIKE', '%' . $filter_value . '%');
+                $result = $result->whereHas('userDetail', function ($query) use ($filter_value) {
+                    $query->whereRaw("concat(first_name, ' ', middle_name, ' ', last_name)LIKE '%$filter_value%'");
                 });
             } // IF CUSTOMER ID
             else if ($filter_by === 'CUSTOMER_ID') {
                 $result = $result->where('account_number', $filter_value);
             } // IF TIER
             else if ($filter_by === 'TIER') {
-                $result = $result->where('tier_class', $filter_value);
+                $result = $result->whereHas('tier', function ($query) use ($filter_value) {
+                    $query->where('name', $filter_value);
+                });
             } // IF STATUS
             else if ($filter_by === 'STATUS') {
                 $result = $result->where('status', $filter_value);
             }
-            // IF EMAIL
-            else if ($filter_by === 'EMAIL') {
-                $result = $result->where('email', 'LIKE', '%' . $filter_value . '%');
-            }
-            // IF MOBILE
-            else if ($filter_by === 'MOBILE') {
-                $result = $result->where('mobile_number', $filter_value);
-            }
         }
 
         if (isset($from) && isset($to)) {
-            $result = $result->whereBetween('original_created_at', [$attributes['from'], $attributes['to']]);
+            $result = $result->whereBetween('created_at', [$attributes['from'], $attributes['to']]);
         }
 
-        $result = $result->orderBy('original_created_at', 'DESC');
-
-        if($isPaginated) {
-            return $result->paginate($perPage);
-        }
-        return $result->get();
+        return $result->with(['profile', 'tier', 'tierApprovals' => function ($q) {
+            return $q->where('status', '!=', 'DECLINED');
+        }])->orderBy('created_at', 'DESC')->paginate($perPage);
     }
 
     public function findById($id)
@@ -81,11 +69,6 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
     public function getAdminUser(string $id)
     {
         return $this->getAdminUserBaseQuery()->where('id', '=', $id)->first();
-    }
-
-    public function getAdminUserByEmail(string $email)
-    {
-        return $this->getAdminUserBaseQuery()->where('email', '=', $email)->first();
     }
 
     public function getAdminUsersByEmail(string $email): Collection
@@ -106,7 +89,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             return $record;
         }
 
-        $this->userAccountNotFound();
+        return $this->userAccountNotFound();
     }
 
     public function getUser(string $id)
@@ -116,9 +99,8 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getByUsername(string $usernameField, string $username)
     {
-      return $this->getBaseQuery()->where($usernameField, '=', $username)->first();
+        return $this->model->where($usernameField, '=', $username)->first();
     }
-
 
     public function getUserInfo(string $userAccountID)
     {
@@ -133,11 +115,6 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
     public function getUserByAccountNumber(string $accountNumber)
     {
         return $this->model->where(['account_number' => $accountNumber])->first();
-    }
-
-    public function getUserByAccountNumberAndRsbsaNumber(string $accountNumber, string $rsbsaNumber)
-    {
-        return $this->model->where(['account_number' => $accountNumber])->where(['rsbsa_number' => $rsbsaNumber])->first();
     }
 
     public function getUserByAccountNumberWithRelations(string $accountNumber)
@@ -178,7 +155,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             return $record;
         }
 
-        $this->userAccountNotFound();
+        return $this->userAccountNotFound();
     }
 
     public function getUserCount()
@@ -194,27 +171,6 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         }
 
         $this->userAccountNotFound();
-    }
-
-    public function getAccountDetailByRSBSANumber(string $rsbsa_number) {
-        return $this->model->where('rsbsa_number', $rsbsa_number)->first();
-    }
-
-    public function getUserAccountByRSBSANoV2(string $RSBSANo) {
-        $record = $this->model->with(['profile', 'user_balance_info'])
-            // ->where('account_number', $accountNumber)
-            ->where('rsbsa_number', $RSBSANo)
-            ->first();
-
-        if($record) {
-            return $record;
-        }
-
-        return null;
-    }
-
-    public function getAccountByMobileNumber(string $mobileNumber) {
-        return $this->model->with(['profile'])->where('mobile_number', $mobileNumber)->first();
     }
 
 }

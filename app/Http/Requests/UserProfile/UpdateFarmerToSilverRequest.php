@@ -59,7 +59,6 @@ class UpdateFarmerToSilverRequest  extends FormRequest
             'mother_maidenname'=>'required',
             'employer'=>['required', 'max:50'],
             'contact_no'=>['required', 'max:11',  new MobileNumber()],
-            'barangay'=>'required',
         ];
         
         $inputs = request()->input();

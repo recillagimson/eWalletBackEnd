@@ -8,5 +8,4 @@ interface ITierApprovalService {
     public function updateStatus(array $attr, TierApproval $tierApproval);
     public function takePhotoAction(array $attr);
     public function takeSelfieAction(array $attr);
-    public function sendSMS(UserAccount $user, string $message);
 }
