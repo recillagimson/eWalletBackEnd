@@ -353,7 +353,7 @@ class UserProfileService implements IUserProfileService
             $returnableData['dedup_responses'] = $dedup_responses;
             return $returnableData;
         } catch (\Exception $e) {
-            throw $e . "ran";
+            //throw $e;
         }
     }
 }
