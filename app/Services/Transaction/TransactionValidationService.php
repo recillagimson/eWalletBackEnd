@@ -8,6 +8,7 @@ use App\Enums\TransactionCategoryIds;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
 use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
@@ -24,7 +25,6 @@ use App\Traits\Errors\WithUserErrors;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 
 class TransactionValidationService implements ITransactionValidationService
 {
@@ -101,7 +101,6 @@ class TransactionValidationService implements ITransactionValidationService
 
     public function validateUser(UserAccount $user)
     {
-        if (!$user) $this->accountDoesntExist();
         if (!$user->is_active) $this->accountDeactivated();
         if (!$user->profile) $this->userProfileNotUpdated();
         if (!$user->balanceInfo) $this->userInsufficientBalance();
@@ -141,7 +140,7 @@ class TransactionValidationService implements ITransactionValidationService
                 } //else {
                     //$addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
-                    //$receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                //$receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
                    // $in = $addMoneyFromBank + $receiveMoney;
                     //$totalTransactionCurrentMonth =0;
 

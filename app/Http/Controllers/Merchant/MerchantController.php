@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Services\KYCService\IKYCService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\Merchant\MerchantSelfieVerificationRequest;
+use App\Http\Requests\Merchant\MerchantToggleRequest;
+use App\Http\Requests\Merchant\MerchantVerifyRequest;
 use App\Services\Merchant\IMerchantService;
 
 class MerchantController extends Controller
@@ -34,6 +36,26 @@ class MerchantController extends Controller
 
     public function list(Request $request) {
         $record = $this->merchatService->list($request->all());
+        return $this->responseService->successResponse($record, SuccessMessages::success);
+    }
+
+    public function toggleMerchantStatus(MerchantToggleRequest $request) {
+        $record = $this->merchatService->toggleMerchantStatus($request->all());
+        return $this->responseService->successResponse($record, SuccessMessages::success);
+    }
+
+    public function verifyMerchant(MerchantVerifyRequest $request) {
+        $record = $this->merchatService->verifyMerchant($request->all());
+        return $this->responseService->successResponse($record, SuccessMessages::success);
+    }
+
+    public function showDocument(string $id) {
+        $record = $this->merchatService->showDocument($id);
+        return $this->responseService->successResponse($record, SuccessMessages::success);
+    }
+
+    public function updateDocumentStatus(Request $request) {
+        $record = $this->merchatService->updateDocumentStatus($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 }

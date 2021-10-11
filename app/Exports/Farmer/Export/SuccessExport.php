@@ -47,9 +47,9 @@ class SuccessExport implements FromCollection, WithHeadings
                 'Filipino',
                 'Farmer',
                 'Farming',
-                $entry['mothermaidenname'],
-                $entry['of_farm_parcel'],
-                $entry['total_farm_area_ha']
+                $entry[DBPUploadKeys::mothermaidenname],
+                $entry[DBPUploadKeys::farmParcel],
+                $entry[DBPUploadKeys::totalFarmArea]
             ]);
         }
         return new collection($successData);

@@ -69,6 +69,174 @@ class MerchantService implements IMerchantService
         return $this->clientTokenError();
     }
 
+    // TOGGLE MERCHANT
+    public function toggleMerchantStatus(array $attr) {
+        // GENERATE CLIENT TOKEN
+        $clientTokenResponse = $this->getClientToken();
+
+        if($clientTokenResponse && $clientTokenResponse->status() == 200) {
+            $clientToken = $clientTokenResponse->json()['access_token'];
+            // GENERATE REQUEST ID
+            $requestPayload = $this->getRequestId($clientToken);
+            if($requestPayload && $requestPayload->status() ==200 && $requestPayload->json() && isset($requestPayload->json()['passPhrase'])) {
+    
+                $encrypted = $this->encryptionService->encrypt(json_encode($attr), $requestPayload->json()['passPhrase']);
+                $getListUrl = $this->merchantUrl . "/merchant/toggle/active";
+                $build = [
+                    'id' => $requestPayload->json()['id'],
+                    'payload' => json_encode($encrypted)
+                ];
+    
+                $merchantListResponse = $this->apiService->post($getListUrl, $build, [
+                    'Authorization' => 'Bearer ' . $clientToken,
+                    'Accept' => 'application/json'
+                ]);
+    
+                // HANDLE RESPONSE OF MERCHANT LIST
+                if($merchantListResponse && $merchantListResponse->status() == 200) {
+                    $decryptionResponse = $this->decryptResponse($merchantListResponse->json()['data'], $clientToken);
+                    if($decryptionResponse && $decryptionResponse->status() == 200){
+                        return $decryptionResponse->json();
+                    }
+                    // DECRYPTION ERROR
+                    return $this->decryptionError();
+                }
+                // THROW ERROR GETTING MERCHANT LIST
+                return $this->getMerchantListError();
+            }
+            // THROW ERROR GENERATE REQUEST ID
+            return $this->requestIdError();
+        }
+        // THROW ERROR GETTING CLIENT TOKEN
+        return $this->clientTokenError();
+    }
+
+    // VERIFY MERCHANT
+    public function verifyMerchant(array $attr) {
+        // GENERATE CLIENT TOKEN
+        $clientTokenResponse = $this->getClientToken();
+
+        if($clientTokenResponse && $clientTokenResponse->status() == 200) {
+            $clientToken = $clientTokenResponse->json()['access_token'];
+            // GENERATE REQUEST ID
+            $requestPayload = $this->getRequestId($clientToken);
+            if($requestPayload && $requestPayload->status() ==200 && $requestPayload->json() && isset($requestPayload->json()['passPhrase'])) {
+    
+                $encrypted = $this->encryptionService->encrypt(json_encode($attr), $requestPayload->json()['passPhrase']);
+                $getListUrl = $this->merchantUrl . "/merchant/verify";
+                $build = [
+                    'id' => $requestPayload->json()['id'],
+                    'payload' => json_encode($encrypted)
+                ];
+    
+                $merchantListResponse = $this->apiService->post($getListUrl, $build, [
+                    'Authorization' => 'Bearer ' . $clientToken,
+                    'Accept' => 'application/json'
+                ]);
+    
+                // HANDLE RESPONSE OF MERCHANT LIST
+                if($merchantListResponse && $merchantListResponse->status() == 200) {
+                    $decryptionResponse = $this->decryptResponse($merchantListResponse->json()['data'], $clientToken);
+                    if($decryptionResponse && $decryptionResponse->status() == 200){
+                        return $decryptionResponse->json();
+                    }
+                    // DECRYPTION ERROR
+                    return $this->decryptionError();
+                }
+                // THROW ERROR GETTING MERCHANT LIST
+                return $this->verifyMerchantError();
+            }
+            // THROW ERROR GENERATE REQUEST ID
+            return $this->requestIdError();
+        }
+        // THROW ERROR GETTING CLIENT TOKEN
+        return $this->clientTokenError();
+    }
+    
+    // SHOW DOCUMENTS
+    public function showDocument(string $merchantId) {
+        // GENERATE CLIENT TOKEN
+        $clientTokenResponse = $this->getClientToken();
+
+        if($clientTokenResponse && $clientTokenResponse->status() == 200) {
+            $clientToken = $clientTokenResponse->json()['access_token'];
+            // GENERATE REQUEST ID
+            $requestPayload = $this->getRequestId($clientToken);
+            if($requestPayload && $requestPayload->status() ==200 && $requestPayload->json() && isset($requestPayload->json()['passPhrase'])) {
+    
+                // $encrypted = $this->encryptionService->encrypt(json_encode($attr), $requestPayload->json()['passPhrase']);
+                $getListUrl = $this->merchantUrl . "/merchant/" . $merchantId . "/documents";
+                // $build = [
+                //     'id' => $requestPayload->json()['id'],
+                //     'payload' => json_encode($encrypted)
+                // ];
+    
+                $merchantListResponse = $this->apiService->get($getListUrl, [
+                    'Authorization' => 'Bearer ' . $clientToken,
+                    'Accept' => 'application/json'
+                ]);
+    
+                // HANDLE RESPONSE OF MERCHANT LIST
+                if($merchantListResponse && $merchantListResponse->status() == 200) {
+                    $decryptionResponse = $this->decryptResponse($merchantListResponse->json()['data'], $clientToken);
+                    if($decryptionResponse && $decryptionResponse->status() == 200){
+                        return $decryptionResponse->json();
+                    }
+                    // DECRYPTION ERROR
+                    return $this->decryptionError();
+                }
+                // THROW ERROR GETTING MERCHANT LIST
+                return $this->showDocumentError();
+            }
+            // THROW ERROR GENERATE REQUEST ID
+            return $this->requestIdError();
+        }
+        // THROW ERROR GETTING CLIENT TOKEN
+        return $this->clientTokenError();
+    }
+
+    // DOCUMENTS STATUS UPDATE
+    public function updateDocumentStatus(array $attr) {
+        // GENERATE CLIENT TOKEN
+        $clientTokenResponse = $this->getClientToken();
+
+        if($clientTokenResponse && $clientTokenResponse->status() == 200) {
+            $clientToken = $clientTokenResponse->json()['access_token'];
+            // GENERATE REQUEST ID
+            $requestPayload = $this->getRequestId($clientToken);
+            if($requestPayload && $requestPayload->status() ==200 && $requestPayload->json() && isset($requestPayload->json()['passPhrase'])) {
+    
+                $encrypted = $this->encryptionService->encrypt(json_encode($attr), $requestPayload->json()['passPhrase']);
+                $getListUrl = $this->merchantUrl . "/merchant/documents/update/status";
+                $build = [
+                    'id' => $requestPayload->json()['id'],
+                    'payload' => json_encode($encrypted)
+                ];
+    
+                $merchantListResponse = $this->apiService->post($getListUrl, $build, [
+                    'Authorization' => 'Bearer ' . $clientToken,
+                    'Accept' => 'application/json'
+                ]);
+    
+                // HANDLE RESPONSE OF MERCHANT LIST
+                if($merchantListResponse && $merchantListResponse->status() == 200) {
+                    $decryptionResponse = $this->decryptResponse($merchantListResponse->json()['data'], $clientToken);
+                    if($decryptionResponse && $decryptionResponse->status() == 200){
+                        return $decryptionResponse->json();
+                    }
+                    // DECRYPTION ERROR
+                    return $this->decryptionError();
+                }
+                // THROW ERROR GETTING MERCHANT LIST
+                return $this->updateDocumentStatusError();
+            }
+            // THROW ERROR GENERATE REQUEST ID
+            return $this->requestIdError();
+        }
+        // THROW ERROR GETTING CLIENT TOKEN
+        return $this->clientTokenError();
+    }
+
     // REQUEST ID
     public function getRequestId(string $clientToken) {
         $requestIdUrl = $this->merchantUrl . "/payloads/generate";

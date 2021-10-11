@@ -41,14 +41,14 @@ class AddMoneyService implements IAddMoneyService
     private IServiceFeeRepository $serviceFees;
     private IUserTransactionHistoryRepository $userTransactionHistories;
 
-    public function __construct(IUserAccountRepository $userAccounts,
-                                IInAddMoneyRepository $addMoney,
-                                IServiceFeeRepository $serviceFees,
+    public function __construct(IUserAccountRepository            $userAccounts,
+                                IInAddMoneyRepository             $addMoney,
+                                IServiceFeeRepository             $serviceFees,
                                 IUserTransactionHistoryRepository $userTransactionHistories,
-                                ITransactionValidationService $transactionValidationService,
-                                IDragonPayService $dragonPayService,
-                                IReferenceNumberService $referenceNumberService,
-                                ILogHistoryService $logHistoryService)
+                                ITransactionValidationService     $transactionValidationService,
+                                IDragonPayService                 $dragonPayService,
+                                IReferenceNumberService           $referenceNumberService,
+                                ILogHistoryService                $logHistoryService)
     {
         $this->userAccounts = $userAccounts;
         $this->addMoney = $addMoney;

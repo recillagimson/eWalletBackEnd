@@ -167,8 +167,12 @@ class KYCService implements IKYCService
 
     public function matchOCR(array $attr) {
         if(isset($attr['manual_input']) && isset($attr['ocr_response'])) {
-            if(isset($attr['manual_input']['full_name']) && isset($attr['ocr_response']['full_name'])) {
-                if(strtolower($attr['ocr_response']['full_name']) == strtolower($attr['manual_input']['full_name'])) {
+            // BOTH FULLNAME
+            if(
+                isset($attr['manual_input']['full_name']) && 
+                isset($attr['ocr_response']['full_name'])) {
+                if(
+                    strtolower($attr['ocr_response']['full_name']) == strtolower($attr['manual_input']['full_name'])) {
                     // return [
                     //     'message' => 'OCR and Input data match'
                     // ];
@@ -178,8 +182,26 @@ class KYCService implements IKYCService
                 }
             }
 
-            if(isset($attr['manual_input']['first_name']) && isset($attr['ocr_response']['first_name']) && isset($attr['manual_input']['last_name']) && isset($attr['ocr_response']['last_name'])) {
-                if(strtolower($attr['ocr_response']['first_name']) == strtolower($attr['manual_input']['first_name']) && strtolower($attr['ocr_response']['last_name']) == strtolower($attr['manual_input']['last_name'])) {
+            if(isset($attr['manual_input']) && !isset($attr['manual_input']['full_name']) && isset($attr['ocr_response']) && isset($attr['ocr_response']['full_name'])) {
+                // HANDLE BUILD FULLNAME
+                $middle_name = isset($attr['manual_input']['middle_name']) ? $attr['manual_input']['middle_name'] : "";
+                $full_name = $attr['manual_input']['last_name'] . ", " . $attr['manual_input']['first_name'] . " " . $middle_name;
+                $full_name = strtolower($full_name);
+                if($full_name == strtolower($attr['ocr_response']['full_name'])) {
+                    return $this->responseService->successResponse([
+                        'message' => 'OCR and Input data match'
+                    ], SuccessMessages::success);
+                }
+            }
+
+            // ALL NOT FULLNAME
+            if(
+                isset($attr['manual_input']['first_name']) && 
+                isset($attr['ocr_response']['first_name']) && 
+                isset($attr['manual_input']['last_name']) && 
+                isset($attr['ocr_response']['last_name'])) {
+                if(strtolower($attr['ocr_response']['first_name']) == strtolower($attr['manual_input']['first_name']) && 
+                strtolower($attr['ocr_response']['last_name']) == strtolower($attr['manual_input']['last_name'])) {
                     // return [
                     //     'message' => 'OCR and Input data match'
                     // ];

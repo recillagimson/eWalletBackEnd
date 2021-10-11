@@ -9,6 +9,7 @@ class TransactionCategories
     const MerchantSendMoney = 'MXTRANSFER';
     const SendMoneyToSettlementAcct = 'CASHOUT';
     const AddMoneyWebBankDragonPay = 'CASHINDRAGONPAY';
+    const AddMoneyUBP = 'CASHINUBP';
     const DebitMemo = 'DR_MEMO';
     const CreditMemo = 'CR_MEMO';
     const Refund = 'POSREFUND';
