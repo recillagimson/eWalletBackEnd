@@ -143,10 +143,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Route::post('ecpay/custom', [Send2BankController::class, 'sample'])->middleware(['decrypt.request']);
-    Route::middleware(['decrypt.request'])->prefix('ecpay')->group(function () {
-        Route::post('commitpayment', [AddMoneyController::class, 'commitPayment']);
-        Route::post('confirmpayment', [AddMoneyController::class, 'confirmPayment']);
-    });
+   // Route::middleware(['decrypt.request'])->prefix('ecpay')->group(function () {
+       // Route::post('commitpayment', [AddMoneyController::class, 'commitPayment']);
+       // Route::post('confirmpayment', [AddMoneyController::class, 'confirmPayment']);
+   // });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser'])->name('user.show');
@@ -350,20 +350,20 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/barangays', [BarangayController::class, 'getBarangays']);
         });
 
-        Route::prefix('/bpi')->group(function () {
-            Route::post('/auth', [BPIController::class, 'bpiAuth']);
-            Route::post('/accounts', [BPIController::class, 'getAccounts']);
-            Route::post('/fundtopup', [BPIController::class, 'fundTopUp']);
-            Route::post('/otp', [BPIController::class, 'otp']);
-            Route::post('/process', [BPIController::class, 'process']);
-            Route::post('/status', [BPIController::class, 'status']);
-            Route::post('/login/url', [BPIController::class, 'getBPIAuthUrl']);
-        });
+       // Route::prefix('/bpi')->group(function () {
+           // Route::post('/auth', [BPIController::class, 'bpiAuth']);
+           // Route::post('/accounts', [BPIController::class, 'getAccounts']);
+           // Route::post('/fundtopup', [BPIController::class, 'fundTopUp']);
+           // Route::post('/otp', [BPIController::class, 'otp']);
+           // Route::post('/process', [BPIController::class, 'process']);
+           // Route::post('/status', [BPIController::class, 'status']);
+           // Route::post('/login/url', [BPIController::class, 'getBPIAuthUrl']);
+        //});
 
-        Route::prefix('/ubp')->group(function () {
-            Route::get('/auth/generate', [UBPOAuthController::class, 'generateAuthorizeUrl']);
-            Route::post('/auth/account/link', [UBPOAuthController::class, 'linkAccount']);
-        });
+        //Route::prefix('/ubp')->group(function () {
+           // Route::get('/auth/generate', [UBPOAuthController::class, 'generateAuthorizeUrl']);
+           // Route::post('/auth/account/link', [UBPOAuthController::class, 'linkAccount']);
+        //});
 
     });
 
