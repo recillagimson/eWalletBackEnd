@@ -203,9 +203,9 @@ trait Send2BankHelpers
                 $send2Bank->amount, $send2Bank->transaction_date, $send2Bank->service_fee, $availableBalance, $send2Bank->provider,
                 $send2Bank->provider_remittance_id);
 
-            if ($send2Bank->send_receipt_to) {
-                $this->emailService->sendSend2BankReceipt($send2Bank->send_receipt_to, $send2Bank);
-            }
+           // if ($send2Bank->send_receipt_to) {
+                //$this->emailService->sendSend2BankReceipt($send2Bank->send_receipt_to, $send2Bank);
+            //}
         }
     }
 
