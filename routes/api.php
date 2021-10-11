@@ -203,11 +203,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/resend/otp', [AuthV2Controller::class, 'resendOTP']);
 
         Route::prefix('/verify')->name('verify.')->group(function () {
-            Route::post('/otp', [AuthV2Controller::class, 'verifyTransactionOtp'])->name('otp');
-            Route::post('/account', [RegisterV2Controller::class, 'verifyAccount'])->name('account');
-            Route::post('/mobile/login', [AuthV2Controller::class, 'verifyMobileLogin'])->name('mobile.login');
-            Route::post('/partners/login', [AuthV2Controller::class, 'verifyPartnersLogin'])->name('partners.login');
-            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type');
+            Route::post('/otp', [AuthV2Controller::class, 'verifyTransactionOtp'])->name('v2.otp');
+            Route::post('/account', [RegisterV2Controller::class, 'verifyAccount'])->name('v2.account');
+            Route::post('/mobile/login', [AuthV2Controller::class, 'verifyMobileLogin'])->name('v2.mobile.login');
+            Route::post('/partners/login', [AuthV2Controller::class, 'verifyPartnersLogin'])->name('v2.partners.login');
+            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('v2.key.type');
         });
     });
 
