@@ -9,17 +9,17 @@ use Carbon\Carbon;
 
 interface INotificationService
 {
-    public function sendLoginVerification(string $to, string $otp);
+    public function sendLoginVerification(string $to, string $otp, string $recipientName);
 
-    public function sendAccountVerification(string $to, string $otp);
+    public function sendAccountVerification(string $to, string $otp, string $recipientName);
 
-    public function sendPasswordVerification(string $to, string $otp, string $otpType);
+    public function sendPasswordVerification(string $to, string $otp, string $otpType, string $recipientName);
 
-    public function sendMoneyVerification(string $to, string $otp);
+    public function sendMoneyVerification(string $to, string $otp, string $recipientName);
 
-    public function sendS2BVerification(string $to, string $otp);
+    public function sendS2BVerification(string $to, string $otp, string $recipientName);
 
-    public function updateProfileVerification(string $to, string $otp);
+    public function updateProfileVerification(string $to, string $otp, string $recipientName);
 
     public function sendMoneySenderNotification(string $to, array $fillRequest, string $receiverName);
 
@@ -35,4 +35,5 @@ interface INotificationService
                                         Carbon $transactionDate, float $newBalance, string $refNo);
 
     public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier);
+    public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber);
 }

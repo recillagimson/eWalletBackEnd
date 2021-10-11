@@ -2,6 +2,7 @@
 
 namespace App\Services\PayBills;
 
+use App\Enums\PayBillsConfig;
 use App\Enums\TransactionStatuses;
 use App\Models\UserAccount;
 use App\Repositories\LogHistory\ILogHistoryRepository;
@@ -23,6 +24,7 @@ use App\Traits\Errors\WithPayBillsErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Transactions\PayBillsHelpers;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class PayBillsService implements IPayBillsService
 {
@@ -78,40 +80,11 @@ class PayBillsService implements IPayBillsService
 
         //list of active billing partners
         for ($x = 0; $x < $billersCount; $x++) {
-            if (
-                $arrayResponse['data'][$x]['code'] == 'MECOR' ||
-                $arrayResponse['data'][$x]['code'] == 'MWCOM' ||
-                $arrayResponse['data'][$x]['code'] == 'MWSIN' ||
-                $arrayResponse['data'][$x]['code'] == 'RFID1' ||
-                $arrayResponse['data'][$x]['code'] == 'ETRIP' ||
-                $arrayResponse['data'][$x]['code'] == 'SPLAN' ||
-                $arrayResponse['data'][$x]['code'] == 'SKY01' ||
-                $arrayResponse['data'][$x]['code'] == 'MCARE ' ||
-                $arrayResponse['data'][$x]['code'] == 'AEON1' ||
-                $arrayResponse['data'][$x]['code'] == 'BNECO' ||
-                $arrayResponse['data'][$x]['code'] == 'PRULI' ||
-                $arrayResponse['data'][$x]['code'] == 'AECOR' ||
-                $arrayResponse['data'][$x]['code'] == 'CNVRG' ||
-                $arrayResponse['data'][$x]['code'] == 'SMART' ||
-                //$arrayResponse['data'][$x]['code'] == 'SSS01' ||
-                // $arrayResponse['data'][$x]['code'] == 'SSS02' ||
-                $arrayResponse['data'][$x]['code'] == 'SSS03' ||
-                //$arrayResponse['data'][$x]['code'] == 'DFA01' ||
-                //$arrayResponse['data'][$x]['code'] == 'POEA1'
-                $arrayResponse['data'][$x]['code'] == 'MBCCC' ||
-                $arrayResponse['data'][$x]['code'] == 'BPI00' ||
-                $arrayResponse['data'][$x]['code'] == 'BNKRD' ||
-                $arrayResponse['data'][$x]['code'] == 'UNBNK' ||
-                $arrayResponse['data'][$x]['code'] == 'PILAM' ||
-                $arrayResponse['data'][$x]['code'] == 'ADMSN' ||
-                $arrayResponse['data'][$x]['code'] == 'UBNK4' ||
-                $arrayResponse['data'][$x]['code'] == 'ASLNK'
-
-                ){
-                    $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
-                } else {
-                    $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $inActive);
-                }
+            if (in_array($arrayResponse['data'][$x]['code'], PayBillsConfig::billerCodes)) {
+                $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $active);
+            } else {
+                $newResponse['data'][$x] = array_merge($arrayResponse['data'][$x], $inActive);
+            }
         }
 
         return $newResponse;
@@ -136,14 +109,42 @@ class PayBillsService implements IPayBillsService
     }
 
 
+    // old function
+    public function oldValidateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
+    {
+        $this->firstLayerValidation($billerCode, $accountNumber, $data);
+
+        $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
+        $arrayResponse = (array)json_decode($response->body(), true);
+
+        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
+        if ($arrayResponse['data'] === "NOT_FOUND") return $this->tpaErrorCatch($arrayResponse);
+        if (isset($arrayResponse['message']) === "Internal server error") return $this->tpaErrorCatch($arrayResponse);
+        if (isset($arrayResponse['data']) === "Internal Server Error") return $this->tpaErrorCatch($arrayResponse);
+        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return $this->tpaErrorCatchMeralco($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+        $this->checkAmountAndMonthlyLimit($billerCode, $data, $user);
+        return $this->validationResponse($user, $response, $billerCode, $data);
+    }
+
+
     public function validateAccount(string $billerCode, string $accountNumber, $data, UserAccount $user): array
     {
         $response = $this->bayadCenterService->validateAccount($billerCode, $accountNumber, $data);
         $arrayResponse = (array)json_decode($response->body(), true);
-        if (isset($arrayResponse['exception'])) return $this->tpaErrorCatch($arrayResponse);
-        if ($arrayResponse['data'] === "Internal Server Error") return $this->tpaErrorCatch($arrayResponse);
-        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) return $this->tpaErrorCatchMeralco($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
-        $this->validateTransaction($billerCode, $data, $user);
+
+        // To catch the DFO account from MECOR
+        if (isset($arrayResponse['data']['code']) && $arrayResponse['data']['code'] === 1) $this->accountWithDFO($arrayResponse, $this->getServiceFee($user), $this->getOtherCharges($billerCode));
+
+        // To catch bayad validation for invalid accounts
+        if (isset($arrayResponse['data']) && in_array($arrayResponse['data'], PayBillsConfig::billerInvalidMsg)) $this->invalidAccountNumber();
+
+        // To catch endpointRequestTimeout
+        if(isset($arrayResponse['message']) && $arrayResponse['message'] ===  PayBillsConfig::endpointRequestTimeOut) $this->endpointRequestTimeOut();
+
+        // To catch bayad general Error
+        if (isset($arrayResponse['exception'])) $this->catchBayadErrors($arrayResponse, $billerCode, $user);
+
+        $this->checkAmountAndMonthlyLimit($billerCode, $data, $user);
         return $this->validationResponse($user, $response, $billerCode, $data);
     }
 
@@ -209,6 +210,18 @@ class PayBillsService implements IPayBillsService
         ];
     }
 
+    public function processAllPending()
+    {
+        $users = $this->outPayBills->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('Pay Bills Processing User:', ['user_account_id' => $user->user_account_id]);
+            $user = $this->userAccountRepository->getUser($user->user_account_id);
+            $this->processPending($user);
+        }
+
+    }
+
     public function downloadListOfBillersCSV()
     {
         $billers = $this->outPayBillsRepository->getAllBillers();
@@ -217,7 +230,7 @@ class PayBillsService implements IPayBillsService
 
         foreach ($billers as $biller) {
             array_push($datas, [
-                'Customer Account ID'  => $biller->user_account_id,
+                'Customer Account ID' => $biller->user_account_id,
                 'Customer Name' => ucwords($biller->user_detail->first_name) . ' ' . ucwords($biller->user_detail->last_name),
                 'Reference Number' => $biller->reference_number,
                 'Date of Transaction'  => Carbon::parse($biller->transaction_date)->format('F d, Y g:i A'),

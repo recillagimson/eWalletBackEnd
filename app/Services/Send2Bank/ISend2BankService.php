@@ -55,4 +55,7 @@ interface ISend2BankService
      * @return mixed
      */
     public function updateTransaction(string $status, string $refNo);
+
+    public function processAllPending();
+
 }

@@ -30,9 +30,9 @@ class UpdateProfileSilverRequest  extends FormRequest
         $required_fields_default =  [
             // 'entity_id'=>'required',
             // 'title'=>['required', 'max:10'],
-            'last_name'=>['required', 'max:50'],
-            'first_name'=>['required', 'max:50'],
-            'middle_name'=>['required', 'max:50'],
+            'last_name'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
+            'first_name'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
+            'middle_name'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
             // 'name_extension'=>['required', 'max:50'],
             'nationality_id'=>'required',
             'birth_date'=>['required', 'before:today'],
@@ -44,28 +44,29 @@ class UpdateProfileSilverRequest  extends FormRequest
             // 'report_exception_status'=>['required', 'max:10'],
             'postal_code'=>['required', 'max:5'],
             'house_no_street'=>['required', 'max:100'],
-            'city'=>['required', 'max:50'],
-            'province_state'=>['required', 'max:50'],
+            'city'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
+            'province_state'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
 
-            'place_of_birth'=>['required', 'max:50'],
+            'place_of_birth'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
             'marital_status_id'=>'required',
             // 'encoded_nationality'=>'required_with:nationality_id',
-            'occupation'=>['required', 'max:50'],
+            'occupation'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
             'nature_of_work_id'=>'required',
             'encoded_nature_of_work'=>Rule::requiredIf($this->nature_of_work_id === '0ed96f01-9131-11eb-b44f-1c1b0d14e211'),
             'source_of_fund_id'=>'required',
             'encoded_source_of_fund'=>Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211'),
             'mother_maidenname'=>'required',
-            'employer'=>['required', 'max:50'],
+            'employer'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
             'contact_no'=>['required', 'max:11',  new MobileNumber()],
             //'ocr_response' => ['required']
+           //'barangay' => 'required'
         ];
 
         $inputs = request()->input();
 
         // check if first time to upgrade to silver
         if(request()->user()->tier->id === AccountTiers::tier1) {
-            $required_fields_default['id_photos_ids'] = ['required', 'array', 'min:1'];
+            $required_fields_default['id_photos_ids'] = ['required', 'array', 'min:1', 'max:4'];
             $required_fields_default['id_photos_ids.*'] = ['required', 'exists:user_id_photos,id'];
             $required_fields_default['id_selfie_ids'] = ['required', 'array', 'min:1'];
             $required_fields_default['id_selfie_ids.*'] = ['required', 'exists:user_selfie_photos,id'];

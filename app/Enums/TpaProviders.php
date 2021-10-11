@@ -14,5 +14,6 @@ class TpaProviders
     const secBankPesonet = 'secbank-pesonet';
     const bc = 'bayad center';
     const atm = 'atm';
+    const ecpay = 'ecpay';
 
 }

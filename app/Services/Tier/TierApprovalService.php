@@ -77,15 +77,15 @@ class TierApprovalService implements ITierApprovalService
                     'approved_date' => Carbon::now()->format('Y-m-d H:i:s')
                 ]);
 
-                // if($user_account->mobile_number) {
-                //     // SMS USER FOR NOTIFICATION
-                //     $this->smsService->tierUpgradeNotification($user_account->mobile_number, $details, $tier);
-                // }
+                if($user_account->mobile_number) {
+                    // SMS USER FOR NOTIFICATION
+                    $this->smsService->tierUpgradeNotification($user_account->mobile_number, $details, $tier);
+                }
 
-                // if($user_account->email) {
-                //     // EMAIL USER FOR NOTIFICATION
-                //     $this->emailService->tierUpgradeNotification($user_account->email, $details, $tier);
-                // }                
+                if($user_account->email) {
+                    // EMAIL USER FOR NOTIFICATION
+                    $this->emailService->tierUpgradeNotification($user_account->email, $details, $tier);
+                }                
             } else if($attr['status'] === 'DECLINED') {
 
                 $this->tierApprovalRepository->update($tierApproval, [
@@ -162,5 +162,15 @@ class TierApprovalService implements ITierApprovalService
             \DB::rollBack();
             return $e->getMessage();
         }
+    }
+    
+    public function sendSMS(UserAccount $user, string $message) {
+        if (!$user->mobile_number) {
+            throw ValidationException::withMessages([
+                'mobile_number_not_fount' => 'Mobile Number not found'
+            ]);
+        }
+
+        $this->smsService->kycNotification($user, $message);
     }
 }

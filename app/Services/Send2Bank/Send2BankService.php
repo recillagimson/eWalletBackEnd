@@ -4,12 +4,12 @@
 namespace App\Services\Send2Bank;
 
 
-use App\Enums\OtpTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategories;
 use App\Enums\TransactionStatuses;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\ProviderBanks\IProviderBanksRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
@@ -30,6 +30,7 @@ use App\Traits\Errors\WithAuthErrors;
 use App\Traits\Errors\WithTpaErrors;
 use App\Traits\Errors\WithTransactionErrors;
 use App\Traits\Errors\WithUserErrors;
+use App\Traits\StringHelpers;
 use App\Traits\Transactions\Send2BankHelpers;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
@@ -41,7 +42,7 @@ use Log;
 class Send2BankService implements ISend2BankService
 {
     use WithAuthErrors, WithUserErrors, WithTpaErrors, WithTransactionErrors;
-    use UserHelpers, Send2BankHelpers;
+    use UserHelpers, Send2BankHelpers, StringHelpers;
 
     private IReferenceNumberService $referenceNumberService;
     private ITransactionValidationService $transactionValidationService;
@@ -59,21 +60,22 @@ class Send2BankService implements ISend2BankService
     protected string $provider;
     private IProviderBanksRepository $providerBanks;
 
-    public function __construct(IUBPService $ubpService,
-                                ISecurityBankService $secBankService,
-                                IReferenceNumberService $referenceNumberService,
-                                ITransactionValidationService $transactionValidationService,
-                                INotificationService $notificationService,
-                                ISmsService $smsService,
-                                IEmailService $emailService,
-                                IOtpService $otpService,
-                                ILogHistoryService $logHistories,
-                                IUserAccountRepository $users,
-                                IUserBalanceInfoRepository $userBalances,
-                                IOutSend2BankRepository $send2banks,
-                                IServiceFeeRepository $serviceFees,
+    public function __construct(IUBPService                       $ubpService,
+                                ISecurityBankService              $secBankService,
+                                IReferenceNumberService           $referenceNumberService,
+                                ITransactionValidationService     $transactionValidationService,
+                                INotificationService              $notificationService,
+                                ISmsService                       $smsService,
+                                IEmailService                     $emailService,
+                                IOtpService                       $otpService,
+                                ILogHistoryService                $logHistories,
+                                IUserAccountRepository            $users,
+                                IUserBalanceInfoRepository        $userBalances,
+                                IOutSend2BankRepository           $send2banks,
+                                IServiceFeeRepository             $serviceFees,
                                 IUserTransactionHistoryRepository $transactionHistories,
-                                IProviderBanksRepository $providerBanks)
+                                IProviderBanksRepository          $providerBanks,
+                                INotificationRepository           $notificationRepository)
     {
         $this->ubpService = $ubpService;
         $this->referenceNumberService = $referenceNumberService;
@@ -91,6 +93,7 @@ class Send2BankService implements ISend2BankService
         $this->transactionHistories = $transactionHistories;
         $this->secBankService = $secBankService;
         $this->logHistories = $logHistories;
+        $this->notificationRepository = $notificationRepository;
     }
 
 
@@ -153,8 +156,12 @@ class Send2BankService implements ISend2BankService
         $serviceFee = $this->serviceFees
             ->getByTierAndTransCategory($user->tier_id, $this->transactionCategoryId);
 
+
         $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
         $totalAmount = $recipient['amount'] + $serviceFeeAmount;
+
+
+        $this->transactionValidationService->checkUserBalance($user, $totalAmount );
 
         $this->transactionValidationService
             ->validate($user, $this->transactionCategoryId, $totalAmount);
@@ -181,10 +188,9 @@ class Send2BankService implements ISend2BankService
             $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
             $totalAmount = $data['amount'] + $serviceFeeAmount;
 
-            $this->transactionValidationService
-                ->validate($user, $this->transactionCategoryId, $totalAmount);
+            $this->transactionValidationService->checkUserBalance($user, $totalAmount );
 
-            $this->otpService->ensureValidated(OtpTypes::send2Bank . ':' . $userId, $user->otp_enabled);
+
 
             $userFullName = ucwords($user->profile->full_name);
             $recipientFullName = ucwords($data['account_name'] ?: $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
@@ -226,8 +232,9 @@ class Send2BankService implements ISend2BankService
 
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
-
             $this->logHistory($userId, $refNo, $currentDate, $totalAmount, $send2Bank->account_number);
+
+            if ($send2Bank->status === TransactionStatuses::failed) $this->transactionFailed();
             return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();
@@ -266,6 +273,16 @@ class Send2BankService implements ISend2BankService
             'success_count' => $successCount,
             'failed_count' => $failCount
         ];
+    }
+
+    public function processAllPending()
+    {
+        $users = $this->send2banks->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('S2B Processing User:', ['user_account_id' => $user->user_account_id]);
+            $this->processPending($user->user_account_id);
+        }
     }
 
     public function updateTransaction(string $status, string $refNo)

@@ -68,8 +68,20 @@ class UserDetail extends Model
         "occupation",
         "employer",
         "contact_no",
-        "avatar_location"
-
+        "avatar_location",
+        "barangay",
+        "signature_photo_location",
+        'id_number',
+        'government_id_type',
+        'district',
+        'region',
+        'sex',
+        'no_of_farm_parcel',
+        'total_farm_area',
+        'name_of_da_personel',
+        'da_remarks',
+        'is_da_update',
+        'preferred_cash_out_partner'
     ];
 
     public function getUserAccount()

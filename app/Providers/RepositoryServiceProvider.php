@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
+use App\Models\OutDisbursementDbp;
 use App\Repositories\Admin\Permission\IPermissionRepository;
 use App\Repositories\Admin\Permission\PermissionRepository;
 use App\Repositories\Admin\Role\IRoleRepository;
@@ -104,11 +105,29 @@ use App\Repositories\Address\Municipality\MunicipalityRepository;
 use App\Repositories\Address\Municipality\IMunicipalityRepository;
 use App\Repositories\Address\Barangay\BarangayRepository;
 use App\Repositories\Address\Barangay\IBarangayRepository;
+use App\Repositories\Dashboard\DashboardRepository;
+use App\Repositories\Dashboard\IDashboardRepository;
+use App\Repositories\Disbursement\IInDisbursementDbpRepository;
+use App\Repositories\Disbursement\InDisbursementDbpRepository;
+use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
+use App\Repositories\Disbursement\OutDisbursementDbpRepository;
+use App\Repositories\FarmerImport\FarmerImportRepository;
+use App\Repositories\FarmerImport\IFarmerImportRepository;
 use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\KYCVerification\KYCVerificationRepository;
+use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
+use App\Repositories\InReceiveFromDBP\InReceiveFromDBPRepository;
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\InAddMoneyUpbDirect\InAddMoneyUpbDirectRepository;
+use App\Repositories\InAddMoneyUpbDirect\IInAddMoneyUpbDirectRepository;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
+use App\Repositories\InAddMoneyEcPay\InAddMoneyEcPayRepository;
+use App\Repositories\Loan\ILoanRepository;
+use App\Repositories\Loan\LoanRepository;
+use App\Repositories\PreferredCashOutPartner\IPreferredCashOutPartnerRepository;
+use App\Repositories\PreferredCashOutPartner\PreferredCashOutPartnerRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -227,8 +246,33 @@ class RepositoryServiceProvider extends ServiceProvider
         // KYC Verification
         $this->app->bind(IKYCVerificationRepository::class, KYCVerificationRepository::class);
 
+        // Disbursement DBP
+        $this->app->bind(IOutDisbursementDbpRepository::class, OutDisbursementDbpRepository::class);
+        $this->app->bind(IInDisbursementDbpRepository::class, InDisbursementDbpRepository::class);
+
+        // In Receive Money from DBP
+        $this->app->bind(IInReceiveFromDBPRepository::class, InReceiveFromDBPRepository::class);
+
+        // Add Money from UPB Direct
+        $this->app->bind(IInAddMoneyUpbDirectRepository::class, InAddMoneyUpbDirectRepository::class);
+
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
+
+        //In Add Money ECPAY Repositories
+        $this->app->bind(IInAddMoneyEcPayRepository::class, InAddMoneyEcPayRepository::class);
+
+        // Dashboard
+        $this->app->bind(IDashboardRepository::class, DashboardRepository::class);
+        
+        // Loan
+        $this->app->bind(ILoanRepository::class, LoanRepository::class);
+
+        // FarmerImport
+        $this->app->bind(IFarmerImportRepository::class, FarmerImportRepository::class);
+
+        // 
+        $this->app->bind(IPreferredCashOutPartnerRepository::class, PreferredCashOutPartnerRepository::class);
 
     }
 

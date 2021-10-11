@@ -5,6 +5,7 @@ namespace App\Services\Utilities\Verification;
 use App\Enums\eKYC;
 use App\Enums\SquidPayModuleTypes;
 use App\Repositories\IdType\IIdTypeRepository;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\Tier\ITierApprovalCommentRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
@@ -29,6 +30,7 @@ class VerificationService implements IVerificationService
     public ITierApprovalCommentRepository $tierApprovalComment;
     private IKYCService $kycService;
     private IUserAccountRepository $userAccountService;
+    private IKYCVerificationRepository $kycRepository;
 
     public function __construct(IUserPhotoRepository $userPhotoRepository,
                                 IUserDetailRepository $userDetailRepository,
@@ -37,7 +39,8 @@ class VerificationService implements IVerificationService
                                 IIdTypeRepository $iIdTypeRepository,
                                 ITierApprovalCommentRepository $iTierApprovalCommentRepository,
                                 IKYCService $kycService,
-                                IUserAccountRepository $userAccountService)
+                                IUserAccountRepository $userAccountService,
+                                IKYCVerificationRepository $kycRepository)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -47,13 +50,15 @@ class VerificationService implements IVerificationService
         $this->iTierApprovalCommentRepository = $iTierApprovalCommentRepository;
         $this->kycService = $kycService;
         $this->userAccountService = $userAccountService;
+        $this->kycRepository = $kycRepository;
     }
 
     public function createSelfieVerification(array $data, ?string $userAccountId = null)
     {
         // Delete existing first
         // Get details first
-        $userDetails = $this->userDetailRepository->getByUserId($userAccountId ? $userAccountId : request()->user()->id);
+        $userId = $userAccountId ? $userAccountId : request()->user()->id;
+        $userDetails = $this->userDetailRepository->getByUserId($userId);
 
         // If no user Details
         if(!$userDetails) {
@@ -203,7 +208,25 @@ class VerificationService implements IVerificationService
 
                     // CHECK IF DOE
                     if(in_array($key, eKYC::expirationDateKey)) {
-                        $templateResponse['expiration_date'] = $entry->value;
+                        if($entry->value != '') {
+                            $templateResponse['expiration_date'] = Carbon::parse($entry->value)->toISOString();
+                        } else {
+                            $templateResponse['expiration_date'] = $entry->value;
+                        }
+                        // $templateResponse['expiration_date'] = $entry->value;
+                    }
+
+                    // CHECK IF DOB
+                    if(in_array($key, eKYC::dateOfBirth)) {
+                        if($entry->value != '') {
+                            if($idType == 'TIN ID') {
+                                $templateResponse['birth_date'] = Carbon::createFromFormat(eKYC::TINDateFormat, $entry->value)->toISOString();
+                            } else {
+                                $templateResponse['birth_date'] = Carbon::parse($entry->value)->toISOString();
+                            }
+                        } else {
+                            $templateResponse['birth_date'] = $entry->value;
+                        }
                     }
 
                     // if($entry && $entry->value) {
@@ -319,7 +342,7 @@ class VerificationService implements IVerificationService
         $userAccount = $this->userAccountService->get($userAccountId);
 
         // If no user Details
-        if(!$userDetails) {
+        if(!$userDetails || !$userAccount) {
             throw ValidationException::withMessages([
                 'user_detail_not_found' => 'User Detail not found'
             ]);
@@ -358,16 +381,46 @@ class VerificationService implements IVerificationService
         $res = $this->kycService->verify([
             'dob' => $userDetails['birth_date'],
             'name' => $userDetails['first_name'] . " " . $userDetails['last_name'],
-            'id_number' => $userAccount['rsbsa_number'],
+            'id_number' => $userAccount->rsbsa_number,
             'user_account_id' => $userAccountId,
             'selfie' => $data['selfie_photo'],
             'nid_front' => $data['id_photo'],
         ], false);
+
 
         return [
             'selfie_record' => $record,
             'dedupe' => $res
         ];
         // return to controller all created records
+    }
+
+    public function uploadSignature(array $attr) {
+        // Delete existing first
+        // Get details first
+        $userDetails = $this->userDetailRepository->getByUserId($attr['user_account_id']);
+
+        // If no user Details
+        if(!$userDetails) {
+            throw ValidationException::withMessages([
+                'user_detail_not_found' => 'User Detail not found'
+            ]);
+        }
+
+        // GET EXT NAME
+        $signaturePhotoExt = $this->getFileExtensionName($attr['signature_photo']);
+        // GENERATE NEW FILE NAME
+        $signaturePhotoName = $attr['user_account_id'] . "/" . Str::random(40) . "." . $signaturePhotoExt;
+        // PUT FILE TO STORAGE
+        $signaturePhotoPath = $this->saveFile($attr['signature_photo'], $signaturePhotoName, 'signature_photo');
+
+        // SAVE SIGNATURE LOCATION ON USER DETAILS
+        $this->userDetailRepository->update($userDetails, [
+            'signature_photo_location' => $signaturePhotoPath
+        ]);
+
+        $userDetails = $this->userDetailRepository->getByUserId($attr['user_account_id']);
+
+        return $userDetails;
     }
 }

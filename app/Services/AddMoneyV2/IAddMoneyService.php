@@ -11,4 +11,7 @@ interface IAddMoneyService
     public function handlePostBack(array $data);
 
     public function processPending(string $userId);
+
+    public function processAllPending();
+
 }

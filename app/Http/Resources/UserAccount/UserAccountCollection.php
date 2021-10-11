@@ -23,7 +23,8 @@ class UserAccountCollection extends JsonResource
                 "mobile_number" => $this->mobile_number,
                 "is_lockout" => $this->is_lockout,
                 "is_active" => $this->is_active,
-                "verified" => $this->verified
+                "verified" => $this->verified,
+                "tier_id" => $this->tier_id
             ],
             "user_details" => [
                 "first_name" => $this->profile->first_name,

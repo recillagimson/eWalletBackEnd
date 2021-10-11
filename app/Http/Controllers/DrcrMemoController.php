@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\SuccessMessages;
-use App\Http\Requests\DRCR\DRCRReportRequest;
-use App\Http\Requests\DrcrMemo\ApprovalRequest;
-use App\Http\Requests\DrcrMemo\DrcrMemoRequest;
-use App\Http\Requests\DrcrMemo\GetUserRequest;
-use App\Http\Requests\DrcrMemo\ShowRequest;
-use App\Http\Requests\DrcrMemo\UpdateMemoRequest;
-use App\Services\DrcrMemo\IDrcrMemoService;
-use App\Services\Utilities\Responses\IResponseService;
 use Exception;
+use App\Enums\SuccessMessages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\DrcrMemo\ShowRequest;
+use App\Services\DrcrMemo\IDrcrMemoService;
+use App\Http\Requests\DRCR\DRCRReportRequest;
+use App\Http\Requests\DrcrMemo\GetUserRequest;
+use App\Http\Requests\DrcrMemo\ApprovalRequest;
+use App\Http\Requests\DrcrMemo\DrcrMemoRequest;
+use App\Http\Requests\DrcrMemo\UpdateMemoRequest;
+use App\Services\Utilities\Responses\IResponseService;
+use Illuminate\Http\Request;
 
 class DrcrMemoController extends Controller
 {
@@ -156,6 +157,31 @@ class DrcrMemoController extends Controller
             Log::error('Error in exporting PDF', $e->getTrace());
             throw $e;
         }
+    }
+
+    public function reportFiltered(Request $request) {
+    return $this->drcrMemoService->reportFiltered($request->all());
+    }
+
+    public function reportFilteredPending(Request $request) {
+        $attr = $request->all();
+        $attr['user_id'] = request()->user()->id;
+        $attr['is_pending_only'] = true;
+        return $this->drcrMemoService->reportFiltered($attr);
+    }
+
+    public function reportFilteredPerUser(Request $request) {
+        $attr = $request->all();
+        $attr['is_pending_only'] = true;
+        return $this->drcrMemoService->reportFiltered($attr);
+    }
+
+    public function updatedReportFilteredPerUser(Request $request) {
+        return $this->drcrMemoService->reportFilteredPerUser($request->all(), true);
+    }
+
+    public function updatedReportFilteredAll(Request $request) {
+        return $this->drcrMemoService->reportFilteredPerUser($request->all(), false);
     }
 
 }
