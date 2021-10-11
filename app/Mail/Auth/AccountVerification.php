@@ -11,7 +11,6 @@ class AccountVerification extends Mailable
     use Queueable, SerializesModels;
 
     private string $otp;
-    private string $recipientName;
 
 
     /**
@@ -19,11 +18,10 @@ class AccountVerification extends Mailable
      *
      * @return void
      */
-    public function __construct(string $otp, string $recipientName)
+    public function __construct(string $otp)
     {
         //
         $this->otp = $otp;
-        $this->recipientName = $recipientName;
     }
 
     /**
@@ -36,8 +34,7 @@ class AccountVerification extends Mailable
         return $this->view('emails.auth.account_verification')
             ->subject('SquidPay - Account Verification')
             ->with([
-                'code' => $this->otp,
-                'recipientName' => $this->recipientName
+                'code' => $this->otp
             ]);
     }
 }

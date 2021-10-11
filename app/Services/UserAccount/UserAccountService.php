@@ -159,13 +159,12 @@ class UserAccountService implements IUserAccountService
 
     public function validateEmail(string $userId, string $email)
     {
-        $user = $this->users->getUser($userId);
+        $user = $this->users->get($userId);
         if (!$user) $this->accountDoesntExist();
         $this->checkEmail($user, $email);
 
-        $recipientName = ucwords($user->profile->first_name);
         $otp = $this->authService->generateOTP(OtpTypes::updateEmail, $user->id, $user->otp_enabled);
-        $this->emailService->updateEmailVerification($email, $otp->token, $recipientName);
+        $this->emailService->updateEmailVerification($email, $otp->token);
     }
 
     public function updateEmail(string $email, object $user): array
@@ -186,13 +185,12 @@ class UserAccountService implements IUserAccountService
 
     public function validateMobile(string $userId, string $mobile)
     {
-        $user = $this->users->getUser($userId);
+        $user = $this->users->get($userId);
         if (!$user) $this->accountDoesntExist();
         $this->checkMobile($user, $mobile);
 
-        $recipientName = ucwords($user->profile->first_name);
         $otp = $this->authService->generateOTP(OtpTypes::updateMobile, $user->id, $user->otp_enabled);
-        $this->smsService->updateMobileVerification($mobile, $otp->token, $recipientName);
+        $this->smsService->updateMobileVerification($mobile, $otp->token);
     }
 
     public function updateMobile(string $userId, string $mobile, UserAccount $user): array

@@ -10,6 +10,5 @@ interface IUserProfileService {
     public function changeAvatar(array $data);
     public function updateUserProfile(UserAccount $userAccount, array $request, object $user);
     public function supervisorUpdateUserProfile(UserAccount $userAccount, array $request, object $user);
-    public function upgradeToSilver(array $attr);
     // public function upgradeFarmerToSilver(array $attr);
 }

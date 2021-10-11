@@ -6,7 +6,6 @@ namespace App\Services\Send2Bank\Pesonet;
 
 use App\Enums\TpaProviders;
 use App\Enums\TransactionCategoryIds;
-use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\ProviderBanks\IProviderBanksRepository;
 use App\Repositories\Send2Bank\IOutSend2BankRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
@@ -26,26 +25,25 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 
 class Send2BankPesonetService extends Send2BankService implements ISend2BankPesonetService
 {
-    public function __construct(IUBPService                       $ubpService,
-                                ISecurityBankService              $securityBankService,
-                                IReferenceNumberService           $referenceNumberService,
-                                ITransactionValidationService     $transactionValidationService,
-                                INotificationService              $notificationService,
-                                ISmsService                       $smsService,
-                                IEmailService                     $emailService,
-                                IOtpService                       $otpService,
-                                ILogHistoryService                $logHistoryService,
-                                IUserAccountRepository            $users,
-                                IUserBalanceInfoRepository        $userBalances,
-                                IOutSend2BankRepository           $send2banks,
-                                IServiceFeeRepository             $serviceFees,
+    public function __construct(IUBPService $ubpService,
+                                ISecurityBankService $securityBankService,
+                                IReferenceNumberService $referenceNumberService,
+                                ITransactionValidationService $transactionValidationService,
+                                INotificationService $notificationService,
+                                ISmsService $smsService,
+                                IEmailService $emailService,
+                                IOtpService $otpService,
+                                ILogHistoryService $logHistoryService,
+                                IUserAccountRepository $users,
+                                IUserBalanceInfoRepository $userBalances,
+                                IOutSend2BankRepository $send2banks,
+                                IServiceFeeRepository $serviceFees,
                                 IUserTransactionHistoryRepository $transactionHistories,
-                                IProviderBanksRepository          $providerBanks,
-                                INotificationRepository           $notificationRepository)
+                                IProviderBanksRepository $providerBanks)
     {
         parent::__construct($ubpService, $securityBankService, $referenceNumberService, $transactionValidationService,
             $notificationService, $smsService, $emailService, $otpService, $logHistoryService, $users, $userBalances,
-            $send2banks, $serviceFees, $transactionHistories, $providerBanks, $notificationRepository);
+            $send2banks, $serviceFees, $transactionHistories, $providerBanks);
 
         $this->transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
         $this->provider = TpaProviders::ubpPesonet;

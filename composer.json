@@ -9,7 +9,6 @@
     "license": "MIT",
     "require": {
         "php": "^7.4|^8.0",
-        "ext-curl": "^7.4",
         "ext-json": "^7.4",
         "ext-libxml": "^7.4",
         "ext-openssl": "^7.4",
@@ -21,14 +20,12 @@
         "firebase/php-jwt": "^5.3",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.3",
-        "intervention/image": "^2.6",
         "laravel/framework": "^8.12",
         "laravel/sanctum": "^2.9",
         "laravel/tinker": "^2.5",
         "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
         "niklasravnsborg/laravel-pdf": "^4.0",
-        "predis/predis": "^1.1",
         "ricorocks-digital-agency/soap": "^1.4",
         "sendgrid/sendgrid": "^7.9",
         "tmilos/jose-jwt": "^2.0"

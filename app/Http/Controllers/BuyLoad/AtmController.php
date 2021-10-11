@@ -2,26 +2,22 @@
 
 namespace App\Http\Controllers\BuyLoad;
 
+use App\Enums\SuccessMessages;
 use App\Enums\TopupTypes;
-use App\Enums\UsernameTypes;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\BuyLoad\ATM\GenerateSignatureRequest;
+use App\Http\Requests\BuyLoad\ATM\VerifySignatureRequest;
+use App\Http\Requests\BuyLoad\GetProductsByProviderRequest;
+use App\Http\Requests\BuyLoad\TopupLoadRequest;
+use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
+use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Services\BuyLoad\IBuyLoadService;
+use App\Services\UserProfile\IUserProfileService;
+use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
+use App\Services\Utilities\Responses\IResponseService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Enums\SuccessMessages;
-use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
-use App\Services\BuyLoad\IBuyLoadService;
-use App\Services\SendMoney\ISendMoneyService;
-use App\Http\Requests\BuyLoad\TopupLoadRequest;
-use App\Services\UserProfile\IUserProfileService;
-use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
-use App\Services\Utilities\Responses\IResponseService;
-use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
-use App\Http\Requests\BuyLoad\ATM\VerifySignatureRequest;
-use App\Http\Requests\BuyLoad\ATM\GenerateSignatureRequest;
-use App\Http\Requests\BuyLoad\GetProductsByProviderRequest;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
 
 class AtmController extends Controller
 {
@@ -29,26 +25,18 @@ class AtmController extends Controller
     private IResponseService $responseService;
     public IOutBuyLoadRepository $outBuyLoadRepository;
     private IBuyLoadService $buyLoadService;
-    private ISendMoneyService $sendMoneyService;
-    // private IUserDetailRepository $userDetail;
-    private IUserAccountRepository $accountRepository;
-
 
     public function __construct(IAtmService $atmService,
                                 IResponseService $responseService,
                                 IOutBuyLoadRepository $outBuyLoadRepository,
                                 ITransactionCategoryRepository $transactionCategoryRepository,
                                 IUserProfileService $userProfileService,
-                                IBuyLoadService $buyLoadService,
-                                ISendMoneyService $sendMoneyService,
-                                IUserAccountRepository $accountRepository)
+                                IBuyLoadService $buyLoadService)
     {
         $this->atmService = $atmService;
         $this->responseService = $responseService;
         $this->outBuyLoadRepository = $outBuyLoadRepository;
         $this->buyLoadService = $buyLoadService;
-        $this->sendMoneyService = $sendMoneyService;
-        $this->accountRepository = $accountRepository;
     }
 
     public function generate(GenerateSignatureRequest $request): JsonResponse
@@ -87,12 +75,8 @@ class AtmController extends Controller
         $data = $request->validated();
         $mobileNumber = $data['mobile_number'];
         $responseData = $this->buyLoadService->getProductsByProvider($mobileNumber);
-        return $this->responseService->successResponse($responseData);
-    }
 
-    private function getUsernameField(Request $request): string
-    {
-        return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
+        return $this->responseService->successResponse($responseData);
     }
 
     public function validateTopup(TopupLoadRequest $request): JsonResponse
@@ -100,19 +84,10 @@ class AtmController extends Controller
         $userId = $request->user()->id;
         $data = $request->validated();
 
-        // ADD ONLY FOR CODE REUSE
-        // $usernameField = $this->getUsernameField($request);
-        // $review = $this->sendMoneyService->sendValidate($usernameField, $request->all(), $request->user());
-        // $userDetail = $this->userDetail->getByUserId($review['user_account_id']);
-        // $data = array_merge($request->all(),$review);
-        // if($userDetail) {
-        //     $data['avatar_link'] = $userDetail->avatar_link;
-        // }
-
         $this->buyLoadService->validateTopup($userId, $data['mobile_number'], $data['product_code'],
             $data['product_name'], $data['amount']);
 
-        return $this->responseService->successResponse($data,
+        return $this->responseService->successResponse([],
             SuccessMessages::transactionValidationSuccessful);
     }
 

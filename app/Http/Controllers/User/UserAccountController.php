@@ -10,7 +10,6 @@ use App\Http\Requests\UserRole\SetUserRoleRequest;
 use App\Http\Resources\UserAccount\UserAccountCollection;
 use App\Http\Resources\UserAccount\UserAccountListCollection;
 use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
-use App\Services\Report\IReportService;
 use App\Services\UserAccount\IUserAccountService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
@@ -24,23 +23,20 @@ class UserAccountController extends Controller
     private IUserAccountService $userAccountService;
     private IResponseService $responseService;
     private IUserRoleRepository $userRoleRepository;
-    private IReportService $reportService;
 
-    public function __construct(IUserAccountService $userAccountService, IResponseService $responseService, IUserRoleRepository $userRoleRepository, IReportService $reportService)
+    public function __construct(IUserAccountService $userAccountService, IResponseService $responseService, IUserRoleRepository $userRoleRepository)
     {
         $this->userAccountService = $userAccountService;
         $this->responseService = $responseService;
         $this->userRoleRepository = $userRoleRepository;
-        $this->reportService = $reportService;
     }
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        // $records = $this->userAccountService->getAllPaginated($request);
-        // $records = new UserAccountListCollection($records);
-        // return $this->responseService->successResponse($records->toArray($request), SuccessMessages::success);
+        $records = $this->userAccountService->getAllPaginated($request);
+        $records = new UserAccountListCollection($records);
 
-        return $this->reportService->customerList($request->all());
+        return $this->responseService->successResponse($records->toArray($request), SuccessMessages::success);
     }
 
     public function show(Request $request): JsonResponse
