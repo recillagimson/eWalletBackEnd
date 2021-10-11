@@ -7,6 +7,11 @@ namespace App\Services\Transaction;
 use App\Enums\TransactionCategoryIds;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
+<<<<<<< HEAD
+=======
+use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
+>>>>>>> stagingfix
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
@@ -93,7 +98,6 @@ class TransactionValidationService implements ITransactionValidationService
 
     public function validateUser(UserAccount $user)
     {
-        if (!$user) $this->accountDoesntExist();
         if (!$user->is_active) $this->accountDeactivated();
         if (!$user->profile) $this->userProfileNotUpdated();
         if (!$user->balanceInfo) $this->userInsufficientBalance();
@@ -111,27 +115,44 @@ class TransactionValidationService implements ITransactionValidationService
             if($transactionCategory) {
                 $totalTransactionCurrentMonth = 0;
 
-                // OUT TRANSACTIONS
-                // if($transactionCategory->transaction_type === 'NEGATIVE') {
-                    $buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
-                    $payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
-                    $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
-                    $sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                //IN TRANSACTIONS
+                if($transactionCategory->transaction_type === 'POSITIVE') {
+
 
                     $out = $buyLoad + $payBills + $send2Banks + $sendMoney;
 
                 // } else {
                     $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
                     $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    $bpiAddMoney = (Double) $this->iInAddMoneyBPIRepository->getSumOfTransactions($from, $to, $user->id);
+                    $ecpayAddMoney = (Double) $this->addMoneyEcPayRepository->getSumOfTransactions($from, $to, $user->id);
+                    $sumUp = $addMoneyFromBank + $receiveMoney + $bpiAddMoney + $ecpayAddMoney;
 
-                    $in = $addMoneyFromBank + $receiveMoney;
-                    $totalTransactionCurrentMonth = $out + $in;
-                // }
+                    //$buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
+                     //$payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
+                    // $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
+                     //$sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+
+                   //$totalTransactionCurrentMonth = $buyLoad+$payBills+ $send2Banks+$sendMoney;
+                   // $sumUp = $totalTransactionCurrentMonth + $totalAmount;
+
+                } //else {
+                    //$addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+
+                //$receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                   // $in = $addMoneyFromBank + $receiveMoney;
+                    //$totalTransactionCurrentMonth =0;
+
+                 //}
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
 
+<<<<<<< HEAD
                 $sumUp = $totalTransactionCurrentMonth + $totalAmount;
+=======
+
+>>>>>>> stagingfix
                 if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
                 if (isset($customMessage) && count($customMessage) > 0) {

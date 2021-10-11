@@ -12,6 +12,8 @@ use App\Http\Requests\Tier\TierUpgradeRequest;
 use App\Http\Requests\Tier\TierApprovalRequest;
 use App\Repositories\Tier\ITierApprovalRepository;
 use App\Services\Utilities\Responses\IResponseService;
+use App\Http\Requests\User\SendEmailRequest;
+use App\Http\Requests\User\SendSMSRequest;
 
 class TierApprovalController extends Controller
 {
@@ -73,7 +75,7 @@ class TierApprovalController extends Controller
         $params = $request->all();
         $params['actioned_by'] = request()->user()->id;
         $record = $this->iTierApprovalService->updateStatus($params, $tierApproval);
-        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::recordDeleted);
     }
 
     /**
@@ -85,6 +87,23 @@ class TierApprovalController extends Controller
     public function destroy(TierApproval $tierApproval)
     {
         $this->iTierApprovalRepository->delete($tierApproval);
-        return $this->responseService->noContentResponse("", SuccessMessages::recordDeleted);
+        return $this->responseService->noContentResponse("", SuccessMessages::success);
     }
+<<<<<<< HEAD
+=======
+
+    public function sendEmail(SendEmailRequest $request)
+    {
+        $email = $request->email;
+        $this->iTierApprovalService->sendEmail($email, $request->message);
+        return $this->responseService->successResponse([], SuccessMessages::success);
+    }
+
+    public function sendSMS(SendSMSRequest $request)
+    {
+        $user = $request->mobile_number;
+        $this->iTierApprovalService->sendSMS($user, $request->message);
+        return $this->responseService->successResponse([], SuccessMessages::success);
+    }
+>>>>>>> stagingfix
 }

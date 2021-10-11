@@ -54,4 +54,9 @@ class SuccessMessages
     const updateMobileSuccessful = "Update mobile successful";
     const updateUserSuccessful = "Update user details successful";
     const updateUserPending = "Update user details request submitted successfully";
+
+    const processingRequestWithEmailNotification = "We are processing your request. An email will be send once the process is done.";
+
+    const accountLinkingSuccess = "Account Linking Successful";
+    const accountLinkCheckSuccess = "Account Link Check Success";
 }

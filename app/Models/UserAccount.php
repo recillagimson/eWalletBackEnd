@@ -8,9 +8,9 @@ use App\Traits\HasS3Links;
 use App\Traits\UsesUuid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
@@ -149,4 +149,12 @@ class UserAccount extends Authenticatable
         $this->last_failed_attempt = null;
         $this->save();
     }
+<<<<<<< HEAD
+=======
+
+    public function getManilaTimeCreatedAtAttribute(): string
+    {
+        return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
+    }
+>>>>>>> stagingfix
 }

@@ -92,4 +92,6 @@ trait WithAuthErrors
         $this->validationErrorMessage(ErrorCodes::accountDeactivated,
             'Your account is disabled. Please contact Squidpay support.');
     }
+
+
 }

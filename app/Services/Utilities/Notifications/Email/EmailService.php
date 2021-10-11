@@ -11,6 +11,9 @@ use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
 use App\Mail\LoginVerification;
 use App\Mail\PayBills\PayBillsNotification;
 use App\Mail\Send2Bank\Send2BankReceipt;
+use App\Mail\User\AdminUserVerification;
+use App\Mail\TierUpgrade\UpgradeToSilverNotification;
+use App\Models\UserUtilities\UserDetail;
 use App\Mail\Send2Bank\SenderNotification;
 use App\Mail\SendMoney\SendMoneyRecipientNotification;
 use App\Mail\SendMoney\SendMoneySenderNotification;
@@ -27,8 +30,18 @@ use Illuminate\Http\Response;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+<<<<<<< HEAD
 use SendGrid;
 use SendGrid\Mail\Mail;
+=======
+use App\Mail\SendMoney\SendMoneySenderNotification;
+use App\Mail\TierApproval\TierUpgradeRequestApproved;
+use App\Mail\SendMoney\SendMoneyRecipientNotification;
+use App\Mail\TierUpgrade\KYCNotification;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
+>>>>>>> stagingfix
 
 class EmailService implements IEmailService
 {
@@ -244,5 +257,35 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
+<<<<<<< HEAD
+=======
+    public function batchUploadNotification(UserAccount $user, string $successLink, string $failedLink)
+    {
+        $subject = EmailSubjects::farmersBatchUploadNotif;
+        $firstName = ucwords($user->profile->first_name);
+        $template = new BatchUploadNotification($firstName, $successLink, $failedLink);
+    }
+
+    private function getUser(): UserAccount
+    {
+        $userId = request()->user()->id;
+        return $this->userAccounts->getUser($userId);
+    }
+
+    public function kycNotification(UserAccount $user, string $text)
+    {
+        $subject = EmailSubjects::kycNotification;
+        $to = $user->email;
+        $template = new KYCNotification($subject, $text);
+
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendLoanReferenceNumber(string $firstName, string $refNo, string $to) {
+        $subject = 'SquidPay - Loan Confirmation';
+        $template = new LoanRefNumber($firstName, $refNo);
+        $this->sendMessage($to, $subject, $template);
+    }
+>>>>>>> stagingfix
 
 }

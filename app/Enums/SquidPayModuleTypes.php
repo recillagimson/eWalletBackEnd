@@ -11,6 +11,7 @@ class SquidPayModuleTypes
     const AddMoneyViaWebBanksDragonPay = 'ADD_MONEY_WEB_BANK_DRAGONPAY';
     const AddMoneyViaOTCDragonPay = 'ADD_MONEY_OTC_DRAGONPAY'; //Over the counter
     const AddMoneyViaSquidPay = 'ADD_MONEY_SQUIDPAY';
+    const AddMoneyViaUBP = 'ADD_MONEY_UBP';
     const sendMoneyUBPDirect = 'SEND_MONEY_UBP_DIRECT';
 
     const send2BankInstapay = 'SEND2BANK_INSTAPAY';
@@ -22,4 +23,9 @@ class SquidPayModuleTypes
 
     const uploadSelfiePhoto = 'UPLOAD_SELFIE_PHOTO';
     const uploadIdPhoto = 'UPLOAD_ID_PHOTO';
+    
+    const AddMoneyViaWebBanksUpbDirect = 'ADD_MONEY_WEB_BANK_UPB_DIRECT';
+    const AddMoneyViaCebuana = 'ADD_MONEY_WEB_BANK_CEBUANA';
+
+    const AccountLocked = 'USER_ACCOUNT_LOCKED';
 }

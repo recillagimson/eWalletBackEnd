@@ -10,6 +10,12 @@ use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\Farmer\FarmerSelfieUploadRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
+<<<<<<< HEAD
+=======
+use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
+use App\Jobs\Farmers\BatchUpload;
+use App\Jobs\Farmers\SubsidyBatchUpload;
+>>>>>>> stagingfix
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
 use App\Services\Utilities\Verification\IVerificationService;
@@ -67,4 +73,55 @@ class FarmerController extends Controller
         $record = $this->userAccountRepository->getUserByRSBAWithRelations($request->rsbsa_number);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
+
+    public function batchUpload(FarmerBatchUploadRequest $request): JsonResponse
+    {
+        $import = $this->farmerProfileService->batchUpload($request->file, request()->user()->id);
+
+        return $this->responseService->successResponse($import, SuccessMessages::updateUserSuccessful);
+    }
+
+    public function processBatchUpload(FarmerBatchUploadRequest $request): JsonResponse
+    {
+        $filePath = $this->farmerProfileService->uploadFileToS3($request->file);
+        BatchUpload::dispatch($filePath, $request->user()->id);
+        return $this->responseService->successResponse(null, SuccessMessages::processingRequestWithEmailNotification);
+    }
+
+    public function subsidyBatchUpload(FarmerBatchUploadRequest $request): JsonResponse
+    {
+        $import = $this->farmerProfileService->subsidyBatchUpload($request->file, request()->user()->id);
+
+        return $this->responseService->successResponse($import, SuccessMessages::updateUserSuccessful);
+    }
+
+    // UPLOADING V2
+    public function batchUploadV2(FarmerBatchUploadRequest $request)
+    {
+        $import = $this->farmerProfileService->batchUploadV2($request->file, request()->user()->id);
+        Log::info(json_encode($import));
+        return $this->responseService->successResponse($import->toArray(), SuccessMessages::success);
+    }
+
+    public function uploadFileToS3(FarmerBatchUploadFileRequest $request) {
+        $import = $this->farmerProfileService->uploadFileToS3($request->file);
+        return $this->responseService->successResponse(['path' => $import], SuccessMessages::success);
+    }
+
+    public function uploadSubsidyFileToS3(FarmerBatchUploadFileRequest $request) {
+        $import = $this->farmerProfileService->uploadFileToS3($request->file);
+        SubsidyBatchUpload::dispatch($import, $request->user()->id);
+        return $this->responseService->successResponse(['path' => $import], SuccessMessages::success);
+    }
+
+    public function subsidyBatchUploadV2(FarmerSubsidyProcessRequest $request) {
+        $import = $this->farmerProfileService->subsidyProcess($request->s3Url, request()->user()->id);
+        return $this->responseService->successResponse($import->toArray(), SuccessMessages::updateUserSuccessful);
+    }
+
+    public function report(Request $request) {
+        return $this->farmerProfileService->DBPTransactionReport($request->all(), request()->user()->id);
+    }
+
+
 }

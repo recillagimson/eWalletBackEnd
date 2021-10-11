@@ -173,4 +173,32 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         $this->userAccountNotFound();
     }
 
+<<<<<<< HEAD
+=======
+    public function getAccountDetailByRSBSANumber(string $rsbsa_number) {
+        return $this->model->where('rsbsa_number', $rsbsa_number)->first();
+    }
+
+    public function getUserAccountByRSBSANoV2(string $RSBSANo) {
+        $record = $this->model->with(['profile', 'user_balance_info'])
+            // ->where('account_number', $accountNumber)
+            ->where('rsbsa_number', $RSBSANo)
+            ->first();
+
+        if($record) {
+            return $record;
+        }
+
+        return null;
+    }
+
+    public function getAccountByMobileNumber(string $mobileNumber) {
+        return $this->model->with(['profile'])->where('mobile_number', $mobileNumber)->first();
+    }
+
+    public function getAccountsWithRSBSANumberCount() {
+        return $this->model->where('rsbsa_number', '!=', '')->count();
+    }
+
+>>>>>>> stagingfix
 }
