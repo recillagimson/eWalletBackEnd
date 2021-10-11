@@ -145,6 +145,7 @@ class AddMoneyService implements IAddMoneyService
         ];
     }
 
+    //
     public function processAllPending()
     {
         $users = $this->addMoney->getUsersWithPending();
