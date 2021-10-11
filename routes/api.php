@@ -371,7 +371,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
         Route::post('/validate', [SendMoneyController::class, 'sendValidate'])->name('send.validate');
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr'])->name('generate.qr');
-        Route::get('/get/qr', [SendMoneyController::class, 'getQr']);
+        Route::get('/get/qr', [SendMoneyController::class, 'getQr'])->name('get.qr');
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr'])->name('scan.qr');
     });
 
