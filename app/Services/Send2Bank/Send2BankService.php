@@ -228,7 +228,7 @@ class Send2BankService implements ISend2BankService
             DB::commit();
 
             $this->logHistory($userId, $refNo, $currentDate, $totalAmount, $send2Bank->account_number);
-            return $this->createTransferResponse($send2Bank);
+            //return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();
 
