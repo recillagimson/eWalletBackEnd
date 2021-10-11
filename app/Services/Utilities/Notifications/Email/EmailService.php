@@ -23,6 +23,7 @@ use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\Send2Bank\Send2BankReceipt;
 use App\Mail\User\AdminUserVerification;
+use App\Mail\TierUpgrade\UpgradeToSilverNotification;
 use App\Models\UserUtilities\UserDetail;
 use App\Mail\Send2Bank\SenderNotification;
 use App\Mail\PayBills\PayBillsNotification;
@@ -33,6 +34,7 @@ use Illuminate\Validation\ValidationException;
 use App\Mail\SendMoney\SendMoneySenderNotification;
 use App\Mail\TierApproval\TierUpgradeRequestApproved;
 use App\Mail\SendMoney\SendMoneyRecipientNotification;
+use App\Mail\TierUpgrade\KYCNotification;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
@@ -279,6 +281,15 @@ class EmailService implements IEmailService
     {
         $userId = request()->user()->id;
         return $this->userAccounts->getUser($userId);
+    }
+
+    public function kycNotification(UserAccount $user, string $text)
+    {
+        $subject = EmailSubjects::kycNotification;
+        $to = $user->email;
+        $template = new KYCNotification($subject, $text);
+
+        $this->sendMessage($to, $subject, $template);
     }
 
     public function sendLoanReferenceNumber(string $firstName, string $refNo, string $to) {

@@ -13,6 +13,7 @@ class TransactionCategoryIds
     const posAddFunds = '0ec436e0-9131-11eb-b44f-1c1b0d14e211';
     const cashinDragonPay = '0ec43457-9131-11eb-b44f-1c1b0d14e211';
     const cashinBPI = 'edf5d5d0-9299-11eb-9663-1c1b0d14e211';
+    const cashinUBP = '4bb15489-71d4-49fa-a043-e6820e0d52d2';
 
     const sendMoneyToSquidPayAccount = '1a86b905-929a-11eb-9663-1c1b0d14e211';
     const receiveMoneyToSquidPayAccount = 'b1792f37-929c-11eb-9663-1c1b0d14e211';
@@ -22,7 +23,7 @@ class TransactionCategoryIds
 
     const drMemo = '0ec434b6-9131-11eb-b44f-1c1b0d14e211';
     const crMemo = '0ec43514-9131-11eb-b44f-1c1b0d14e211';
-    
+
     const dbpSubsidy = 'edj4d5d0-9299-11eb-9663-1c1b0d14e211';
 
     const addMoneyCebuana = 'edj4d5d0-9255-11eb-9663-1c1b0d14e218';

@@ -13,6 +13,7 @@ use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
 use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
 use App\Jobs\Farmers\BatchUpload;
+use App\Jobs\Farmers\SubsidyBatchUpload;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\Utilities\Responses\IResponseService;
@@ -114,6 +115,7 @@ class FarmerController extends Controller
 
     public function uploadSubsidyFileToS3(FarmerBatchUploadFileRequest $request) {
         $import = $this->farmerProfileService->uploadFileToS3($request->file);
+        SubsidyBatchUpload::dispatch($import, $request->user()->id);
         return $this->responseService->successResponse(['path' => $import], SuccessMessages::success);
     }
 

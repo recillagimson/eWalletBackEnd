@@ -4,6 +4,7 @@ namespace App\Services\Tier;
 
 use App\Enums\AccountTiers;
 use App\Models\TierApproval;
+use App\Models\UserAccount;
 use App\Repositories\IdType\IIdTypeRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
@@ -163,11 +164,25 @@ class TierApprovalService implements ITierApprovalService
             return $e->getMessage();
         }
     }
-    
-    public function sendSMS(UserAccount $user, string $message) {
-        if (!$user->mobile_number) {
+
+    public function sendEmail($email, string $message) {
+        $user = $this->userAccountRepository->getByEmail('email', $email);
+
+        if (!$user) {
             throw ValidationException::withMessages([
-                'mobile_number_not_fount' => 'Mobile Number not found'
+                'email_not_found' => 'Email not found'
+            ]);
+        }
+
+        $this->emailService->kycNotification($user, $message);
+    }
+    
+    public function sendSMS($mobile_number, string $message) {
+        $user = $this->userAccountRepository->getAccountByMobileNumber($mobile_number);
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'mobile_number_not_found' => 'Mobile Number not found'
             ]);
         }
 
