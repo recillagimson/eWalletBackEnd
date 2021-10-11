@@ -181,7 +181,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/auth/v2')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/user', [AuthV2Controller::class, 'getUser'])->name('user.show');
+        Route::get('/user', [AuthV2Controller::class, 'getUser'])->name('v2.user.show');
 
         Route::post('/register/validate', [RegisterV2Controller::class, 'registerValidate']);
         Route::post('/register', [RegisterV2Controller::class, 'register']);
@@ -468,7 +468,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/approval', [DrcrMemoController::class, 'approval']);
 
         Route::post('/report', [DrcrMemoController::class, 'report']);
-        
+
         Route::post('/report/filter', [DrcrMemoController::class, 'reportFiltered']);
         Route::post('/report/filter/pending/peruser', [DrcrMemoController::class, 'reportFilteredPending']);
         Route::post('/report/filter/pending/all', [DrcrMemoController::class, 'reportFilteredPerUser']);
