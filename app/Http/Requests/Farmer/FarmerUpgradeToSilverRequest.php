@@ -57,7 +57,7 @@ class FarmerUpgradeToSilverRequest extends FormRequest
             'source_of_fund_id'=>'required',
             'encoded_source_of_fund'=>Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211'),
             'mother_maidenname'=>'required',
-            'employer'=>['required', 'max:50'],
+            // 'employer'=>['required', 'max:50'],
             'contact_no'=>['required', 'max:11',  new MobileNumber()],
             'rsbsa_number' => 'required',
             'barangay' => 'required'
