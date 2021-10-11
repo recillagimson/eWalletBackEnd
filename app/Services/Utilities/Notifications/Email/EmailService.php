@@ -10,6 +10,7 @@ use App\Models\Tier;
 use App\Enums\OtpTypes;
 use SendGrid\Mail\Mail;
 use App\Mail\BPI\CashInBPI;
+use App\Mail\EcPay\SuccessPayment;
 use App\Models\UserAccount;
 use Illuminate\Support\Str;
 use App\Enums\EmailSubjects;
@@ -302,6 +303,13 @@ class EmailService implements IEmailService
     {
         $subject = "Cash In via BPI";
         $template = new CashInBPI($userDetail, $newBalance, $referenceNumber);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendEcPaySuccessPaymentNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
+    {
+        $subject = "Payment via EcPay";
+        $template = new SuccessPayment($userDetail, $newBalance, $referenceNumber);
         $this->sendMessage($to, $subject, $template);
     }
 }

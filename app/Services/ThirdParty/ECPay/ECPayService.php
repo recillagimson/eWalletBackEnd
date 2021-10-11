@@ -27,6 +27,9 @@ use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 
 class ECPayService implements IECPayService
 {
@@ -46,6 +49,9 @@ class ECPayService implements IECPayService
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private IResponseService $responseService;
     private IUserDetailRepository $userDetailRepository;
+    private IEmailService $emailService;
+    private ISmsService $smsService;
+    private IUserBalanceInfoRepository $balanceInfos;
 
     public function __construct(IApiService $apiService,
                                 IHandlePostBackService $handlePostBackService,
@@ -55,7 +61,10 @@ class ECPayService implements IECPayService
                                 ILogHistoryService $logHistoryService,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepository,
                                 IResponseService $responseService,
-                                IUserDetailRepository $userDetailRepository)
+                                IUserDetailRepository $userDetailRepository,
+                                IEmailService $emailService,
+                                ISmsService $smsService,
+                                IUserBalanceInfoRepository $balanceInfos)
     {
 
         $this->ecpayUrl = config('ecpay.ecpay_url');
@@ -73,6 +82,9 @@ class ECPayService implements IECPayService
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->responseService = $responseService;
         $this->userDetailRepository = $userDetailRepository;
+        $this->emailService = $emailService;
+        $this->smsService = $smsService;
+        $this->balanceInfos = $balanceInfos;
     }
 
     private function getXmlHeaders(): array
@@ -152,7 +164,8 @@ class ECPayService implements IECPayService
                 'transaction_response'=>$data['result'],
                 'status' => ($resultData[0]->PaymentStatus == 0) ? ECPayStatusTypes::Success : ECPayStatusTypes::Pending
             ]);
-            $this->handlePostBackService->addAmountToUserBalance($user->id, $amount);
+            $remainingBalance = $this->handlePostBackService->addAmountToUserBalance($user->id, $amount);
+            if($resultData[0]->PaymentStatus == 0) $this->sendNotification($this->getUserBalance(request()->user()->id), $refNo);
         } else {
             $amount = $inputData['amount'];
             $isDataExisting = $this->addMoneyEcPayRepository->create($this->createBodyFormat($data, $inputData, $user, $refNo, $transCategoryId, $expirationDate));
@@ -288,5 +301,22 @@ class ECPayService implements IECPayService
         ';
 
         return $str;
+    }
+
+    private function getUserBalance(string $userAccountID) {
+        $userBalanceInfo = $this->balanceInfos->getByUserAccountID($userAccountID);
+        
+        return $userBalanceInfo->available_balance;
+    }
+
+    private function sendNotification($newBalance, $referenceNumber): void {
+        if(request()->user() && request()->user()->is_login_email == 0) {
+            // SMS USER FOR NOTIFICATION
+            $this->smsService->sendEcPaySuccessPaymentNotification(request()->user()->mobile_number, request()->user()->profile, $newBalance, $referenceNumber);
+        }else {
+            // EMAIL USER FOR NOTIFICATION
+            $this->emailService->sendEcPaySuccessPaymentNotification(request()->user()->email, request()->user()->profile, $newBalance, $referenceNumber);
+        } 
+        
     }
 }
