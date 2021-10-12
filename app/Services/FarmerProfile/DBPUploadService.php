@@ -227,7 +227,7 @@ class DBPUploadService implements IDBPUploadService
         if($attr && isset($attr[DBPUploadKeysV3::RSBSANumber])) {
             $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeysV3::RSBSANumber]);
             $account = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
-            $record = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
+            $record = $this->userAccountRepository->getUserByRSBAWithRelations($rsbsaNumber);
             if(!$account) {
                 array_push($errors, 'RSBSA Number doesn\'t exist in record(s)');
             }
