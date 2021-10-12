@@ -112,8 +112,7 @@ class DBPUploadService implements IDBPUploadService
         $entries = implode('', $encodedString);
         //Save the JSON string to a text file.
         $fileName = $this->generateFileName($this->prov, $attr['path']);
-        $path = Storage::put($fileName, $entries);
-
+        $path = Storage::disk('s3')->put($fileName, $entries);
         return [
             'path' => $fileName
         ];
