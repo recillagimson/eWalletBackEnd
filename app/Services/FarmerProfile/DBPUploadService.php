@@ -251,7 +251,7 @@ class DBPUploadService implements IDBPUploadService
             if((Integer)$exists > 0) {
                 array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
              }
-
+        }
         //if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
           //  $record = $this->userAccountRepository->getUserByAccountNumber($attr[DBPUploadKeysV3::applicationNumber]);
            // if(!$record) {
