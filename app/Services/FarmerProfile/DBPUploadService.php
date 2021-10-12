@@ -231,7 +231,7 @@ class DBPUploadService implements IDBPUploadService
                 array_push($errors, 'RSBSA Number doesn\'t exist in record(s)');
             }
 
-            $exists = $this->dbpRepository->getExistByTransactionCategory($account->id, DBPUploadKeysV3::transactionCategoryId);
+            $exists = $this->dbpRepository->getExistByTransactionCategory($account->user_account_id, DBPUploadKeysV3::transactionCategoryId);
             if((Integer)$exists > 0) {
                 array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
              }
