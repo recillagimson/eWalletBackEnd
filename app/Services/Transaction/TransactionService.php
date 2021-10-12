@@ -6,18 +6,17 @@ namespace App\Services\Transaction;
 use PDF;
 use Carbon\Carbon;
 use App\Models\UserAccount;
-use App\Repositories\UserBalance\IUserBalanceRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\AddMoney\UBP\IUbpAddMoneyService;
-use App\Services\AddMoneyV2\IAddMoneyService;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\Utilities\CSV\ICSVService;
+use App\Services\AddMoneyV2\IAddMoneyService;
 use App\Exports\TransactionReport\TransactionReport;
+use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class TransactionService implements ITransactionService
 {
@@ -28,16 +27,14 @@ class TransactionService implements ITransactionService
     private ISend2BankPesonetService $s2bService;
     private IBuyLoadService $buyLoadService;
     private IAddMoneyService $addMoneyService;
-    private IUbpAddMoneyService $ubpAddMoneyService;
 
-    public function __construct(IUserBalanceRepository            $userBalanceRepository,
+    public function __construct(IUserBalanceRepository $userBalanceRepository,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-                                ICSVService                       $csvService,
-                                IPayBillsService                  $paybillsService,
-                                ISend2BankPesonetService          $s2bService,
-                                IBuyLoadService                   $buyLoadService,
-                                IAddMoneyService                  $addMoneyService,
-                                IUbpAddMoneyService               $ubpAddMoneyService)
+                                ICSVService $csvService,
+                                IPayBillsService $paybillsService,
+                                ISend2BankPesonetService $s2bService,
+                                IBuyLoadService $buyLoadService,
+                                IAddMoneyService $addMoneyService)
     {
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
@@ -46,7 +43,6 @@ class TransactionService implements ITransactionService
         $this->s2bService = $s2bService;
         $this->buyLoadService = $buyLoadService;
         $this->addMoneyService = $addMoneyService;
-        $this->ubpAddMoneyService = $ubpAddMoneyService;
     }
 
     public function processUserPending(UserAccount $user)
@@ -55,9 +51,6 @@ class TransactionService implements ITransactionService
 
         $addMoneyResponse = $this->addMoneyService->processPending($user->id);
         Log::info('Add Money Via DragonPay:', $addMoneyResponse);
-
-        $ubpAddMoneyResponse = $this->ubpAddMoneyService->processPending($user->id);
-        Log::info('Add Money Via UBP:', $ubpAddMoneyResponse);
 
         $paybillsResponse = $this->paybillsService->processPending($user);
         Log::info('Pay Bills Process Pending Result:', $paybillsResponse);
