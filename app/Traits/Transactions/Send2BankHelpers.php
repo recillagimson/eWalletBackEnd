@@ -240,6 +240,7 @@ trait Send2BankHelpers
             'account_number' => $send2Bank->account_number,
             'account_name' => $send2Bank->account_name,
             'amount' => $send2Bank->amount,
+            'total_amount' => $send2Bank->total_amount,
             'send_receipt_to' => $send2Bank->send_receipt_to,
             'purpose' => Str::lower($send2Bank->purpose) === 'others' ? $send2Bank->other_purpose : $send2Bank->purpose,
             'transaction_number' => $send2Bank->reference_number,
