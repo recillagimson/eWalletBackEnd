@@ -13,6 +13,7 @@ use App\Enums\ReferenceNumberTypes;
 use App\Repositories\Address\Province\IProvinceRepository;
 use App\Repositories\FarmerImport\IFarmerImportRepository;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
+use App\Repositories\Notification\INotificationRepository;
 use Illuminate\Support\Facades\Storage;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
@@ -36,6 +37,7 @@ class DBPUploadService implements IDBPUploadService
     private IReferenceNumberService $referenceNumberService;
     private IFarmerImportRepository $farmerImportRepository;
     private IProvinceRepository $provinceRepository;
+    private INotificationRepository $notificationRepository;
 
     public function __construct(
         IUserAccountRepository $userAccountRepository, 
@@ -44,7 +46,8 @@ class DBPUploadService implements IDBPUploadService
         IInReceiveFromDBPRepository $dbpRepository,
         IReferenceNumberService $referenceNumberService,
         IFarmerImportRepository $farmerImportRepository,
-        IProvinceRepository $provinceRepository
+        IProvinceRepository $provinceRepository,
+        INotificationRepository $notificationRepository
     )
     {
         $this->entries = collect();
@@ -55,6 +58,7 @@ class DBPUploadService implements IDBPUploadService
         $this->referenceNumberService = $referenceNumberService;
         $this->farmerImportRepository = $farmerImportRepository;
         $this->provinceRepository = $provinceRepository;
+        $this->notificationRepository = $notificationRepository;
         $this->success = 0;
         $this->fails = 0;
     }
@@ -113,8 +117,20 @@ class DBPUploadService implements IDBPUploadService
         //Save the JSON string to a text file.
         $fileName = $this->generateFileName($this->prov, $attr['path']);
         $path = Storage::disk('s3')->put($fileName, $entries);
+
+        // // ADD NOTIFICATION TO AUTH USER
+        $notification = $this->notificationRepository->create([
+            'user_account_id' => $authUser,
+            'title' => 'DBP Upload',
+            'description' => Storage::disk('s3')->temporaryUrl($fileName, Carbon::now()->addMinutes(30)),
+            'status' => 1,
+            'user_created' => $authUser,
+            'user_updated' => $authUser
+        ]);
+
         return [
-            'path' => $fileName
+            'path' => $fileName,
+            'notification' => $notification
         ];
     }
 

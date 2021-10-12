@@ -141,7 +141,7 @@ class FarmerController extends Controller
 
     public function processSubsidyV3(SubsidyProcessRequest $request) {
         $result = $this->dbpUploadService->processSubsidyV3($request->all(), request()->user()->id);
-        return $this->responseService->successResponse(['path' => $result], SuccessMessages::updateUserSuccessful);
+        return $this->responseService->successResponse($result, SuccessMessages::updateUserSuccessful);
     }
 
 }
