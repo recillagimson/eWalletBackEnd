@@ -6,6 +6,7 @@ use DB;
 use Str;
 use Exception;
 use App\Enums\eKYC;
+use Illuminate\Http\File;
 use App\Enums\AccountTiers;
 use App\Models\FarmerImport;
 use App\Enums\SuccessMessages;
@@ -34,6 +35,7 @@ use App\Repositories\Tier\ITierApprovalRepository;
 use App\Exports\Farmer\Subsidy\SubsidyFailedExport;
 use App\Exports\Farmer\Subsidy\SubsidySuccessExport;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Repositories\Address\Province\IProvinceRepository;
@@ -50,7 +52,6 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\Responses\IResponseService;
 
 class FarmerProfileService implements IFarmerProfileService
 {

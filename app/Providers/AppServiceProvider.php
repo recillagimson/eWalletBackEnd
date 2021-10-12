@@ -46,7 +46,9 @@ use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\FarmerAccount\FarmerAccountService;
 use App\Services\FarmerAccount\IFarmerAccountService;
+use App\Services\FarmerProfile\DBPUploadService;
 use App\Services\FarmerProfile\FarmerProfileService;
+use App\Services\FarmerProfile\IDBPUploadService;
 use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\KYCService\IKYCService;
 use App\Services\KYCService\KYCService;
@@ -279,6 +281,7 @@ class AppServiceProvider extends ServiceProvider
 
         // DBP
         $this->app->bind(IDBPReportService::class, DBPReportService::class);
+        $this->app->bind(IDBPUploadService::class, DBPUploadService::class);
     }
 
     /**
