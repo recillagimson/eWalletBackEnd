@@ -121,6 +121,8 @@ class AtmService implements IAtmService
         if ($response->successful()) {
             $data = $response->json();
             $state = $data['responseCode'];
+            \Log::info('///// - PRODUCT LIST IF SUCCESSFUL - //////');
+            \Log::info(json_encode($data));
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
                 return ($provider == TopupTypes::atm_epin) ? 
