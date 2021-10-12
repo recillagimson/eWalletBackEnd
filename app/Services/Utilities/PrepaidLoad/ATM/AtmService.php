@@ -102,7 +102,7 @@ class AtmService implements IAtmService
                 if (!$prefix) $this->prefixNotSupported();
 
                 // return $prefix['provider'];
-                return ucwords(strtolower($this->convertPrefixNetworkToProductListProvider($prefix['provider'])));
+                return $this->convertPrefixNetworkToProductListProvider($prefix['provider']);
             }
         }
 
