@@ -246,20 +246,20 @@ class DBPUploadService implements IDBPUploadService
             array_push($errors, 'Application Number is required');
         }
 
-        if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
-            $record = $this->userAccountRepository->getUserByAccountNumber($attr[DBPUploadKeysV3::applicationNumber]);
-            if(!$record) {
-                array_push($errors, 'User Account doesn\'t exists');
-            }
+        //if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
+          //  $record = $this->userAccountRepository->getUserByAccountNumber($attr[DBPUploadKeysV3::applicationNumber]);
+           // if(!$record) {
+               // array_push($errors, 'User Account doesn\'t exists');
+            //}
 
             
-            if($attr && isset($attr[DBPUploadKeysV3::applicationNumber]) && $record) {
-                $exists = $this->dbpRepository->getExistByTransactionCategory($record->id, DBPUploadKeysV3::transactionCategoryId);
-                if((Integer)$exists > 0) {
-                    array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
-                }
-            }
-        }
+           // if($attr && isset($attr[DBPUploadKeysV3::applicationNumber]) && $record) {
+               // $exists = $this->dbpRepository->getExistByTransactionCategory($record->id, DBPUploadKeysV3::transactionCategoryId);
+                //if((Integer)$exists > 0) {
+                  //  array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
+                //}
+            //}
+        //}
 
         // REMITTANCE AMOUNT
         if($attr && !isset($attr[DBPUploadKeysV3::remittanceAmount])) {
@@ -277,39 +277,39 @@ class DBPUploadService implements IDBPUploadService
         }
 
         // BENEFICIARY 2
-        if($attr && !isset($attr[DBPUploadKeysV3::beneficiary2])) {
-            array_push($errors, 'Beneficiary Name 2 is required');
-        }
+       //if($attr && !isset($attr[DBPUploadKeysV3::beneficiary2])) {
+            //array_push($errors, 'Beneficiary Name 2 is required');
+       // }
         
         // BENEFICIARY ADDRESS 1
-        if($attr && !isset($attr[DBPUploadKeysV3::beneficiary1Address])) {
-            array_push($errors, 'Beneficiary Address 1 is required');
-        }
+       // if($attr && !isset($attr[DBPUploadKeysV3::beneficiary1Address])) {
+           // array_push($errors, 'Beneficiary Address 1 is required');
+        //}
 
         // BENEFICIARY ADDRESS 2
-        if($attr && !isset($attr[DBPUploadKeysV3::beneficiary2Address])) {
-            array_push($errors, 'Beneficiary Address 2 is required');
-        }
+        //if($attr && !isset($attr[DBPUploadKeysV3::beneficiary2Address])) {
+            //array_push($errors, 'Beneficiary Address 2 is required');
+        //}
 
         // REMITTER NAME 1
-        if($attr && !isset($attr[DBPUploadKeysV3::remitterName1])) {
-            array_push($errors, 'Remitter 1 Name is required');
-        }
+        //if($attr && !isset($attr[DBPUploadKeysV3::remitterName1])) {
+           // array_push($errors, 'Remitter 1 Name is required');
+        //}
 
         // REMITTER NAME 2
-        if($attr && !isset($attr[DBPUploadKeysV3::remitterName2])) {
-            array_push($errors, 'Remitter 2 Name is required');
-        }
+        //if($attr && !isset($attr[DBPUploadKeysV3::remitterName2])) {
+            //array_push($errors, 'Remitter 2 Name is required');
+        //}
 
         // REMITTER ADDRESS 1
-        if($attr && !isset($attr[DBPUploadKeysV3::remitterAddress1])) {
-            array_push($errors, 'Remitter 1 Address is required');
-        }
+        //if($attr && !isset($attr[DBPUploadKeysV3::remitterAddress1])) {
+           // array_push($errors, 'Remitter 1 Address is required');
+        //}
 
         // REMITTER ADDRESS 2
-        if($attr && !isset($attr[DBPUploadKeysV3::remitterAddress2])) {
-            array_push($errors, 'Remitter 2 Address is required');
-        }
+        //if($attr && !isset($attr[DBPUploadKeysV3::remitterAddress2])) {
+            //array_push($errors, 'Remitter 2 Address is required');
+        //}
 
         return $errors;
     }
