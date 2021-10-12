@@ -123,15 +123,9 @@ class AtmService implements IAtmService
             $state = $data['responseCode'];
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
-
-                $products = $prefixes->where('provider', $provider)
-                    ->sortBy(['provider', 'productCode', 'denominations']);
-
-                $uniqueProducts = $products->unique(function ($product) {
-                    return $product['provider'] . $product['productCode'];
-                });
-
-                return $uniqueProducts->values();
+                return ($provider == TopupTypes::atm_epin) ? 
+                $prefixes->where('productType', $provider)->sortBy(['provider', 'productCode', 'denominations']) :
+                $prefixes->where('provider', $provider)->sortBy(['provider', 'productCode', 'denominations']);
             }
         }
 

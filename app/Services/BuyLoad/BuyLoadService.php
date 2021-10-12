@@ -88,7 +88,6 @@ class BuyLoadService implements IBuyLoadService
     public function getProductsByProvider(string $mobileNumber): array
     {
         $provider = $this->atmService->getProvider($mobileNumber);
-        //$provider = Str::upper($provider);
         return array_values($this->atmService->getProductsByProvider($provider)->toArray());
     }
 
