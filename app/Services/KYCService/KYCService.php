@@ -298,6 +298,10 @@ class KYCService implements IKYCService
                 $error = $response['status'];
             }
 
+            isset($response['result']) ? $response['result']->requestId : (isset($response['requestId']) ? $response['requestId'] : '');
+            \Log::info('DEDUP');
+            \Log::info(json_encode($response));
+
             $record = $this->kycRepository->create([
                 'user_account_id' => $attr['user_account_id'],
                 'request_id' => isset($response['result']) ? $response['result']->requestId : $response['requestId'],
