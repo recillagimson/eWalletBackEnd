@@ -227,15 +227,9 @@ class DBPUploadService implements IDBPUploadService
         if($attr && isset($attr[DBPUploadKeysV3::RSBSANumber])) {
             $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeysV3::RSBSANumber]);
             $account = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
-            $record = $this->userAccountRepository->getUserByRSBAWithRelations($rsbsaNumber);
             if(!$account) {
                 array_push($errors, 'RSBSA Number doesn\'t exist in record(s)');
             }
-
-            $exists = $this->dbpRepository->getExistByTransactionCategory($record->id, DBPUploadKeysV3::transactionCategoryId);
-            if((Integer)$exists > 0) {
-                array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
-             }
 
         }
 
@@ -254,13 +248,7 @@ class DBPUploadService implements IDBPUploadService
             array_push($errors, 'Application Number is required');
         }
 
- // if($attr && isset($attr[DBPUploadKeysV3::RSBSANumber])) {
-           //$record = $this->userAccountRepository->getUserAccountByRSBSANoV2($attr[DBPUploadKeysV3::RSBSANumber]);
-           // $exists = $this->dbpRepository->getExistByTransactionCategory($record->id, DBPUploadKeysV3::transactionCategoryId);
-            //if((Integer)$exists > 0) {
-               // array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
-             //}
-        //}
+
         //if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
           //  $record = $this->userAccountRepository->getUserByAccountNumber($attr[DBPUploadKeysV3::applicationNumber]);
            // if(!$record) {
