@@ -246,6 +246,12 @@ class DBPUploadService implements IDBPUploadService
             array_push($errors, 'Application Number is required');
         }
 
+        if($attr && isset($attr[DBPUploadKeysV3::applicationNumber]) && $record) {
+            $exists = $this->dbpRepository->getExistByTransactionCategory($record->id, DBPUploadKeysV3::transactionCategoryId);
+            if((Integer)$exists > 0) {
+                array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
+             }
+
         //if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
           //  $record = $this->userAccountRepository->getUserByAccountNumber($attr[DBPUploadKeysV3::applicationNumber]);
            // if(!$record) {
