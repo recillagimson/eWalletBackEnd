@@ -165,7 +165,7 @@ class DBPUploadService implements IDBPUploadService
     private function addUserBalance($user, $amount)
     {
         $currentBalance = $this->userBalanceInfo->getUserBalance($user->id);
-        $total = (float)$currentBalance + (float)DBPUploadKeysV3::remittanceAmount;
+        $total = (Double)$currentBalance + (Double)$amount;
         return $this->userBalanceInfo->updateUserBalance($user->id, $total);
     }
 
