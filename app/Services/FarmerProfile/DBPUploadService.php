@@ -121,7 +121,7 @@ class DBPUploadService implements IDBPUploadService
         // // ADD NOTIFICATION TO AUTH USER
         $notification = $this->notificationRepository->create([
             'user_account_id' => $authUser,
-            'title' => 'DBP Upload',
+            'title' => 'DBP Disbursement Upload',
             'description' => Storage::disk('s3')->temporaryUrl($fileName, Carbon::now()->addMinutes(30)),
             'status' => 1,
             'user_created' => $authUser,
