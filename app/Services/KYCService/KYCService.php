@@ -351,14 +351,16 @@ class KYCService implements IKYCService
                     'status' => 'CALLBACK_RECEIVED'
                 ]);
             }
-            if($tierApproval && $attr['result']['summary']['action'] != 'Pass') {
-                $tierApproval->update([
-                    'status' => 'PENDING'
-                ]);
-            } else {
-                $tierApproval->update([
-                    'status' => 'APPROVED'
-                ]);
+            if($tierApproval) {
+                if($tierApproval && $attr['result']['summary']['action'] != 'Pass') {
+                    $this->tierApproval->update($tierApproval, [
+                        'status' => 'PENDING'
+                    ]);
+                } else {
+                    $this->tierApproval->update($tierApproval, [
+                        'status' => 'APPROVED'
+                    ]);
+                }
             }
         }
 
