@@ -270,6 +270,7 @@ class DBPUploadService implements IDBPUploadService
         if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
             $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeysV3::RSBSANumber]);
             $record = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
+        }
 
         if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
             $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeysV3::RSBSANumber]);
