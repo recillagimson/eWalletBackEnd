@@ -366,9 +366,9 @@ class AuthService implements IAuthService
     private function validateAllowOnborderUsersOnly(?UserAccount $user)
     {
         if (!$user) $this->loginFailed();
-        if ($user->is_admin) $this->loginFailed();
-        //if (!$user->is_merchant) $this->loginFailed();
-       // if (!$user->is_onboarder) $this->loginFailed();
+        if ($user->is_admin == 1) $this->loginFailed();
+        if ($user->is_merchant != 1) $this->loginFailed();
+        if ($user->is_onboarder != 1) $this->loginFailed();
     }
 
 }
