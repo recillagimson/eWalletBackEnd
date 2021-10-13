@@ -81,7 +81,7 @@ class DBPUploadService implements IDBPUploadService
             $record = explode('|', $content);
             $this->prov = preg_replace("/\r|\n/", "", $record[DBPUploadKeysV3::remitterAddress3]);
             $errors = $this->runValidation($record);
-
+            
             if(count($errors) == 0) {
                 try {
                     \DB::beginTransaction();
@@ -90,7 +90,7 @@ class DBPUploadService implements IDBPUploadService
                     $user = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
                     $transaction = $this->addReceiveFromDBP($user, $referenceNumber, $record);
                     $this->addTransaction($user, $referenceNumber, $transaction, $record);
-                    $this->addUserBalance($user, $referenceNumber, $record[DBPUploadKeysV3::remittanceAmount]);
+                    $this->addUserBalance($user, $record[DBPUploadKeysV3::remittanceAmount]);
                     $content = preg_replace('/\r|\n/', '', $content) . "|" . "CREDITED" . "\n";
                     $this->entries->push($content);
                     $this->success = $this->success + 1;
