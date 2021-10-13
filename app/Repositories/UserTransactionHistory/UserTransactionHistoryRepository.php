@@ -288,8 +288,8 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             }
         }
 
-        $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE')
-        ->where('rsbsa_number', '!=', '');
+        // $records = $records->where('reference_number', '!=', 'BEGINNING BALANCE')
+        // ->where('rsbsa_number', '!=', '');
 
         if($authUser && $authUser != "") {
             $records = $records->where('user_updated', $authUser);
