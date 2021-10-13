@@ -7,6 +7,7 @@ use Log;
 use CURLFILE;
 use Exception;
 use Carbon\Carbon;
+use App\Enums\eKYC;
 use App\Enums\AccountTiers;
 use Illuminate\Support\Str;
 use App\Enums\SuccessMessages;
@@ -353,20 +354,26 @@ class KYCService implements IKYCService
                         'hv_result' => $attr['result']['summary']['action'],
                         'status' => 'CALLBACK_RECEIVED'
                     ]);
-                }
-                if($tierApproval) {
-                    if($tierApproval && $attr['result']['summary']['action'] == 'Pass') {
-                        $userAccount = $this->userAccountRepository->get($record->user_account_id);
-                        if($userAccount) {
-                            $this->userAccountRepository->update($userAccount, ['tier_id' => AccountTiers::tier2]);
+                    if($tierApproval) {
+                        if($tierApproval && $attr['result']['summary']['action'] == 'Pass') {
+                            $userAccount = $this->userAccountRepository->get($record->user_account_id);
+                            if($userAccount) {
+                                $this->userAccountRepository->update($userAccount, [
+                                    'tier_id' => AccountTiers::tier2,
+                                    'verified' => 1,
+                                ]);
+                            }
+                            $this->tierApproval->update($tierApproval, [
+                                'status' => 'APPROVED',
+                                'approved_by' => eKYC::eKYC,
+                                'remarks' => eKYC::eKYC_remarks,
+                                'approved_date' => Carbon::now()->format('Y-m-d H:i:s')
+                            ]);
+                        } else {
+                            $this->tierApproval->update($tierApproval, [
+                                'status' => 'PENDING'
+                            ]);
                         }
-                        $this->tierApproval->update($tierApproval, [
-                            'status' => 'APPROVED'
-                        ]);
-                    } else {
-                        $this->tierApproval->update($tierApproval, [
-                            'status' => 'PENDING'
-                        ]);
                     }
                 }
             }
