@@ -167,7 +167,7 @@ class FarmerProfileService implements IFarmerProfileService
                 $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id, true);
                 $audit_remarks = $user_account->id . " has requested to upgrade to Silver";
                 $record = $this->logHistoryService->logUserHistory($user_account->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
-                $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
+                // $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
             // } //COMMENT FOR TESTING PURPOSES
             // $details = $request->validated();
             // dd($user_account->profile);

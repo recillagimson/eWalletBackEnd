@@ -2,24 +2,25 @@
 
 namespace App\Services\KYCService;
 
+use DB;
+use Log;
+use CURLFILE;
+use Exception;
+use Carbon\Carbon;
+use App\Enums\AccountTiers;
+use Illuminate\Support\Str;
 use App\Enums\SuccessMessages;
-use App\Repositories\KYCVerification\IKYCVerificationRepository;
+use Illuminate\Http\JsonResponse;
+use App\Traits\Errors\WithKYCErrors;
+use App\Traits\Errors\WithUserErrors;
+use Illuminate\Support\Facades\Storage;
+use App\Traits\Errors\WithTransactionErrors;
 use App\Repositories\Tier\ITierApprovalRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\Responses\IResponseService;
-use App\Traits\Errors\WithKYCErrors;
-use App\Traits\Errors\WithTransactionErrors;
-use App\Traits\Errors\WithUserErrors;
-use Carbon\Carbon;
-use CURLFILE;
-use DB;
-use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Log;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
 
 class KYCService implements IKYCService
 {
@@ -342,24 +343,31 @@ class KYCService implements IKYCService
         Log::info(json_encode($attr));
         if ($attr && isset($attr['statusCode']) && isset($attr['statusCode']) == 200 && isset($attr['result']) && isset($attr['result']['summary'])) {
             $record = $this->kycRepository->findByRequestId($attr['result']['data']['requestId']);
-            $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
-            Log::info(json_encode($tierApproval));
-            if ($record) {
-                $this->kycRepository->update($record, [
-                    'hv_response' => json_encode($attr),
-                    'hv_result' => $attr['result']['summary']['action'],
-                    'status' => 'CALLBACK_RECEIVED'
-                ]);
-            }
-            if($tierApproval) {
-                if($tierApproval && $attr['result']['summary']['action'] != 'Pass') {
-                    $this->tierApproval->update($tierApproval, [
-                        'status' => 'PENDING'
+            Log::info(json_encode($record));
+            if($record) {
+                $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
+                Log::info(json_encode($tierApproval));
+                if ($record) {
+                    $this->kycRepository->update($record, [
+                        'hv_response' => json_encode($attr),
+                        'hv_result' => $attr['result']['summary']['action'],
+                        'status' => 'CALLBACK_RECEIVED'
                     ]);
-                } else {
-                    $this->tierApproval->update($tierApproval, [
-                        'status' => 'APPROVED'
-                    ]);
+                }
+                if($tierApproval) {
+                    if($tierApproval && $attr['result']['summary']['action'] == 'Pass') {
+                        $userAccount = $this->userAccountRepository->get($record->user_account_id);
+                        if($userAccount) {
+                            $this->userAccountRepository->update($userAccount, ['tier_id' => AccountTiers::tier2]);
+                        }
+                        $this->tierApproval->update($tierApproval, [
+                            'status' => 'APPROVED'
+                        ]);
+                    } else {
+                        $this->tierApproval->update($tierApproval, [
+                            'status' => 'PENDING'
+                        ]);
+                    }
                 }
             }
         }
