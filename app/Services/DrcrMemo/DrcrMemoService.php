@@ -447,6 +447,13 @@ class DrcrMemoService implements IDrcrMemoService
                                          $controlNumber->id
                                         );
             Excel::import($import, $file);
+
+            $this->drcrMemoControlNumberRepository->update($controlNumber, [
+                'user_updated' => $user->id,
+                'status' => 'Success',
+    
+            ]);
+
             return ;
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
