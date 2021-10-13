@@ -249,20 +249,23 @@ class DBPUploadService implements IDBPUploadService
         }
 
 
-        //if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
-          //  $record = $this->userAccountRepository->getUserByAccountNumber($attr[DBPUploadKeysV3::applicationNumber]);
-           // if(!$record) {
-               // array_push($errors, 'User Account doesn\'t exists');
-            //}
+        if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
+            $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeysV3::RSBSANumber]);
+            $record = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
+
+            if(!$record) {
+                array_push($errors, 'User Account doesn\'t exists');
+            }
 
             
-           // if($attr && isset($attr[DBPUploadKeysV3::applicationNumber]) && $record) {
-               // $exists = $this->dbpRepository->getExistByTransactionCategory($record->id, DBPUploadKeysV3::transactionCategoryId);
-                //if((Integer)$exists > 0) {
-                  //  array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
-                //}
-            //}
-        //}
+            if($attr && isset($attr[DBPUploadKeysV3::applicationNumber]) && $record) {
+               $exists = $this->dbpRepository->getExistByTransactionCategory($record->id, DBPUploadKeysV3::transactionCategoryId);
+                if((Integer)$exists > 0) {
+                   array_push($errors, 'Subsidiary for this record has already been uploaded(duplicate record)');
+                }
+            }
+        }
+
 
         // REMITTANCE AMOUNT
         if($attr && !isset($attr[DBPUploadKeysV3::remittanceAmount])) {
