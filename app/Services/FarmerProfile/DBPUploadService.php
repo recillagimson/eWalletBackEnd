@@ -81,6 +81,7 @@ class DBPUploadService implements IDBPUploadService
             $record = explode('|', $content);
             $this->prov = preg_replace("/\r|\n/", "", $record[DBPUploadKeysV3::remitterAddress3]);
             $errors = $this->runValidation($record);
+
             if(count($errors) == 0) {
                 try {
                     \DB::beginTransaction();
@@ -109,6 +110,7 @@ class DBPUploadService implements IDBPUploadService
                 $this->entries->push($content);
                 $this->fails = $this->fails + 1;
             }
+            dd('awdawd');
 
         }
 
@@ -171,7 +173,7 @@ class DBPUploadService implements IDBPUploadService
 
     private function addTransaction($user, $referenceId, $transaction, $row)
     {
-        $this->userTransactionHistoryRepository->create([
+        $params = [
             'user_account_id' => $user->id,
             'transaction_id' => $transaction->id,
             'reference_number' => $referenceId,
@@ -196,7 +198,8 @@ class DBPUploadService implements IDBPUploadService
             'remitter_name_2' => isset($row[DBPUploadKeysV3::remitterName2]) ? $row[DBPUploadKeysV3::remitterName2] : "",
             'remitter_address_1' => isset($row[DBPUploadKeysV3::remitterAddress1]) ? $row[DBPUploadKeysV3::remitterAddress1] : "",
             'remitter_address_2' => isset($row[DBPUploadKeysV3::remitterAddress2]) ? $row[DBPUploadKeysV3::remitterAddress2] : "",
-        ]);
+        ];
+        $this->userTransactionHistoryRepository->create($params);
     }
 
     private function addReceiveFromDBP($user, $referenceId, $row)
@@ -212,6 +215,22 @@ class DBPUploadService implements IDBPUploadService
             "status" => 'SUCCESS',
             "user_created" => $this->authUser,
             'user_updated' => $this->authUser,
+            'funding_currency' => isset($row[DBPUploadKeysV3::currency]) ? $row[DBPUploadKeysV3::currency] : "",
+            'remittance_date' => isset($row[DBPUploadKeysV3::remittanceDate]) ? $row[DBPUploadKeysV3::remittanceDate] : "",
+            'service_code' => isset($row[DBPUploadKeysV3::serviceCode]) ? $row[DBPUploadKeysV3::serviceCode] : "",
+            'outlet_name' => isset($row[DBPUploadKeysV3::outletName]) ? $row[DBPUploadKeysV3::outletName] : "",
+            'beneficiary_name_1' => isset($row[DBPUploadKeysV3::beneficiary1]) ? $row[DBPUploadKeysV3::beneficiary1] : "",
+            'beneficiary_name_2' => isset($row[DBPUploadKeysV3::beneficiary2]) ? $row[DBPUploadKeysV3::beneficiary2] : "",
+            'beneficiary_name_3' => isset($row[DBPUploadKeysV3::beneficiary3]) ? $row[DBPUploadKeysV3::beneficiary3] : "",
+            'beneficiary_address_1' => isset($row[DBPUploadKeysV3::beneficiary1Address]) ? $row[DBPUploadKeysV3::beneficiary1Address] : "",
+            'beneficiary_address_2' => isset($row[DBPUploadKeysV3::beneficiary2Address]) ? $row[DBPUploadKeysV3::beneficiary2Address] : "",
+            'beneficiary_address_3' => isset($row[DBPUploadKeysV3::beneficiary3Address]) ? $row[DBPUploadKeysV3::beneficiary3Address] : "",
+            'mobile_number' => isset($row[DBPUploadKeysV3::beneficiaryPhoneNo]) ? $row[DBPUploadKeysV3::beneficiaryPhoneNo] : "",
+            'message' => isset($row[DBPUploadKeysV3::message]) ? $row[DBPUploadKeysV3::message] : "",
+            'remitter_name_1' => isset($row[DBPUploadKeysV3::remitterName1]) ? $row[DBPUploadKeysV3::remitterName1] : "",
+            'remitter_name_2' => isset($row[DBPUploadKeysV3::remitterName2]) ? $row[DBPUploadKeysV3::remitterName2] : "",
+            'remitter_address_1' => isset($row[DBPUploadKeysV3::remitterAddress1]) ? $row[DBPUploadKeysV3::remitterAddress1] : "",
+            'remitter_address_2' => isset($row[DBPUploadKeysV3::remitterAddress2]) ? $row[DBPUploadKeysV3::remitterAddress2] : "",
         ];
 
         return $this->dbpRepository->create($data);
@@ -248,6 +267,9 @@ class DBPUploadService implements IDBPUploadService
             array_push($errors, 'Application Number is required');
         }
 
+        if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
+            $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeysV3::RSBSANumber]);
+            $record = $this->userAccountRepository->getUserAccountByRSBSANoV2($rsbsaNumber);
 
         if($attr && isset($attr[DBPUploadKeysV3::applicationNumber])) {
             $rsbsaNumber = preg_replace("/[^0-9]/", "", $attr[DBPUploadKeysV3::RSBSANumber]);

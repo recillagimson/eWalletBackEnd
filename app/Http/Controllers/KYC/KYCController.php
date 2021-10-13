@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\KYC;
 
-use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KYC\OCRRequest;
 use App\Services\KYCService\IKYCService;

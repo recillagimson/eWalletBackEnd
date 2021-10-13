@@ -343,6 +343,14 @@ class KYCService implements IKYCService
         if ($attr && isset($attr['statusCode']) && isset($attr['statusCode']) == 200 && isset($attr['result']) && isset($attr['result']['summary'])) {
             $record = $this->kycRepository->findByRequestId($attr['result']['data']['requestId']);
             $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
+            Log::info(json_encode($tierApproval));
+            if ($record) {
+                $this->kycRepository->update($record, [
+                    'hv_response' => json_encode($attr),
+                    'hv_result' => $attr['result']['summary']['action'],
+                    'status' => 'CALLBACK_RECEIVED'
+                ]);
+            }
             if($tierApproval && $attr['result']['summary']['action'] != 'Pass') {
                 $tierApproval->update([
                     'status' => 'PENDING'
@@ -350,13 +358,6 @@ class KYCService implements IKYCService
             } else {
                 $tierApproval->update([
                     'status' => 'APPROVED'
-                ]);
-            }
-            if ($record) {
-                $this->kycRepository->update($record, [
-                    'hv_response' => json_encode($attr),
-                    'hv_result' => $attr['result']['summary']['action'],
-                    'status' => 'CALLBACK_RECEIVED'
                 ]);
             }
         }
