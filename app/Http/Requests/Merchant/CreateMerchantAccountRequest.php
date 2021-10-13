@@ -13,7 +13,7 @@ class CreateMerchantAccountRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,15 @@ class CreateMerchantAccountRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required',
+            'type' => 'required',
+            'house_no' => 'required',
+            'city_municipality' => 'required',
+            'province' => 'required',
+            'authorized_representative' => 'required',
+            'company_email' => 'required',
+            'contact_number' => 'required',
+            'merchant_balance' => 'required',
         ];
     }
 }

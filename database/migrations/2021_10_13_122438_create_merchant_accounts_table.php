@@ -23,7 +23,7 @@ class CreateMerchantAccountsTable extends Migration
             $table->string('authorized_representative');
             $table->string('company_email');
             $table->string('contact_number');
-            $table->double('merchant_balance');
+            $table->double('merchant_balance')->default(0);
             $table->uuid('created_by')->nullable();
             $table->uuid('updated_by')->nullable();
             $table->timestamps();
