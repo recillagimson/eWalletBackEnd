@@ -401,7 +401,7 @@ class KYCService implements IKYCService
 
     private function generateApplicationId() {
         $count = $this->kycRepository->count();
-        $transactionId = $count;
+        $transactionId = ($count + 1);
         if($count < 10) {
             $transactionId = "DUP0000000" . $count;
         } else if($count < 100) {
