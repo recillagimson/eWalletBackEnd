@@ -367,8 +367,8 @@ class AuthService implements IAuthService
     {
         if (!$user) $this->loginFailed();
         if ($user->is_admin == 1) $this->loginFailed();
-        if ($user->is_merchant != 1) $this->loginFailed();
-        if ($user->is_onboarder != 1) $this->loginFailed();
+        if ($user->is_merchant != 1 &&  $user->is_onboarder != 1) $this->loginFailed();
+       
     }
 
 }
