@@ -11,6 +11,7 @@ use App\Models\UserAccount;
 use App\Repositories\Disbursement\IInDisbursementDbpRepository;
 use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
+use App\Repositories\MerchantAccount\IMerchantAccountRepository;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
@@ -47,8 +48,26 @@ class DisbursementDbpService implements IDisbursementDbpService
     private INotificationRepository $notificationRepository;
     private IOutDisbursementDbpRepository $outDisbursementDbpRepository;
     private IInDisbursementDbpRepository $inDisbursementDbpRepository;
+    private IMerchantAccountRepository $merchantAccountRepo;
 
-    public function __construct(IBayadCenterService $bayadCenterService, IUserDetailRepository $userDetailRepository, IReferenceNumberService $referenceNumberService, IUserBalanceInfoRepository $userBalanceInfo, IServiceFeeRepository $serviceFeeRepository, IUserAccountRepository $userAccountRepository, IOutPayBillsRepository $outPayBillsRepository, IUserTransactionHistoryRepository $transactionHistories, INotificationService $notificationService, ILogHistoryRepository $logHistory, IEmailService $emailService, ISmsService $smsService, INotificationRepository $notificationRepository, IOutDisbursementDbpRepository $outDisbursementDbpRepository, IInDisbursementDbpRepository $inDisbursementDbpRepository)
+    public function __construct(
+        IBayadCenterService $bayadCenterService, 
+        IUserDetailRepository $userDetailRepository, 
+        IReferenceNumberService $referenceNumberService, 
+        IUserBalanceInfoRepository $userBalanceInfo, 
+        IServiceFeeRepository $serviceFeeRepository, 
+        IUserAccountRepository $userAccountRepository, 
+        IOutPayBillsRepository $outPayBillsRepository, 
+        IUserTransactionHistoryRepository $transactionHistories, 
+        INotificationService $notificationService, 
+        ILogHistoryRepository $logHistory, 
+        IEmailService $emailService, 
+        ISmsService $smsService, 
+        INotificationRepository $notificationRepository, 
+        IOutDisbursementDbpRepository $outDisbursementDbpRepository, 
+        IInDisbursementDbpRepository $inDisbursementDbpRepository,
+        IMerchantAccountRepository $merchantAccountRepo
+        )
     {
         $this->bayadCenterService = $bayadCenterService;
         $this->userDetailRepository = $userDetailRepository;
@@ -65,6 +84,7 @@ class DisbursementDbpService implements IDisbursementDbpService
         $this->notificationRepository = $notificationRepository;
         $this->outDisbursementDbpRepository = $outDisbursementDbpRepository;
         $this->inDisbursementDbpRepository = $inDisbursementDbpRepository;
+        $this->merchantAccountRepo = $merchantAccountRepo;
     }
 
 
@@ -130,6 +150,18 @@ class DisbursementDbpService implements IDisbursementDbpService
     {
         $balance = $this->userBalanceInfo->getUserBalance($user->id);
         $newBalance = $balance + $fillRequest['amount'];
+
+        $merchantId = $user->merchant_account_id;
+        if($merchantId) {
+            $merchantAccount = $this->merchantAccountRepo->get($merchantId);
+            if($merchantAccount) {
+                $balance = (Double)$merchantAccount->merchant_balance + (Double)$fillRequest['amount'];
+                $this->merchantAccountRepo->update($merchantAccount, [
+                    'merchant_balance' => $balance
+                ]);
+            }
+        }
+
         $this->userBalanceInfo->updateUserBalance($user->id, $newBalance);
     }
 
