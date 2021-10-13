@@ -551,6 +551,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/claims', [DBPReportController::class, 'claims']);
     });
 
+    Route::prefix('/merchant/accounts')->middleware(['decrypt.request'])->group(function() {
+        Route::get('/list', [MerchantController::class, 'listMerchantAccount']);
+        Route::get('/store', [MerchantController::class, 'storeMerchantAccount']);
+    });
+
 });
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {

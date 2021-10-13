@@ -53,6 +53,8 @@ use App\Repositories\Loan\ILoanRepository;
 use App\Repositories\Loan\LoanRepository;
 use App\Repositories\LogHistory\ILogHistoryRepository;
 use App\Repositories\LogHistory\LogHistoryRepository;
+use App\Repositories\MerchantAccount\IMerchantAccountRepository;
+use App\Repositories\MerchantAccount\MerchantAccountRepository;
 use App\Repositories\NewsAndUpdate\INewsAndUpdateRepository;
 use App\Repositories\NewsAndUpdate\NewsAndUpdateRepository;
 use App\Repositories\Notification\INotificationRepository;
@@ -283,6 +285,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //UBP Account Tokens
         $this->app->bind(IUBPAccountTokenRepository::class, UBPAccountTokenRepository::class);
+
+        // MERCHANT ACCOUNT
+        $this->app->bind(IMerchantAccountRepository::class, MerchantAccountRepository::class);
 
 
     }
