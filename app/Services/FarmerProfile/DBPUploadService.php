@@ -110,7 +110,6 @@ class DBPUploadService implements IDBPUploadService
                 $this->entries->push($content);
                 $this->fails = $this->fails + 1;
             }
-            dd('awdawd');
 
         }
 
