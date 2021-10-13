@@ -248,11 +248,11 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             $to = $attr['to'];
         }
 
-        //$records = $records->where('transaction_category_id', DBPUploadKeys::DBPTransactionId);
+        $records = $records->where('transaction_category_id', DBPUploadKeys::DBPTransactionId);
 
-        $records = $records->where('original_transaction_date', '>=', $from)
-        ->where('original_transaction_date', '<=', $to)
-        ->where('transaction_category_id', DBPUploadKeys::DBPTransactionId);
+       // $records = $records->where('original_transaction_date', '>=', $from)
+       // ->where('original_transaction_date', '<=', $to)
+        //->where('transaction_category_id', DBPUploadKeys::DBPTransactionId);
 
         if (isset($attr['filter_by']) && $attr['filter_by'] != '' && isset($attr['filter_value']) && $attr['filter_value'] != '') {
             $filter_by = $attr['filter_by'];
