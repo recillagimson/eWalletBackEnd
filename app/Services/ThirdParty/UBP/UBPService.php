@@ -245,8 +245,6 @@ class UBPService implements IUBPService
         return $this->apiService->get($url, $headers);
     }
 
-<<<<<<< HEAD
-=======
     public function merchantPayment(string $userToken, array $data): Response
     {
         $headers = $this->defaultHeaders;
@@ -355,6 +353,5 @@ class UBPService implements IUBPService
 
 
 
->>>>>>> stagingfix
 
 }

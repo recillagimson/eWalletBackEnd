@@ -6,24 +6,18 @@ namespace App\Services\Transaction;
 use PDF;
 use Carbon\Carbon;
 use App\Models\UserAccount;
-<<<<<<< HEAD
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
-=======
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\AddMoney\UBP\IUbpAddMoneyService;
 use App\Services\AddMoneyV2\IAddMoneyService;
->>>>>>> stagingfix
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\Utilities\CSV\ICSVService;
-use App\Services\AddMoneyV2\IAddMoneyService;
 use App\Exports\TransactionReport\TransactionReport;
-use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class TransactionService implements ITransactionService
 {

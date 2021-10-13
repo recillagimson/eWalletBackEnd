@@ -10,16 +10,12 @@ use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\Farmer\FarmerSelfieUploadRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
-<<<<<<< HEAD
-=======
 use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
 use App\Jobs\Farmers\BatchUpload;
 use App\Jobs\Farmers\SubsidyBatchUpload;
->>>>>>> stagingfix
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
 use App\Services\Utilities\Verification\IVerificationService;
-use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
 use App\Services\UserAccount\IUserAccountService;
 
 class FarmerController extends Controller

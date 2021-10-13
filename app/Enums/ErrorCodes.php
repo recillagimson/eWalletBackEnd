@@ -59,6 +59,7 @@ class ErrorCodes
     const bpiFundTopUp = 424;
     const bpiTransactionError = 425;
     const bpiInvalidError = 426;
+    const controlNumberAlreadyUploaded = 427;
 
 
 

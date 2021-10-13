@@ -34,8 +34,6 @@ use App\Services\BPIService\IBPIService;
 use App\Services\BuyLoad\BuyLoadService;
 use App\Services\KYCService\IKYCService;
 use App\Services\BuyLoad\IBuyLoadService;
-<<<<<<< HEAD
-=======
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
 use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
@@ -44,7 +42,6 @@ use App\Services\DBPReport\DBPReportService;
 use App\Services\DBPReport\IDBPReportService;
 use App\Services\Disbursement\DisbursementDbpService;
 use App\Services\Disbursement\IDisbursementDbpService;
->>>>>>> stagingfix
 use App\Services\DrcrMemo\DrcrMemoService;
 use App\Services\PayBills\PayBillsService;
 use App\Services\Tier\TierApprovalService;
@@ -53,25 +50,18 @@ use App\Services\Utilities\CSV\CSVService;
 use App\Services\Utilities\OTP\OtpService;
 use App\Services\Utilities\PDF\PDFService;
 use App\Services\DrcrMemo\IDrcrMemoService;
-<<<<<<< HEAD
-=======
 use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
 use App\Services\FarmerAccount\FarmerAccountService;
 use App\Services\FarmerAccount\IFarmerAccountService;
 use App\Services\FarmerProfile\FarmerProfileService;
 use App\Services\FarmerProfile\IFarmerProfileService;
-use App\Services\KYCService\IKYCService;
-use App\Services\KYCService\KYCService;
 use App\Services\Loan\ILoanService;
 use App\Services\Loan\LoanService;
 use App\Services\Merchant\IMerchantService;
 use App\Services\Merchant\MerchantService;
-use App\Services\MyTask\IMyTaskService;
-use App\Services\MyTask\MyTaskService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
->>>>>>> stagingfix
 use App\Services\PayBills\IPayBillsService;
 use App\Services\ThirdParty\UBP\UBPService;
 use App\Services\Tier\ITierApprovalService;
@@ -79,13 +69,8 @@ use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\CSV\ICSVService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\PDF\IPDFService;
-use App\Services\AddMoney\InAddMoneyService;
-use App\Services\AddMoneyV2\AddMoneyService;
-use App\Services\Dashboard\DashboardService;
 use App\Services\Send2Bank\Send2BankService;
 use App\Services\SendMoney\SendMoneyService;
-<<<<<<< HEAD
-=======
 use App\Services\TempUserDetail\ITempUserDetailService;
 use App\Services\TempUserDetail\TempUserDetailService;
 use App\Services\ThirdParty\BayadCenter\BayadCenterService;
@@ -98,97 +83,55 @@ use App\Services\ThirdParty\GH\GHService;
 use App\Services\ThirdParty\GH\IGHService;
 use App\Services\ThirdParty\SecurityBank\ISecurityBankService;
 use App\Services\ThirdParty\SecurityBank\SecurityBankService;
->>>>>>> stagingfix
 use App\Services\ThirdParty\UBP\IUBPService;
-use App\Http\Controllers\Send2BankController;
-use App\Services\AddMoney\IInAddMoneyService;
 use App\Services\Auth\UserKey\UserKeyService;
-use App\Services\Dashboard\IDashboardService;
 use App\Services\Send2Bank\ISend2BankService;
 use App\Services\SendMoney\ISendMoneyService;
 use App\Services\Auth\UserKey\IUserKeyService;
-use App\Services\Encryption\EncryptionService;
-use App\Services\OutBuyLoad\OutBuyLoadService;
-use App\Services\Encryption\IEncryptionService;
-use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\Transaction\TransactionService;
-<<<<<<< HEAD
-=======
 use App\Services\Transaction\TransactionValidationService;
 use App\Services\UBP\IUbpAccountService;
 use App\Services\UBP\UbpAccountService;
 use App\Services\UserAccount\IUserAccountService;
->>>>>>> stagingfix
 use App\Services\UserAccount\UserAccountService;
 use App\Services\UserProfile\UserProfileService;
 use App\Services\Transaction\ITransactionService;
-use App\Services\UserAccount\IUserAccountService;
 use App\Services\UserProfile\IUserProfileService;
 use App\Services\Send2Bank\Send2BankDirectService;
 use App\Services\Send2Bank\ISend2BankDirectService;
 use App\Services\Utilities\CurlService\CurlService;
-use App\Services\FarmerAccount\FarmerAccountService;
-use App\Services\FarmerProfile\FarmerProfileService;
 use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\PrepaidLoad\GlobeService;
-use App\Services\AddMoney\Providers\DragonPayService;
-use App\Services\AddMoney\Providers\IAddMoneyService;
-use App\Services\FarmerAccount\IFarmerAccountService;
-use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\Utilities\Responses\ResponseService;
-use App\Services\TempUserDetail\TempUserDetailService;
 use App\Services\Utilities\PrepaidLoad\ATM\AtmService;
 use App\Services\Utilities\Responses\IResponseService;
-use App\Services\Admin\Dashboard\AdminDashboardService;
 use App\Services\Auth\Registration\RegistrationService;
-use App\Services\TempUserDetail\ITempUserDetailService;
 use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
-use App\Services\Admin\Dashboard\IAdminDashboardService;
 use App\Services\Auth\Registration\IRegistrationService;
-use App\Services\ThirdParty\DragonPay\IDragonPayService;
 use App\Services\Utilities\LogHistory\LogHistoryService;
 use App\Services\Utilities\Notifications\SMS\SmsService;
 use App\Services\Utilities\ServiceFee\ServiceFeeService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\ServiceFee\IServiceFeeService;
-use App\Services\AddMoney\DragonPay\HandlePostBackService;
-use App\Services\Transaction\TransactionValidationService;
-use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\Send2Bank\Pesonet\Send2BankPesonetService;
-use App\Services\ThirdParty\BayadCenter\BayadCenterService;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\PrepaidLoad\IPrepaidLoadService;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
-use App\Services\ThirdParty\BayadCenter\IBayadCenterService;
 use App\Services\Utilities\Notifications\Email\EmailService;
 use App\Services\Utilities\Verification\VerificationService;
 use App\Services\Send2Bank\Instapay\Send2BankInstapayService;
 use App\Services\Send2Bank\Pesonet\Send2BankSBPesonetService;
-use App\Services\ThirdParty\SecurityBank\SecurityBankService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\NotificationService;
 use App\Services\Utilities\Verification\IVerificationService;
-use App\Services\ThirdParty\SecurityBank\ISecurityBankService;
 use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Send2Bank\Instapay\Send2BankSBInstapayService;
 use App\Services\Send2Bank\Instapay\ISend2BankSBInstapayService;
 use App\Services\Utilities\Notifications\PushNotificationService;
 use App\Services\Utilities\Notifications\IPushNotificationService;
-use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
-<<<<<<< HEAD
-use App\Services\AddMoneyV2\IAddMoneyService as IAddMoneyServiceV2;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
-use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
-use App\Services\ThirdParty\DragonPay\DragonPayService as DragonPayServiceV2;
-=======
-use App\Services\Utilities\Responses\IResponseService;
-use App\Services\Utilities\Responses\ResponseService;
-use App\Services\Utilities\ServiceFee\IServiceFeeService;
-use App\Services\Utilities\ServiceFee\ServiceFeeService;
-use App\Services\Utilities\Verification\IVerificationService;
-use App\Services\Utilities\Verification\VerificationService;
+use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
 use App\Services\v2\Auth\AuthService as AuthV2Service;
 use App\Services\v2\Auth\IAuthService as IAuthV2Service;
 use App\Services\v2\Auth\Registration\IRegistrationService as IRegistrationV2Service;
@@ -196,10 +139,7 @@ use App\Services\v2\Auth\Registration\RegistrationService as RegistrationV2Servi
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic;
->>>>>>> stagingfix
 
 
 class AppServiceProvider extends ServiceProvider
@@ -312,8 +252,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IMyTaskService::class, MyTaskService::class);
         // Report
         $this->app->bind(IReportService::class, ReportService::class);
-<<<<<<< HEAD
-=======
         // Loan
         $this->app->bind(ILoanService::class, LoanService::class);
 
@@ -330,7 +268,6 @@ class AppServiceProvider extends ServiceProvider
 
         // DBP
         $this->app->bind(IDBPReportService::class, DBPReportService::class);
->>>>>>> stagingfix
     }
 
     /**

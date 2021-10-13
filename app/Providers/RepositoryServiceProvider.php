@@ -27,6 +27,8 @@ use App\Repositories\Disbursement\IOutDisbursementDbpRepository;
 use App\Repositories\Disbursement\OutDisbursementDbpRepository;
 use App\Repositories\DrcrMemo\DrcrMemoRepository;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
+use App\Repositories\DrcrMemoControlNumber\DrcrMemoControlNumberRepository;
+use App\Repositories\DrcrMemoControlNumber\IDrcrMemoControlNumberRepository;
 use App\Repositories\FarmerImport\FarmerImportRepository;
 use App\Repositories\FarmerImport\IFarmerImportRepository;
 use App\Repositories\HelpCenter\HelpCenterRepository;
@@ -130,19 +132,6 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
 use App\Repositories\UserUtilities\UserRole\IUserRoleRepository;
 use App\Repositories\UserUtilities\UserRole\UserRoleRepository;
-<<<<<<< HEAD
-use App\Repositories\Address\Region\RegionRepository;
-use App\Repositories\Address\Region\IRegionRepository;
-use App\Repositories\Address\Province\ProvinceRepository;
-use App\Repositories\Address\Province\IProvinceRepository;
-use App\Repositories\Address\Municipality\MunicipalityRepository;
-use App\Repositories\Address\Municipality\IMunicipalityRepository;
-use App\Repositories\Address\Barangay\BarangayRepository;
-use App\Repositories\Address\Barangay\IBarangayRepository;
-use App\Repositories\KYCVerification\IKYCVerificationRepository;
-use App\Repositories\KYCVerification\KYCVerificationRepository;
-=======
->>>>>>> stagingfix
 use App\Services\Auth\UserKey\UserKeyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -258,14 +247,15 @@ class RepositoryServiceProvider extends ServiceProvider
         //Drcr Memos Repositories
         $this->app->bind(IDrcrMemoRepository::class, DrcrMemoRepository::class);
 
+        //Drcr Memo Control Numbers Repositories
+        $this->app->bind(IDrcrMemoControlNumberRepository::class, DrcrMemoControlNumberRepository::class);
+
         // KYC Verification
         $this->app->bind(IKYCVerificationRepository::class, KYCVerificationRepository::class);
 
-<<<<<<< HEAD
         //CONTEXTUAL BINDINGS
         $this->bindUserKeyRepository();
 
-=======
         // Disbursement DBP
         $this->app->bind(IOutDisbursementDbpRepository::class, OutDisbursementDbpRepository::class);
         $this->app->bind(IInDisbursementDbpRepository::class, InDisbursementDbpRepository::class);
@@ -303,7 +293,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IUBPAccountTokenRepository::class, UBPAccountTokenRepository::class);
 
 
->>>>>>> stagingfix
     }
 
     /**

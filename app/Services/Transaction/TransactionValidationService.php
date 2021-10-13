@@ -7,11 +7,8 @@ namespace App\Services\Transaction;
 use App\Enums\TransactionCategoryIds;
 use App\Models\UserAccount;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
-<<<<<<< HEAD
-=======
 use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
 use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
->>>>>>> stagingfix
 use App\Repositories\InReceiveMoney\IInReceiveMoneyRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\OutPayBills\IOutPayBillsRepository;
@@ -148,11 +145,8 @@ class TransactionValidationService implements ITransactionValidationService
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
 
-<<<<<<< HEAD
                 $sumUp = $totalTransactionCurrentMonth + $totalAmount;
-=======
 
->>>>>>> stagingfix
                 if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
                 if (isset($customMessage) && count($customMessage) > 0) {

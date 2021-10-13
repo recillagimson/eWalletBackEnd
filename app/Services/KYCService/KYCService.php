@@ -148,10 +148,6 @@ class KYCService implements IKYCService
                 }
             }
 
-<<<<<<< HEAD
-            if(isset($attr['manual_input']['first_name']) && isset($attr['ocr_response']['first_name']) && isset($attr['manual_input']['last_name']) && isset($attr['ocr_response']['last_name'])) {
-                if($attr['ocr_response']['first_name'] == $attr['manual_input']['first_name'] && $attr['ocr_response']['last_name'] == $attr['manual_input']['last_name']) {
-=======
             if(isset($attr['manual_input']) && !isset($attr['manual_input']['full_name']) && isset($attr['ocr_response']) && isset($attr['ocr_response']['full_name'])) {
                 // HANDLE BUILD FULLNAME
                 $middle_name = isset($attr['manual_input']['middle_name']) ? $attr['manual_input']['middle_name'] : "";
@@ -172,7 +168,6 @@ class KYCService implements IKYCService
                 isset($attr['ocr_response']['last_name'])) {
                 if(strtolower($attr['ocr_response']['first_name']) == strtolower($attr['manual_input']['first_name']) && 
                 strtolower($attr['ocr_response']['last_name']) == strtolower($attr['manual_input']['last_name'])) {
->>>>>>> stagingfix
                     // return [
                     //     'message' => 'OCR and Input data match'
                     // ];

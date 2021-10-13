@@ -30,8 +30,6 @@ class MerchantController extends Controller
         $record = $this->kycService->initMerchantFaceMatch($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
-<<<<<<< HEAD
-=======
 
     public function list(Request $request) {
         $record = $this->merchatService->list($request->all());
@@ -57,5 +55,4 @@ class MerchantController extends Controller
         $record = $this->merchatService->updateDocumentStatus($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
->>>>>>> stagingfix
 }

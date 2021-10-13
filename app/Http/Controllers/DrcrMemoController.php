@@ -10,6 +10,7 @@ use App\Http\Requests\DrcrMemo\GetUserRequest;
 use App\Http\Requests\DrcrMemo\ShowRequest;
 use App\Http\Requests\DrcrMemo\UpdateMemoRequest;
 use App\Services\DrcrMemo\IDrcrMemoService;
+use App\Http\Requests\DrcrMemo\DrcrMemoBatchUploadRequest;
 use App\Services\Utilities\Responses\IResponseService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -117,6 +118,19 @@ class DrcrMemoController extends Controller
         $data = $request->validated();
         $store = $this->drcrMemoService->store($request->user(), $data);
         return $this->responseService->successResponse($store->toArray(), SuccessMessages::success);
+    }
+
+    /**
+     * Batch Upload Drcr memo
+     *
+     * @param DrcrMemoRequest $request
+     * @return JsonResponse
+     */
+    public function batchUpload(DrcrMemoBatchUploadRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $response = $this->drcrMemoService->batchUpload($request->user(), $data['file']);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 
 

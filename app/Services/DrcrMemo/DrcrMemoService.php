@@ -4,12 +4,14 @@ namespace App\Services\DrcrMemo;
 
 use App\Enums\Currencies;
 use App\Enums\DrcrStatus;
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\SuccessMessages;
-use App\Enums\TransactionCategoryIds;
-use App\Enums\TransactionStatuses;
-use App\Exports\DRCR\DRCRReport;
 use App\Models\UserAccount;
+use App\Enums\SuccessMessages;
+use App\Imports\DrcrMemo\DrcrMemoImport;
+use App\Exports\DRCR\DRCRReport;
+use App\Enums\TransactionStatuses;
+use App\Enums\ReferenceNumberTypes;
+use App\Enums\TransactionCategoryIds;
+use App\Repositories\DrcrMemoControlNumber\IDrcrMemoControlNumberRepository;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
@@ -22,11 +24,13 @@ use App\Traits\LogHistory\LogHistory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DRCR\DRCRBulkErrorList;
 
 class DrcrMemoService implements IDrcrMemoService
 {
     use WithDrcrMemoErrors, LogHistory;
 
+    private IDrcrMemoControlNumberRepository $drcrMemoControlNumberRepository;
     private IDrcrMemoRepository $drcrMemoRepository;
     private IReferenceNumberService $referenceNumberService;
     private IUserAccountRepository $userAccountRepository;
@@ -41,7 +45,8 @@ class DrcrMemoService implements IDrcrMemoService
                                 IUserAccountRepository $userAccountRepository,
                                 IUserBalanceInfoRepository $userBalanceRepository,
                                 IUserTransactionHistoryRepository $userTransHistory,
-                                IPDFService $pdfService, IResponseService $responseService)
+                                IPDFService $pdfService, IResponseService $responseService,
+                                IDrcrMemoControlNumberRepository $drcrMemoControlNumberRepository)
     {
         $this->pdfService = $pdfService;
         $this->drcrMemoRepository = $drcrMemoRepository;
@@ -50,6 +55,7 @@ class DrcrMemoService implements IDrcrMemoService
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransHistory = $userTransHistory;
         $this->responseService = $responseService;
+        $this->drcrMemoControlNumberRepository = $drcrMemoControlNumberRepository;
     }
 
     public function getList(UserAccount $user, $data, $per_page = 15, $from = '', $to ='')
@@ -188,7 +194,7 @@ class DrcrMemoService implements IDrcrMemoService
         return $this->referenceNumberService->generate($this->setTypeOfMemo($data));
     }
 
-    private function getUserByAccountNumber($data)
+     private function getUserByAccountNumber($data)
     {
         return $this->userAccountRepository->getUserByAccountNumber($data['accountNumber']);
     }
@@ -278,5 +284,186 @@ class DrcrMemoService implements IDrcrMemoService
     public function s3TempUrl(string $generated_link) {
         $temp_url = Storage::disk('s3')->temporaryUrl($generated_link, Carbon::now()->addMinutes(30));
         return $temp_url;
+    }
+
+    public function reportFiltered(array $attr) {
+        $from = Carbon::now()->subDays(30)->format('Y-m-d');
+        $to = Carbon::now()->format('Y-m-d');
+        $type = 'API';
+        $filterBy = '';
+        $filterValue = '';
+        $userId = 0;
+        $isPending = false;
+
+        if($attr && isset($attr['from']) && isset($attr['to'])) {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+
+        if($attr && isset($attr['type'])) {
+            $type = $attr['type'];
+        }
+
+        if($attr && isset($attr['userId'])) {
+            $userId = $attr['userId'];
+        }
+
+        if($attr && isset($attr['filter_by'])) {
+            $filterBy = $attr['filter_by'];
+        }
+
+        if($attr && isset($attr['filter_value'])) {
+            $filterValue = $attr['filter_value'];
+        }
+
+        if($attr && isset($attr['is_pending_only'])) {
+            $isPending = $attr['is_pending_only'];
+        }   
+
+        $data = [];
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+
+        if($type == 'API') {
+            $data = $this->drcrMemoRepository->reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, true, $isPending);
+        } else {
+            $data = $this->drcrMemoRepository->reportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, false, $isPending);
+        }
+
+        if($type == 'API') {
+            return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
+        } 
+        // CSV
+        else if($type == 'CSV') {
+            Excel::store(new DRCRReportSupervisor($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        }
+        // XLSX
+        else if($type == 'XLSX') {
+            Excel::store(new DRCRReportSupervisor($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        }
+    }
+
+    // DRCR MEMO PER USER
+    // DRCR MEMO PER USER
+    // DRCR MEMO PER USER
+
+    public function reportFilteredPerUser(array $attr, $isPerUserStatus) {
+        $from = Carbon::now()->subDays(30)->format('Y-m-d');
+        $to = Carbon::now()->format('Y-m-d');
+        $type = 'API';
+        $filterBy = '';
+        $filterValue = '';
+        $userId = 0;
+        $isPerUser = false;
+
+        if($attr && isset($attr['from']) && isset($attr['to'])) {
+            $from = $attr['from'];
+            $to = $attr['to'];
+        }
+
+        if($attr && isset($attr['type'])) {
+            $type = $attr['type'];
+        }
+
+        if($attr && isset($attr['userId'])) {
+            $userId = $attr['userId'];
+        }
+
+        if($attr && isset($attr['filter_by'])) {
+            $filterBy = $attr['filter_by'];
+        }
+
+        if($attr && isset($attr['filter_value'])) {
+            $filterValue = $attr['filter_value'];
+        }
+
+        if($isPerUserStatus) {
+            $isPerUser = true;
+        }
+
+        $data = [];
+        $fileName = 'reports/' . $from . "-" . $to . "." . $type;
+
+        if($type == 'API') {
+            $data = $this->drcrMemoRepository->updatedReportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, true, $isPerUser);
+        } else {
+            $data = $this->drcrMemoRepository->updatedReportPerUserSupervisor($from, $to, $filterBy, $filterValue, $userId, false, $isPerUser);
+        }
+
+        if($type == 'API') {
+            return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
+        } 
+        // CSV
+        else if($type == 'CSV') {
+            Excel::store(new DRCRWithBalanceReport($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        }
+        // XLSX
+        else if($type == 'XLSX') {
+            Excel::store(new DRCRWithBalanceReport($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
+            $temp_url = $this->s3TempUrl($fileName);
+            return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
+        }
+    }
+
+    public function batchUpload(UserAccount $user, $file)
+    {
+        $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
+        $exists = $this->drcrMemoControlNumberRepository->findByControlNumber($filename);
+
+        if ($exists && $exists->status == 'Success') return $this->controlNumberAlreadyUploaded();
+
+        if ($exists) {
+            $this->drcrMemoControlNumberRepository->update($exists, [
+                'control_number' => $filename,
+                'user_updated' => $user->id,
+                'status' => 'Pending',
+    
+            ]);
+            $controlNumber = $exists;
+        } else {
+            $controlNumber = $this->drcrMemoControlNumberRepository->create([
+                'control_number' => $filename,
+                'user_created' => $user->id,
+                'user_updated' => $user->id,
+                'status' => 'Pending',
+
+            ]);
+        }
+
+        try {
+            $import = new DrcrMemoImport(
+                                         $user,
+                                         $this->referenceNumberService, 
+                                         $this->drcrMemoRepository, 
+                                         $this->userAccountRepository,
+                                         $this->userBalanceRepository,
+                                         $this->userTransHistory,
+                                         $controlNumber->id
+                                        );
+            Excel::import($import, $file);
+            return ;
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $exportName = $filename . "- Errors.xlsx";
+
+            $failData = collect();
+            foreach ($failures as $key => $fail) {
+                $failData->push($fail->values() + [ 'remarks' => $fail->errors()]);
+            }
+
+            Excel::store(new DRCRBulkErrorList($failData), $exportName, 's3');
+
+            $temp_url = $this->s3TempUrl($exportName);
+            return [
+                'temp_url' => $temp_url,
+                'data' => $failData
+            ];
+        }
     }
 }

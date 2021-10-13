@@ -89,8 +89,6 @@ class TierApprovalController extends Controller
         $this->iTierApprovalRepository->delete($tierApproval);
         return $this->responseService->noContentResponse("", SuccessMessages::success);
     }
-<<<<<<< HEAD
-=======
 
     public function sendEmail(SendEmailRequest $request)
     {
@@ -105,5 +103,4 @@ class TierApprovalController extends Controller
         $this->iTierApprovalService->sendSMS($user, $request->message);
         return $this->responseService->successResponse([], SuccessMessages::success);
     }
->>>>>>> stagingfix
 }

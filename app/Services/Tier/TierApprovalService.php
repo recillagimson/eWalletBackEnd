@@ -164,8 +164,6 @@ class TierApprovalService implements ITierApprovalService
             return $e->getMessage();
         }
     }
-<<<<<<< HEAD
-=======
 
     public function sendEmail($email, string $message) {
         $user = $this->userAccountRepository->getByEmail('email', $email);
@@ -190,5 +188,4 @@ class TierApprovalService implements ITierApprovalService
 
         $this->smsService->kycNotification($user, $message);
     }
->>>>>>> stagingfix
 }

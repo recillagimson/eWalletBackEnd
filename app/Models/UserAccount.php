@@ -149,12 +149,9 @@ class UserAccount extends Authenticatable
         $this->last_failed_attempt = null;
         $this->save();
     }
-<<<<<<< HEAD
-=======
 
     public function getManilaTimeCreatedAtAttribute(): string
     {
         return Carbon::parse($this->created_at)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A');
     }
->>>>>>> stagingfix
 }
