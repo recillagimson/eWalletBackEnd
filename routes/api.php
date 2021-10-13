@@ -317,7 +317,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::middleware(['require.user.token'])->post('/farmer/verification/account-number', [FarmerController::class, 'farmerVerificationUserAccountNumberOnly']);
             Route::middleware(['require.user.token'])->post('/farmer/print', [ReportController::class, 'print']);
             Route::middleware(['require.user.token'])->post('/farmer/tosilver/manual-override', [UserProfileController::class, 'addDAPersonel']);
-            Route::middleware(['require.user.token'])->post('/farmer/report', [FarmerController::class, 'report']);
+        Route::middleware(['require.user.token'])->post('/farmer/report', [FarmerController::class, 'report']);
 
 
             // TRANSACTION LOG HISTORY
