@@ -115,7 +115,7 @@ class SendMoneyService implements ISendMoneyService
         $receiverAccount = $this->userAccounts->get($receiverID);
         $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
-        $this->otpService->ensureValidated($identifier, $user->otp_enabled);
+        //$this->otpService->ensureValidated($identifier, $user->otp_enabled);
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
         if (!$receiverDetails) $this->recipientDetailsNotFound();
