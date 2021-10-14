@@ -79,6 +79,7 @@ trait Send2BankHelpers
             $send2Bank->save();
 
             Log::error('Send2Bank UBP Error: ', $errors);
+            Log::error('Send2Bank UBP Error: ', $response);
             return $send2Bank;
         }
 
