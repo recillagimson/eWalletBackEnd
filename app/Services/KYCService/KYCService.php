@@ -357,11 +357,16 @@ class KYCService implements IKYCService
                     if($tierApproval) {
                         if($tierApproval && $attr['result']['summary']['action'] == 'Pass') {
                             $userAccount = $this->userAccountRepository->get($record->user_account_id);
+                            Log::info(json_encode($userAccount));                        
                             if($userAccount) {
                                 $this->userAccountRepository->update($userAccount, [
                                     'tier_id' => AccountTiers::tier2,
                                     'verified' => 1,
                                 ]);
+                                Log::info("UPDATE TRIGGERED");                        
+                            } else {
+                                Log::info(json_encode($userAccount));                        
+                                Log::info("ERROR USER NOT FOUND");                        
                             }
                             $this->tierApproval->update($tierApproval, [
                                 'status' => 'APPROVED',
