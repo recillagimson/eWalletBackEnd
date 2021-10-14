@@ -354,31 +354,38 @@ class KYCService implements IKYCService
                         'hv_result' => $attr['result']['summary']['action'],
                         'status' => 'CALLBACK_RECEIVED'
                     ]);
-                    if($tierApproval) {
-                        if($tierApproval && $attr['result']['summary']['action'] == 'Pass') {
-                            $userAccount = $this->userAccountRepository->get($record->user_account_id);
-                            Log::info(json_encode($userAccount));                        
-                            if($userAccount) {
-                                $this->userAccountRepository->update($userAccount, [
-                                    'tier_id' => AccountTiers::tier2,
-                                    'verified' => 1,
-                                ]);
-                                Log::info("UPDATE TRIGGERED");                        
-                            } else {
+                    \DB::beginTransaction();
+                    try {
+                        if($tierApproval) {
+                            if($tierApproval && $attr['result']['summary']['action'] == 'Pass') {
+                                $userAccount = $this->userAccountRepository->get($record->user_account_id);
                                 Log::info(json_encode($userAccount));                        
-                                Log::info("ERROR USER NOT FOUND");                        
+                                if($userAccount) {
+                                    $this->userAccountRepository->update($userAccount, [
+                                        'tier_id' => AccountTiers::tier2,
+                                        'verified' => 1,
+                                    ]);
+                                    Log::info("UPDATE TRIGGERED");                        
+                                } else {
+                                    Log::info(json_encode($userAccount));                        
+                                    Log::info("ERROR USER NOT FOUND");                        
+                                }
+                                $this->tierApproval->update($tierApproval, [
+                                    'status' => 'APPROVED',
+                                    'approved_by' => eKYC::eKYC,
+                                    'remarks' => eKYC::eKYC_remarks,
+                                    'approved_date' => Carbon::now()->format('Y-m-d H:i:s')
+                                ]);
+                            } else {
+                                $this->tierApproval->update($tierApproval, [
+                                    'status' => 'PENDING'
+                                ]);
                             }
-                            $this->tierApproval->update($tierApproval, [
-                                'status' => 'APPROVED',
-                                'approved_by' => eKYC::eKYC,
-                                'remarks' => eKYC::eKYC_remarks,
-                                'approved_date' => Carbon::now()->format('Y-m-d H:i:s')
-                            ]);
-                        } else {
-                            $this->tierApproval->update($tierApproval, [
-                                'status' => 'PENDING'
-                            ]);
                         }
+                        \DB::commit();
+                    } catch(\Exception $e) {
+                        \DB::rollBack();
+                        \Log::info($e->getMessage());
                     }
                 }
             }
