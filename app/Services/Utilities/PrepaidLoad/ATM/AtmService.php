@@ -102,7 +102,7 @@ class AtmService implements IAtmService
                 if (!$prefix) $this->prefixNotSupported();
 
                 // return $prefix['provider'];
-                return ucwords(strtolower($this->convertPrefixNetworkToProductListProvider($prefix['provider'])));
+                return $this->convertPrefixNetworkToProductListProvider($prefix['provider']);
             }
         }
 
@@ -121,17 +121,13 @@ class AtmService implements IAtmService
         if ($response->successful()) {
             $data = $response->json();
             $state = $data['responseCode'];
+            \Log::info('///// - PRODUCT LIST IF SUCCESSFUL - //////');
+            \Log::info(json_encode($data));
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
-
-                $products = $prefixes->where('provider', $provider)
-                    ->sortBy(['provider', 'productCode', 'denominations']);
-
-                $uniqueProducts = $products->unique(function ($product) {
-                    return $product['provider'] . $product['productCode'];
-                });
-
-                return $uniqueProducts->values();
+                return ($provider == TopupTypes::atm_epin) ? 
+                $prefixes->where('productType', $provider)->sortBy(['provider', 'productCode', 'denominations']) :
+                $prefixes->where('provider', $provider)->sortBy(['provider', 'productCode', 'denominations']);
             }
         }
 
