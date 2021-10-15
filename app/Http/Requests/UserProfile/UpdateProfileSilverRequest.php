@@ -47,7 +47,7 @@ class UpdateProfileSilverRequest  extends FormRequest
             'city'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
             'province_state'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
 
-            'place_of_birth'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
+            'place_of_birth'=>['required', 'max:50'],
             'marital_status_id'=>'required',
             // 'encoded_nationality'=>'required_with:nationality_id',
             'occupation'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],

@@ -73,6 +73,10 @@ class BPIService implements IBPIService
         $this->userBalanceInfo = $userBalanceInfo;
         $this->bpiRepository = $bpiRepository;
         $this->serviceFee = $serviceFee;
+        $this->smsService = $smsService;
+        $this->emailService = $emailService;
+        $this->notificationRepository = $notificationRepository;
+        $this->logHistory = $logHistory;
 
         $this->clientId = config('bpi.clientId');
         $this->clientSecret = config('bpi.clientSecret');
