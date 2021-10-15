@@ -131,7 +131,7 @@ class UBPService implements IUBPService
         $headers = $this->getAuthorizationHeaders();
 
         $data = [
-            "senderRefId" => $refNo . '1234',
+            "senderRefId" => $refNo . 'DEV-001',
             "tranRequestDate" => $transactionDate,
             "sender" => [
                 "name" => $this->formatName($fromFullName),
