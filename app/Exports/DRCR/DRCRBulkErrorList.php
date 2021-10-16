@@ -23,6 +23,7 @@ class DRCRBulkErrorList implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
+            "ROW NUMBER",
             "ACCOUNT NUMBER",
             "TYPE OF MEMO",
             "CATEGORY",

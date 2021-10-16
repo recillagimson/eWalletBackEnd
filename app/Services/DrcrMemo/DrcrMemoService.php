@@ -459,12 +459,16 @@ class DrcrMemoService implements IDrcrMemoService
             $failures = $e->failures();
             $exportName = $filename . "- Errors.xlsx";
 
-            $failData = collect();
+            $failData = [];
             foreach ($failures as $key => $fail) {
-                $failData->push($fail->values() + [ 'remarks' => $fail->errors()]);
+                if (isset($failData[$fail->row()])) {
+                    $failData[$fail->row()]['remarks'] = array_merge($failData[$fail->row()]['remarks'], $fail->errors());
+                } else {
+                    $failData[$fail->row()] = ['row_number' => $fail->row()] + $fail->values() + [ 'remarks' => $fail->errors()];
+                }
             }
 
-            Excel::store(new DRCRBulkErrorList($failData), $exportName, 's3');
+            Excel::store(new DRCRBulkErrorList(collect($failData)), $exportName, 's3');
 
             $temp_url = $this->s3TempUrl($exportName);
             return [
