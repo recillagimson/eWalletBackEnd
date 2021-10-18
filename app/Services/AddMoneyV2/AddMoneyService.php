@@ -67,16 +67,11 @@ class AddMoneyService implements IAddMoneyService
         if (!$user) $this->userAccountNotFound();
         $this->transactionValidationService->validateUser($user);
 
-
-
         $serviceFee = $this->serviceFees->getByTierAndTransCategory($user->tier_id,
             TransactionCategoryIds::cashinDragonPay);
         $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
         $serviceFeeId = $serviceFee ? $serviceFee->id : '';
         $totalAmount = $data['amount'] + $serviceFeeAmount;
-
-
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($userAccount, $totalAmount, TransactionCategoryIds::cashinDragonPay);
 
         $this->transactionValidationService->validate($user,
             TransactionCategoryIds::cashinDragonPay, $totalAmount);
