@@ -140,6 +140,11 @@ class UserAccount extends Authenticatable
         return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
     }
 
+    public function merchant_account(): HasOne
+    {
+        return $this->hasOne(MerchantAccount::class, 'id', 'merchant_account_id');
+    }
+
     public function lastTierApproval() {
         return $this->hasOne(TierApproval::class, 'user_account_id', 'id')
         ->orderBy('created_at', 'DESC');
