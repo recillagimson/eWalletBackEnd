@@ -26,6 +26,7 @@ use App\Traits\StringHelpers;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use Log;
 
@@ -78,8 +79,21 @@ trait Send2BankHelpers
             $send2Bank->transaction_response = json_encode($errors);
             $send2Bank->save();
 
-            Log::error('Send2Bank UBP Error: ', $errors);
+            Log::error('Send2Bank UBP Error: ', [
+                'statusCode' => $response->status(),
+                'responseBody' => $errors
+            ]);
+
+            //Log::error('Send2Bank UBP Error: ', $$response);
             return $send2Bank;
+        }
+
+        if (App::environment(['local', 'staging'])) {
+            Log:
+            info('Send2Bank UBP Success Response', [
+                'statusCode' => $response->status(),
+                'responseBody' => $response->json()
+            ]);
         }
 
         $data = $response->json();
@@ -238,6 +252,7 @@ trait Send2BankHelpers
             'account_number' => $send2Bank->account_number,
             'account_name' => $send2Bank->account_name,
             'amount' => $send2Bank->amount,
+            'total_amount' => $send2Bank->total_amount,
             'send_receipt_to' => $send2Bank->send_receipt_to,
             'purpose' => Str::lower($send2Bank->purpose) === 'others' ? $send2Bank->other_purpose : $send2Bank->purpose,
             'transaction_number' => $send2Bank->reference_number,

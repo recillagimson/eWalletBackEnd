@@ -121,21 +121,19 @@ class TransactionValidationService implements ITransactionValidationService
 
                 //IN TRANSACTIONS
                 if($transactionCategory->transaction_type === 'POSITIVE') {
-
-
                     $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                    $receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                    $bpiAddMoney = (Double) $this->iInAddMoneyBPIRepository->getSumOfTransactions($from, $to, $user->id);
-                    $ecpayAddMoney = (Double) $this->addMoneyEcPayRepository->getSumOfTransactions($from, $to, $user->id);
+                    $receiveMoney = (double)$this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    $bpiAddMoney = (double)$this->iInAddMoneyBPIRepository->getSumOfTransactions($from, $to, $user->id);
+                    $ecpayAddMoney = (double)$this->addMoneyEcPayRepository->getSumOfTransactions($from, $to, $user->id);
                     $sumUp = $addMoneyFromBank + $receiveMoney + $bpiAddMoney + $ecpayAddMoney;
 
                     //$buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
-                     //$payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
+                    //$payBills = (Double) $this->outPayBillsRepository->getSumOfTransactions($from, $to, $user->id);
                     // $send2Banks = (Double) $this->outsend2BankRepository->getSumOfTransactions($from, $to, $user->id);
-                     //$sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    //$sendMoney =  (Double) $this->outSendMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
-                   //$totalTransactionCurrentMonth = $buyLoad+$payBills+ $send2Banks+$sendMoney;
-                   // $sumUp = $totalTransactionCurrentMonth + $totalAmount;
+                    //$totalTransactionCurrentMonth = $buyLoad+$payBills+ $send2Banks+$sendMoney;
+                    // $sumUp = $totalTransactionCurrentMonth + $totalAmount;
 
                 } //else {
                     //$addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
@@ -162,6 +160,7 @@ class TransactionValidationService implements ITransactionValidationService
                     'totalMonthlyAmount' => $sumUp,
                     'tierMonthlyLimit' => $tier->monthly_limit
                 ]);
+
                 $this->userMonthlyLimitExceeded();
             }
 

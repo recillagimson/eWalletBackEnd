@@ -236,9 +236,9 @@ class ECPayService implements IECPayService
             "middle_name"=>$userDetail->middle_name,
             "reference_number"=>$data["reference_number"],
             "amount"=>$data["amount"],
-            "expiry_date"=>$data["expiry_date"],
+            "expiry_date"=>Carbon::parse($data["expiry_date"])->format('Y-m-d H:i:s P'),
             "ec_pay_reference_number"=>$data["ec_pay_reference_number"],
-            "transaction_date"=>$data["transaction_date"],
+            "transaction_date"=>Carbon::parse($data["transaction_date"])->format('Y-m-d H:i:s P'),
             "status"=>$data["status"]
         ];
 

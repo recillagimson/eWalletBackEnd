@@ -6,6 +6,7 @@ use DB;
 use Str;
 use Exception;
 use App\Enums\eKYC;
+use Illuminate\Http\File;
 use App\Enums\AccountTiers;
 use App\Models\FarmerImport;
 use App\Enums\SuccessMessages;
@@ -34,6 +35,7 @@ use App\Repositories\Tier\ITierApprovalRepository;
 use App\Exports\Farmer\Subsidy\SubsidyFailedExport;
 use App\Exports\Farmer\Subsidy\SubsidySuccessExport;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Repositories\Address\Province\IProvinceRepository;
@@ -50,7 +52,6 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
 use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\Responses\IResponseService;
 
 class FarmerProfileService implements IFarmerProfileService
 {
@@ -155,18 +156,14 @@ class FarmerProfileService implements IFarmerProfileService
                 $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
                     'user_account_id' => $user_account->id,
                     'request_tier_id' => AccountTiers::tier2,
-                    'status' => 'APPROVED',
                     'user_created' => $authUser,
                     'user_updated' => $authUser,
                     'transaction_number' => $generatedTransactionNumber,
-                    'approved_by' => eKYC::eKYC,
-                    'remarks' => eKYC::eKYC_remarks,
-                    'approved_date' => Carbon::now()->format('Y-m-d H:i:s')
                 ]);
                 $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id, true);
                 $audit_remarks = $user_account->id . " has requested to upgrade to Silver";
                 $record = $this->logHistoryService->logUserHistory($user_account->id, "", SquidPayModuleTypes::upgradeToSilver, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
-                $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
+                // $this->userAccountRepository->update($user_account, ['tier_id' => AccountTiers::tier2]);
             // } //COMMENT FOR TESTING PURPOSES
             // $details = $request->validated();
             // dd($user_account->profile);
@@ -175,7 +172,6 @@ class FarmerProfileService implements IFarmerProfileService
                 'mobile_number' => $attr['contact_no'],
                 'password' => bcrypt($attr['rsbsa_number']),
                 'pin_code' => bcrypt(substr($attr['rsbsa_number'], -4)),
-                'verified' => 1,
             ]);
 
             $addOrUpdate = $this->userProfileService->update($user_account, $attr);

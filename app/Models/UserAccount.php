@@ -37,6 +37,7 @@ class UserAccount extends Authenticatable
         'user_created',
         'user_updated',
         'rsbsa_number',
+        'merchant_account_id'
     ];
 
     /**

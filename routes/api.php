@@ -127,6 +127,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);
 
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2/subsidy', [FarmerController::class, 'uploadSubsidyFileToS3']);
+
+
+    Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v3/subsidy', [FarmerController::class, 'uploadSubsidyFileToS3v3']);
+    Route::middleware(['require.user.token', 'decrypt.request', 'auth:sanctum'])->post('/farmer/batch-upload/v3/subsidy/process', [FarmerController::class, 'processSubsidyV3']);
+    
     Route::middleware(['require.user.token', 'decrypt.request'])->post('/farmer/batch-upload/v2/subsidy/process', [FarmerController::class, 'subsidyBatchUploadV2']);
 
     Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
@@ -311,7 +316,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::middleware(['require.user.token'])->post('/farmer/verification/account-number', [FarmerController::class, 'farmerVerificationUserAccountNumberOnly']);
             Route::middleware(['require.user.token'])->post('/farmer/print', [ReportController::class, 'print']);
             Route::middleware(['require.user.token'])->post('/farmer/tosilver/manual-override', [UserProfileController::class, 'addDAPersonel']);
-            Route::middleware(['require.user.token'])->post('/farmer/report', [FarmerController::class, 'report']);
+        Route::middleware(['require.user.token'])->post('/farmer/report', [FarmerController::class, 'report']);
 
 
             // TRANSACTION LOG HISTORY
@@ -543,6 +548,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/onboarding', [DBPReportController::class, 'onBoarding']);
         Route::post('/transaction/histories', [DBPReportController::class, 'transactionHistories']);
         Route::post('/claims', [DBPReportController::class, 'claims']);
+    });
+
+    Route::prefix('/merchant/accounts')->middleware(['decrypt.request'])->group(function() {
+        Route::get('/list', [MerchantController::class, 'listMerchantAccount']);
+        Route::post('/store', [MerchantController::class, 'storeMerchantAccount']);
     });
 
 });

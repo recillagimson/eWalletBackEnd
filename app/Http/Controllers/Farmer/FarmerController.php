@@ -12,9 +12,12 @@ use App\Http\Requests\Farmer\FarmerSubsidyProcessRequest;
 use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
 use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
+use App\Http\Requests\Farmer\v3\SubsidyProcessRequest;
+use App\Http\Requests\Farmer\v3\SubsidyUploadRequest;
 use App\Jobs\Farmers\BatchUpload;
 use App\Jobs\Farmers\SubsidyBatchUpload;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Services\FarmerProfile\IDBPUploadService;
 use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Services\Utilities\Verification\IVerificationService;
@@ -28,18 +31,21 @@ class FarmerController extends Controller
     private IFarmerProfileService $farmerProfileService;
     private IUserAccountRepository $userAccountRepository;
     private IVerificationService $verificationService;
+    private IDBPUploadService $dbpUploadService;
 
     public function __construct(
         IResponseService       $responseService,
         IFarmerProfileService  $farmerProfileService,
         IUserAccountRepository $userAccountRepository,
-        IVerificationService   $verificationService
+        IVerificationService   $verificationService,
+        IDBPUploadService      $dbpUploadService
     )
     {
         $this->responseService = $responseService;
         $this->farmerProfileService = $farmerProfileService;
         $this->userAccountRepository = $userAccountRepository;
         $this->verificationService = $verificationService;
+        $this->dbpUploadService = $dbpUploadService;
     }
 
     public function farmerIdUpload(FarmerIdUploadRequest $request): JsonResponse
@@ -128,5 +134,14 @@ class FarmerController extends Controller
         return $this->farmerProfileService->DBPTransactionReport($request->all(), request()->user()->id);
     }
 
+    public function uploadSubsidyFileToS3v3(SubsidyUploadRequest $request) {
+        $result = $this->dbpUploadService->uploadSubsidyFileToS3v3($request->file);
+        return $this->responseService->successResponse(['path' => $result], SuccessMessages::updateUserSuccessful);
+    }
+
+    public function processSubsidyV3(SubsidyProcessRequest $request) {
+        $result = $this->dbpUploadService->processSubsidyV3($request->all(), request()->user()->id);
+        return $this->responseService->successResponse($result, SuccessMessages::updateUserSuccessful);
+    }
 
 }
