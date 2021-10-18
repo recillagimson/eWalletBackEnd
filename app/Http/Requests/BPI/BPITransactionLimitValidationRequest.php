@@ -11,7 +11,7 @@ class BPITransactionLimitValidationRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,10 +21,10 @@ class BPITransactionLimitValidationRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'amount' => 'required|regex:/^[0-9]+(\.[0-9][0-9]?)?$/'
+            'amount' => 'required|min:1|max:50000|regex:/^[0-9]+(\.[0-9][0-9]?)?$/'
         ];
     }
 }
