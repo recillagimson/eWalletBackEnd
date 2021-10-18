@@ -152,9 +152,9 @@ class TransactionValidationService implements ITransactionValidationService
 
                 if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
-                if (isset($customMessage) && count($customMessage) > 0) {
-                    $this->handleCustomErrorMessage($customMessage['key'], $customMessage['value']);
-                }
+                //if (isset($customMessage) && count($customMessage) > 0) {
+                    //$this->handleCustomErrorMessage($customMessage['key'], $customMessage['value']);
+                //}
 
                 Log::error('Account Monthly Limit Exceeded:', [
                     'totalFrom' => $from,
