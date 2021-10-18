@@ -24,7 +24,7 @@ class BPITransactionLimitValidationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => 'required|min:1|max:50000|regex:/^[0-9]+(\.[0-9][0-9]?)?$/'
+            'amount' => 'required|numeric|min:1|max:50000|'
         ];
     }
 }
