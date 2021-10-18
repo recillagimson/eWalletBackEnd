@@ -26,6 +26,7 @@ use App\Traits\StringHelpers;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use Log;
 
@@ -85,6 +86,14 @@ trait Send2BankHelpers
 
             //Log::error('Send2Bank UBP Error: ', $$response);
             return $send2Bank;
+        }
+
+        if (App::environment(['local', 'staging'])) {
+            Log:
+            info('Send2Bank UBP Success Response', [
+                'statusCode' => $response->status(),
+                'responseBody' => $response->json()
+            ]);
         }
 
         $data = $response->json();
