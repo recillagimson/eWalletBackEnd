@@ -77,4 +77,8 @@ class NotificationService implements INotificationService
     public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber) {
         // TODO: Implement sendBPICashInNotification() method.
     }
+
+    public function sendMerchantAccoutCredentials(string $to, string $firstName, string $password, string $pinCode) {
+        // TODO: Implement sendMerchantAccoutCredentials() method.
+    }
 }

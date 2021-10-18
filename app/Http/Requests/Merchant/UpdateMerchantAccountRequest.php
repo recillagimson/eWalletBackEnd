@@ -4,7 +4,7 @@ namespace App\Http\Requests\Merchant;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateMerchantAccountRequest extends FormRequest
+class UpdateMerchantAccountRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,6 @@ class CreateMerchantAccountRequest extends FormRequest
     public function rules()
     {
         return [
-            // MERCHANT
             'name' => 'required',
             'type' => 'required',
             'house_no' => 'required',
@@ -33,11 +32,7 @@ class CreateMerchantAccountRequest extends FormRequest
             'authorized_representative' => 'required',
             'company_email' => 'required',
             'contact_number' => 'required',
-            // USER ACCOUNT
-            'email' => 'required',
-            'mobile_number' => 'required',
-            'first_name' => 'required',
-            'last_name' => 'required',
+            'merchant_account_id' => 'required'
         ];
     }
 }
