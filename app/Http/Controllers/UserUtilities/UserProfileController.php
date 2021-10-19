@@ -198,8 +198,17 @@ class UserProfileController extends Controller
         $avatarLink = '';
         if($userDetail && isset($userDetail->profile)) {
             $avatarLink = $userDetail->profile->avatar_link;
+            return $this->responseService->successResponse(['link' => $avatarLink], SuccessMessages::success);
         }
-        return $this->responseService->successResponse(['link' => $avatarLink], SuccessMessages::success);
+
+        // CHECK if email is used
+        $userDetail = $this->userAccountRepository->getAdminUserByEmail($mobileNumber);
+        if($userDetail && isset($userDetail->profile)) {
+            $avatarLink = $userDetail->profile->avatar_link;
+            return $this->responseService->successResponse(['link' => $avatarLink], SuccessMessages::success);
+        }
+
+        return $this->responseService->successResponse([], SuccessMessages::success);
     }
 
 }
