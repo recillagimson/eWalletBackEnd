@@ -20,5 +20,5 @@ interface IBuyLoadService
 
     public function processAllPending();
 
-
+    public function executeDisabledNetwork(string $mobileNumber);
 }
