@@ -14,6 +14,7 @@ use App\Services\MerchantAccount\IMerchantAccountService;
 use App\Http\Requests\Merchant\CreateMerchantAccountRequest;
 use App\Http\Requests\Merchant\UpdateMerchantAccountRequest;
 use App\Http\Requests\Merchant\SetUserMerchantAccountRequest;
+use App\Http\Requests\Merchant\CreateAccountForMerchantRequest;
 use App\Repositories\MerchantAccount\IMerchantAccountRepository;
 use App\Http\Requests\Merchant\MerchantSelfieVerificationRequest;
 
@@ -77,12 +78,20 @@ class MerchantController extends Controller
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
-    public function storeMerchantAccount(CreateMerchantAccountRequest $request) {
+    public function storeMerchant(CreateMerchantAccountRequest $request) {
         $attr = $request->all();
         $attr['created_by'] = request()->user()->id;
         $attr['updated_by'] = request()->user()->id;
         $attr['merchant_balance'] = 0;
         $record = $this->merchantAccountService->create($attr);
+        return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+    }
+    
+    public function storeMerchantAccount(CreateAccountForMerchantRequest $request) {
+        $attr = $request->all();
+        $attr['created_by'] = request()->user()->id;
+        $attr['updated_by'] = request()->user()->id;
+        $record = $this->merchantAccountService->createMerchantAccount($attr);
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 

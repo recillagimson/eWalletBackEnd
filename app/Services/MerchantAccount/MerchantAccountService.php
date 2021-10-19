@@ -42,6 +42,17 @@ class MerchantAccountService implements IMerchantAccountService
         try {
             // CREATE MERCHANT
             $merchant = $this->merchantAccountRepo->create($attr);
+            \DB::commit();
+            return $merchant;
+        } catch (\Exception $e) {
+            throw $e;
+            \DB::rollBack();
+        }
+    }
+
+    public function createMerchantAccount(array $attr) {
+        \DB::beginTransaction();
+        try {
             $password = Str::random(16);
             $pinCode = rand(1000, 9999);
             $accountNumber = $this->userAccountNumbers->generateNo();
@@ -53,7 +64,7 @@ class MerchantAccountService implements IMerchantAccountService
                 'user_created' => $attr['created_by'],
                 'user_updated' => $attr['updated_by'],
                 'account_number' => $accountNumber,
-                'merchant_account_id' => $merchant->id
+                'merchant_account_id' => $attr['merchant_account_id']
             ]);
 
             $userDetail = $this->userDetailRepo->create([
@@ -66,14 +77,12 @@ class MerchantAccountService implements IMerchantAccountService
 
             $this->emailService->sendMerchantAccoutCredentials($userAccount->email, $userDetail->first_name, $password, $pinCode);
             $this->smsService->sendMerchantAccoutCredentials($userAccount->email, $userDetail->first_name, $password, $pinCode);
-
             \DB::commit();
             return [
-                'merchant' => $merchant,
-                'user_account' => $userAccount
+                'user_account' => $userAccount,
+                'user_detail' => $userDetail,
             ];
-        } catch (\Exception $e) {
-            throw $e;
+        } catch(\Exception $e) {
             \DB::rollBack();
         }
     }

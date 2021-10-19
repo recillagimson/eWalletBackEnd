@@ -365,7 +365,7 @@ class AuthService implements IAuthService
         $remarks = "Account locked for User Account ID $userId.";  
         $currentDate = Carbon::now();
 
-        $this->logHistoryService->logUserHistory($userId,
+        $this->logHistories->logUserHistory($userId,
                 null,
                 SquidPayModuleTypes::AccountLocked,
                 __NAMESPACE__,
