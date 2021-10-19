@@ -7,4 +7,5 @@ class NetworkTypes
     const Globe = 'GLOBE';
     const Smart = 'SMART';
     const Sun = 'SUN';
+    const Dito = 'DITO';
 }

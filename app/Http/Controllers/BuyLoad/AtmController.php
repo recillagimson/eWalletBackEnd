@@ -120,6 +120,7 @@ class AtmController extends Controller
     {
         $userId = $request->user()->id;
         $data = $request->validated();
+        $disabledNetwork = $this->buyLoadService->executeDisabledNetwork($data['mobile_number']);
 
         $response = $this->buyLoadService->topup($userId, $data['mobile_number'], $data['product_code'],
             $data['product_name'], $data['amount'], TopupTypes::load);
