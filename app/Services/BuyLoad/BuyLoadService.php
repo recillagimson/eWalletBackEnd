@@ -34,6 +34,8 @@ use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Enums\NetworkTypes;
+use Illuminate\Validation\ValidationException;
 
 class BuyLoadService implements IBuyLoadService
 {
@@ -197,6 +199,23 @@ class BuyLoadService implements IBuyLoadService
             $this->processPending($user->user_account_id);
         }
 
+    }
+
+    public function executeDisabledNetwork(string $mobileNumber)
+    {
+        $provider = $this->atmService->getProvider($mobileNumber);
+        $upperCaseProvider = strtoupper($provider);
+
+        switch (strtoupper($provider)) {
+            case NetworkTypes::Dito:
+                throw ValidationException::withMessages([
+                    'network_disabled' => "$upperCaseProvider is currently disabled."
+                ]);
+                break;
+
+            default:
+              return $provider;
+          }
     }
 
 
