@@ -10,7 +10,6 @@ use App\Models\Tier;
 use App\Enums\OtpTypes;
 use SendGrid\Mail\Mail;
 use App\Mail\BPI\CashInBPI;
-use App\Mail\EcPay\SuccessPayment;
 use App\Models\UserAccount;
 use Illuminate\Support\Str;
 use App\Enums\EmailSubjects;
@@ -19,23 +18,25 @@ use App\Traits\StringHelpers;
 use Illuminate\Mail\Mailable;
 use App\Mail\LoginVerification;
 use App\Mail\Loan\LoanRefNumber;
+use App\Mail\EcPay\SuccessPayment;
 use App\Mail\User\OtpVerification;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\Send2Bank\Send2BankReceipt;
 use App\Mail\User\AdminUserVerification;
-use App\Mail\TierUpgrade\UpgradeToSilverNotification;
 use App\Models\UserUtilities\UserDetail;
+use App\Mail\TierUpgrade\KYCNotification;
 use App\Mail\Send2Bank\SenderNotification;
 use App\Mail\PayBills\PayBillsNotification;
 use App\Mail\Farmers\BatchUploadNotification;
+use App\Mail\Merchant\MerchantAccountCreated;
 use App\Mail\SendMoney\SendMoneyVerification;
 use App\Traits\Transactions\Send2BankHelpers;
 use Illuminate\Validation\ValidationException;
 use App\Mail\SendMoney\SendMoneySenderNotification;
 use App\Mail\TierApproval\TierUpgradeRequestApproved;
+use App\Mail\TierUpgrade\UpgradeToSilverNotification;
 use App\Mail\SendMoney\SendMoneyRecipientNotification;
-use App\Mail\TierUpgrade\KYCNotification;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
@@ -310,6 +311,12 @@ class EmailService implements IEmailService
     {
         $subject = "Payment via EcPay";
         $template = new SuccessPayment($userDetail, $newBalance, $referenceNumber);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendMerchantAccoutCredentials(string $to, string $firstName, string $password, string $pinCode) {
+        $subject = "Merchant Account Created";
+        $template = new MerchantAccountCreated($subject, $firstName, $password, $pinCode, $to);
         $this->sendMessage($to, $subject, $template);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
+use App\Enums\TransactionCategoryIds;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\BPI\BPIOTPRequest;
 use App\Services\BPIService\IBPIService;
@@ -12,6 +13,8 @@ use App\Http\Requests\BPI\BPIStatusRequest;
 use App\Http\Requests\BPI\BPIProcessRequest;
 use App\Http\Requests\BPI\BPIFundTopUpRequest;
 use App\Http\Requests\BPI\BPIGetAccountRequest;
+use App\Http\Requests\BPI\BPITransactionLimitValidationRequest;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\Responses\IResponseService;
 
 class BPIController extends Controller
@@ -19,11 +22,13 @@ class BPIController extends Controller
 
     private IBPIService $bpiService;
     private IResponseService $responseService;
+    private ITransactionValidationService $transactionValidationService;
 
-    public function __construct(IBPIService $bpiService, IResponseService $responseService)
+    public function __construct(IBPIService $bpiService, IResponseService $responseService, ITransactionValidationService $transactionValidationService)
     {
         $this->bpiService = $bpiService;
         $this->responseService = $responseService;
+        $this->transactionValidationService = $transactionValidationService;
     }
 
     public function bpiAuth(BPIAuthRequest $request): JsonResponse
@@ -67,7 +72,13 @@ class BPIController extends Controller
         return $this->responseService->successResponse($response, SuccessMessages::success);
     }
 
-    public function getBPIAuthUrl(Request $request) {
-        return $this->responseService->successResponse(['login_url' => config('bpi.loginUrl')], SuccessMessages::success);
+    public function getBPIAuthUrl(BPITransactionLimitValidationRequest $request) {
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit(request()->user(), $request->amount, TransactionCategoryIds::cashinBPI);
+        return $this->responseService->successResponse(
+            [
+                'login_url' => config('bpi.loginUrl')
+            ], 
+            SuccessMessages::success
+        );
     }
 }

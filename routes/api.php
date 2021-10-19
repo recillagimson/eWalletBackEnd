@@ -554,6 +554,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/merchant/accounts')->middleware(['decrypt.request'])->group(function() {
         Route::get('/list', [MerchantController::class, 'listMerchantAccount']);
         Route::post('/store', [MerchantController::class, 'storeMerchantAccount']);
+        Route::post('/update', [MerchantController::class, 'updateMerchantAccount']);
+        Route::post('/set/user', [MerchantController::class, 'setUserMerchantAccount']);
     });
 
 });

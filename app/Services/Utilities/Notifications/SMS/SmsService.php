@@ -233,4 +233,9 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
+    public function sendMerchantAccoutCredentials(string $to, string $firstName, string $password, string $pinCode) {
+        $content = 'Hi ' . $firstName . '! You merchant account has been created. Please see below details: Username: ' . $to . ', Password: ' . $password . ', PIN: ' . $pinCode . '. Thank you!';
+        $this->sendMessages($to, $content);
+    }
+
 }
