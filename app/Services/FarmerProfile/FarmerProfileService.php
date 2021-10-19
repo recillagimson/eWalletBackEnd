@@ -275,12 +275,13 @@ class FarmerProfileService implements IFarmerProfileService
 
         $seq = $this->farmerImportRepository->countSequnceByProvinceAndDateCreated($prov, Carbon::now()->format('Y-m-d'));
 
+        
         $imp = $this->farmerImportRepository->create([
             'filename' => $filePath,
             'province' => $prov,
-            'seq' => ($seq + 1)
+            'seq' => $seq > 0 ? ($seq + 1) : 1,
         ]);
-
+        
         $seq = ($seq + 1);
         $formatSeq = $seq;
 
