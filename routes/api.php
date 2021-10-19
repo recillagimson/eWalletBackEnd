@@ -560,6 +560,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/set/user', [MerchantController::class, 'setUserMerchantAccount']);
     });
 
+    Route::prefix('/transactions')->middleware(['decrypt.request'])->group(function() {
+        Route::post('/generate', [UserTransactionHistoryController::class, 'generateTransactionHistory']);
+    });
+
 });
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {

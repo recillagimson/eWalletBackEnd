@@ -81,4 +81,8 @@ class NotificationService implements INotificationService
     public function sendMerchantAccoutCredentials(string $to, string $firstName, string $password, string $pinCode) {
         // TODO: Implement sendMerchantAccoutCredentials() method.
     }
+
+    public function sendUserTransactionHistory(string $to, array $records){
+        // TODO: Implement sendUserTransactionHistory() method.
+    }
 }

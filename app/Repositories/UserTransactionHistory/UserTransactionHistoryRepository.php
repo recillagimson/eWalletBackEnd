@@ -303,4 +303,12 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return $records->get();
     }
 
+    public function getFilteredTransactionHistory(string $authUser, string $from, string $to) {
+        return $this->model->with(['user_account.profile', 'transaction_category'])
+        ->where('created_at', '<=', $from)
+        ->where('created_at', '>=', $to)
+        ->where('user_account_id', $authUser)
+        ->get();
+    }
+
 }

@@ -238,4 +238,8 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
+    public function sendUserTransactionHistory(string $to, array $records) {
+
+    }
+
 }

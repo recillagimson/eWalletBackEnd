@@ -40,6 +40,7 @@ use App\Mail\SendMoney\SendMoneyRecipientNotification;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
+use App\Mail\UserTransactionMail\UserTransactionHistoryMail;
 
 class EmailService implements IEmailService
 {
@@ -319,4 +320,10 @@ class EmailService implements IEmailService
         $template = new MerchantAccountCreated($subject, $firstName, $password, $pinCode, $to);
         $this->sendMessage($to, $subject, $template);
     }
+
+    public function sendUserTransactionHistory(string $to, array $records) {
+        $subject = "User Transaction History";
+        $template = new UserTransactionHistoryMail($subject, $records);
+        $this->sendMessage($to, $subject, $template);
+    }    
 }
