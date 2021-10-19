@@ -19,4 +19,6 @@ interface IEmailService extends INotificationService
     public function batchUploadNotification(UserAccount $user, string $successLink, string $failedLink);
 
     public function sendLoanReferenceNumber(string $firstName, string $refNo, string $to);
+
+    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password);
 }

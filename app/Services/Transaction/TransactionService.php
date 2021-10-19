@@ -9,6 +9,7 @@ use App\Models\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\AddMoney\UBP\IUbpAddMoneyService;
 use App\Services\AddMoneyV2\IAddMoneyService;
 use App\Services\BuyLoad\IBuyLoadService;
@@ -34,6 +35,7 @@ class TransactionService implements ITransactionService
     private IUbpAddMoneyService $ubpAddMoneyService;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepo;
     private IEmailService $emailService;
+    private IUserDetailRepository $userDetailRepository;
 
     public function __construct(IUserBalanceRepository            $userBalanceRepository,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepository,
@@ -44,7 +46,8 @@ class TransactionService implements ITransactionService
                                 IAddMoneyService                  $addMoneyService,
                                 IUbpAddMoneyService               $ubpAddMoneyService,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepo,
-                                IEmailService                     $emailService)
+                                IEmailService                     $emailService,
+                                IUserDetailRepository             $userDetailRepository)
     {
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
@@ -56,6 +59,7 @@ class TransactionService implements ITransactionService
         $this->ubpAddMoneyService = $ubpAddMoneyService;
         $this->userTransactionHistoryRepo = $userTransactionHistoryRepo;
         $this->emailService = $emailService;
+        $this->userDetailRepository = $userDetailRepository;
     }
 
     public function processUserPending(UserAccount $user)
@@ -191,9 +195,10 @@ class TransactionService implements ITransactionService
     }
 
     public function generateTransactionHistoryByEmail(array $attr) {
-        // dd($attr);
         $records = $this->userTransactionHistoryRepo->getFilteredTransactionHistory($attr['auth_user'], $attr['from'], $attr['to']);
-        // dd($records);
-        $this->emailService->sendUserTransactionHistory($attr['email'], $records->toArray());
+        $fileName = $attr['from'] . "-" . $attr['to'] . ".pdf";
+        $user = $this->userDetailRepository->getByUserId($attr['auth_user']);
+        $password = Carbon::now()->format('mdY') . Carbon::parse($user->birth_date)->format('mdy');
+        $this->emailService->sendUserTransactionHistory($attr['email'], $records->toArray(), $fileName, $user->first_name, $attr['from'], $attr['to'], $password);
     }
 }

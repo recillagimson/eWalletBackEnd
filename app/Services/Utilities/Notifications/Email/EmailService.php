@@ -3,7 +3,7 @@
 
 namespace App\Services\Utilities\Notifications\Email;
 
-
+use PDF;
 use SendGrid;
 use Carbon\Carbon;
 use App\Models\Tier;
@@ -245,13 +245,23 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
-    private function sendMessage(string $to, string $subject, Mailable $template): void
+    private function sendMessage(string $to, string $subject, Mailable $template, $file = null, $fileName = null): void
     {
         $mail = new Mail();
         $mail->setFrom($this->fromAddress, $this->fromName);
         $mail->setSubject($subject);
         $mail->addTo($to);
         $mail->addContent('text/html', ($template)->render());
+
+        if($file && $fileName) {
+            // $mail->attachData($file, $fileName);
+            $mail->addAttachment(
+                $file,
+                "application/pdf",
+                $fileName,
+                "attachment"
+            );
+        }
 
         $sendgrid = new SendGrid($this->apiKey);
         $response = $sendgrid->send($mail);
@@ -321,9 +331,28 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
-    public function sendUserTransactionHistory(string $to, array $records) {
+    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password) {
+        $records = [];
+        foreach($records as $item) {
+            $entry = $item;
+            $record = [
+                $entry['manila_time_transaction_date'],
+                $entry['name'],
+                $entry['reference_number'],
+                $entry['transaction_type'] == 'DR' ? $entry['total_amount'] : '',
+                $entry['transaction_type'] == 'CR' ? $entry['total_amount'] : '',
+                $entry['available_balance']
+            ];
+            array_push($records, $record);
+        }
+        
+        $pdf = PDF::loadView('reports.transaction_history.transaction_history_v2', [
+            'records' => $records
+        ]);
+        $pdf->SetProtection(['copy', 'print'], $password, 'squidP@y');
+
         $subject = "User Transaction History";
-        $template = new UserTransactionHistoryMail($subject, $records);
-        $this->sendMessage($to, $subject, $template);
+        $template = new UserTransactionHistoryMail($subject, $records, $fileName, $firstName, $from, $dateTo);
+        $this->sendMessage($to, $subject, $template, $pdf->output(), $fileName);
     }    
 }
