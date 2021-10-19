@@ -81,4 +81,14 @@ class BPIController extends Controller
             SuccessMessages::success
         );
     }
+
+    public function getCredentials() {
+        return $this->responseService->successResponse(
+            [
+                'clientId' => config('bpi.clientId'),
+                'clientSecret' => config('bpi.clientSecret')
+            ], 
+            SuccessMessages::success
+        );
+    }
 }
