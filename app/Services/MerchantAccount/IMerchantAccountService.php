@@ -11,4 +11,5 @@ interface IMerchantAccountService
 {
     public function create(array $attr);
     public function setUserMerchantAccount(array $attr);
+    public function createMerchantAccount(array $attr);
 }
