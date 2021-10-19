@@ -49,6 +49,7 @@ class InAddMoneyRepository extends Repository implements IInAddMoneyRepository
         return $this->model->where('user_account_id', $userId)
             ->where('status', TransactionStatuses::pending)
             ->where('deleted_at', null)
+            ->where('expired_on', null)
             ->orderBy('created_at', 'asc')
             ->get();
     }
