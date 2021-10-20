@@ -27,7 +27,7 @@ class SuccessExport implements FromCollection, WithHeadings
         $successData = [];
         foreach($this->data as $entry) {
             array_push($successData, [
-                $entry[DBPUploadKeys::rsbsaNumber],
+                $entry[DBPUploadKeys::rsbsaNumber]],
                 $entry['firstname'],
                 $entry['middlename'],
                 $entry['lastname'],
@@ -40,7 +40,7 @@ class SuccessExport implements FromCollection, WithHeadings
                 $entry['district'],
                 $entry['province'],
                 $entry['region'],
-                $entry[DBPUploadKeys::birthDate],
+                $entry[$dob],
                 $entry['placeofbirth'],
                 $entry['mobileno'],
                 $entry['sex'],
