@@ -27,7 +27,7 @@ class SuccessExport implements FromCollection, WithHeadings
         $successData = [];
         foreach($this->data as $entry) {
             array_push($successData, [
-                $entry[DBPUploadKeys::rsbsaNumber]],
+                $entry['rsbsa_number'],
                 $entry['firstname'],
                 $entry['middlename'],
                 $entry['lastname'],
