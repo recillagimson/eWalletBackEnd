@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h2>Hi {{ $senderName  }}!,</h2>
+<h2>Hi {{ $senderName  }}!</h2>
 <p>You have sent ₱{{ $amount }} of SquidPay on {{ $transactionDate }} to {{ $receiverName }}. Convenience fee for this
     transaction is ₱{{ $serviceFee }}. Your new balance is ₱{{ $newBalance }} with Ref No. {{ $refNo }}. Thank you for
     using SquidPay!</p>

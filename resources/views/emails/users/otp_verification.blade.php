@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h2>Hi {{ $recipientName }}!,</h2>
+<h2>Hi {{ $recipientName }}!</h2>
 <p>This is your verification code: {{ $code }}. <b>DO NOT SHARE</b> this OTP.</p>
 </body>
 
