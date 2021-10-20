@@ -294,8 +294,8 @@ class FarmerProfileService implements IFarmerProfileService
         $province = $this->provinceRepository->getProvinceByName($prov);
         
         $date = date('ymd');
-        $successFilename = "farmers/ONBSUCRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.csv";
-        $failFilename = "farmers/ONBEXPRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.csv";
+        $successFilename = "farmers/ONBSUCRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.xlsx";
+        $failFilename = "farmers/ONBEXPRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.xlsx";
 
         Excel::store(new FailedExport($errors, $headers->toArray()), $failFilename, 's3');
         Excel::store(new SuccessExport($success, $headers->toArray()), $successFilename, 's3');
