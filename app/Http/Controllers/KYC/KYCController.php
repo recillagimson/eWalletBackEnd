@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\KYC;
 
-use App\Enums\SuccessMessages;
 use Illuminate\Http\Request;
+use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KYC\OCRRequest;
 use App\Services\KYCService\IKYCService;
+use App\Http\Requests\KYC\FaceAuthRequest;
 use App\Http\Requests\KYC\MatchOCRRequest;
 use App\Http\Requests\KYC\FaceMatchRequest;
 use App\Http\Requests\KYC\ExpirationCheckRequest;
@@ -49,5 +50,9 @@ class KYCController extends Controller
 
     public function verifyRequest(string $requestId) {
         return $this->kycService->verifyRequest($requestId);
+    }
+
+    public function faceAuth(FaceAuthRequest $request) {
+        return $this->kycService->faceAuth($request->all());
     }
 }

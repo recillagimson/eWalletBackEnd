@@ -123,6 +123,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2', [FarmerController::class, 'uploadFileToS3']);
     Route::middleware(['decrypt.request', 'auth:sanctum'])->post('/upload/process', [FarmerController::class, 'batchUploadV2']);
     Route::middleware(['require.user.token'])->post('/farmer/jobs/batch-upload', [FarmerController::class, 'processBatchUpload']);
+    // EKYC
+    Route::post('ekyc/face/auth', [KYCController::class, 'faceAuth'])->name('face.auth');
 
     Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);
 
