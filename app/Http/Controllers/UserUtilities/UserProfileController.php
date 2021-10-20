@@ -202,7 +202,7 @@ class UserProfileController extends Controller
         }
 
         // CHECK if email is used
-        $userDetail = $this->userAccountRepository->getAdminUserByEmail($mobileNumber);
+        $userDetail = $this->userAccountRepository->getByEmail('email', $mobileNumber);
         if($userDetail && isset($userDetail->profile)) {
             $avatarLink = $userDetail->profile->avatar_link;
             return $this->responseService->successResponse(['link' => $avatarLink], SuccessMessages::success);
