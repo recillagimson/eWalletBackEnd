@@ -49,45 +49,45 @@ class SmsService implements ISmsService
 
         $pinOrPassword = $otpType === OtpTypes::passwordRecovery ? 'password' : 'pin code';
 
-        $content = 'Hi ' . $recipientName . '! Your ' . $pinOrPassword . ' recovery code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
+        $content = 'Hi ' . $recipientName . '! Your ' . $pinOrPassword . ' recovery code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP.';
         $this->sendMessages($to, $content);
     }
 
     public function sendAccountVerification(string $to, string $otp, string $recipientName)
     {
 
-        $content = 'Hi ' . $recipientName . '! Your account verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
+        $content = 'Hi ' . $recipientName . '! Your account verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP.';
         $this->sendMessages($to, $content);
     }
 
     public function sendLoginVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi ' . $recipientName . '! Your login verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
+        $content = 'Hi ' . $recipientName . '! Your login verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP.';
         $this->sendMessages($to, $content);
     }
 
     public function sendMoneyVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi ' . $recipientName . '! Your send money verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
+        $content = 'Hi ' . $recipientName . '! Your send money verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP.';
         $this->sendMessages($to, $content);
     }
 
     public function sendS2BVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi ' . $recipientName . '! Your send to bank verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
+        $content = 'Hi ' . $recipientName . '! Your send to bank verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP.';
         $this->sendMessages($to, $content);
     }
 
     public function updateProfileVerification(string $to, string $otp, string $recipientName)
     {
-        $content = 'Hi ' . $recipientName . '! Your update profile verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
+        $content = 'Hi ' . $recipientName . '! Your update profile verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP.';
         $this->sendMessages($to, $content);
     }
 
     public function updateMobileVerification(string $to, string $otp, string $recipientName)
     {
 
-        $content = 'Hi ' . $recipientName . '! Your update mobile verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP';
+        $content = 'Hi ' . $recipientName . '! Your update mobile verification code is: ' . $otp . '. PLEASE DO NOT SHARE YOUR OTP.';
         $this->sendMessages($to, $content);
     }
 
