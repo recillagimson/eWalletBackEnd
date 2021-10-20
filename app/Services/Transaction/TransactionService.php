@@ -198,7 +198,8 @@ class TransactionService implements ITransactionService
         $records = $this->userTransactionHistoryRepo->getFilteredTransactionHistory($attr['auth_user'], $attr['from'], $attr['to']);
         $fileName = $attr['from'] . "-" . $attr['to'] . ".pdf";
         $user = $this->userDetailRepository->getByUserId($attr['auth_user']);
-        $password = Carbon::now()->format('mdY') . Carbon::parse($user->birth_date)->format('mdy');
+        $password = Carbon::parse($user->birth_date)->format('mdY');
         $this->emailService->sendUserTransactionHistory($attr['email'], $records->toArray(), $fileName, $user->first_name, $attr['from'], $attr['to'], $password);
+        return;
     }
 }

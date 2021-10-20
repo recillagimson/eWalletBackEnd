@@ -90,5 +90,6 @@ class UserTransactionHistoryController extends Controller
         $attr = $request->all();
         $attr['auth_user'] = request()->user()->id;
         $record = $this->transactionService->generateTransactionHistoryByEmail($attr);
+        return $this->responseService->successResponse([]);
     }
 }

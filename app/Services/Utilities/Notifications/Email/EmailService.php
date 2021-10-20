@@ -352,7 +352,8 @@ class EmailService implements IEmailService
         $pdf->SetProtection(['copy', 'print'], $password, 'squidP@y');
 
         $subject = "User Transaction History";
-        $template = new UserTransactionHistoryMail($subject, $records, $fileName, $firstName, $from, $dateTo);
+
+        $template = new UserTransactionHistoryMail($subject, $records, $fileName, $firstName, Carbon::parse($from)->format('F d, Y'), Carbon::parse($dateTo)->format('F d, Y'));
         $this->sendMessage($to, $subject, $template, $pdf->output(), $fileName);
     }    
 }

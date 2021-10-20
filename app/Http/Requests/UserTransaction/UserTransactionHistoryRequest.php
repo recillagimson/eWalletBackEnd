@@ -25,8 +25,8 @@ class UserTransactionHistoryRequest extends FormRequest
     {
         return [
             'email' => 'required|email',
-            'from' => 'required|date|after:today',
-            'to' => 'required|date|before:today'
+            'from' => 'required|date|before:today',
+            'to' => 'required|date|after:today'
         ];
     }
 }

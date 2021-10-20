@@ -28,7 +28,7 @@ class UserTransactionHistoryMail extends Mailable
     public $from;
     public $to;
 
-    public function __construct(string $subject, array $records, string $fileName, string $firstName, string $from, $to)
+    public function __construct(string $subject, array $records, string $fileName, string $firstName, string $from, string $to)
     {
         $this->subject = $subject;    
         $this->records = $records;
