@@ -22,7 +22,14 @@ class FailedExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return $this->data;
+        // return $this->data;
+        $records = [];
+        foreach($this->data as $item) {
+            $data = $item;
+            $data['account_number'] = 'N/A';
+            $data['remarks'] = 'FAILED';
+        }
+        return new Collection($records);
     }
 
     public function headings(): array
@@ -52,6 +59,8 @@ class FailedExport implements FromCollection, WithHeadings
             "MOTHERMAIDENNAME",
             "# OF FARM PARCEL",
             "TOTAL FARM AREA (Ha)",
+            "ACCOUNT NUMBER",
+            "REMARKS"
         ];
     }
 }
