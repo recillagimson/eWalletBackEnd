@@ -17,6 +17,7 @@ class QrTransactions extends Model
         'status',
         'user_updated',
         'user_created',
+        'message',
     ];
 
 }
