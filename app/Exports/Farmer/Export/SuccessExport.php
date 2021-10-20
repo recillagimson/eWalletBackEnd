@@ -40,7 +40,7 @@ class SuccessExport implements FromCollection, WithHeadings
                 $entry['district'],
                 $entry['province'],
                 $entry['region'],
-                $entry[$dob],
+                $entry[DBPUploadKeys::birthDate],
                 $entry['placeofbirth'],
                 $entry['mobileno'],
                 $entry['sex'],
