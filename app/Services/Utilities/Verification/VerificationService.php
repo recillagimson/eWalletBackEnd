@@ -2,23 +2,25 @@
 
 namespace App\Services\Utilities\Verification;
 
-use App\Enums\eKYC;
-use App\Enums\SquidPayModuleTypes;
-use App\Repositories\IdType\IIdTypeRepository;
-use App\Repositories\KYCVerification\IKYCVerificationRepository;
-use App\Repositories\Tier\ITierApprovalCommentRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserPhoto\IUserPhotoRepository;
-use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\KYCService\IKYCService;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 use Log;
 use Str;
+use App\Enums\eKYC;
+use App\Enums\AccountTiers;
+use Illuminate\Support\Carbon;
+use Illuminate\Http\UploadedFile;
+use App\Enums\SquidPayModuleTypes;
+use Illuminate\Support\Facades\Storage;
+use App\Services\KYCService\IKYCService;
+use App\Repositories\IdType\IIdTypeRepository;
+use Illuminate\Validation\ValidationException;
+use App\Repositories\Tier\ITierApprovalRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\Tier\ITierApprovalCommentRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 
 class VerificationService implements IVerificationService
 {
@@ -31,6 +33,7 @@ class VerificationService implements IVerificationService
     private IKYCService $kycService;
     private IUserAccountRepository $userAccountService;
     private IKYCVerificationRepository $kycRepository;
+    private ITierApprovalRepository $tierApproval;
 
     public function __construct(IUserPhotoRepository $userPhotoRepository,
                                 IUserDetailRepository $userDetailRepository,
@@ -40,7 +43,8 @@ class VerificationService implements IVerificationService
                                 ITierApprovalCommentRepository $iTierApprovalCommentRepository,
                                 IKYCService $kycService,
                                 IUserAccountRepository $userAccountService,
-                                IKYCVerificationRepository $kycRepository)
+                                IKYCVerificationRepository $kycRepository,
+                                ITierApprovalRepository $tierApproval)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -51,6 +55,7 @@ class VerificationService implements IVerificationService
         $this->kycService = $kycService;
         $this->userAccountService = $userAccountService;
         $this->kycRepository = $kycRepository;
+        $this->tierApproval = $tierApproval;
     }
 
     public function createSelfieVerification(array $data, ?string $userAccountId = null)
@@ -120,6 +125,13 @@ class VerificationService implements IVerificationService
             $path = $this->saveFile($idPhoto, $idPhotoName, 'id_photo');
             // Save record to DB
 
+            $tierApproval = $this->tierApproval->updateOrCreateApprovalRequest([
+                'user_account_id' => $data['user_account_id'],
+                'request_tier_id' => AccountTiers::tier2,
+                'user_created' => request()->user()->id,
+                'user_updated' => request()->user()->id,
+            ]);
+
             // Init eKYC OCR
             $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
             $extractData = $this->extractData($eKYC, $idType->type);
@@ -131,7 +143,7 @@ class VerificationService implements IVerificationService
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
                 'id_number' => isset($extractData['id_number']) && $extractData['id_number'] != 'N/A' ? $extractData['id_number'] : $data['id_number'],
-                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                'tier_approval_id' => $tierApproval->id,
                 'remarks' => isset($data['remarks']) ? $data['remarks'] : ""
             ];
             $record = $this->userPhotoRepository->create($params);
@@ -139,7 +151,7 @@ class VerificationService implements IVerificationService
 
             if(isset($data['remarks'])) {
                 $this->iTierApprovalCommentRepository->create([
-                    'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                    'tier_approval_id' => $tierApproval->id,
                     'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
                     'user_created' => $data['user_created'] = request()->user()->id,
                     'user_updated' => $data['user_updated'] = request()->user()->id
@@ -148,6 +160,7 @@ class VerificationService implements IVerificationService
 
             // Collect created record
             $record->ekyc = $extractData;
+            $record->tier_approval = $tierApproval;
             array_push($recordsCreated, $record);
 
             $audit_remarks = request()->user()->account_number . "  has uploaded " . $idType->type . ", " . $idType->description;
