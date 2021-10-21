@@ -223,6 +223,7 @@ class AuthService implements IAuthService
 
         $notif = $notifService == null ? $this->notificationService : $notifService;
 
+        //With Recipient
         if ($otpType === OtpTypes::registration)
             $notif->sendAccountVerification($username, $otp->token);
         elseif ($otpType === OtpTypes::login)
