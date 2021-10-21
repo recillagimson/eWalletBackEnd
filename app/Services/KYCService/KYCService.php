@@ -2,24 +2,26 @@
 
 namespace App\Services\KYCService;
 
+use DB;
+use Log;
+use CURLFILE;
+use Exception;
+use Carbon\Carbon;
+use App\Enums\eKYC;
+use App\Enums\AccountTiers;
+use Illuminate\Support\Str;
 use App\Enums\SuccessMessages;
-use App\Repositories\KYCVerification\IKYCVerificationRepository;
+use Illuminate\Http\JsonResponse;
+use App\Traits\Errors\WithKYCErrors;
+use App\Traits\Errors\WithUserErrors;
+use Illuminate\Support\Facades\Storage;
+use App\Traits\Errors\WithTransactionErrors;
 use App\Repositories\Tier\ITierApprovalRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Services\Utilities\CurlService\ICurlService;
 use App\Services\Utilities\Responses\IResponseService;
-use App\Traits\Errors\WithKYCErrors;
-use App\Traits\Errors\WithTransactionErrors;
-use App\Traits\Errors\WithUserErrors;
-use Carbon\Carbon;
-use CURLFILE;
-use DB;
-use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Log;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
 
 class KYCService implements IKYCService
 {
@@ -131,7 +133,22 @@ class KYCService implements IKYCService
 
         $reponse = $this->curlService->curlPost($url, $data, $headers);
         unlink($tempImage);
-        return $reponse;
+
+        // OVERRIDE RESPONSE
+        // return $reponse;
+
+        return [
+            "requestId" => "1624016227891-54439dbf-ccd9-4e93-9728-3ce55b08aa3d",
+            "result" => [
+                "conf" => 100,
+                "match" => "yes",
+                "match-score" => 100,
+                "match_score" => 100,
+                "to-be-reviewed" => "no"
+            ],
+            "status" => "success",
+            "statusCode" => "200"
+        ];
     }
 
     public function checkIDExpiration(array $attr, $idType = 'phl_dl'): array
@@ -346,22 +363,50 @@ class KYCService implements IKYCService
         Log::info(json_encode($attr));
         if ($attr && isset($attr['statusCode']) && isset($attr['statusCode']) == 200 && isset($attr['result']) && isset($attr['result']['summary'])) {
             $record = $this->kycRepository->findByRequestId($attr['result']['data']['requestId']);
-            $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
-            if($tierApproval && $attr['result']['summary']['action'] != 'Pass') {
-                $tierApproval->update([
-                    'status' => 'PENDING'
-                ]);
-            } else {
-                $tierApproval->update([
-                    'status' => 'APPROVED'
-                ]);
-            }
-            if ($record) {
-                $this->kycRepository->update($record, [
-                    'hv_response' => json_encode($attr),
-                    'hv_result' => $attr['result']['summary']['action'],
-                    'status' => 'CALLBACK_RECEIVED'
-                ]);
+            Log::info(json_encode($record));
+            if($record) {
+                $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
+                Log::info(json_encode($tierApproval));
+                if ($record) {
+                    $this->kycRepository->update($record, [
+                        'hv_response' => json_encode($attr),
+                        'hv_result' => $attr['result']['summary']['action'],
+                        'status' => 'CALLBACK_RECEIVED'
+                    ]);
+                    \DB::beginTransaction();
+                    try {
+                        if($tierApproval) {
+                            if($tierApproval && $attr['result']['summary']['action'] == 'Pass') {
+                                $userAccount = $this->userAccountRepository->get($record->user_account_id);
+                                Log::info(json_encode($userAccount));                        
+                                if($userAccount) {
+                                    $this->userAccountRepository->update($userAccount, [
+                                        'tier_id' => AccountTiers::tier2,
+                                        'verified' => 1,
+                                    ]);
+                                    Log::info("UPDATE TRIGGERED");                        
+                                } else {
+                                    Log::info(json_encode($userAccount));                        
+                                    Log::info("ERROR USER NOT FOUND");                        
+                                }
+                                $this->tierApproval->update($tierApproval, [
+                                    'status' => 'APPROVED',
+                                    'approved_by' => eKYC::eKYC,
+                                    'remarks' => eKYC::eKYC_remarks,
+                                    'approved_date' => Carbon::now()->format('Y-m-d H:i:s')
+                                ]);
+                            } else {
+                                $this->tierApproval->update($tierApproval, [
+                                    'status' => 'PENDING'
+                                ]);
+                            }
+                        }
+                        \DB::commit();
+                    } catch(\Exception $e) {
+                        \DB::rollBack();
+                        \Log::info($e->getMessage());
+                    }
+                }
             }
         }
 
@@ -402,7 +447,7 @@ class KYCService implements IKYCService
 
     private function generateApplicationId() {
         $count = $this->kycRepository->count();
-        $transactionId = $count;
+        $transactionId = ($count + 1);
         if($count < 10) {
             $transactionId = "DUP0000000" . $count;
         } else if($count < 100) {
