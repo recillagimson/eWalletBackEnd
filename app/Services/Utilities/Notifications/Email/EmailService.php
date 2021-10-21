@@ -353,7 +353,7 @@ class EmailService implements IEmailService
 
         $subject = "User Transaction History";
 
-        $template = new UserTransactionHistoryMail($subject, $records, $fileName, $firstName, Carbon::parse($from)->format('F d, Y'), Carbon::parse($dateTo)->format('F d, Y'));
+        $template = new UserTransactionHistoryMail($subject, $records, $fileName, $firstName, Carbon::parse($from)->format('F d, Y'), Carbon::parse($dateTo)->format('F d, Y'), Carbon::now()->format('m/d/Y'));
         $this->sendMessage($to, $subject, $template, $pdf->output(), $fileName);
     }    
 }
