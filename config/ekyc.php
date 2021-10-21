@@ -10,4 +10,6 @@ return [
     'callbackUrl' => env('KYC_APP_CALLBACK_URL'),
     'enrolId' => env('KYC_APP_VERIFY_REGISTER_ID', 'no'),
     'verifyUrlV2' => env('KYC_APP_VERIFY_URL_V2'),
+    'faceAuthUrl' => env('KYC_APP_FACE_AUTH_URL'),
+
 ];

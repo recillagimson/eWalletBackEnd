@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
+use App\Services\Report\IReportService;
+use App\Services\Utilities\PDF\IPDFService;
+use App\Services\Transaction\ITransactionService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Http\Requests\UserTransaction\UserTransactionHistoryRequest;
 use App\Http\Requests\TransactionHistory\DownloadTransactionHistoryRequest;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Report\IReportService;
-use App\Services\Transaction\ITransactionService;
-use App\Services\Utilities\PDF\IPDFService;
-use App\Services\Utilities\Responses\IResponseService;
-use Illuminate\Http\Request;
 
 class UserTransactionHistoryController extends Controller
 {
@@ -83,5 +84,12 @@ class UserTransactionHistoryController extends Controller
 
     public function downloadCountTotalAmountEachUserCSV(DownloadTransactionHistoryRequest $request) {
         return $this->transactionService->downloadCountTotalAmountEachUserCSV($request);
+    }
+
+    public function generateTransactionHistory(UserTransactionHistoryRequest $request) {
+        $attr = $request->all();
+        $attr['auth_user'] = request()->user()->id;
+        $record = $this->transactionService->generateTransactionHistoryByEmail($attr);
+        return $this->responseService->successResponse([]);
     }
 }

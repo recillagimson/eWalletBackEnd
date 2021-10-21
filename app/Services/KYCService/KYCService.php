@@ -11,6 +11,7 @@ use App\Enums\eKYC;
 use App\Enums\AccountTiers;
 use Illuminate\Support\Str;
 use App\Enums\SuccessMessages;
+use App\Repositories\FaceAuth\IFaceAuthRepository;
 use Illuminate\Http\JsonResponse;
 use App\Traits\Errors\WithKYCErrors;
 use App\Traits\Errors\WithUserErrors;
@@ -33,6 +34,7 @@ class KYCService implements IKYCService
     private IResponseService $responseService;
     private IKYCVerificationRepository $kycRepository;
     private ITierApprovalRepository $tierApproval;
+    private IFaceAuthRepository $faceAuthRepo;
 
     private $appId;
     private $appKey;
@@ -43,8 +45,9 @@ class KYCService implements IKYCService
     private $verifyUrlV2;
     private $callBackUrl;
     private $enrolId;
+    private $faceAuthUrl;
 
-    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository, ITierApprovalRepository $tierApproval)
+    public function __construct(ICurlService $curlService, IUserSelfiePhotoRepository $userSelfiePhotoRepository, IUserAccountRepository $userAccountRepository, IResponseService $responseService, IKYCVerificationRepository $kycRepository, ITierApprovalRepository $tierApproval, IFaceAuthRepository $faceAuthRepo)
     {
         $this->curlService = $curlService;
         $this->userSelfiePhotoRepository = $userSelfiePhotoRepository;
@@ -52,6 +55,7 @@ class KYCService implements IKYCService
         $this->responseService = $responseService;
         $this->kycRepository = $kycRepository;
         $this->tierApproval = $tierApproval;
+        $this->faceAuthRepo = $faceAuthRepo;
 
         $this->appId = config('ekyc.appId');
         $this->appKey = config('ekyc.appKey');
@@ -62,6 +66,7 @@ class KYCService implements IKYCService
         $this->callBackUrl = config('ekyc.callbackUrl');
         $this->enrolId = config('ekyc.enrolId');
         $this->verifyUrlV2 = config('ekyc.verifyUrlV2');
+        $this->faceAuthUrl = config('ekyc.faceAuthUrl');
 
     }
 
@@ -467,5 +472,30 @@ class KYCService implements IKYCService
         }
 
         return $transactionId;
+    }
+
+    public function faceAuth(array $attr) {
+        $url = $this->faceAuthUrl;
+        $headers = $this->getAuthorizationHeaders();
+        $transaction = Str::uuid()->toString();
+        $body = [
+            'selfie' => new CURLFILE($attr['selfie']->getPathName()),
+            'transactionId' => $transaction,
+            'uidType' => 'id_number',
+            'uid' => $attr['rsbsa_number'],
+        ];
+        $response = $this->curlService->curlPost($url, $body, $headers);
+        $userAccount = $this->userAccountRepository->getUserAccountByRSBSANo($attr['rsbsa_number']);
+        $faceAuthTransaction = $this->faceAuthRepo->create([
+            'transaction_id' => $transaction,
+            'rsbsa_number' => $attr['rsbsa_number'],
+            'user_account_id' => $userAccount->id,
+            'response' => json_encode($response)
+        ]);
+
+        return $this->responseService->successResponse([
+            'hv_response' => $response,
+            'transaction_record' => $faceAuthTransaction->toArray()
+        ], SuccessMessages::success);
     }
 }

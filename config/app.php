@@ -205,6 +205,9 @@ return [
 
         niklasravnsborg\LaravelPdf\PdfServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+
+        Barryvdh\DomPDF\ServiceProvider::class,
+
     ],
 
     /*
@@ -287,7 +290,7 @@ return [
 
         //Enums - Messages
         'SuccessMessages' => SuccessMessages::class,
-
+        'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 
     'web_app_url' => env('WEB_APP_URL'),

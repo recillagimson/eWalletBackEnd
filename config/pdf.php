@@ -6,7 +6,7 @@ return [
 	'author'                => '',
 	'subject'               => '',
 	'keywords'              => '',
-	'creator'               => 'Laravel Pdf',
+	'creator'               => 'SquidPay',
 	'display_mode'          => 'fullpage',
 	'tempDir'               => base_path('/storage/app/temp')
 ];

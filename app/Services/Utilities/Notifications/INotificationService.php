@@ -37,4 +37,5 @@ interface INotificationService
     public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier);
     public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber);
     public function sendMerchantAccoutCredentials(string $to, string $firstName, string $password, string $pinCode);
+    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password);
 }

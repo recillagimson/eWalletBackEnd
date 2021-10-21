@@ -3,6 +3,7 @@
 namespace App\Repositories\UserTransactionHistory;
 
 use Carbon\Carbon;
+use App\Models\DRCRBalance;
 use App\Enums\DBPUploadKeys;
 use App\Models\DRCRProcedure;
 use App\Repositories\Repository;
@@ -301,6 +302,14 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             return $records->paginate();
         }
         return $records->get();
+    }
+
+    public function getFilteredTransactionHistory(string $authUser, string $from, string $to) {
+        return DRCRBalance::with([])
+        ->where('original_transaction_date', '<=', $from)
+        ->where('original_transaction_date', '>=', $to)
+        ->where('user_account_id', $authUser)
+        ->get();
     }
 
 }
