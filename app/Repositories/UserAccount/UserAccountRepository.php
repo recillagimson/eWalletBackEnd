@@ -173,8 +173,6 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         $this->userAccountNotFound();
     }
 
-<<<<<<< HEAD
-=======
     public function getAccountDetailByRSBSANumber(string $rsbsa_number) {
         return $this->model->where('rsbsa_number', $rsbsa_number)->first();
     }
@@ -199,6 +197,4 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
     public function getAccountsWithRSBSANumberCount() {
         return $this->model->where('rsbsa_number', '!=', '')->count();
     }
-
->>>>>>> stagingfix
 }

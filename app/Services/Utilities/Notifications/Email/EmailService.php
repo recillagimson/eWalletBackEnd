@@ -3,40 +3,38 @@
 
 namespace App\Services\Utilities\Notifications\Email;
 
-use PDF;
-use SendGrid;
-use Carbon\Carbon;
-use App\Models\Tier;
+use App\Enums\EmailSubjects;
 use App\Enums\OtpTypes;
-use SendGrid\Mail\Mail;
-use App\Mail\BPI\CashInBPI;
-use Illuminate\Support\Str;
-use App\Models\OutSend2Bank;
-use App\Traits\StringHelpers;
-use Illuminate\Mail\Mailable;
-use App\Mail\LoginVerification;
-use App\Mail\Loan\LoanRefNumber;
-use App\Mail\EcPay\SuccessPayment;
-use App\Mail\User\OtpVerification;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
+use App\Mail\EcPay\SuccessPayment;
+use App\Mail\LoginVerification;
+use App\Mail\Merchant\MerchantAccountCreated;
 use App\Mail\PayBills\PayBillsNotification;
 use App\Mail\Send2Bank\Send2BankReceipt;
-use App\Mail\User\AdminUserVerification;
-use App\Models\UserUtilities\UserDetail;
 use App\Mail\Send2Bank\SenderNotification;
-use App\Mail\Farmers\BatchUploadNotification;
-use App\Mail\Merchant\MerchantAccountCreated;
+use App\Mail\SendMoney\SendMoneyRecipientNotification;
+use App\Mail\SendMoney\SendMoneySenderNotification;
 use App\Mail\SendMoney\SendMoneyVerification;
 use App\Mail\TierApproval\TierUpgradeRequestApproved;
-use App\Traits\Transactions\Send2BankHelpers;
-use Illuminate\Http\Response;
-use Illuminate\Validation\ValidationException;
-use App\Mail\SendMoney\SendMoneySenderNotification;
-use App\Mail\TierUpgrade\UpgradeToSilverNotification;
-use App\Mail\SendMoney\SendMoneyRecipientNotification;
+use App\Mail\TierUpgrade\KYCNotification;
+use App\Mail\User\AdminUserVerification;
+use App\Mail\User\OtpVerification;
 use App\Mail\UserTransactionMail\UserTransactionHistoryMail;
+use App\Models\OutSend2Bank;
+use App\Models\Tier;
+use App\Models\UserAccount;
+use App\Models\UserUtilities\UserDetail;
+use App\Traits\Transactions\Send2BankHelpers;
+use Carbon\Carbon;
+use Illuminate\Http\Response;
+use Illuminate\Mail\Mailable;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use niklasravnsborg\LaravelPdf\Facades\Pdf;
+use SendGrid;
+use SendGrid\Mail\Mail;
 
 class EmailService implements IEmailService
 {
@@ -59,12 +57,13 @@ class EmailService implements IEmailService
      * @param string $to
      * @param string $otp
      * @param string $otpType
+     * @param string $recipientName
      */
-    public function sendPasswordVerification(string $to, string $otp, string $otpType)
+    public function sendPasswordVerification(string $to, string $otp, string $otpType, string $recipientName)
     {
         $pinOrPassword = $otpType == OtpTypes::passwordRecovery ? 'password' : 'pin code';
         $subject = 'SquidPay - Account ' . ucwords($pinOrPassword) . ' Recovery Verification';
-        $template = new PasswordRecoveryEmail($otp, $otpType);
+        $template = new PasswordRecoveryEmail($otp, $otpType, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -74,11 +73,12 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function sendAccountVerification(string $to, string $otp)
+    public function sendAccountVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Account Verification';
-        $template = new AccountVerification($otp);
+        $template = new AccountVerification($otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -87,8 +87,9 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function sendLoginVerification(string $to, string $otp)
+    public function sendLoginVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Login Verification';
         $template = new LoginVerification($otp);
@@ -100,18 +101,19 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function sendMoneyVerification(string $to, string $otp)
+    public function sendMoneyVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Send Money Verification';
         $template = new SendMoneyVerification($otp);
         $this->sendMessage($to, $subject, $template);
     }
 
-    public function sendS2BVerification(string $to, string $otp)
+    public function sendS2BVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Send to Bank Verification';
-        $template = new OtpVerification($subject, $otp);
+        $template = new OtpVerification($subject, $otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -120,11 +122,12 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function updateEmailVerification(string $to, string $otp)
+    public function updateEmailVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Update Email Verification';
-        $template = new OtpVerification($subject, $otp);
+        $template = new OtpVerification($subject, $otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -133,11 +136,12 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
-    public function updateProfileVerification(string $to, string $otp)
+    public function updateProfileVerification(string $to, string $otp, string $recipientName)
     {
         $subject = 'SquidPay - Update Profile Verification';
-        $template = new OtpVerification($subject, $otp);
+        $template = new OtpVerification($subject, $otp, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 

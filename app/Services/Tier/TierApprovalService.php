@@ -4,24 +4,24 @@ namespace App\Services\Tier;
 
 use App\Enums\AccountTiers;
 use App\Models\TierApproval;
-use App\Models\UserAccount;
 use App\Repositories\IdType\IIdTypeRepository;
-use Illuminate\Support\Carbon;
-use Illuminate\Validation\ValidationException;
-use App\Repositories\Tier\ITierApprovalRepository;
-use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\Tier\ITierApprovalCommentRepository;
+use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\Tier\ITierRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
-use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
+use DB;
+use Exception;
+use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class TierApprovalService implements ITierApprovalService
-{   
+{
     public ITierApprovalRepository $tierApprovalRepository;
     public IUserPhotoRepository $userPhotoRepository;
     public IUserAccountRepository $userAccountRepository;
@@ -54,7 +54,7 @@ class TierApprovalService implements ITierApprovalService
     }
 
     public function updateStatus(array $attr, TierApproval $tierApproval) {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $this->tierApprovalRepository->update($tierApproval, $attr);
             $user_account = $this->userAccountRepository->get($tierApproval->user_account_id);
@@ -86,8 +86,8 @@ class TierApprovalService implements ITierApprovalService
                 // if($user_account->email) {
                 //     // EMAIL USER FOR NOTIFICATION
                 //     $this->emailService->tierUpgradeNotification($user_account->email, $details, $tier);
-                // }                
-            } else if($attr['status'] === 'DECLINED') {
+                // }
+            } else if ($attr['status'] === 'DECLINED') {
 
                 $this->tierApprovalRepository->update($tierApproval, [
                     'declined_by' => $attr['actioned_by'],
@@ -95,10 +95,10 @@ class TierApprovalService implements ITierApprovalService
                 ]);
             }
 
-            \DB::commit();
+            DB::commit();
             return $tierApproval;
-        } catch (\Exception $e) {
-            \DB::rollBack();
+        } catch (Exception $e) {
+            DB::rollBack();
             throw ValidationException::withMessages([
                 'unable_to_change_tier' => $e->getMessage()
             ]);
@@ -107,7 +107,7 @@ class TierApprovalService implements ITierApprovalService
     }
 
     public function takePhotoAction(array $attr) {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $photo = $this->userPhotoRepository->get($attr['user_photo_id']);
             $attr['reviewed_by'] = request()->user()->id;
@@ -134,16 +134,16 @@ class TierApprovalService implements ITierApprovalService
                     'photo_not_found' => 'Photo not found'
                 ]);
             }
-            \DB::commit();
+            DB::commit();
             return $photo;
-        } catch (\Exception $e) {
-            \DB::rollBack();
+        } catch (Exception $e) {
+            DB::rollBack();
             return $e->getMessage();
         }
     }
 
     public function takeSelfieAction(array $attr) {
-        \DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $photo = $this->userSelfiePhotoRepository->get($attr['user_selfie_photo_id']);
             $attr['reviewed_by'] = request()->user()->id;
@@ -157,15 +157,13 @@ class TierApprovalService implements ITierApprovalService
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
             ]);
-            \DB::commit();
+            DB::commit();
             return $photo;
-        } catch(\Exception $e) {
-            \DB::rollBack();
+        } catch (Exception $e) {
+            DB::rollBack();
             return $e->getMessage();
         }
     }
-<<<<<<< HEAD
-=======
 
     public function sendEmail($email, string $message) {
         $user = $this->userAccountRepository->getByEmail('email', $email);
@@ -178,7 +176,7 @@ class TierApprovalService implements ITierApprovalService
 
         $this->emailService->kycNotification($user, $message);
     }
-    
+
     public function sendSMS($mobile_number, string $message) {
         $user = $this->userAccountRepository->getAccountByMobileNumber($mobile_number);
 
@@ -190,5 +188,4 @@ class TierApprovalService implements ITierApprovalService
 
         $this->smsService->kycNotification($user, $message);
     }
->>>>>>> stagingfix
 }
