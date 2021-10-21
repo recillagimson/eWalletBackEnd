@@ -9,6 +9,7 @@ use App\Http\Requests\KYC\FaceMatchRequest;
 use App\Http\Requests\KYC\MatchOCRRequest;
 use App\Http\Requests\KYC\OCRRequest;
 use App\Services\KYCService\IKYCService;
+use App\Http\Requests\KYC\FaceAuthRequest;
 use App\Services\Utilities\Responses\IResponseService;
 
 class KYCController extends Controller
@@ -40,5 +41,17 @@ class KYCController extends Controller
 
     public function matchOCR(MatchOCRRequest $request) {
         return $this->kycService->matchOCR($request->all());
+    }
+
+    public function callback(Request $request) {
+        return $this->kycService->handleCallback($request->all());
+    }
+
+    public function verifyRequest(string $requestId) {
+        return $this->kycService->verifyRequest($requestId);
+    }
+
+    public function faceAuth(FaceAuthRequest $request) {
+        return $this->kycService->faceAuth($request->all());
     }
 }

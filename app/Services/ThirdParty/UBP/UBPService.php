@@ -131,7 +131,7 @@ class UBPService implements IUBPService
         $headers = $this->getAuthorizationHeaders();
 
         $data = [
-            "senderRefId" => $refNo,
+            "senderRefId" => $refNo . 'DEV-001',
             "tranRequestDate" => $transactionDate,
             "sender" => [
                 "name" => Str::replace("-", " ", $fromFullName),
@@ -165,7 +165,7 @@ class UBPService implements IUBPService
             ]
         ];
 
-        //Log::info('Fund Transfer Payload ' . $provider . ':', $data);
+        Log::info('Fund Transfer Payload ' . $provider . ':', $data);
         $json = json_encode($data);
 
         $transferUrl = $provider === TpaProviders::ubpPesonet ? $this->pesonetTransferUrl : $this->instaPayTransferUrl;

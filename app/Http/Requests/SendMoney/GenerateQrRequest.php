@@ -24,7 +24,8 @@ class GenerateQrRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => 'required|numeric|min:1'
+            'amount' => 'required|numeric|min:1',
+            'message' => 'nullable'
         ];
     }
 }

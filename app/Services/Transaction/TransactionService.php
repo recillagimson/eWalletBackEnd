@@ -3,27 +3,25 @@
 
 namespace App\Services\Transaction;
 
-use PDF;
-use Carbon\Carbon;
+use App\Exports\TransactionReport\TransactionReport;
+use App\Exports\UserTransaction\UserTransactionHistoryExport;
 use App\Models\UserAccount;
-<<<<<<< HEAD
-use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Storage;
-=======
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\AddMoney\UBP\IUbpAddMoneyService;
 use App\Services\AddMoneyV2\IAddMoneyService;
->>>>>>> stagingfix
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
-use App\Services\Utilities\CSV\ICSVService;
-use App\Services\AddMoneyV2\IAddMoneyService;
-use App\Exports\TransactionReport\TransactionReport;
-use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\Utilities\CSV\ICSVService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class TransactionService implements ITransactionService
 {
@@ -35,6 +33,9 @@ class TransactionService implements ITransactionService
     private IBuyLoadService $buyLoadService;
     private IAddMoneyService $addMoneyService;
     private IUbpAddMoneyService $ubpAddMoneyService;
+    private IUserTransactionHistoryRepository $userTransactionHistoryRepo;
+    private IEmailService $emailService;
+    private IUserDetailRepository $userDetailRepository;
 
     public function __construct(IUserBalanceRepository            $userBalanceRepository,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepository,
@@ -43,7 +44,10 @@ class TransactionService implements ITransactionService
                                 ISend2BankPesonetService          $s2bService,
                                 IBuyLoadService                   $buyLoadService,
                                 IAddMoneyService                  $addMoneyService,
-                                IUbpAddMoneyService               $ubpAddMoneyService)
+                                IUbpAddMoneyService               $ubpAddMoneyService,
+                                IUserTransactionHistoryRepository $userTransactionHistoryRepo,
+                                IEmailService                     $emailService,
+                                IUserDetailRepository             $userDetailRepository)
     {
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
@@ -53,6 +57,9 @@ class TransactionService implements ITransactionService
         $this->buyLoadService = $buyLoadService;
         $this->addMoneyService = $addMoneyService;
         $this->ubpAddMoneyService = $ubpAddMoneyService;
+        $this->userTransactionHistoryRepo = $userTransactionHistoryRepo;
+        $this->emailService = $emailService;
+        $this->userDetailRepository = $userDetailRepository;
     }
 
     public function processUserPending(UserAccount $user)
@@ -73,6 +80,14 @@ class TransactionService implements ITransactionService
 
         $buyLoadResponse = $this->buyLoadService->processPending($user->id);
         Log::info('Buy Load Process Pending Result:', $buyLoadResponse);
+    }
+
+    public function processAllPending()
+    {
+        $this->s2bService->processAllPending();
+        $this->addMoneyService->processAllPending();
+        $this->paybillsService->processAllPending();
+        $this->buyLoadService->processAllPending();
     }
 
     public function addUserBalanceInfo(string $userAccountId, string $currencyId, float $availableBalance, float $pendingBalance)
@@ -121,7 +136,7 @@ class TransactionService implements ITransactionService
         $password = str_replace(" ", "", strtolower(request()->user()->profile->last_name)) . Carbon::parse(request()->user()->profile->birth_date)->format('mdY');
         $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name . "_" . $dateFrom . "_" . $dateTo . '.pdf';
         \Log::info($password);
-        $pdf = PDF::loadView('reports.transaction_history.transaction_history', $data);
+        $pdf = \PDF::loadView('reports.transaction_history.transaction_history', $data);
         $pdf->SetProtection(['copy', 'print'], $password, 'squidP@y');
         return $pdf->stream($file_name);
     }
@@ -179,4 +194,12 @@ class TransactionService implements ITransactionService
         return $temp_url;
     }
 
+    public function generateTransactionHistoryByEmail(array $attr) {
+        $records = $this->userTransactionHistoryRepo->getFilteredTransactionHistory($attr['auth_user'], $attr['from'], $attr['to']);
+        $fileName = $attr['from'] . "-" . $attr['to'] . ".pdf";
+        $user = $this->userDetailRepository->getByUserId($attr['auth_user']);
+        $password = Carbon::parse($user->birth_date)->format('mdY');
+        $this->emailService->sendUserTransactionHistory($attr['email'], $records->toArray(), $fileName, $user->first_name, $attr['from'], $attr['to'], $password);
+        return;
+    }
 }

@@ -145,6 +145,18 @@ class AddMoneyService implements IAddMoneyService
         ];
     }
 
+    //
+    public function processAllPending()
+    {
+        $users = $this->addMoney->getUsersWithPending();
+
+        foreach ($users as $user) {
+            Log::info('Add Money DragonPay Processing User:', ['user_account_id' => $user->user_account_id]);
+            $this->processPending($user->user_account_id);
+        }
+    }
+
+
     private function updateStatus(InAddMoneyFromBank $addMoney): InAddMoneyFromBank
     {
         $response = $this->dragonPayService->checkStatus($addMoney->reference_number);
@@ -159,7 +171,19 @@ class AddMoneyService implements IAddMoneyService
             $responseData = $response->json();
             $updatedStatus = $responseData['Status'];
 
-            if ($updatedStatus === DragonPayStatusTypes::Pending) return $addMoney;
+            if ($updatedStatus === DragonPayStatusTypes::Pending) {
+                $addMoney->transaction_response = $responseData;
+
+                $currentDate = Carbon::now();
+                $expiresAt = $addMoney->transaction_date->addDays(2);
+
+                if ($expiresAt->lessThan($currentDate)) {
+                    $addMoney->expired_on = $currentDate;
+                }
+
+                $addMoney->save();
+                return $addMoney;
+            }
 
             if ($updatedStatus === DragonPayStatusTypes::Success) {
                 $user = $this->userAccounts->getUser($addMoney->user_account_id);
@@ -181,6 +205,7 @@ class AddMoneyService implements IAddMoneyService
             $addMoney->dragonpay_reference = $responseData['RefNo'];
             $addMoney->dragonpay_channel_reference_number = $responseData['ProcMsg'];
             $addMoney->transaction_remarks = $responseData['Description'];
+            $addMoney->transaction_response = $responseData;
             $addMoney->save();
 
             $balanceInfo->available_balance += $addMoney->amount;
@@ -220,6 +245,7 @@ class AddMoneyService implements IAddMoneyService
             $addMoney->dragonpay_reference = $responseData['RefNo'];
             $addMoney->dragonpay_channel_reference_number = $responseData['ProcMsg'];
             $addMoney->transaction_remarks = $responseData['Description'];
+            $addMoney->transaction_response = $responseData;
             $addMoney->save();
 
             $this->logHistoryService->logUserHistory($addMoney->user_account_id,

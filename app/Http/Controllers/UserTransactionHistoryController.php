@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
+use App\Services\Report\IReportService;
+use App\Services\Utilities\PDF\IPDFService;
+use App\Services\Transaction\ITransactionService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Http\Requests\UserTransaction\UserTransactionHistoryRequest;
 use App\Http\Requests\TransactionHistory\DownloadTransactionHistoryRequest;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Transaction\ITransactionService;
-use App\Services\Utilities\PDF\IPDFService;
-use App\Services\Utilities\Responses\IResponseService;
-use Illuminate\Http\Request;
 
 class UserTransactionHistoryController extends Controller
 {
@@ -17,16 +19,21 @@ class UserTransactionHistoryController extends Controller
     private IResponseService $responseService;
     private IPDFService $pdfService;
 
+    private IReportService $reportService;
+
 
     public function __construct(IResponseService                  $responseService,
                                 IUserTransactionHistoryRepository $userTransactionHistory,
                                 ITransactionService               $transactionService,
-                                IPDFService                       $pdfService)
+                                IPDFService                       $pdfService,
+                                IReportService                    $reportService
+                                )
     {
         $this->responseService = $responseService;
         $this->userTransactionHistory = $userTransactionHistory;
         $this->transactionService = $transactionService;
         $this->pdfService = $pdfService;
+        $this->reportService = $reportService;
     }
 
     public function index(Request $request)
@@ -35,14 +42,14 @@ class UserTransactionHistoryController extends Controller
         if ($request->has('status')) {
             $status = $request->status;
         }
+
         $records = $this->userTransactionHistory->getByAuthUserViaViews($status);
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
     public function transactionHistoryAdmin(Request $request)
     {
-        $records = $this->userTransactionHistory->getTransactionHistoryAdmin($request->all());
-        return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
+        return $this->reportService->transactionReportAdmin($request->all());
     }
 
     public function show(string $id)
@@ -77,5 +84,12 @@ class UserTransactionHistoryController extends Controller
 
     public function downloadCountTotalAmountEachUserCSV(DownloadTransactionHistoryRequest $request) {
         return $this->transactionService->downloadCountTotalAmountEachUserCSV($request);
+    }
+
+    public function generateTransactionHistory(UserTransactionHistoryRequest $request) {
+        $attr = $request->all();
+        $attr['auth_user'] = request()->user()->id;
+        $record = $this->transactionService->generateTransactionHistoryByEmail($attr);
+        return $this->responseService->successResponse([]);
     }
 }

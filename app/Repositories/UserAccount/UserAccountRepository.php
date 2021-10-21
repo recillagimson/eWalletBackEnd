@@ -137,7 +137,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     private function getUserDetailsBaseQuery(): Builder
     {
-        return $this->model->with(['profile', 'balanceInfo', 'tier']);
+        return $this->model->with(['merchant_account', 'profile', 'balanceInfo', 'tier']);
     }
 
     private function getAdminUserBaseQuery(): Builder

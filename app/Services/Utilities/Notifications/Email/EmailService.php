@@ -3,45 +3,40 @@
 
 namespace App\Services\Utilities\Notifications\Email;
 
-
+use PDF;
+use SendGrid;
+use Carbon\Carbon;
+use App\Models\Tier;
 use App\Enums\OtpTypes;
+use SendGrid\Mail\Mail;
+use App\Mail\BPI\CashInBPI;
+use Illuminate\Support\Str;
+use App\Models\OutSend2Bank;
+use App\Traits\StringHelpers;
+use Illuminate\Mail\Mailable;
+use App\Mail\LoginVerification;
+use App\Mail\Loan\LoanRefNumber;
+use App\Mail\EcPay\SuccessPayment;
+use App\Mail\User\OtpVerification;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
-use App\Mail\LoginVerification;
 use App\Mail\PayBills\PayBillsNotification;
 use App\Mail\Send2Bank\Send2BankReceipt;
 use App\Mail\User\AdminUserVerification;
-use App\Mail\TierUpgrade\UpgradeToSilverNotification;
 use App\Models\UserUtilities\UserDetail;
 use App\Mail\Send2Bank\SenderNotification;
-use App\Mail\SendMoney\SendMoneyRecipientNotification;
-use App\Mail\SendMoney\SendMoneySenderNotification;
+use App\Mail\Farmers\BatchUploadNotification;
+use App\Mail\Merchant\MerchantAccountCreated;
 use App\Mail\SendMoney\SendMoneyVerification;
 use App\Mail\TierApproval\TierUpgradeRequestApproved;
-use App\Mail\User\AdminUserVerification;
-use App\Mail\User\OtpVerification;
-use App\Models\OutSend2Bank;
-use App\Models\Tier;
-use App\Models\UserUtilities\UserDetail;
 use App\Traits\Transactions\Send2BankHelpers;
-use Carbon\Carbon;
 use Illuminate\Http\Response;
-use Illuminate\Mail\Mailable;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-<<<<<<< HEAD
-use SendGrid;
-use SendGrid\Mail\Mail;
-=======
 use App\Mail\SendMoney\SendMoneySenderNotification;
-use App\Mail\TierApproval\TierUpgradeRequestApproved;
+use App\Mail\TierUpgrade\UpgradeToSilverNotification;
 use App\Mail\SendMoney\SendMoneyRecipientNotification;
-use App\Mail\TierUpgrade\KYCNotification;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
-use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
->>>>>>> stagingfix
+use App\Mail\UserTransactionMail\UserTransactionHistoryMail;
 
 class EmailService implements IEmailService
 {
@@ -228,13 +223,23 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
-    private function sendMessage(string $to, string $subject, Mailable $template): void
+    private function sendMessage(string $to, string $subject, Mailable $template, $file = null, $fileName = null): void
     {
         $mail = new Mail();
         $mail->setFrom($this->fromAddress, $this->fromName);
         $mail->setSubject($subject);
         $mail->addTo($to);
         $mail->addContent('text/html', ($template)->render());
+
+        if($file && $fileName) {
+            // $mail->attachData($file, $fileName);
+            $mail->addAttachment(
+                $file,
+                "application/pdf",
+                $fileName,
+                "attachment"
+            );
+        }
 
         $sendgrid = new SendGrid($this->apiKey);
         $response = $sendgrid->send($mail);
@@ -257,8 +262,6 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
-<<<<<<< HEAD
-=======
     public function batchUploadNotification(UserAccount $user, string $successLink, string $failedLink)
     {
         $subject = EmailSubjects::farmersBatchUploadNotif;
@@ -286,6 +289,50 @@ class EmailService implements IEmailService
         $template = new LoanRefNumber($firstName, $refNo);
         $this->sendMessage($to, $subject, $template);
     }
->>>>>>> stagingfix
 
+    public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
+    {
+        $subject = "Cash In via BPI";
+        $template = new CashInBPI($userDetail, $newBalance, $referenceNumber);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendEcPaySuccessPaymentNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
+    {
+        $subject = "Payment via EcPay";
+        $template = new SuccessPayment($userDetail, $newBalance, $referenceNumber);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendMerchantAccoutCredentials(string $to, string $firstName, string $password, string $pinCode) {
+        $subject = "Merchant Account Created";
+        $template = new MerchantAccountCreated($subject, $firstName, $password, $pinCode, $to);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password) {
+        $records = [];
+        foreach($records as $item) {
+            $entry = $item;
+            $record = [
+                $entry['manila_time_transaction_date'],
+                $entry['name'],
+                $entry['reference_number'],
+                $entry['transaction_type'] == 'DR' ? $entry['total_amount'] : '',
+                $entry['transaction_type'] == 'CR' ? $entry['total_amount'] : '',
+                $entry['available_balance']
+            ];
+            array_push($records, $record);
+        }
+
+        $pdf = PDF::loadView('reports.transaction_history.transaction_history_v2', [
+            'records' => $records
+        ]);
+        $pdf->SetProtection(['copy', 'print'], $password, 'squidP@y');
+
+        $subject = "User Transaction History";
+
+        $template = new UserTransactionHistoryMail($subject, $records, $fileName, $firstName, Carbon::parse($from)->format('F d, Y'), Carbon::parse($dateTo)->format('F d, Y'));
+        $this->sendMessage($to, $subject, $template, $pdf->output(), $fileName);
+    }
 }

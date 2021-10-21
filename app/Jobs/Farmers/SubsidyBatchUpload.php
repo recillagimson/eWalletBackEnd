@@ -48,7 +48,7 @@ class SubsidyBatchUpload implements ShouldQueue, ShouldBeUnique
     {
         try {
             Log::info('Subsidy Batch Upload Parameters', ['filePath' => $this->filePath, 'userId' => $this->userId]);
-            $profileService->subsidyProcess($this->filePath, $this->userId);
+            $dbpUploadService->processSubsidyV3($this->filePath, $this->userId);
         } catch (Exception $e) {
             Log::error('Farmers Subsidy Batch Upload Error', $e->getTrace());
         }

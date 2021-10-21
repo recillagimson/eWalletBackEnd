@@ -10,16 +10,14 @@ use App\Services\FarmerProfile\IFarmerProfileService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\Farmer\FarmerSelfieUploadRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
-<<<<<<< HEAD
-=======
 use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
+use App\Http\Requests\Farmer\v3\SubsidyProcessRequest;
+use App\Http\Requests\Farmer\v3\SubsidyUploadRequest;
 use App\Jobs\Farmers\BatchUpload;
 use App\Jobs\Farmers\SubsidyBatchUpload;
->>>>>>> stagingfix
 use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
+use App\Services\FarmerProfile\IDBPUploadService;
 use App\Services\Utilities\Verification\IVerificationService;
-use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
 use App\Services\UserAccount\IUserAccountService;
 
 class FarmerController extends Controller
@@ -28,18 +26,21 @@ class FarmerController extends Controller
     private IFarmerProfileService $farmerProfileService;
     private IUserAccountRepository $userAccountRepository;
     private IVerificationService $verificationService;
+    private IDBPUploadService $dbpUploadService;
 
     public function __construct(
         IResponseService $responseService,
         IFarmerProfileService $farmerProfileService,
         IUserAccountRepository $userAccountRepository,
-        IVerificationService $verificationService
+        IVerificationService   $verificationService,
+        IDBPUploadService      $dbpUploadService
     )
     {
         $this->responseService = $responseService;
         $this->farmerProfileService = $farmerProfileService;
         $this->userAccountRepository = $userAccountRepository;
         $this->verificationService = $verificationService;
+        $this->dbpUploadService = $dbpUploadService;
     }
 
     public function farmerIdUpload(FarmerIdUploadRequest $request) {
@@ -68,7 +69,7 @@ class FarmerController extends Controller
         $record = $this->farmerProfileService->upgradeFarmerToSilver($request->all(), request()->user()->id);
         return $this->responseService->successResponse($record, SuccessMessages::updateUserSuccessful);
     }
-    
+
     public function getFarmerViaRSVA(Request $request) {
         $record = $this->userAccountRepository->getUserByRSBAWithRelations($request->rsbsa_number);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
@@ -123,5 +124,14 @@ class FarmerController extends Controller
         return $this->farmerProfileService->DBPTransactionReport($request->all(), request()->user()->id);
     }
 
+    public function uploadSubsidyFileToS3v3(SubsidyUploadRequest $request) {
+        $result = $this->dbpUploadService->uploadSubsidyFileToS3v3($request->file);
+        return $this->responseService->successResponse(['path' => $result], SuccessMessages::updateUserSuccessful);
+    }
+
+    public function processSubsidyV3(SubsidyProcessRequest $request) {
+        $result = $this->dbpUploadService->processSubsidyV3($request->all(), request()->user()->id);
+        return $this->responseService->successResponse($result, SuccessMessages::updateUserSuccessful);
+    }
 
 }

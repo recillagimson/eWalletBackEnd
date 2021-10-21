@@ -112,7 +112,7 @@ class SendMoneyService implements ISendMoneyService
         $receiverAccount = $this->userAccounts->get($receiverID);
         $identifier = OtpTypes::sendMoney . ':' . $user->id;
 
-        $this->otpService->ensureValidated($identifier, $user->otp_enabled);
+        //$this->otpService->ensureValidated($identifier, $user->otp_enabled);
         if ($isSelf) $this->invalidRecipient();
         if (!$isEnough) $this->insuficientBalance();
         if (!$receiverDetails) $this->recipientDetailsNotFound();
@@ -192,7 +192,8 @@ class SendMoneyService implements ISendMoneyService
             'amount' => $fillRequest['amount'],
             'status' => true,
             'user_created' => $user->id,
-            'user_updated' => ''
+            'user_updated' => '',
+            'message' => (isset($fillRequest["message"])) ? $fillRequest["message"] : null
         ]);
     }
 
@@ -213,7 +214,7 @@ class SendMoneyService implements ISendMoneyService
 
         $mobileOrEmail = $this->hasMobileOrEmail($user, $qrTransaction->amount);
         $review = $this->sendMoneyReview($qrTransaction->user_account_id);
-
+        $mobileOrEmail['message'] = $qrTransaction->message;
         return  array_merge($mobileOrEmail, $review);
     }
 

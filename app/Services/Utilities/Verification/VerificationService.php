@@ -2,10 +2,13 @@
 
 namespace App\Services\Utilities\Verification;
 
+use App\Enums\AccountTiers;
 use App\Enums\eKYC;
 use App\Enums\SquidPayModuleTypes;
 use App\Repositories\IdType\IIdTypeRepository;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\Tier\ITierApprovalCommentRepository;
+use App\Repositories\Tier\ITierApprovalRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
@@ -29,6 +32,8 @@ class VerificationService implements IVerificationService
     public ITierApprovalCommentRepository $tierApprovalComment;
     private IKYCService $kycService;
     private IUserAccountRepository $userAccountService;
+    private IKYCVerificationRepository $kycRepository;
+    private ITierApprovalRepository $tierApproval;
 
     public function __construct(IUserPhotoRepository $userPhotoRepository,
                                 IUserDetailRepository $userDetailRepository,
@@ -37,7 +42,9 @@ class VerificationService implements IVerificationService
                                 IIdTypeRepository $iIdTypeRepository,
                                 ITierApprovalCommentRepository $iTierApprovalCommentRepository,
                                 IKYCService $kycService,
-                                IUserAccountRepository $userAccountService)
+                                IUserAccountRepository $userAccountService,
+                                IKYCVerificationRepository $kycRepository,
+                                ITierApprovalRepository $tierApproval)
     {
         $this->userPhotoRepository = $userPhotoRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -47,13 +54,16 @@ class VerificationService implements IVerificationService
         $this->iTierApprovalCommentRepository = $iTierApprovalCommentRepository;
         $this->kycService = $kycService;
         $this->userAccountService = $userAccountService;
+        $this->kycRepository = $kycRepository;
+        $this->tierApproval = $tierApproval;
     }
 
     public function createSelfieVerification(array $data, ?string $userAccountId = null)
     {
         // Delete existing first
         // Get details first
-        $userDetails = $this->userDetailRepository->getByUserId($userAccountId ? $userAccountId : request()->user()->id);
+        $userId = $userAccountId ? $userAccountId : request()->user()->id;
+        $userDetails = $this->userDetailRepository->getByUserId($userId);
 
         // If no user Details
         if(!$userDetails) {
@@ -105,6 +115,7 @@ class VerificationService implements IVerificationService
         }
 
         $recordsCreated = [];
+
         // PROCESS IDS
         foreach($data['id_photos'] as $idPhoto) {
             // Get file extension name
@@ -114,6 +125,13 @@ class VerificationService implements IVerificationService
             // Put file to storage
             $path = $this->saveFile($idPhoto, $idPhotoName, 'id_photo');
             // Save record to DB
+
+            $tierApproval = $this->tierApproval->updateOrCreateApprovalRequest([
+                'user_account_id' => $data['user_account_id'],
+                'request_tier_id' => AccountTiers::tier2,
+                'user_created' => request()->user()->id,
+                'user_updated' => request()->user()->id,
+            ]);
 
             // Init eKYC OCR
             $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
@@ -126,15 +144,14 @@ class VerificationService implements IVerificationService
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
                 'id_number' => isset($extractData['id_number']) && $extractData['id_number'] != 'N/A' ? $extractData['id_number'] : $data['id_number'],
-                'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                'tier_approval_id' => $tierApproval->id,
                 'remarks' => isset($data['remarks']) ? $data['remarks'] : ""
             ];
             $record = $this->userPhotoRepository->create($params);
 
-
             if(isset($data['remarks'])) {
                 $this->iTierApprovalCommentRepository->create([
-                    'tier_approval_id' => isset($data['tier_approval_id']) ? $data['tier_approval_id'] : "",
+                    'tier_approval_id' => $tierApproval->id,
                     'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
                     'user_created' => $data['user_created'] = request()->user()->id,
                     'user_updated' => $data['user_updated'] = request()->user()->id
@@ -143,6 +160,7 @@ class VerificationService implements IVerificationService
 
             // Collect created record
             $record->ekyc = $extractData;
+            $record->tier_approval = $tierApproval;
             array_push($recordsCreated, $record);
 
             $audit_remarks = request()->user()->account_number . "  has uploaded " . $idType->type . ", " . $idType->description;
@@ -203,7 +221,25 @@ class VerificationService implements IVerificationService
 
                     // CHECK IF DOE
                     if(in_array($key, eKYC::expirationDateKey)) {
-                        $templateResponse['expiration_date'] = $entry->value;
+                        if($entry->value != '') {
+                            $templateResponse['expiration_date'] = Carbon::parse($entry->value)->toISOString();
+                        } else {
+                            $templateResponse['expiration_date'] = $entry->value;
+                        }
+                        // $templateResponse['expiration_date'] = $entry->value;
+                    }
+
+                    // CHECK IF DOB
+                    if(in_array($key, eKYC::dateOfBirth)) {
+                        if($entry->value != '') {
+                            if($idType == 'TIN ID') {
+                                $templateResponse['birth_date'] = Carbon::createFromFormat(eKYC::TINDateFormat, $entry->value)->toISOString();
+                            } else {
+                                $templateResponse['birth_date'] = Carbon::parse($entry->value)->toISOString();
+                            }
+                        } else {
+                            $templateResponse['birth_date'] = $entry->value;
+                        }
                     }
 
                     // if($entry && $entry->value) {
@@ -319,7 +355,7 @@ class VerificationService implements IVerificationService
         $userAccount = $this->userAccountService->get($userAccountId);
 
         // If no user Details
-        if(!$userDetails) {
+        if(!$userDetails || !$userAccount) {
             throw ValidationException::withMessages([
                 'user_detail_not_found' => 'User Detail not found'
             ]);
@@ -358,16 +394,46 @@ class VerificationService implements IVerificationService
         $res = $this->kycService->verify([
             'dob' => $userDetails['birth_date'],
             'name' => $userDetails['first_name'] . " " . $userDetails['last_name'],
-            'id_number' => $userAccount['rsbsa_number'],
+            'id_number' => $userAccount->rsbsa_number,
             'user_account_id' => $userAccountId,
             'selfie' => $data['selfie_photo'],
             'nid_front' => $data['id_photo'],
         ], false);
+
 
         return [
             'selfie_record' => $record,
             'dedupe' => $res
         ];
         // return to controller all created records
+    }
+
+    public function uploadSignature(array $attr) {
+        // Delete existing first
+        // Get details first
+        $userDetails = $this->userDetailRepository->getByUserId($attr['user_account_id']);
+
+        // If no user Details
+        if(!$userDetails) {
+            throw ValidationException::withMessages([
+                'user_detail_not_found' => 'User Detail not found'
+            ]);
+        }
+
+        // GET EXT NAME
+        $signaturePhotoExt = $this->getFileExtensionName($attr['signature_photo']);
+        // GENERATE NEW FILE NAME
+        $signaturePhotoName = $attr['user_account_id'] . "/" . Str::random(40) . "." . $signaturePhotoExt;
+        // PUT FILE TO STORAGE
+        $signaturePhotoPath = $this->saveFile($attr['signature_photo'], $signaturePhotoName, 'signature_photo');
+
+        // SAVE SIGNATURE LOCATION ON USER DETAILS
+        $this->userDetailRepository->update($userDetails, [
+            'signature_photo_location' => $signaturePhotoPath
+        ]);
+
+        $userDetails = $this->userDetailRepository->getByUserId($attr['user_account_id']);
+
+        return $userDetails;
     }
 }

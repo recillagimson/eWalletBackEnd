@@ -20,6 +20,7 @@ use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\NewAccessToken;
 
 class AuthService implements IAuthService
@@ -316,4 +317,31 @@ class AuthService implements IAuthService
         $user->last_login = Carbon::now();
         $user->save();
     }
+
+    public function onBorderLogin(string $usernameField, array $creds): array
+    {
+        $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
+        if (!$user) $this->accountDoesntExist();
+        $this->validateAllowOnborderUsersOnly($user);
+
+        $this->validateUser($user);
+        $this->tryLogin($user, $creds['pin_code'], $user->pin_code);
+
+        $firstLogin = !$user->last_login;
+        $this->updateLastLogin($user, $usernameField);
+
+        //$this->transactionService->processUserPending($user);
+
+        $user->deleteAllTokens();
+        return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
+    }
+
+    private function validateAllowOnborderUsersOnly(?UserAccount $user)
+    {
+        if (!$user) $this->loginFailed();
+        if ($user->is_admin == 1) $this->loginFailed();
+        if ($user->is_merchant != 1 &&  $user->is_onboarder != 1) $this->loginFailed();
+
+    }
+
 }

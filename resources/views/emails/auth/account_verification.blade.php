@@ -5,7 +5,7 @@
     <title>SquidPay - Account Verification</title>
 </head>
 <body>
-<h2>Hi Squidee!,</h2>
+<h2>Hi {{ $recipientName }}!</h2>
 <p>This is your account verification code: {{ $code }}. DO NOT SHARE this OTP.</p>
 </body>
 </html>
