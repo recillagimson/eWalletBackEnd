@@ -236,6 +236,7 @@ class AuthService implements IAuthService
 
         $notif = $notifService == null ? $this->notificationService : $notifService;
 
+        //With Recipient
         if ($otpType === OtpTypes::registration)
             $notif->sendAccountVerification($username, $otp->token, $recipientName);
         elseif ($otpType === OtpTypes::login)
@@ -368,7 +369,7 @@ class AuthService implements IAuthService
         if (!$user) $this->loginFailed();
         if ($user->is_admin == 1) $this->loginFailed();
         if ($user->is_merchant != 1 &&  $user->is_onboarder != 1) $this->loginFailed();
-       
+
     }
 
 }
