@@ -331,21 +331,7 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
-    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password) {
-        $records = [];
-        foreach($records as $item) {
-            $entry = $item;
-            $record = [
-                $entry['manila_time_transaction_date'],
-                $entry['name'],
-                $entry['reference_number'],
-                $entry['transaction_type'] == 'DR' ? $entry['total_amount'] : '',
-                $entry['transaction_type'] == 'CR' ? $entry['total_amount'] : '',
-                $entry['available_balance']
-            ];
-            array_push($records, $record);
-        }
-        
+    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password) {        
         $pdf = PDF::loadView('reports.transaction_history.transaction_history_v2', [
             'records' => $records
         ]);

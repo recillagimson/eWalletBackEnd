@@ -80,22 +80,22 @@
         @foreach($records as $record)
         <tr>
             <td>
-                {{ $record->manila_time_transaction_date }}
+                {{ $record['manila_time_transaction_date'] }}
             </td>
             <td>
-                {{ $record->name }}
+                {{ $record['name'] }}
             </td>
             <td>
-                {{ $record->reference_number }}
+                {{ $record['reference_number'] }}
             </td>
             <td>
-                {{ $record->type == 'DR' ?  number_format($record->total_amount, 2) : '' }}
+                {{ $record['type'] == 'DR' ?  number_format($record['total_amount'], 2) : '' }}
             </td>
             <td>
-                {{ $record->type == 'CR' ?  number_format($record->total_amount, 2) : '' }}
+                {{ $record['type'] == 'CR' ?  number_format($record['total_amount'], 2) : '' }}
             </td>
             <td>
-                {{ number_format($record->available_balance, 2) }}
+                {{ number_format($record['available_balance'], 2) }}
             </td>
         </tr>
         @endforeach
