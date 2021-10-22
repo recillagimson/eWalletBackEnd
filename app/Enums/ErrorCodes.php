@@ -126,5 +126,8 @@ class ErrorCodes
     const ubpNoAccountLinked = 901;
     const ubpAccountLinkedExpired = 902;
 
+    // 1000
+    const dateFromBeforeDateCreated = 1000;
+
 
 }

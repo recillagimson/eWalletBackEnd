@@ -88,4 +88,8 @@ trait WithUserErrors
     public function bpiInvalidError(string $message) {
         return $this->validationErrorMessage(ErrorCodes::bpiInvalidError, $message);
     }
+
+    public function dateFromBeforeDateCreated(string $dateCreated) {
+        return $this->validationErrorMessage(ErrorCodes::dateFromBeforeDateCreated, 'Date From must be equal or greater than ' . $dateCreated);
+    }
 }
