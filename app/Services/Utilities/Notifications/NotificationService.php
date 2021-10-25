@@ -85,4 +85,8 @@ class NotificationService implements INotificationService
     public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password){
         // TODO: Implement sendUserTransactionHistory() method.
     }
+
+    public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber) {
+        // TODO: Implement sendCebuanaConfirmation() method.
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\UserUtilities\UserDetail;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,4 +31,11 @@ class InAddMoneyCebuana extends Model
         "user_created",
         "user_updated",
     ];
+
+    public function user_account() {
+        return $this->hasOne(UserAccount::class, 'id', 'user_account_id');
+    }
+    public function user_detail() {
+        return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
+    }
 }

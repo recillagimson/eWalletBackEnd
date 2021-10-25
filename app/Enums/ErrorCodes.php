@@ -129,5 +129,11 @@ class ErrorCodes
     // 1000
     const dateFromBeforeDateCreated = 1000;
 
+    // CEBUANA
+    const cebuanaReferenceNumberNotFound = 1100;
+    const referenceNumberExpired = 1101;
+    const lowerThanMinimumAmount = 1102;
+    const higherThanMaximumAmount = 1103;
+
 
 }

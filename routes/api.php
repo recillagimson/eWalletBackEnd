@@ -524,6 +524,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/cebuana')->middleware(['decrypt.request'])->group(function () {
         Route::post('/add/money', [InAddMoneyCebuanaController::class, 'addMoney']);
+
+        Route::get('/generate', [InAddMoneyCebuanaController::class, 'generate']);
+        Route::post('/submit', [InAddMoneyCebuanaController::class, 'submit']);
     });
 
     Route::prefix('/upb/add/money')->middleware(['decrypt.request'])->group(function () {

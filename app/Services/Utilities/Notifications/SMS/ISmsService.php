@@ -10,4 +10,5 @@ interface ISmsService extends INotificationService
     public function sendLoanConfirmation(string $to, string $firstName, string $refNo);
     public function sendMerchantAccoutCredentials(string $to, string $firstName, string $password, string $pinCode);
     public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password);
+    public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber);
 }

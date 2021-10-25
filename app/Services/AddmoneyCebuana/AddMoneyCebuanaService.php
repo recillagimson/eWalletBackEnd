@@ -2,29 +2,33 @@
 
 namespace App\Services\AddmoneyCebuana;
 
-use App\Models\InAddMoneyCebuana;
-use App\Enums\ReferenceNumberTypes;
-use App\Enums\TransactionStatuses;
-use App\Enums\SquidPayModuleTypes;
-use App\Enums\TransactionCategories;
-use App\Enums\TransactionCategoryIds;
+use Exception;
+use Carbon\Carbon;
+use App\Traits\UserHelpers;
+use Illuminate\Support\Str;
+use App\Traits\StringHelpers;
 use App\Repositories\Repository;
-use App\Services\Transaction\ITransactionValidationService;
+use App\Models\InAddMoneyCebuana;
+use App\Enums\SquidPayModuleTypes;
+use App\Enums\TransactionStatuses;
+use Illuminate\Support\Facades\DB;
+use App\Enums\ReferenceNumberTypes;
+use Illuminate\Support\Facades\Log;
+use App\Enums\TransactionCategories;
+use App\Traits\Errors\WithTpaErrors;
+use App\Enums\TransactionCategoryIds;
+use App\Traits\Errors\WithAuthErrors;
+use App\Traits\Errors\WithUserErrors;
+use App\Traits\Errors\WithTransactionErrors;
+use App\Traits\Transactions\Send2BankHelpers;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
-use App\Traits\Errors\WithAuthErrors;
-use App\Traits\Errors\WithTpaErrors;
-use App\Traits\Errors\WithTransactionErrors;
-use App\Traits\Errors\WithUserErrors;
-use App\Traits\StringHelpers;
-use App\Traits\Transactions\Send2BankHelpers;
-use App\Traits\UserHelpers;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use App\Repositories\InAddMoneyCebuana\IInAddMoneyCebuanaRepository;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use App\Services\Utilities\Notifications\SMS\ISmsService;
 
 class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaService
 {
@@ -36,13 +40,22 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
     private IUserAccountRepository $users;
     private IServiceFeeRepository $serviceFees;
     private ILogHistoryService $logHistoryService;
+    private IInAddMoneyCebuanaRepository $addMoneyCebuanaRepository;
+    private IServiceFeeRepository $serviceFeeRepository;
+    private IEmailService $emailService;
+    private ISmsService $smsService;
 
     public function __construct(InAddMoneyCebuana $model,
                                 ITransactionValidationService $transactionValidationService,
                                 IServiceFeeRepository $serviceFees,
                                 IReferenceNumberService $referenceNumberService,
                                 ILogHistoryService $logHistoryService,
-                                IUserAccountRepository $users)
+                                IUserAccountRepository $users,
+                                IInAddMoneyCebuanaRepository $addMoneyCebuanaRepository,
+                                IServiceFeeRepository $serviceFeeRepository,
+                                IEmailService $emailService,
+                                ISmsService $smsService
+                                )
     {
         parent::__construct($model);
         $this->transactionValidationService = $transactionValidationService;
@@ -50,6 +63,10 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
         $this->serviceFees = $serviceFees;
         $this->referenceNumberService = $referenceNumberService;
         $this->logHistoryService = $logHistoryService;
+        $this->addMoneyCebuanaRepository = $addMoneyCebuanaRepository;
+        $this->serviceFeeRepository = $serviceFeeRepository;
+        $this->emailService = $emailService;
+        $this->smsService = $smsService;
     }
 
     public function addMoney($userId, array $data)
@@ -109,6 +126,96 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
         ];
 
         return $this->model->create($data);
+    }
+
+
+    // CEBUANA v2
+    public function generate(string $authUser, string $tierId) {
+        $count = $this->addMoneyCebuanaRepository->countRecords();
+        $cebuanaReferenceNumber = Carbon::now()->format('Ymd') . Str::padLeft(($count + 1), 5, "0");
+        $serviceFee = $this->serviceFeeRepository->getByTierAndTransCategory($tierId, TransactionCategoryIds::addMoneyCebuana);
+        return $this->addMoneyCebuanaRepository->create(
+            [
+                'user_account_id' => $authUser,
+                'reference_number' => $this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyCebuana),
+                'amount' => 0,
+                'service_fee' => 0,
+                'service_fee_id' => $serviceFee ? $serviceFee->id : '',
+                'total_amount' => 0,
+                'transaction_date' => Carbon::now(),
+                'expiration_date' => Carbon::now()->addDays(1),
+                'transaction_category_id' => TransactionCategoryIds::addMoneyCebuana,
+                'transaction_remarks' => 'Add Money via Cebuana',
+                'status' => TransactionStatuses::pending,
+                'cebuana_reference' => $cebuanaReferenceNumber,
+                'posted_date' => Carbon::now(),
+                'user_created' => $authUser,
+                'user_updated' => $authUser,
+            ]
+        );
+    }
+
+    public function submit(array $attr) {
+        $record = $this->addMoneyCebuanaRepository->getByReferenceNumber($attr['reference_number']);
+        
+        // VALIDATE IF EXIST
+        if(!$record) {
+            throw $this->referenceNumberNotFound();
+        }
+
+        // VALIDATE EXPIRATION
+        $diffInHours = Carbon::now()->diffInHours(Carbon::parse($record->created_at));
+        if($diffInHours > 24) {
+            throw $this->referenceNumberExpired();
+        }
+
+        // VALIDATE MIN AND MAX AMOUNT
+        $amount = (Double)$attr['amount'];
+        if($amount < (Double)$attr['amount']) {
+            throw $this->lowerThanMinimumAmount();
+        }
+
+        if($amount > (Double)$attr['amount']) {
+            throw $this->higherThanMaximumAmount();
+        }
+
+        \DB::beginTransaction();
+        try {
+            $this->addMoneyCebuanaRepository->update($record, [
+                'amount' => $attr['amount'],
+                'status' => 'SUCCESS'
+            ]);
+
+            // public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber) {
+            $fullName = $record->user_detail->first_name . " " . $record->user_detail->last_name;
+            if($record && $record->user_account && $record->user_detail && $record->user_account->email) {
+                $this->emailService->sendCebuanaConfirmation($record->user_account->email, $fullName, $record->user_detail->first_name, $record->user_account->account_number, Carbon::parse($record->created_at)->format('F d, Y h:i A'), $record->cebuana_reference, $record->amount, $record->reference_number);
+            } 
+            
+            if($record && $record->user_account && $record->user_detail && $record->user_account->mobile_number){
+                $this->smsService->sendCebuanaConfirmation($record->user_account->mobile_number, $fullName, $record->user_detail->first_name, $record->user_account->account_number, Carbon::parse($record->created_at)->format('F d, Y h:i A'), $record->cebuana_reference, $record->amount, $record->reference_number);
+            }
+    
+            \DB::commit();
+            return [
+                'transaction_id' => $record->id,
+                'amount' => $attr['amount'],
+                'status' => 'SUCCESS'
+            ];
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            $this->addMoneyCebuanaRepository->update($record, [
+                'amount' => $attr['amount'],
+                'status' => 'FAILED'
+            ]);
+            \Log::info($e);
+            throw $e;
+            return [
+                'transaction_id' => $record->id,
+                'amount' => $attr['amount'],
+                'status' => 'FAILED'
+            ];
+        }
     }
 
 }
