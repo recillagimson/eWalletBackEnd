@@ -218,7 +218,7 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
                 'status' => 'FAILED'
             ]);
             \Log::info($e);
-            throw $e;
+            // throw $e;
             return [
                 'transaction_id' => $record->id,
                 'amount' => $attr['amount'],
