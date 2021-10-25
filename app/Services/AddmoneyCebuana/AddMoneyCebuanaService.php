@@ -27,6 +27,7 @@ use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\InAddMoneyCebuana\IInAddMoneyCebuanaRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 
@@ -44,6 +45,7 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
     private IServiceFeeRepository $serviceFeeRepository;
     private IEmailService $emailService;
     private ISmsService $smsService;
+    private IUserBalanceInfoRepository $userBalanceInfo;
 
     public function __construct(InAddMoneyCebuana $model,
                                 ITransactionValidationService $transactionValidationService,
@@ -54,7 +56,8 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
                                 IInAddMoneyCebuanaRepository $addMoneyCebuanaRepository,
                                 IServiceFeeRepository $serviceFeeRepository,
                                 IEmailService $emailService,
-                                ISmsService $smsService
+                                ISmsService $smsService,
+                                IUserBalanceInfoRepository $userBalanceInfo
                                 )
     {
         parent::__construct($model);
@@ -67,6 +70,7 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
         $this->serviceFeeRepository = $serviceFeeRepository;
         $this->emailService = $emailService;
         $this->smsService = $smsService;
+        $this->userBalanceInfo = $userBalanceInfo;
     }
 
     public function addMoney($userId, array $data)
@@ -186,7 +190,12 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
                 'status' => 'SUCCESS'
             ]);
 
-            // public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber) {
+            // UPDATE USER BALANCE
+            $balance = $this->userBalanceInfo->getUserBalance($record->user_account_id);
+            $newBalance = (Double) $balance + (Double) $attr['amount'];
+            $this->userBalanceInfo->updateUserBalance($record->user_account_id, $newBalance);
+            $balance = $this->userBalanceInfo->getUserBalance($record->user_account_id);
+
             $fullName = $record->user_detail->first_name . " " . $record->user_detail->last_name;
             if($record && $record->user_account && $record->user_detail && $record->user_account->email) {
                 $this->emailService->sendCebuanaConfirmation($record->user_account->email, $fullName, $record->user_detail->first_name, $record->user_account->account_number, Carbon::parse($record->created_at)->format('F d, Y h:i A'), $record->cebuana_reference, $record->amount, $record->reference_number);
