@@ -345,6 +345,7 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
+<<<<<<< HEAD
     public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password)
     {
         $records = [];
@@ -361,6 +362,9 @@ class EmailService implements IEmailService
             array_push($records, $record);
         }
 
+=======
+    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password) {        
+>>>>>>> b3148f74a257c964317be26c38a85ba777b9e401
         $pdf = PDF::loadView('reports.transaction_history.transaction_history_v2', [
             'records' => $records
         ]);
@@ -368,7 +372,7 @@ class EmailService implements IEmailService
 
         $subject = "User Transaction History";
 
-        $template = new UserTransactionHistoryMail($subject, $records, $fileName, $firstName, Carbon::parse($from)->format('F d, Y'), Carbon::parse($dateTo)->format('F d, Y'));
+        $template = new UserTransactionHistoryMail($subject, $records, $fileName, $firstName, Carbon::parse($from)->format('F d, Y'), Carbon::parse($dateTo)->format('F d, Y'), Carbon::now()->format('m/d/Y'));
         $this->sendMessage($to, $subject, $template, $pdf->output(), $fileName);
     }
 }

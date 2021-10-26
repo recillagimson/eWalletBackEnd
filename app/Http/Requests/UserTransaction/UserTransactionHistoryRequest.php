@@ -23,10 +23,12 @@ class UserTransactionHistoryRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $required_fields = [
             'email' => 'required|email',
             'from' => 'required|date|before:today',
-            'to' => 'required|date|after:today'
+            'to' => 'required|date|before:tomorrow'
         ];
+
+        return $required_fields;
     }
 }
