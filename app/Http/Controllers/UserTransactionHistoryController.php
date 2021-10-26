@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
 use App\Services\Report\IReportService;
@@ -11,9 +12,12 @@ use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\UserTransaction\UserTransactionHistoryRequest;
 use App\Http\Requests\TransactionHistory\DownloadTransactionHistoryRequest;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Traits\Errors\WithUserErrors;
 
 class UserTransactionHistoryController extends Controller
 {
+
+    use WithUserErrors;
     private IUserTransactionHistoryRepository $userTransactionHistory;
     private ITransactionService $transactionService;
     private IResponseService $responseService;
@@ -87,6 +91,17 @@ class UserTransactionHistoryController extends Controller
     }
 
     public function generateTransactionHistory(UserTransactionHistoryRequest $request) {
+
+        // validate by date created
+        if(request()->user()) {
+            $dateAccountCreated = request()->user()->created_at;
+            if($dateAccountCreated) {
+                if(Carbon::parse($dateAccountCreated)->greaterThan(Carbon::parse($request->from))) {
+                    $this->dateFromBeforeDateCreated(Carbon::parse($dateAccountCreated)->format('F m, Y'));
+                }
+            }
+        }
+
         $attr = $request->all();
         $attr['auth_user'] = request()->user()->id;
         $record = $this->transactionService->generateTransactionHistoryByEmail($attr);

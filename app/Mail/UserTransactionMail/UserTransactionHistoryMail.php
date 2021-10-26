@@ -27,8 +27,9 @@ class UserTransactionHistoryMail extends Mailable
     public $firstName;
     public $from;
     public $to;
+    public $dt;
 
-    public function __construct(string $subject, array $records, string $fileName, string $firstName, string $from, string $to)
+    public function __construct(string $subject, array $records, string $fileName, string $firstName, string $from, string $to, string $dt)
     {
         $this->subject = $subject;    
         $this->records = $records;
@@ -36,6 +37,7 @@ class UserTransactionHistoryMail extends Mailable
         $this->firstName = $firstName;
         $this->from = $from;
         $this->to = $to;
+        $this->dt = $dt;
     }
 
     /**
@@ -46,9 +48,11 @@ class UserTransactionHistoryMail extends Mailable
     public function build()
     {   
         return $this->view('emails.transaction_history.transaction_history', [
+            'records' => $this->records,
             'firstName' => $this->firstName,
             'from' => $this->from,
-            'to' => $this->to
+            'to' => $this->to,
+            'dt' => $this->dt
         ]);
     }
 }
