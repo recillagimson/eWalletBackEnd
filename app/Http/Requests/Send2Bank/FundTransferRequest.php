@@ -27,7 +27,7 @@ class FundTransferRequest extends FormRequest
             'bank_code' => 'required|max:50',
             'bank_name' => 'required|max:150',
             'account_number' => 'required|max:20',
-            'account_name' => 'required_without:recipient_last_name|max:100',
+            'account_name' => 'required|max:100',
             'recipient_first_name' => 'required_without:account_name|max:35',
             'recipient_last_name' => 'required_without:account_name|max:55',
             'amount' => 'required|numeric',

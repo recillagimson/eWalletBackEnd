@@ -7,14 +7,12 @@ namespace App\Services\BuyLoad;
 use App\Enums\AtmPrepaidResponseCodes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
-use App\Enums\TopupTypes;
 use App\Enums\TransactionCategories;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Enums\UsernameTypes;
 use App\Models\OutBuyLoad;
 use App\Models\UserAccount;
-use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
@@ -27,7 +25,6 @@ use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithBuyLoadErrors;
 use App\Traits\Errors\WithTransactionErrors;
-use App\Traits\StringHelpers;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Exception;
@@ -40,7 +37,7 @@ use Illuminate\Validation\ValidationException;
 class BuyLoadService implements IBuyLoadService
 {
     use WithTransactionErrors, WithBuyLoadErrors;
-    use UserHelpers, StringHelpers;
+    use UserHelpers;
 
     private IAtmService $atmService;
     private IEmailService $emailService;
@@ -53,19 +50,17 @@ class BuyLoadService implements IBuyLoadService
     private IOutBuyLoadRepository $buyLoads;
     private IUserTransactionHistoryRepository $transactionHistories;
     private IUserAccountRepository $users;
-    private INotificationRepository $notificationRepository;
 
-    public function __construct(IAtmService                       $atmService,
-                                IOtpService                       $otpService,
-                                ITransactionValidationService     $transactionValidationService,
-                                IReferenceNumberService           $referenceNumberService,
-                                IEmailService                     $emailService,
-                                ISmsService                       $smsService,
-                                IUserAccountRepository            $users,
-                                IOutBuyLoadRepository             $buyLoads,
+    public function __construct(IAtmService $atmService,
+                                IOtpService $otpService,
+                                ITransactionValidationService $transactionValidationService,
+                                IReferenceNumberService $referenceNumberService,
+                                IEmailService $emailService,
+                                ISmsService $smsService,
+                                IUserAccountRepository $users,
+                                IOutBuyLoadRepository $buyLoads,
                                 IUserTransactionHistoryRepository $transactionHistories,
-                                ILogHistoryService                $logHistoryService,
-                                INotificationRepository           $notificationRepository)
+                                ILogHistoryService $logHistoryService)
     {
         $this->atmService = $atmService;
         $this->transactionValidationService = $transactionValidationService;
@@ -73,18 +68,16 @@ class BuyLoadService implements IBuyLoadService
         $this->referenceNumberService = $referenceNumberService;
         $this->emailService = $emailService;
         $this->smsService = $smsService;
-        $this->logHistoryService = $logHistoryService;
 
         $this->users = $users;
         $this->buyLoads = $buyLoads;
         $this->transactionHistories = $transactionHistories;
-        $this->notificationRepository = $notificationRepository;
-
+        $this->logHistoryService = $logHistoryService;
     }
 
     public function getEpinProducts(): array
     {
-        return array_values($this->atmService->getProductsByProvider(TopupTypes::atm_epin)->toArray());
+        return array_values($this->atmService->getProductsByProvider('EPIN')->toArray());
     }
 
     public function getProductsByProvider(string $mobileNumber): array
@@ -319,9 +312,6 @@ class BuyLoadService implements IBuyLoadService
             $notifService->buyLoadNotification($username, $buyLoad->total_amount, $buyLoad->product_name,
                 $buyLoad->recipient_mobile_number, $buyLoad->transaction_date, $availableBalance,
                 $buyLoad->reference_number);
-
-            $this->createAppNotification($user->id, $buyLoad->transaction_date, $buyLoad->total_amount, $availableBalance,
-                $buyLoad->reference_number, $buyLoad->product_name, $buyLoad->recipient_mobile_number);
         }
     }
 
@@ -346,26 +336,5 @@ class BuyLoadService implements IBuyLoadService
 
         $this->logHistoryService->logUserHistory($userId, $refNo, $spModule,
             null, $logDate, $remarks, $operation);
-    }
-
-    private function createAppNotification(string $userId, Carbon $transactionDate, float $amount, float $newBalance,
-                                           string $refNo, string $productName, string $recipientMobileNumber)
-    {
-        $strDate = $this->formatDate($transactionDate);
-        $strAmount = $this->formatAmount($amount);
-        $strNewBalance = $this->formatAmount($newBalance);
-
-        $title = 'SquidPay - Buy Load Notification';
-        $description = 'You have paid P' . $strAmount . ' of SquidPay to purchase ' . $productName . ' for ' .
-            $recipientMobileNumber . ' on ' . $strDate . '. Your SquidPay balance is P' . $strNewBalance .
-            '. Ref. No. ' . $refNo . '.';
-
-        $this->notificationRepository->create([
-            'title' => $title,
-            'status' => '1',
-            'description' => $description,
-            'user_account_id' => $userId,
-            'user_created' => $userId
-        ]);
     }
 }

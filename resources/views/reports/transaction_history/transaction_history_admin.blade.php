@@ -4,6 +4,7 @@
         margin: auto;
     }
     .table_data {
+        margin-top: 50px;
         border: 2px solid #000;
         border-collapse: collapse;
     }
@@ -16,9 +17,12 @@
 <table>
     <thead>
         <tr>
-            <th colspan="7">
+            <th>
+                <h3>Transaction History</h3>
+            </th>
+            <th>
                 <h3>
-                    Transaction History {{ Carbon\Carbon::parse($from)->format('F d, Y') }} to {{ Carbon\Carbon::parse($to)->format('F d, Y') }}
+                    {{ Carbon\Carbon::parse($from)->format('F d, Y') }} to {{ Carbon\Carbon::parse($to)->format('F d, Y') }}
                 </h3>
             </th>
         </tr>
@@ -27,8 +31,6 @@
 <table class="table_data">
     <thead>
         <tr>
-            <th>Account Number</th>
-            <th>RSBSA Number</th>
             <th>Customer Name</th>
             <th>Date of Transaction</th>
             <th>Transaction</th>
@@ -39,12 +41,6 @@
     <tbody>
         @foreach($records as $record)
         <tr>
-            <td>
-                {{ $record->account_number }}
-            </td>
-            <td>
-                {{ $record->rsbsa_number }}
-            </td>
             <td>
                 {{ $record->first_name . " " . $record->last_name}}
             </td>

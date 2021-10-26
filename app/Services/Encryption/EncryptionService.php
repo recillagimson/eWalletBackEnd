@@ -42,7 +42,7 @@ class EncryptionService implements IEncryptionService {
 
         $data = $this->decryptBase($data, $payload->passPhrase);
 
-        //if($deletePayload) $this->payloads->delete($payload);
+        if($deletePayload) $this->payloads->delete($payload);
         return json_decode($data, true);
     }
 

@@ -86,7 +86,6 @@ class UBPService implements IUBPService
             'x-ibm-client-secret' => $this->clientSecret,
             'x-partner-id' => $this->partnerId
         ];
-
     }
 
     /**
@@ -124,17 +123,26 @@ class UBPService implements IUBPService
         return $this->apiService->get($url, $this->defaultHeaders);
     }
 
-    public function fundTransfer(string $refNo, string $fromFullName, string $zipCode, int $bankCode, string $recipientAccountNumber,
-                                 string $recipientAccountName, float $amount, string $transactionDate,
-                                 string $instructions, string $provider, string $purpose = "1003"): Response
-    {
+    public function fundTransfer(
+        string $refNo,
+        string $fromFullName,
+        string $zipCode,
+        int $bankCode,
+        string $recipientAccountNumber,
+        string $recipientAccountName,
+        float $amount,
+        string $transactionDate,
+        string $instructions,
+        string $provider,
+        string $purpose = "1003"
+    ): Response {
         $headers = $this->getAuthorizationHeaders();
 
         $data = [
             "senderRefId" => $refNo . 'DEV-001',
             "tranRequestDate" => $transactionDate,
             "sender" => [
-                "name" => $this->formatName($fromFullName),
+                "name" => Str::replace("-", " ", $fromFullName),
                 "address" => [
                     "line1" => "Metro Manila",
                     "line2" => " ",
@@ -146,7 +154,7 @@ class UBPService implements IUBPService
             ],
             "beneficiary" => [
                 "accountNumber" => $recipientAccountNumber,
-                "name" => $this->formatName($recipientAccountName),
+                "name" => Str::replace("-", " ", $recipientAccountName),
                 "address" => [
                     "line1" => "",
                     "line2" => "",
@@ -204,9 +212,15 @@ class UBPService implements IUBPService
         return $headers;
     }
 
-    public function send2BankUBPDirect(string $senderRefId, string $transactionDate, string $accountNo, float $amount,
-                                       string $remarks, string $particulars, string $recipientName): Response
-    {
+    public function send2BankUBPDirect(
+        string $senderRefId,
+        string $transactionDate,
+        string $accountNo,
+        float $amount,
+        string $remarks,
+        string $particulars,
+        string $recipientName
+    ): Response {
         $token = $this->getToken();
         $headers = $this->defaultHeaders;
         $headers['Authorization'] = 'Bearer ' . $token->access_token;
@@ -350,8 +364,4 @@ class UBPService implements IUBPService
 
         return $this->ubpTokens->create($token);
     }
-
-
-
-
 }

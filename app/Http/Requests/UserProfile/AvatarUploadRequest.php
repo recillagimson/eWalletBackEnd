@@ -24,7 +24,7 @@ class AvatarUploadRequest extends FormRequest
     public function rules()
     {
         return [
-            'avatar_photo' => 'required|max:5120|mimes:jpeg,png,jpg',
+            'avatar_photo' => 'required|max:1024|mimes:jpeg,png,jpg',
         ];
     }
 }

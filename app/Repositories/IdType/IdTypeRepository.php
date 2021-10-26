@@ -23,12 +23,12 @@ class IdTypeRepository extends Repository implements IIdTypeRepository
 
     public function IdTypeForFarmers() {
         return $this->model
-            // ->whereIn('id', [
-            //     IdTypes::tin,
-            //     IdTypes::sss,
-            //     IdTypes::umid,
-            //     IdTypes::drivers,
-            // ])
+            ->whereIn('id', [
+                IdTypes::tin,
+                IdTypes::sss,
+                IdTypes::umid,
+                IdTypes::drivers,
+            ])
             ->get();
     }
 }

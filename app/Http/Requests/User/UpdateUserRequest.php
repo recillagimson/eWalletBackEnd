@@ -6,17 +6,9 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\MobileNumber;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
-use App\Enums\AccountTiers;
-use App\Services\UserAccount\IUserAccountService;
 
 class UpdateUserRequest extends FormRequest
 {
-    private IUserAccountService $userAccountService;
-
-    public function __construct(IUserAccountService $userAccountService)
-    {
-        $this->userAccountService = $userAccountService;
-    }
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -34,28 +26,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules()
     {
-        $user = $this->userAccountService->findById(request()->route('id'));
-        
         $rules = [
-            'mobile_number' => [
-                Rule::requiredIf(!$this->email),
-                'max:11',
-                new MobileNumber(),
-                'unique:user_accounts,mobile_number,' . $this->id
-            ],
-            'email' => [
-                Rule::requiredIf(!$this->mobile_number),
-                'email:rfc,dns',
-                'max:50',
-                'unique:user_accounts,email,' . $this->id
-
-            ],
-            'remarks' => [
-                'sometimes'
-            ]
-        ];
-        
-        $bronze =  [
             'last_name' => [
                 'required', 
                 'max:50'
@@ -81,30 +52,21 @@ class UpdateUserRequest extends FormRequest
                 'date'
             ],
             'house_no_street' => [
-                'required',
                 'max:100'
             ],
             'province_state' => [
-                'required',
                 'max:50'
             ],
             'city' => [
-                'required',
                 'max:50'
             ],
             'postal_code' => [
-                'required',
                 'max:5'
-            ]
-        ];
-
-        $silver = [
+            ],
             'place_of_birth' => [
-                'required',
                 'max:50'
             ],
             'mother_maidenname' => [
-                'required',
                 'max:100'
             ],
             'marital_status_id' => [
@@ -130,19 +92,27 @@ class UpdateUserRequest extends FormRequest
                 Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211')
             ],
             'employer' => [
-                'required',
+                'required'
             ],
+            'mobile_number' => [
+                Rule::requiredIf(!$this->email),
+                'max:11',
+                new MobileNumber(),
+                'unique:user_accounts,mobile_number,' . $this->id
+            ],
+            'email' => [
+                Rule::requiredIf(!$this->mobile_number),
+                'email:rfc,dns',
+                'max:50',
+                'unique:user_accounts,email,' . $this->id
+
+            ],
+            'remarks' => [
+                'sometimes'
+            ]
         ];
 
-        
         $inputs = request()->input();
-        
-        if ($user->tier_id === AccountTiers::tier1) {
-            $rules = array_merge($rules, $bronze);
-        } else {
-            $rules = array_merge($rules, $bronze);
-            $rules = array_merge($rules, $silver);
-        }
         
         if(isset($inputs['birth_date'])) {
             $birthdate = Carbon::parse($inputs['birth_date']);

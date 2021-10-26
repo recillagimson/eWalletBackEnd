@@ -2,39 +2,30 @@
 
 namespace App\Mail\SendMoney;
 
-use App\Traits\StringHelpers;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class SendMoneySenderNotification extends Mailable
 {
-    use Queueable, SerializesModels, StringHelpers;
+    use Queueable, SerializesModels;
 
     private array $fillRequest;
-    private string $amount;
-    private string $serviceFee;
-    private string $newBalance;
-    private string $refNo;
     private string $receiverName;
-    private string $transactionDate;
-    private string $senderName;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(array $fillRequest, string $receiverName, string $senderName)
+    public function __construct(array $fillRequest, string $receiverName)
     {
-        $this->amount = $this->formatAmount($fillRequest['amount']);
-        $this->serviceFee = $this->formatAmount($fillRequest['serviceFee']);
-        $this->newBalance = $this->formatAmount($fillRequest['newBalance']);
+        $this->amount = $fillRequest['amount'];
+        $this->serviceFee = $fillRequest['serviceFee'];
+        $this->newBalance = $fillRequest['newBalance'];
         $this->refNo = $fillRequest['refNo'];
-        $this->transactionDate = $this->formatDate(Carbon::now());
-        $this->receiverName = ucwords($receiverName);
-        $this->senderName = ucwords($senderName);
+        $this->receiverName = $receiverName;
     }
 
     /**
@@ -42,7 +33,7 @@ class SendMoneySenderNotification extends Mailable
      *
      * @return $this
      */
-    public function build(): SendMoneySenderNotification
+    public function build()
     {
         return $this->view('emails.sendmoney.send_money_sender_notification')
             ->subject('SquidPay - Send Money Notification')
@@ -51,9 +42,7 @@ class SendMoneySenderNotification extends Mailable
                 'serviceFee' => $this->serviceFee,
                 'newBalance' => $this->newBalance,
                 'refNo' => $this->refNo,
-                'receiverName' => $this->receiverName,
-                'transactionDate' => $this->transactionDate,
-                'senderName' => $this->senderName
+                'receiverName' => $this->receiverName
             ]);
     }
 }

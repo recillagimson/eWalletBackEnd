@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Farmer;
 
+use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Farmer\FarmerBatchUploadFileRequest;
-use App\Http\Requests\Farmer\FarmerBatchUploadRequest;
 use App\Http\Requests\Farmer\FarmerIdUploadRequest;
+use App\Services\FarmerProfile\IFarmerProfileService;
+use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\Farmer\FarmerSelfieUploadRequest;
-use App\Http\Requests\Farmer\FarmerSubsidyProcessRequest;
-use App\Http\Requests\Farmer\FarmerUpgradeToSilverRequest;
 use App\Http\Requests\Farmer\FarmerVerificationRequest;
 use App\Http\Requests\Farmer\FarmerVerificationUsingAccountNumberOnlyRequest;
 use App\Http\Requests\Farmer\v3\SubsidyProcessRequest;
@@ -18,12 +17,8 @@ use App\Jobs\Farmers\BatchUpload;
 use App\Jobs\Farmers\SubsidyBatchUpload;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\FarmerProfile\IDBPUploadService;
-use App\Services\FarmerProfile\IFarmerProfileService;
-use App\Services\Utilities\Responses\IResponseService;
 use App\Services\Utilities\Verification\IVerificationService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Log;
+use App\Services\UserAccount\IUserAccountService;
 
 class FarmerController extends Controller
 {
@@ -34,8 +29,8 @@ class FarmerController extends Controller
     private IDBPUploadService $dbpUploadService;
 
     public function __construct(
-        IResponseService       $responseService,
-        IFarmerProfileService  $farmerProfileService,
+        IResponseService $responseService,
+        IFarmerProfileService $farmerProfileService,
         IUserAccountRepository $userAccountRepository,
         IVerificationService   $verificationService,
         IDBPUploadService      $dbpUploadService
@@ -48,39 +43,34 @@ class FarmerController extends Controller
         $this->dbpUploadService = $dbpUploadService;
     }
 
-    public function farmerIdUpload(FarmerIdUploadRequest $request): JsonResponse
-    {
+    public function farmerIdUpload(FarmerIdUploadRequest $request) {
         $record = $this->verificationService->create($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
-    public function farmerSelfieUpload(FarmerSelfieUploadRequest $request): JsonResponse
-    {
+    public function farmerSelfieUpload(FarmerSelfieUploadRequest $request) {
         $record = $this->verificationService->createSelfieVerificationFarmers($request->all(), $request->user_account_id);
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
-    public function farmerVerification(FarmerVerificationRequest $request): JsonResponse
-    {
+    public function farmerVerification(FarmerVerificationRequest $request) {
         // $record = $this->farmerAccountService->getUserAccountByAccountNumberAndRSBSANo($request->all());
         $record = $this->userAccountRepository->getUserAccountByRSBSANo($request->rsbsa_number);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
-    public function farmerVerificationUserAccountNumberOnly(FarmerVerificationUsingAccountNumberOnlyRequest $request): JsonResponse
-    {
+    public function farmerVerificationUserAccountNumberOnly(FarmerVerificationUsingAccountNumberOnlyRequest $request) {
         $record = $this->userAccountRepository->getUserByAccountNumberWithRelations($request->account_number);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
 
-    public function updateSilver(FarmerUpgradeToSilverRequest $request): JsonResponse
+    public function updateSilver(FarmerUpgradeToSilverRequest $request)
     {
         $record = $this->farmerProfileService->upgradeFarmerToSilver($request->all(), request()->user()->id);
         return $this->responseService->successResponse($record, SuccessMessages::updateUserSuccessful);
     }
 
-    public function getFarmerViaRSVA(Request $request): JsonResponse
-    {
+    public function getFarmerViaRSVA(Request $request) {
         $record = $this->userAccountRepository->getUserByRSBAWithRelations($request->rsbsa_number);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }

@@ -27,7 +27,7 @@ class FarmerIdUploadRequest extends FormRequest
             'id_type_id' => 'required|exists:id_types,id',
             // Validate if photo in array is less that 1MB
             "id_photos"    => "required|array|min:1",
-            'id_photos.*' => 'required|max:5120|mimes:jpeg,png',
+            'id_photos.*' => 'required|max:1024|mimes:jpeg,png',
             'id_number' => 'max:50',
             'user_account_id' => 'required|exists:user_accounts,id'
         ];

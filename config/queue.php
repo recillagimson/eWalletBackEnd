@@ -38,8 +38,7 @@ return [
             'driver' => 'database',
             'table' => 'jobs',
             'queue' => 'default',
-           //'retry_after' => 90,
-            'retry_after' => 9000,
+            'retry_after' => 90,
             'after_commit' => false,
         ],
 
@@ -56,7 +55,7 @@ return [
             'driver' => 'sqs',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'prefix' => env('SQS_PREFIX', 'https://sqs.ap-southeast-1.amazonaws.com/687297908254'),
+            'prefix' => env('SQS_PREFIX', 'https://sqs.us-east-1.amazonaws.com/your-account-id'),
             'queue' => env('SQS_QUEUE', 'default'),
             'suffix' => env('SQS_SUFFIX'),
             'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),

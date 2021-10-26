@@ -24,7 +24,7 @@ class SelfieUploadRequest extends FormRequest
     public function rules()
     {
         return [
-            'selfie_photo' => 'required|max:5120|mimes:jpeg,png',
+            'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
         ];
     }
 }

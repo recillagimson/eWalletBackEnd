@@ -21,9 +21,6 @@ class ErrorCodes
     const accountAlreadyTaken = 112;
     const confirmationFailed = 113;
     const accountDeactivated = 114;
-    const otpMaxedGenerationAttempt = 115;
-    const accountAlreadyVerified = 116;
-
 
     //ENCRYPTION ERRORS - 150
     const payloadInvalid = 151;
@@ -38,7 +35,6 @@ class ErrorCodes
     const transactionInvalid = 301;
     const transactionFailed = 302;
     const transactionDoesntExists = 303;
-    const transactionErrorEncountered = 304;
 
     //USER ERRORS - 400
     const userProfileNotUpdated = 401;
@@ -63,6 +59,7 @@ class ErrorCodes
     const bpiFundTopUp = 424;
     const bpiTransactionError = 425;
     const bpiInvalidError = 426;
+    const controlNumberAlreadyUploaded = 427;
 
 
 
@@ -76,7 +73,6 @@ class ErrorCodes
 
     // eKYC - 600
     const ocrMismatch = 601;
-    const verifyRequestFailed = 602;
 
     // Bayad Center 700
     const accountWithDFO = 701;

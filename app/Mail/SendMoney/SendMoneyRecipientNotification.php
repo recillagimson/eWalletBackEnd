@@ -2,20 +2,17 @@
 
 namespace App\Mail\SendMoney;
 
-use App\Traits\StringHelpers;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class SendMoneyRecipientNotification extends Mailable
 {
-    use Queueable, SerializesModels, StringHelpers;
+    use Queueable, SerializesModels;
 
     private array $fillRequest;
     private string $senderName;
-    private string $receiverName;
-    private string $transactionDate;
 
     /**
      * Create a new message instance.
@@ -24,13 +21,10 @@ class SendMoneyRecipientNotification extends Mailable
      */
     public function __construct(array $fillRequest, string $senderName)
     {
-        $this->amount = $this->formatAmount($fillRequest['amount']);
-        $this->newBalance = $this->formatAmount($fillRequest['newBalance']);
+        $this->amount = $fillRequest['amount'];
+        $this->newBalance = $fillRequest['newBalance'];
         $this->refNo = $fillRequest['refNo'];
-        $this->senderName = ucwords($senderName);
-        $this->receiverName = ucwords($fillRequest['receiverName']);
-        $this->transactionDate = $this->formatDate(Carbon::now());
-
+        $this->senderName = $senderName;
     }
 
     /**
@@ -46,9 +40,7 @@ class SendMoneyRecipientNotification extends Mailable
                 'amount' => $this->amount,
                 'newBalance' => $this->newBalance,
                 'refNo' => $this->refNo,
-                'senderName' => $this->senderName,
-                'receiverName' => $this->receiverName,
-                'transactionDate' => $this->transactionDate
+                'senderName' => $this->senderName
             ]);
     }
 }

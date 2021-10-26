@@ -8,50 +8,21 @@ use Exception;
 use App\Enums\eKYC;
 use Illuminate\Http\File;
 use App\Enums\AccountTiers;
-use App\Models\FarmerImport;
 use App\Enums\SuccessMessages;
 use App\Traits\HasFileUploads;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
 use App\Enums\SquidPayModuleTypes;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Traits\Errors\WithUserErrors;
-use App\Imports\Farmers\FarmersImport;
-use App\Imports\Farmers\SubsidyImport;
 use Illuminate\Support\Facades\Storage;
 use App\Services\KYCService\IKYCService;
-use App\Exports\DBP\DBPTransactionExport;
-use App\Exports\Farmer\FailedUploadExport;
-use App\Exports\Farmer\Export\FailedExport;
-use App\Exports\Farmer\SuccessUploadExport;
-use App\Exports\Farmer\Export\SuccessExport;
-use App\Imports\Farmers\FarmerAccountImportV2;
-use App\Imports\FarmerV2\FarmerSubsidyImportV2;
-use App\Exports\Farmer\SubsidyFailedUploadExport;
 use App\Services\UserProfile\IUserProfileService;
-use App\Exports\Farmer\SubsidySuccessUploadExport;
 use App\Repositories\Tier\ITierApprovalRepository;
-use App\Exports\Farmer\Subsidy\SubsidyFailedExport;
-use App\Exports\Farmer\Subsidy\SubsidySuccessExport;
 use App\Repositories\UserPhoto\IUserPhotoRepository;
-use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Repositories\Address\Province\IProvinceRepository;
-use App\Repositories\FarmerImport\IFarmerImportRepository;
-use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
-use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Verification\IVerificationService;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
-use App\Repositories\UserUtilities\MaritalStatus\IMaritalStatusRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class FarmerProfileService implements IFarmerProfileService
 {
@@ -61,59 +32,18 @@ class FarmerProfileService implements IFarmerProfileService
     private IVerificationService $verificationService;
     private ILogHistoryService $logHistoryService;
     private IUserProfileService $userProfileService;
-    private IUserAccountNumberRepository $userAccountNumbers;
-    private IMaritalStatusRepository $maritalStatus;
-    private IUserDetailRepository $userDetail;
 
     private IUserAccountRepository $userAccountRepository;
-    private IUserDetailRepository $userDetailRepository;
-    private IUserBalanceInfoRepository $userBalanceInfo;
     private IKYCService $kycService;
     private IUserPhotoRepository $userPhotoRepository;
     private IUserSelfiePhotoRepository $userSelfieRepository;
-    private IInReceiveFromDBPRepository $inReceiveFromDBP;
-    private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
-    private IReferenceNumberService $referenceNumberService;
-    private IEmailService $emailService;
-    private INotificationRepository $notificationRepository;
-    private ITransactionCategoryRepository $transactionCategoryRepository;
-
-    private IFarmerImportRepository $farmerImportRepository;
-    private IProvinceRepository $provinceRepository;
-
-    private IInReceiveFromDBPRepository $dboRepository;
-    private IResponseService $responseService;
 
 
     public function __construct(
-        ITierApprovalRepository           $userApprovalRepository,
-        IUserAccountRepository            $userAccountRepository,
-        IUserDetailRepository             $userDetailRepository,
-        IUserBalanceInfoRepository        $userBalanceInfo,
-        IVerificationService              $verificationService,
-        ILogHistoryService                $logHistoryService,
-        IUserProfileService               $userProfileService,
-        IKYCService                       $kycService,
-        IUserPhotoRepository              $userPhotoRepository,
-        IUserSelfiePhotoRepository        $userSelfieRepository,
-        IUserAccountNumberRepository      $userAccountNumbers,
-        IMaritalStatusRepository          $maritalStatus,
-        IInReceiveFromDBPRepository       $inReceiveFromDBP,
-        IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-        IReferenceNumberService           $referenceNumberService,
-        IEmailService                     $emailService,
-        IUserDetailRepository             $userDetail,
-        INotificationRepository           $notificationRepository,
-        IFarmerImportRepository           $farmerImportRepository,
-        IProvinceRepository               $provinceRepository,
-        ITransactionCategoryRepository    $transactionCategoryRepository,
-        IInReceiveFromDBPRepository       $dbpRepository,
-        IResponseService                  $responseService
-    )
+                                ITierApprovalRepository $userApprovalRepository, IUserAccountRepository $userAccountRepository, IVerificationService $verificationService, ILogHistoryService $logHistoryService, IUserProfileService $userProfileService, IKYCService $kycService, IUserPhotoRepository $userPhotoRepository, IUserSelfiePhotoRepository $userSelfieRepository)
     {
         $this->userApprovalRepository = $userApprovalRepository;
         $this->userAccountRepository = $userAccountRepository;
-        $this->userDetailRepository = $userDetailRepository;
         $this->verificationService = $verificationService;
         $this->logHistoryService = $logHistoryService;
         $this->userProfileService = $userProfileService;
@@ -121,24 +51,10 @@ class FarmerProfileService implements IFarmerProfileService
         $this->userPhotoRepository = $userPhotoRepository;
         $this->kycService = $kycService;
         $this->userSelfieRepository = $userSelfieRepository;
-        $this->userAccountNumbers = $userAccountNumbers;
-        $this->maritalStatus = $maritalStatus;
-        $this->userBalanceInfo = $userBalanceInfo;
-        $this->inReceiveFromDBP = $inReceiveFromDBP;
-        $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
-        $this->referenceNumberService = $referenceNumberService;
-        $this->emailService = $emailService;
-        $this->userDetail = $userDetail;
-        $this->notificationRepository = $notificationRepository;
-        $this->farmerImportRepository = $farmerImportRepository;
-        $this->provinceRepository = $provinceRepository;
-        $this->transactionCategoryRepository = $transactionCategoryRepository;
-        $this->dbpRepository = $dbpRepository;
-        $this->responseService = $responseService;
     }
 
     public function upgradeFarmerToSilver(array $attr, string $authUser) {
-        DB::beginTransaction();
+        \DB::beginTransaction();
         try {
             // GET USER ACCOUNT WITH TIER
             $user_account = $this->userAccountRepository->getUser($attr['user_account_id']);
@@ -169,7 +85,6 @@ class FarmerProfileService implements IFarmerProfileService
             // dd($user_account->profile);
 
             $this->userAccountRepository->update($user_account, [
-                'mobile_number' => $attr['contact_no'],
                 'password' => bcrypt($attr['rsbsa_number']),
                 'pin_code' => bcrypt(substr($attr['rsbsa_number'], -4)),
             ]);
@@ -177,10 +92,10 @@ class FarmerProfileService implements IFarmerProfileService
             $addOrUpdate = $this->userProfileService->update($user_account, $attr);
             $audit_remarks = $authUser . " Profile Information has been successfully updated.";
             $this->logHistoryService->logUserHistory($authUser, "", SquidPayModuleTypes::updateProfile, "", Carbon::now()->format('Y-m-d H:i:s'), $audit_remarks);
-            DB::commit();
+            \DB::commit();
             return $addOrUpdate;
-        } catch (Exception $e) {
-            DB::rollBack();
+        } catch(\Exception $e) {
+            \DB::rollBack();
             throw $e;
         }
     }
@@ -275,13 +190,13 @@ class FarmerProfileService implements IFarmerProfileService
 
         $seq = $this->farmerImportRepository->countSequnceByProvinceAndDateCreated($prov, Carbon::now()->format('Y-m-d'));
 
-        
+
         $imp = $this->farmerImportRepository->create([
             'filename' => $filePath,
             'province' => $prov,
             'seq' => $seq > 0 ? ($seq + 1) : 1,
         ]);
-        
+
         $seq = ($seq + 1);
         $formatSeq = $seq;
 
@@ -292,7 +207,7 @@ class FarmerProfileService implements IFarmerProfileService
         }
 
         $province = $this->provinceRepository->getProvinceByName($prov);
-        
+
         $date = date('ymd');
         $successFilename = "farmers/ONBSUCRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.xlsx";
         $failFilename = "farmers/ONBEXPRFFA{$province->da_province_code}SPTI{$date}{$formatSeq}.xlsx";
@@ -356,7 +271,7 @@ class FarmerProfileService implements IFarmerProfileService
         $from = Carbon::now()->format('Y-m-d');
         $to = Carbon::now()->subDays(30)->format('Y-m-d');
         $type = 'API';
-        
+
         $records = [];
         if($attr && isset($attr['type']) && $attr['type'] == 'API') {
             $records = $this->userTransactionHistoryRepository->getDBPTransactionHistory($attr, $authUser);

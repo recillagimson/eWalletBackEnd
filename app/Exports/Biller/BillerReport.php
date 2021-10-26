@@ -35,14 +35,13 @@ class BillerReport implements FromView, WithHeadings, WithEvents
                 $record['account_number'],
                 $record['first_name'] . " " . $record['middle_name'] . " " . $record['last_name'],
                 $record['reference_number'],
-                $record['manila_time_transaction_date'],
+                $record['transaction_date'],
                 $record['billers_name'],
-                $record['biller_reference_number'],
                 $record['total_amount'],
                 $record['status'],
             ]);
         }
-        
+
         $this->records = $data;
 
         // $this->fileName = $from . "-" . $to . "." . $type;
@@ -62,7 +61,6 @@ class BillerReport implements FromView, WithHeadings, WithEvents
     }
 
     public function view(): View
-
     {
         return view('reports.out_pay_bills_history.out_pay_bills_history_report', [
             'records' => $this->records
@@ -80,7 +78,6 @@ class BillerReport implements FromView, WithHeadings, WithEvents
                 $record['reference_number'],
                 $record['transaction_date'],
                 $record['billers_name'],
-                $record['biller_reference_number'],
                 $record['total_amount'],
                 $record['status'],
             ]);

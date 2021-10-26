@@ -13,14 +13,11 @@ class LogHistoryRepository extends Repository implements ILogHistoryRepository
     }
 
     public function getByUserAccountId(string $userAccountId) {
-
         $records = $this->model;
         if($userAccountId != "0") {
             $records = $records->where('user_account_id', $userAccountId);
         }
-        $records = $records
-        ->orderBy('created_at', 'DESC')
-        ->get();
+        $records = $records->get();
         return $records;
     }
 }

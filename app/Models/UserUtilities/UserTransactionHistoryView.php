@@ -2,40 +2,24 @@
 
 namespace App\Models\UserUtilities;
 
-use Carbon\Carbon;
-use App\Models\UserAccount;
-use App\Models\TransactionCategory;
 use App\Enums\TransactionCategoryIds;
-use App\Models\UserDetail;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\TransactionCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class UserTransactionHistoryView extends Model
 {
     use HasFactory;
 
     protected $table = 'transaction_hitories_view';
-    protected $appends = [
-        'signed_total_amount', 
-        'transaction_type',
-        'manila_time_transaction_date'
-    ];
-    // protected $dates = ['original_transaction_date'];
+    protected $appends = ['signed_total_amount', 'transaction_type'];
 
     public function transaction_category()
     {
         return $this->hasOne(TransactionCategory::class, 'id', 'transaction_category_id');
     }
 
-    public function user_detail() {
-        return $this->hasOne(UserDetail::class, 'user_account_id', 'user_account_id');
-    }
-
     // Attributes
-    public function getManilaTimeTransactionDateAttribute() {
-        return Carbon::parse($this->transaction_date)->format('F d, Y h:i A');
-    }
-
     public function getSignedTotalAmountAttribute()
     {
         if ($this && $this->transaction_category) {

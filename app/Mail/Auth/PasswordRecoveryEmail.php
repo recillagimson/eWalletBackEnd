@@ -38,7 +38,7 @@ class PasswordRecoveryEmail extends Mailable
             ->with([
                 'code' => $this->otp,
                 'pinOrPassword' => $this->pinOrPassword,
-                'recipientName' => $this->recipientName
+                'recipientName' => $this->recipientName,
             ]);
     }
 }

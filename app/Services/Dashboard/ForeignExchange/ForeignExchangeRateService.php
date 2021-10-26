@@ -47,7 +47,6 @@ class ForeignExchangeRateService extends Repository implements IForeignExchangeR
         }
         return collect(CurrencyRatesConfig::currenciesArrangement)->map(function ($e) use ($data) {
             foreach ($data as $value) {
-                $value['rate'] = number_format((float)$value['rate'], 4, '.', '');
                 if ($value['code'] == $e) {
                     return $value;
                 }

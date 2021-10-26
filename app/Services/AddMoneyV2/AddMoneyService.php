@@ -118,10 +118,10 @@ class AddMoneyService implements IAddMoneyService
         if ($addMoney->status === TransactionStatuses::success) return;
         if ($addMoney->status === TransactionStatuses::failed) return;
 
-        $this->updateStatus($addMoney);
+        $this->updateStatus($addMoney);;
     }
 
-    public function processPending(string $userId): array
+    public function processPending(string $userId)
     {
         $pendingTransactions = $this->addMoney->getUserPending($userId);
         if (!$pendingTransactions) return $this->getDefaultProcessPending();

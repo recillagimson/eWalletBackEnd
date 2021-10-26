@@ -12,7 +12,6 @@ class SuccessMessages
     const confirmationSuccessful = 'Transaction confirmation successful';
 
     const accountRegistered = 'Account registration successful.';
-    const pinValidationPassed = 'Pin Code validation passed.';
     const accountValidationPassed = 'Account validation passed.';
     const accountVerification = 'Account verification successful.';
 
@@ -27,9 +26,6 @@ class SuccessMessages
 
     const pinCodeUpdated = 'Account Pin Code has been updated.';
 
-    //Password confirmation
-    const passwordConfirmationSuccessful = 'Transaction Validation Successful';
-
     // Send Money Controller
     const sendMoneySuccessFul = 'Send money successful';
     const validateSendMoney = 'Send money validation successful';
@@ -39,8 +35,6 @@ class SuccessMessages
     const success = 'Success';
     const recordSaved = 'Record has been saved.';
     const recordDeleted = 'Record has been deleted';
-
-    const getQRMessage = 'QR code generation successful';
 
     // Add Money Controller
     const URLGenerated = 'Generate URL Successful';

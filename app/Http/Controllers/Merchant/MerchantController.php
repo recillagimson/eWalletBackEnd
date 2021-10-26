@@ -32,8 +32,7 @@ class MerchantController extends Controller
         IMerchantService $merchatService,
         IMerchantAccountRepository $merchantAccountRepo,
         IMerchantAccountService $merchantAccountService
-    )
-    {
+    ) {
         $this->responseService = $responseService;
         $this->kycService = $kycService;
         $this->merchatService = $merchatService;
@@ -41,44 +40,51 @@ class MerchantController extends Controller
         $this->merchantAccountService = $merchantAccountService;
     }
 
-    public function selfieVerification(MerchantSelfieVerificationRequest $request) {
+    public function selfieVerification(MerchantSelfieVerificationRequest $request)
+    {
         $record = $this->kycService->initMerchantFaceMatch($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
-    public function list(Request $request) {
+    public function list(Request $request)
+    {
         $record = $this->merchatService->list($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
-    public function toggleMerchantStatus(MerchantToggleRequest $request) {
+    public function toggleMerchantStatus(MerchantToggleRequest $request)
+    {
         $record = $this->merchatService->toggleMerchantStatus($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
-    public function verifyMerchant(MerchantVerifyRequest $request) {
+    public function verifyMerchant(MerchantVerifyRequest $request)
+    {
         $record = $this->merchatService->verifyMerchant($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
-    public function showDocument(string $id) {
+    public function showDocument(string $id)
+    {
         $record = $this->merchatService->showDocument($id);
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
-    public function updateDocumentStatus(Request $request) {
+    public function updateDocumentStatus(Request $request)
+    {
         $record = $this->merchatService->updateDocumentStatus($request->all());
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
-
     // DBP MERCHANT
-    public function listMerchantAccount() {
+    public function listMerchantAccount()
+    {
         $records = $this->merchantAccountRepo->getAll();
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }
 
-    public function storeMerchant(CreateMerchantAccountRequest $request) {
+    public function storeMerchant(CreateMerchantAccountRequest $request)
+    {
         $attr = $request->all();
         $attr['created_by'] = request()->user()->id;
         $attr['updated_by'] = request()->user()->id;
@@ -86,8 +92,9 @@ class MerchantController extends Controller
         $record = $this->merchantAccountService->create($attr);
         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
     }
-    
-    public function storeMerchantAccount(CreateAccountForMerchantRequest $request) {
+
+    public function storeMerchantAccount(CreateAccountForMerchantRequest $request)
+    {
         $attr = $request->all();
         $attr['created_by'] = request()->user()->id;
         $attr['updated_by'] = request()->user()->id;
@@ -95,7 +102,8 @@ class MerchantController extends Controller
         return $this->responseService->successResponse($record, SuccessMessages::success);
     }
 
-    public function updateMerchantAccount(UpdateMerchantAccountRequest $request) {
+    public function updateMerchantAccount(UpdateMerchantAccountRequest $request)
+    {
         $attr = $request->all();
         $merchantAccount = $this->merchantAccountRepo->get($request->merchant_account_id);
         $attr['updated_by'] = request()->user()->id;
@@ -104,7 +112,8 @@ class MerchantController extends Controller
         return $this->responseService->successResponse($merchantAccount->toArray(), SuccessMessages::success);
     }
 
-    public function setUserMerchantAccount(SetUserMerchantAccountRequest $request) {
+    public function setUserMerchantAccount(SetUserMerchantAccountRequest $request)
+    {
         $records = $this->merchantAccountService->setUserMerchantAccount($request->all());
         return $this->responseService->successResponse($records->toArray(), SuccessMessages::success);
     }

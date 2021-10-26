@@ -18,7 +18,7 @@ trait WithAuthErrors
 
     public function loginFailed()
     {
-        $this->validationErrorMessage(ErrorCodes::loginFailed, 'Login Failed');
+        $this->validationErrorMessage(ErrorCodes::confirmationFailed, 'Login Failed');
     }
 
     public function confirmationFailed()
@@ -32,11 +32,6 @@ trait WithAuthErrors
         $this->validationErrorMessage(ErrorCodes::unverifiedAccount, 'Unverified Account.');
     }
 
-    public function accountAlreadyVerified()
-    {
-        $this->validationErrorMessage(ErrorCodes::accountAlreadyVerified, 'Already Verified Account.');
-    }
-
     public function accountDoesntExist()
     {
         $this->validationErrorMessage(ErrorCodes::accountDoesNotExist, 'Account does not exist.');
@@ -45,13 +40,6 @@ trait WithAuthErrors
     public function invalidCredentials()
     {
         $this->validationErrorMessage(ErrorCodes::invalidClient, 'Invalid client credentials.');
-    }
-
-    public function accountLockedOutAdmin()
-    {
-        $this->validationErrorMessage(ErrorCodes::accountLockedOut,
-            'Your account is Locked due to suspicious activity. Please contact support@squid.ph 
-            or call (02) 85217035 to request for access.');
     }
 
     public function accountLockedOut()
@@ -91,12 +79,6 @@ trait WithAuthErrors
     {
         $this->validationErrorMessage(ErrorCodes::otpMaxedAttempts,
             'Reached the maximum allowed attempts.');
-    }
-
-    public function otpMaxedGenerationAttempts()
-    {
-        $this->validationErrorMessage(ErrorCodes::otpMaxedGenerationAttempt,
-            'Reached the maximum times to generate OTP');
     }
 
     public function accountAlreadyTaken()
