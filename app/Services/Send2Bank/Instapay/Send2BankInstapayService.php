@@ -26,26 +26,42 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 
 class Send2BankInstapayService extends Send2BankService implements ISend2BankInstapayService
 {
-    public function __construct(IUBPService                       $ubpService,
-                                ISecurityBankService              $securityBankService,
-                                IReferenceNumberService           $referenceNumberService,
-                                ITransactionValidationService     $transactionValidationService,
-                                INotificationService              $notificationService,
-                                ISmsService                       $smsService,
-                                IEmailService                     $emailService,
-                                IOtpService                       $otpService,
-                                ILogHistoryService                $logHistoryService,
-                                IUserAccountRepository            $users,
-                                IUserBalanceInfoRepository        $userBalances,
-                                IOutSend2BankRepository           $send2banks,
-                                IServiceFeeRepository             $serviceFees,
-                                IUserTransactionHistoryRepository $transactionHistories,
-                                IProviderBanksRepository          $providerBanks,
-                                INotificationRepository           $notificationRepository)
-    {
-        parent::__construct($ubpService, $securityBankService, $referenceNumberService, $transactionValidationService,
-            $notificationService, $smsService, $emailService, $otpService, $logHistoryService, $users, $userBalances,
-            $send2banks, $serviceFees, $transactionHistories, $providerBanks, $notificationRepository);
+    public function __construct(
+        IUBPService                       $ubpService,
+        ISecurityBankService              $securityBankService,
+        IReferenceNumberService           $referenceNumberService,
+        ITransactionValidationService     $transactionValidationService,
+        INotificationService              $notificationService,
+        ISmsService                       $smsService,
+        IEmailService                     $emailService,
+        IOtpService                       $otpService,
+        ILogHistoryService                $logHistoryService,
+        IUserAccountRepository            $users,
+        IUserBalanceInfoRepository        $userBalances,
+        IOutSend2BankRepository           $send2banks,
+        IServiceFeeRepository             $serviceFees,
+        IUserTransactionHistoryRepository $transactionHistories,
+        IProviderBanksRepository          $providerBanks,
+        INotificationRepository           $notificationRepository
+    ) {
+        parent::__construct(
+            $ubpService,
+            $securityBankService,
+            $referenceNumberService,
+            $transactionValidationService,
+            $notificationService,
+            $smsService,
+            $emailService,
+            $otpService,
+            $logHistoryService,
+            $users,
+            $userBalances,
+            $send2banks,
+            $serviceFees,
+            $transactionHistories,
+            $providerBanks,
+            $notificationRepository
+        );
 
         $this->transactionCategoryId = TransactionCategoryIds::send2BankInstaPay;
         $this->provider = TpaProviders::ubpInstapay;
