@@ -194,13 +194,18 @@ class FarmerAccountImportV2 implements ToCollection, WithHeadingRow, WithBatchIn
         $rsbsa = preg_replace("/[^0-9]/", "", $row[DBPUploadKeys::rsbsaNumber]);
         $password = $rsbsa;
         $pin = substr($rsbsa, -4); //last 4 chars of rsbsa_number
+
+        $farmersCount = $this->userAccountRepository->getAccountsWithRSBSANumberCount();
+        $padCount = Str::padLeft($farmersCount, 8, '0');
+        $accountNumber = "F" . date('Y') . $padCount;
+
         $farmer = [
             'rsbsa_number' => $rsbsa,
             'password' => bcrypt($password),
             'pin_code' => bcrypt($pin),
             'tier_id' => AccountTiers::tier1,
-            'account_number' => $this->generateFarmerAccountNumber(),
-            'mobile_number' => "0" . trim(strlen((Integer)$row[DBPUploadKeys::mobileNumber])),
+            'account_number' => $accountNumber,
+            'mobile_number' => "0" . trim((Integer)$row[DBPUploadKeys::mobileNumber]),
             'user_created' => $this->currentUser,
             'user_updated' => $this->currentUser,
         ];

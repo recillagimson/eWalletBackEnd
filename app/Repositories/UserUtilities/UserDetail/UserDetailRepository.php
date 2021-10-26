@@ -20,11 +20,10 @@ class UserDetailRepository extends Repository implements IUserDetailRepository
     public function getByUserId(string $userAccountID)
     {
         $record =  $this->model->where('user_account_id', '=', $userAccountID)->first();
-
         if($record) {
             return $record->append('avatar_link');
         }
-
+        
         ValidationException::withMessages([
             'user_detail_not_found' => 'User Detail not found'
         ]);

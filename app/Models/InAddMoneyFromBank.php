@@ -30,6 +30,8 @@ class InAddMoneyFromBank extends Model
         'user_created',
         'user_updated',
         'expires_at',
+        'expired_on',
+        'transaction_response',
     ];
 
     protected $casts = [

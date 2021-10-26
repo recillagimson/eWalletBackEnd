@@ -6,5 +6,8 @@ use App\Services\Utilities\Notifications\INotificationService;
 
 interface ISmsService extends INotificationService
 {
-    public function updateMobileVerification(string $to, string $otp);
+    public function updateMobileVerification(string $to, string $otp, string $recipientName);
+    public function sendLoanConfirmation(string $to, string $firstName, string $refNo);
+    public function sendMerchantAccoutCredentials(string $to, string $firstName, string $password, string $pinCode);
+    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password);
 }

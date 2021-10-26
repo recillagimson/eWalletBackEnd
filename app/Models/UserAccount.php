@@ -36,6 +36,8 @@ class UserAccount extends Authenticatable
         'tier_id',
         'user_created',
         'user_updated',
+        'rsbsa_number',
+        'merchant_account_id'
     ];
 
     /**
@@ -59,6 +61,8 @@ class UserAccount extends Authenticatable
         'last_failed_attempt' => 'datetime',
         'last_login' => 'datetime',
     ];
+
+    protected $appends = ['manila_time_created_at'];
 
     public function tier(): HasOne
     {
@@ -134,6 +138,16 @@ class UserAccount extends Authenticatable
     public function user_balance_info(): HasOne
     {
         return $this->hasOne(UserBalanceInfo::class, 'user_account_id', 'id');
+    }
+
+    public function merchant_account(): HasOne
+    {
+        return $this->hasOne(MerchantAccount::class, 'id', 'merchant_account_id');
+    }
+
+    public function lastTierApproval() {
+        return $this->hasOne(TierApproval::class, 'user_account_id', 'id')
+        ->orderBy('created_at', 'DESC');
     }
 
     public function toggleActivation()

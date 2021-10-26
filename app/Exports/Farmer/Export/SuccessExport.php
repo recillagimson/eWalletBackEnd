@@ -49,7 +49,9 @@ class SuccessExport implements FromCollection, WithHeadings
                 'Farming',
                 $entry[DBPUploadKeys::mothermaidenname],
                 $entry[DBPUploadKeys::farmParcel],
-                $entry[DBPUploadKeys::totalFarmArea]
+                $entry[DBPUploadKeys::totalFarmArea],
+                $entry['account_number'],
+                'SUCCESS'
             ]);
         }
         return new collection($successData);
@@ -81,6 +83,8 @@ class SuccessExport implements FromCollection, WithHeadings
             "MOTHERMAIDENNAME",
             "# OF FARM PARCEL",
             "TOTAL FARM AREA (Ha)",
+            "ACCOUNT NUMBER",
+            "REMARKS"
         ];
     }
 }

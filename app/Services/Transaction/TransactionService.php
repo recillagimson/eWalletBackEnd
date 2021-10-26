@@ -3,21 +3,25 @@
 
 namespace App\Services\Transaction;
 
-use PDF;
-use Carbon\Carbon;
+use App\Exports\TransactionReport\TransactionReport;
+use App\Exports\UserTransaction\UserTransactionHistoryExport;
 use App\Models\UserAccount;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Services\AddMoney\UBP\IUbpAddMoneyService;
 use App\Services\AddMoneyV2\IAddMoneyService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\Utilities\CSV\ICSVService;
-use App\Exports\TransactionReport\TransactionReport;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
+use App\Services\Utilities\Notifications\Email\IEmailService;
+use Carbon\Carbon;
+use PDF;
 
 class TransactionService implements ITransactionService
 {
@@ -29,16 +33,23 @@ class TransactionService implements ITransactionService
     private IBuyLoadService $buyLoadService;
     private IAddMoneyService $addMoneyService;
     private IUbpAddMoneyService $ubpAddMoneyService;
+    private IUserTransactionHistoryRepository $userTransactionHistoryRepo;
+    private IEmailService $emailService;
+    private IUserDetailRepository $userDetailRepository;
 
-    public function __construct(IUserBalanceRepository            $userBalanceRepository,
-                                IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-                                ICSVService                       $csvService,
-                                IPayBillsService                  $paybillsService,
-                                ISend2BankPesonetService          $s2bService,
-                                IBuyLoadService                   $buyLoadService,
-                                IAddMoneyService                  $addMoneyService,
-                                IUbpAddMoneyService               $ubpAddMoneyService)
-    {
+    public function __construct(
+        IUserBalanceRepository            $userBalanceRepository,
+        IUserTransactionHistoryRepository $userTransactionHistoryRepository,
+        ICSVService                       $csvService,
+        IPayBillsService                  $paybillsService,
+        ISend2BankPesonetService          $s2bService,
+        IBuyLoadService                   $buyLoadService,
+        IAddMoneyService                  $addMoneyService,
+        IUbpAddMoneyService               $ubpAddMoneyService,
+        IUserTransactionHistoryRepository $userTransactionHistoryRepo,
+        IEmailService                     $emailService,
+        IUserDetailRepository             $userDetailRepository
+    ) {
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->csvService = $csvService;
@@ -47,6 +58,9 @@ class TransactionService implements ITransactionService
         $this->buyLoadService = $buyLoadService;
         $this->addMoneyService = $addMoneyService;
         $this->ubpAddMoneyService = $ubpAddMoneyService;
+        $this->userTransactionHistoryRepo = $userTransactionHistoryRepo;
+        $this->emailService = $emailService;
+        $this->userDetailRepository = $userDetailRepository;
     }
 
     public function processUserPending(UserAccount $user)
@@ -69,6 +83,14 @@ class TransactionService implements ITransactionService
         Log::info('Buy Load Process Pending Result:', $buyLoadResponse);
     }
 
+    public function processAllPending()
+    {
+        $this->s2bService->processAllPending();
+        $this->addMoneyService->processAllPending();
+        $this->paybillsService->processAllPending();
+        $this->buyLoadService->processAllPending();
+    }
+
     public function addUserBalanceInfo(string $userAccountId, string $currencyId, float $availableBalance, float $pendingBalance)
     {
         return $this->userBalanceRepository->create([
@@ -82,7 +104,8 @@ class TransactionService implements ITransactionService
     }
 
     // USER TRANSACTION HISTORY
-    public function createUserTransactionEntry(string $userAccountId, string $transactionId, string $referenceNumber, string $transactionCategoryId) {
+    public function createUserTransactionEntry(string $userAccountId, string $transactionId, string $referenceNumber, string $transactionCategoryId)
+    {
         return $this->userTransactionHistoryRepository->create([
             'user_account_id' => $userAccountId,
             'transaction_id' => $transactionId,
@@ -93,7 +116,8 @@ class TransactionService implements ITransactionService
         ]);
     }
 
-    public function createUserTransactionEntryUnauthenticated(string $userAccountId, string $transactionId, string $referenceNumber, float $total_amount, string $transactionCategoryId) {
+    public function createUserTransactionEntryUnauthenticated(string $userAccountId, string $transactionId, string $referenceNumber, float $total_amount, string $transactionCategoryId)
+    {
         return $this->userTransactionHistoryRepository->create([
             'user_account_id' => $userAccountId,
             'transaction_id' => $transactionId,
@@ -105,7 +129,8 @@ class TransactionService implements ITransactionService
         ]);
     }
 
-    public function generateTransactionHistory(string $userAccountId, string $dateFrom, string $dateTo) {
+    public function generateTransactionHistory(string $userAccountId, string $dateFrom, string $dateTo)
+    {
         $records = $this->userTransactionHistoryRepository->getTransactionHistoryByIdAndDateRange($userAccountId, $dateFrom, $dateTo);
         $data = [
             'records' => $records,
@@ -115,7 +140,7 @@ class TransactionService implements ITransactionService
         $password = str_replace(" ", "", strtolower(request()->user()->profile->last_name)) . Carbon::parse(request()->user()->profile->birth_date)->format('mdY');
         $file_name = request()->user()->profile->first_name . "_" . request()->user()->profile->last_name . "_" . $dateFrom . "_" . $dateTo . '.pdf';
         \Log::info($password);
-        $pdf = PDF::loadView('reports.transaction_history.transaction_history', $data);
+        $pdf = \PDF::loadView('reports.transaction_history.transaction_history', $data);
         $pdf->SetProtection(['copy', 'print'], $password, 'squidP@y');
         return $pdf->stream($file_name);
     }
@@ -137,27 +162,28 @@ class TransactionService implements ITransactionService
         return $this->csvService->generateCSV($datas, $columns);
     }
 
-    public function getTransactionHistoryAdmin(array $attr, bool $paginated = true) {
+    public function getTransactionHistoryAdmin(array $attr, bool $paginated = true)
+    {
         $records = $this->userTransactionHistoryRepository->getTransactionHistoryAdmin($attr, false);
         $from = Carbon::now()->format('Y-m-d');
         $to = Carbon::now()->subDays(30)->format('Y-m-d');
         $type = 'API';
 
-        if($attr && isset($attr['from']) && isset($attr['to'])) {
+        if ($attr && isset($attr['from']) && isset($attr['to'])) {
             $from = $attr['from'];
             $to = $attr['to'];
         }
-        if($attr && isset($attr['type'])) {
+        if ($attr && isset($attr['type'])) {
             $type = $attr['type'];
         }
         $fileName = 'reports/' . $from . "-" . $to . "." . $type;
-        if($type === 'CSV') {
+        if ($type === 'CSV') {
             Excel::store(new TransactionReport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::CSV);
             $temp_url = $this->s3TempUrl($fileName);
             return [
                 'temp_url' => $temp_url
             ];
-        } else if($type === 'XLSX') {
+        } else if ($type === 'XLSX') {
             Excel::store(new TransactionReport($records, $type, $from, $to), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
             $temp_url = $this->s3TempUrl($fileName);
             return [
@@ -168,9 +194,19 @@ class TransactionService implements ITransactionService
         }
     }
 
-    public function s3TempUrl(string $generated_link) {
+    public function s3TempUrl(string $generated_link)
+    {
         $temp_url = Storage::disk('s3')->temporaryUrl($generated_link, Carbon::now()->addMinutes(30));
         return $temp_url;
     }
 
+    public function generateTransactionHistoryByEmail(array $attr)
+    {
+        $records = $this->userTransactionHistoryRepo->getFilteredTransactionHistory($attr['auth_user'], $attr['from'], $attr['to']);
+        $fileName = $attr['from'] . "-" . $attr['to'] . ".pdf";
+        $user = $this->userDetailRepository->getByUserId($attr['auth_user']);
+        $password = Carbon::parse($user->birth_date)->format('mdY');
+        $this->emailService->sendUserTransactionHistory($attr['email'], $records->toArray(), $fileName, $user->first_name, $attr['from'], $attr['to'], $password);
+        return;
+    }
 }

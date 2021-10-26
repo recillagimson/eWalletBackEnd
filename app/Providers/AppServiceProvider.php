@@ -2,37 +2,32 @@
 
 namespace App\Providers;
 
+use Exception;
 use App\Enums\NetworkTypes;
 use App\Enums\TpaProviders;
 use Illuminate\Support\Str;
 use App\Enums\UsernameTypes;
-use App\Http\Controllers\Send2BankController;
-use App\Services\AddMoney\DragonPay\HandlePostBackService;
-use App\Services\AddMoney\DragonPay\IHandlePostBackService;
-use App\Services\AddMoney\IInAddMoneyService;
-use App\Services\AddMoney\InAddMoneyService;
-use App\Services\AddMoney\Providers\DragonPayService;
-use App\Services\AddMoney\Providers\IAddMoneyService;
-use App\Services\AddMoney\UBP\IUbpAddMoneyService;
-use App\Services\AddMoney\UBP\UbpAddMoneyService;
-use App\Services\AddmoneyCebuana\AddMoneyCebuanaService;
-use App\Services\AddmoneyCebuana\IAddMoneyCebuanaService;
-use App\Services\AddMoneyV2\AddMoneyService;
-use App\Services\AddMoneyV2\IAddMoneyService as IAddMoneyServiceV2;
-use App\Services\Admin\Dashboard\AdminDashboardService;
-use App\Services\Admin\Dashboard\IAdminDashboardService;
+use Illuminate\Http\Request;
+use App\Enums\PayBillsConfig;
+use App\Enums\AddMoneyProviders;
 use App\Services\Auth\AuthService;
+use App\Services\Loan\LoanService;
 use App\Services\Auth\IAuthService;
+use App\Services\Loan\ILoanService;
 use App\Services\MyTask\MyTaskService;
 use App\Services\Report\ReportService;
 use App\Services\BPIService\BPIService;
 use App\Services\KYCService\KYCService;
 use App\Services\MyTask\IMyTaskService;
+use App\Services\Printing\PrintService;
 use App\Services\Report\IReportService;
+use App\Services\UBP\UbpAccountService;
 use Illuminate\Support\ServiceProvider;
 use App\Services\BPIService\IBPIService;
 use App\Services\BuyLoad\BuyLoadService;
 use App\Services\KYCService\IKYCService;
+use App\Services\Printing\IPrintService;
+use App\Services\UBP\IUbpAccountService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
@@ -42,13 +37,18 @@ use App\Services\DBPReport\DBPReportService;
 use App\Services\DBPReport\IDBPReportService;
 use App\Services\Disbursement\DisbursementDbpService;
 use App\Services\Disbursement\IDisbursementDbpService;
+use App\Services\ThirdParty\GH\GHService;
+use Illuminate\Support\Facades\Validator;
 use App\Services\DrcrMemo\DrcrMemoService;
+use App\Services\Merchant\MerchantService;
 use App\Services\PayBills\PayBillsService;
+use App\Services\ThirdParty\GH\IGHService;
 use App\Services\Tier\TierApprovalService;
 use App\Services\Utilities\API\ApiService;
 use App\Services\Utilities\CSV\CSVService;
 use App\Services\Utilities\OTP\OtpService;
 use App\Services\Utilities\PDF\PDFService;
+use Intervention\Image\ImageManagerStatic;
 use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Services\Encryption\EncryptionService;
 use App\Services\Encryption\IEncryptionService;
@@ -56,10 +56,7 @@ use App\Services\FarmerAccount\FarmerAccountService;
 use App\Services\FarmerAccount\IFarmerAccountService;
 use App\Services\FarmerProfile\FarmerProfileService;
 use App\Services\FarmerProfile\IFarmerProfileService;
-use App\Services\Loan\ILoanService;
-use App\Services\Loan\LoanService;
 use App\Services\Merchant\IMerchantService;
-use App\Services\Merchant\MerchantService;
 use App\Services\OutBuyLoad\IOutBuyLoadService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
@@ -79,10 +76,10 @@ use App\Services\ThirdParty\DragonPay\DragonPayService as DragonPayServiceV2;
 use App\Services\ThirdParty\DragonPay\IDragonPayService;
 use App\Services\ThirdParty\ECPay\ECPayService;
 use App\Services\ThirdParty\ECPay\IECPayService;
-use App\Services\ThirdParty\GH\GHService;
-use App\Services\ThirdParty\GH\IGHService;
 use App\Services\ThirdParty\SecurityBank\ISecurityBankService;
 use App\Services\ThirdParty\SecurityBank\SecurityBankService;
+use App\Services\AddMoney\InAddMoneyService;
+use App\Services\AddMoneyV2\AddMoneyService;
 use App\Services\ThirdParty\UBP\IUBPService;
 use App\Services\Auth\UserKey\UserKeyService;
 use App\Services\Send2Bank\ISend2BankService;
@@ -90,13 +87,15 @@ use App\Services\SendMoney\ISendMoneyService;
 use App\Services\Auth\UserKey\IUserKeyService;
 use App\Services\Transaction\TransactionService;
 use App\Services\Transaction\TransactionValidationService;
-use App\Services\UBP\IUbpAccountService;
-use App\Services\UBP\UbpAccountService;
 use App\Services\UserAccount\IUserAccountService;
+use App\Services\FarmerProfile\DBPUploadService;
 use App\Services\UserAccount\UserAccountService;
 use App\Services\UserProfile\UserProfileService;
+use App\Services\AddMoney\UBP\UbpAddMoneyService;
+use App\Services\FarmerProfile\IDBPUploadService;
 use App\Services\Transaction\ITransactionService;
 use App\Services\UserProfile\IUserProfileService;
+use App\Services\AddMoney\UBP\IUbpAddMoneyService;
 use App\Services\Send2Bank\Send2BankDirectService;
 use App\Services\Send2Bank\ISend2BankDirectService;
 use App\Services\Utilities\CurlService\CurlService;
@@ -105,12 +104,21 @@ use App\Services\Utilities\PrepaidLoad\GlobeService;
 use App\Services\Utilities\Responses\ResponseService;
 use App\Services\Utilities\PrepaidLoad\ATM\AtmService;
 use App\Services\Utilities\Responses\IResponseService;
+use App\Services\AddMoney\Providers\DragonPayService;
+use App\Services\AddMoney\Providers\IAddMoneyService;
+use App\Services\v2\Auth\AuthService as AuthV2Service;
+use App\Services\Admin\Dashboard\AdminDashboardService;
 use App\Services\Auth\Registration\RegistrationService;
 use App\Services\Utilities\PrepaidLoad\ATM\IAtmService;
-use App\Services\Auth\Registration\IRegistrationService;
+use App\Services\AddmoneyCebuana\AddMoneyCebuanaService;
+use App\Services\Admin\Dashboard\IAdminDashboardService;
+use App\Services\MerchantAccount\MerchantAccountService;
 use App\Services\Utilities\LogHistory\LogHistoryService;
 use App\Services\Utilities\Notifications\SMS\SmsService;
 use App\Services\Utilities\ServiceFee\ServiceFeeService;
+use App\Services\v2\Auth\IAuthService as IAuthV2Service;
+use App\Services\AddmoneyCebuana\IAddMoneyCebuanaService;
+use App\Services\MerchantAccount\IMerchantAccountService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\ServiceFee\IServiceFeeService;
@@ -132,14 +140,7 @@ use App\Services\Utilities\Notifications\PushNotificationService;
 use App\Services\Utilities\Notifications\IPushNotificationService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Utilities\ReferenceNumber\ReferenceNumberService;
-use App\Services\v2\Auth\AuthService as AuthV2Service;
-use App\Services\v2\Auth\IAuthService as IAuthV2Service;
-use App\Services\v2\Auth\Registration\IRegistrationService as IRegistrationV2Service;
-use App\Services\v2\Auth\Registration\RegistrationService as RegistrationV2Service;
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Intervention\Image\ImageManagerStatic;
+use App\Services\AddMoneyV2\IAddMoneyService as IAddMoneyServiceV2;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -164,6 +165,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ISmsService::class, SmsService::class);
         $this->app->singleton(IPDFService::class, PDFService::class);
         $this->app->singleton(ICSVService::class, CSVService::class);
+        $this->app->singleton(IPrintService::class, PrintService::class);
 
         //3PP APIs
         $this->app->singleton(IUBPService::class, UBPService::class);
@@ -172,6 +174,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(IBayadCenterService::class, BayadCenterService::class);
         $this->app->singleton(IAtmService::class, AtmService::class);
         $this->app->singleton(IDragonPayService::class, DragonPayServiceV2::class);
+        $this->app->singleton(IGHService::class, GHService::class);
+        $this->app->singleton(IECPayService::class, ECPayService::class);
 
         //APP SERVICES
         $this->app->singleton(IAuthService::class, AuthService::class);
@@ -245,6 +249,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ITempUserDetailService::class, TempUserDetailService::class);
         // FARMER SERVICE
         $this->app->bind(IFarmerProfileService::class, FarmerProfileService::class);
+
+        // BPI SERVICE
+        $this->app->bind(IDisbursementDbpService::class, DisbursementDbpService::class);
+
         // BPI SERVICE
         $this->app->bind(IBPIService::class, BPIService::class);
 
@@ -265,9 +273,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Merchant
         $this->app->bind(IMerchantService::class, MerchantService::class);
+        $this->app->bind(IMerchantAccountService::class, MerchantAccountService::class);
 
         // DBP
         $this->app->bind(IDBPReportService::class, DBPReportService::class);
+        $this->app->bind(IDBPUploadService::class, DBPUploadService::class);
     }
 
     /**
@@ -277,7 +287,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Validator::extend('imageable', function ($attribute, $value, $params, $validator) {
+            try {
+                ImageManagerStatic::make($value);
+                return true;
+            } catch (Exception $e) {
+                return false;
+            }
+        });
     }
 
     private function bindNotificationService()
@@ -363,9 +380,7 @@ class AppServiceProvider extends ServiceProvider
                     if ($request['provider'] === PayBillsConfig::BayadCenter) return $this->app->get(BayadCenterService::class);
                 }
 
-            return $this->app->get(BayadCenterService::class);
+                return $this->app->get(BayadCenterService::class);
             });
     }
-
-
 }

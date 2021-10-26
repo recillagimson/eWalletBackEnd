@@ -85,7 +85,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
             ]);
         })->get();
 
-        if($record) {
+        if ($record) {
             return $record;
         }
 
@@ -137,7 +137,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     private function getUserDetailsBaseQuery(): Builder
     {
-        return $this->model->with(['profile', 'balanceInfo', 'tier']);
+        return $this->model->with(['merchant_account', 'profile', 'balanceInfo', 'tier']);
     }
 
     private function getAdminUserBaseQuery(): Builder
@@ -145,13 +145,14 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
         return $this->getBaseQuery()->where('is_admin', '=', true);
     }
 
-    public function getUserAccountByRSBSANo(string $RSBSANo) {
+    public function getUserAccountByRSBSANo(string $RSBSANo)
+    {
         $record = $this->model->with(['profile', 'user_balance_info'])
             // ->where('account_number', $accountNumber)
             ->where('rsbsa_number', $RSBSANo)
             ->first();
 
-        if($record) {
+        if ($record) {
             return $record;
         }
 
@@ -160,42 +161,46 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getUserCount()
     {
-        return $this->model->where('created_at','<=',Carbon::now()->subDay())->where('is_active','=',1)->count('*');
+        return $this->model->where('created_at', '<=', Carbon::now()->subDay())->where('is_active', '=', 1)->count('*');
     }
 
-    public function getUserByRSBAWithRelations(string $RSBSANo) {
+    public function getUserByRSBAWithRelations(string $RSBSANo)
+    {
         $record = $this->model->with(['profile', 'user_balance_info'])->where('rsbsa_number', $RSBSANo)->first();
 
-        if($record) {
+        if ($record) {
             return $record;
         }
 
         $this->userAccountNotFound();
     }
 
-    public function getAccountDetailByRSBSANumber(string $rsbsa_number) {
+    public function getAccountDetailByRSBSANumber(string $rsbsa_number)
+    {
         return $this->model->where('rsbsa_number', $rsbsa_number)->first();
     }
 
-    public function getUserAccountByRSBSANoV2(string $RSBSANo) {
+    public function getUserAccountByRSBSANoV2(string $RSBSANo)
+    {
         $record = $this->model->with(['profile', 'user_balance_info'])
             // ->where('account_number', $accountNumber)
             ->where('rsbsa_number', $RSBSANo)
             ->first();
 
-        if($record) {
+        if ($record) {
             return $record;
         }
 
         return null;
     }
 
-    public function getAccountByMobileNumber(string $mobileNumber) {
+    public function getAccountByMobileNumber(string $mobileNumber)
+    {
         return $this->model->with(['profile'])->where('mobile_number', $mobileNumber)->first();
     }
 
-    public function getAccountsWithRSBSANumberCount() {
+    public function getAccountsWithRSBSANumberCount()
+    {
         return $this->model->where('rsbsa_number', '!=', '')->count();
     }
-
 }
