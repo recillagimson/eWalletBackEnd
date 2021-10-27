@@ -17,6 +17,7 @@ use App\Http\Requests\UserPhoto\VerificationRequest;
 use App\Http\Requests\UserPhoto\ManualIDUploadRequest;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\UserPhoto\ManualSelfieUploadRequest;
+use App\Http\Requests\UserSignature\UploadSignatureRequest;
 use App\Services\Utilities\Verification\IVerificationService;
 
 class UserPhotoController extends Controller
@@ -51,8 +52,12 @@ class UserPhotoController extends Controller
     public function createSelfieVerification(SelfieUploadRequest $request) {
         $params = $request->all();
         $createRecord = $this->iVerificationService->createSelfieVerification($params);
-        // $encryptedResponse = $this->encryptionService->encrypt(array($createRecord));
-        // return response()->json($encryptedResponse, Response::HTTP_OK);
+        return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::success);
+    }
+
+    public function uploadSignature(UploadSignatureRequest $request) {
+        $params = $request->all();
+        $createRecord = $this->iVerificationService->uploadSignature($params);
         return $this->responseService->successResponse($createRecord->toArray(), SuccessMessages::success);
     }
 

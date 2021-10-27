@@ -35,5 +35,5 @@ interface IUserTransactionHistoryRepository extends IRepository
     public function getDBPTransactionHistory(array $attr, string $authUser);
 
     public function getFilteredTransactionHistory(string $authUser, string $from, string $to);
-
+    
 }

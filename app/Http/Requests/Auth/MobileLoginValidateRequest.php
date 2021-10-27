@@ -28,8 +28,7 @@ class MobileLoginValidateRequest extends FormRequest
             'mobile_number' => [
                 'required_without:email',
                 'max:11',
-                new MobileNumber(),
-                'exists:user_accounts'
+                new MobileNumber()
             ],
             'email' => 'required_without:mobile_number|max:50|email|exists:user_accounts',
         ];

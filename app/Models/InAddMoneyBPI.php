@@ -15,6 +15,7 @@ class InAddMoneyBPI extends Model
     protected $table = 'in_add_money_bpi';
 
     protected $fillable = [
+        "bank_name",
         "user_account_id",
         "reference_number",
         "amount",
@@ -29,5 +30,6 @@ class InAddMoneyBPI extends Model
         "transaction_response",
         "user_created",
         "user_updated",
+        "account_number"
     ];
 }

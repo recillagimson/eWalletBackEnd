@@ -127,10 +127,7 @@ class OtpService implements IOtpService
         }
 
         if ($otp->no_times_generated == $this->maximumOtpsAllowed) {
-            return (object) [
-                'status' => false,
-                'message' => "Reached the maximum times to generate OTP",
-            ];
+            $this->otpMaxedGenerationAttempts();
         }
 
         $otp->increment('no_times_generated');
@@ -146,17 +143,19 @@ class OtpService implements IOtpService
     {
         $otp = $this->otps->getByIdentifier($identifier);
 
-        if (!$otp) $this->otpInvalid();
+        if (!$otp) {
+            Log::error('OTP Validation failed: No OTP Record Found.', [
+                'identifier' => $identifier,
+                'token' => $token,
+            ]);
+
+            $this->otpInvalid();
+        }
+
         if ($otp->isExpired()) $this->otpIsExpired();
         if ($otp->no_times_attempted == $this->allowedAttempts) $this->otpMaxedAttempts();
 
         $otp->increment('no_times_attempted');
-
-        Log::debug('OTP Validate', [
-            'identifier' => $identifier,
-            'token' => $token,
-            'otp' => $otp->toArray()
-        ]);
 
         if ($otp->token === $token) {
             $otp->validated = true;
@@ -167,6 +166,12 @@ class OtpService implements IOtpService
                 'message' => 'OTP is valid',
             ];
         }
+
+        Log::error('OTP Validation failed', [
+            'identifier' => $identifier,
+            'token' => $token,
+            'otp' => $otp->toArray(),
+        ]);
 
         $this->otpInvalid();
     }

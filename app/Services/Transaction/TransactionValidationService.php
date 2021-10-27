@@ -50,22 +50,10 @@ class TransactionValidationService implements ITransactionValidationService
     private IInAddMoneyEcPayRepository $addMoneyEcPayRepository;
 
 
-    public function __construct(
-        IUserBalanceRepository $userBalanceRepository,
-        IUserTransactionHistoryRepository $userTransactionHistoryRepository,
-        IUserAccountRepository $userAccountRepository,
-        IUserDetailRepository $userDetailRepository,
-        ITransactionCategoryRepository $transactionCategoryRepository,
-        ITierRepository $tierRepository,
-        IOutBuyLoadRepository $outBuyLoadRepository,
-        IOutSend2BankRepository $outsend2BankRepository,
-        IOutSendMoneyRepository $outSendMoneyRepository,
-        IOutPayBillsRepository $outPayBillsRepository,
-        IInAddMoneyRepository $addMoneyRepository,
-        IInReceiveMoneyRepository $receiveMoneyRepository,
-        IInAddMoneyBPIRepository $iInAddMoneyBPIRepository,
-        IInAddMoneyEcPayRepository $addMoneyEcPayRepository
-    ) {
+    public function __construct(IUserBalanceRepository $userBalanceRepository, IUserTransactionHistoryRepository $userTransactionHistoryRepository, IUserAccountRepository $userAccountRepository, IUserDetailRepository $userDetailRepository, ITransactionCategoryRepository $transactionCategoryRepository, ITierRepository $tierRepository, IOutBuyLoadRepository $outBuyLoadRepository, IOutSend2BankRepository $outsend2BankRepository, IOutSendMoneyRepository $outSendMoneyRepository, IOutPayBillsRepository $outPayBillsRepository, IInAddMoneyRepository $addMoneyRepository, IInReceiveMoneyRepository $receiveMoneyRepository,
+    IInAddMoneyBPIRepository $iInAddMoneyBPIRepository, IInAddMoneyEcPayRepository $addMoneyEcPayRepository
+    )
+    {
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
         $this->userAccountRepository = $userAccountRepository;
@@ -108,6 +96,7 @@ class TransactionValidationService implements ITransactionValidationService
             // Stage 5 Checking if total transaction is maxed out
             $this->checkUserMonthlyTransactionLimit($user, $totalAmount, $transactionCategoryId);
         }
+
     }
 
     public function validateUser(UserAccount $user)
@@ -119,23 +108,23 @@ class TransactionValidationService implements ITransactionValidationService
 
     public function checkUserMonthlyTransactionLimit(UserAccount $user, float $totalAmount, string $transactionCategoryId, array $customMessage = [])
     {
-        $tier = $this->tierRepository->get($user->tier_id);
+         $tier = $this->tierRepository->get($user->tier_id);
         if ($tier) {
             $from = Carbon::now()->startOfMonth()->format('Y-m-d');
             $to = Carbon::now()->endOfMonth()->format('Y-m-d');
 
             $transactionCategory = $this->transactionCategoryRepository->get($transactionCategoryId);
 
-            if ($transactionCategory) {
+            if($transactionCategory) {
                 $totalTransactionCurrentMonth = 0;
                 $sumUp = 0;
 
                 //IN TRANSACTIONS
-                if ($transactionCategory->transaction_type === 'POSITIVE') {
-                    $addMoneyFromBank = (float) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                    $receiveMoney = (float)$this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                    $bpiAddMoney = (float)$this->iInAddMoneyBPIRepository->getSumOfTransactions($from, $to, $user->id);
-                    $ecpayAddMoney = (float)$this->addMoneyEcPayRepository->getSumOfTransactions($from, $to, $user->id);
+                if($transactionCategory->transaction_type === 'POSITIVE') {
+                    $addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    $receiveMoney = (double)$this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    $bpiAddMoney = (double)$this->iInAddMoneyBPIRepository->getSumOfTransactions($from, $to, $user->id);
+                    $ecpayAddMoney = (double)$this->addMoneyEcPayRepository->getSumOfTransactions($from, $to, $user->id);
                     $sumUp = $addMoneyFromBank + $receiveMoney + $bpiAddMoney + $ecpayAddMoney;
 
                     //$buyLoad = (Double) $this->outBuyLoadRepository->getSumOfTransactions($from, $to, $user->id);
@@ -147,20 +136,19 @@ class TransactionValidationService implements ITransactionValidationService
                     // $sumUp = $totalTransactionCurrentMonth + $totalAmount;
 
                 } //else {
-                //$addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                    //$addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
                 //$receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                // $in = $addMoneyFromBank + $receiveMoney;
-                //$totalTransactionCurrentMonth =0;
+                   // $in = $addMoneyFromBank + $receiveMoney;
+                    //$totalTransactionCurrentMonth =0;
 
-                //}
+                 //}
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
 
-                $sumUp = $totalTransactionCurrentMonth + $totalAmount;
 
-                if ((float)$sumUp <= (float)$tier->monthly_limit) return;
+                if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
                 if (isset($customMessage) && count($customMessage) > 0) {
                     $this->handleCustomErrorMessage($customMessage['key'], $customMessage['value']);

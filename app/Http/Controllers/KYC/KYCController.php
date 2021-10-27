@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\KYC;
 
+use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\KYC\ExpirationCheckRequest;
-use App\Http\Requests\KYC\FaceMatchRequest;
-use App\Http\Requests\KYC\MatchOCRRequest;
 use App\Http\Requests\KYC\OCRRequest;
 use App\Services\KYCService\IKYCService;
 use App\Http\Requests\KYC\FaceAuthRequest;
+use App\Http\Requests\KYC\MatchOCRRequest;
+use App\Http\Requests\KYC\FaceMatchRequest;
+use App\Http\Requests\KYC\ExpirationCheckRequest;
 use App\Services\Utilities\Responses\IResponseService;
 
 class KYCController extends Controller

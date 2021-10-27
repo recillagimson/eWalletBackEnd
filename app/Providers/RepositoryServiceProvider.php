@@ -25,10 +25,6 @@ use App\Repositories\FaceAuth\FaceAuthRepository;
 use App\Repositories\OtpRepository\OtpRepository;
 use App\Repositories\Tier\TierApprovalRepository;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
-use App\Repositories\DrcrMemoControlNumber\DrcrMemoControlNumberRepository;
-use App\Repositories\DrcrMemoControlNumber\IDrcrMemoControlNumberRepository;
-use App\Repositories\FarmerImport\FarmerImportRepository;
-use App\Repositories\FarmerImport\IFarmerImportRepository;
 use App\Repositories\FaceAuth\IFaceAuthRepository;
 use App\Repositories\OtpRepository\IOtpRepository;
 use App\Repositories\Tier\ITierApprovalRepository;
@@ -62,12 +58,14 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalance\IUserBalanceRepository;
 use App\Repositories\Address\Barangay\BarangayRepository;
 use App\Repositories\Address\Province\ProvinceRepository;
+use App\Repositories\FarmerImport\FarmerImportRepository;
 use App\Repositories\Notification\NotificationRepository;
 use App\Repositories\OutSendMoney\OutSendMoneyRepository;
 use App\Repositories\Tier\ITierApprovalCommentRepository;
 use App\Repositories\UserPhoto\UserSelfiePhotoRepository;
 use App\Repositories\Address\Barangay\IBarangayRepository;
 use App\Repositories\Address\Province\IProvinceRepository;
+use App\Repositories\FarmerImport\IFarmerImportRepository;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\OutSendMoney\IOutSendMoneyRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
@@ -251,14 +249,8 @@ class RepositoryServiceProvider extends ServiceProvider
         //Drcr Memos Repositories
         $this->app->bind(IDrcrMemoRepository::class, DrcrMemoRepository::class);
 
-        //Drcr Memo Control Numbers Repositories
-        $this->app->bind(IDrcrMemoControlNumberRepository::class, DrcrMemoControlNumberRepository::class);
-
         // KYC Verification
         $this->app->bind(IKYCVerificationRepository::class, KYCVerificationRepository::class);
-
-        //CONTEXTUAL BINDINGS
-        $this->bindUserKeyRepository();
 
         // Disbursement DBP
         $this->app->bind(IOutDisbursementDbpRepository::class, OutDisbursementDbpRepository::class);
@@ -300,6 +292,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IMerchantAccountRepository::class, MerchantAccountRepository::class);
         // FACE AUTH
         $this->app->bind(IFaceAuthRepository::class, FaceAuthRepository::class);
+
+
     }
 
     /**

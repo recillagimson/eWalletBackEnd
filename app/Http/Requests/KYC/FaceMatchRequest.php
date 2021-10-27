@@ -24,8 +24,8 @@ class FaceMatchRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_photo' => 'required|max:1024|mimes:jpeg,png',
-            'selfie_photo' => 'required|max:1024|mimes:jpeg,png',
+            'id_photo' => 'required|max:5120|mimes:jpeg,png',
+            'selfie_photo' => 'required|max:5120|mimes:jpeg,png',
             // 'user_account_id' => 'required|exists:user_accounts,id'
         ];
     }
