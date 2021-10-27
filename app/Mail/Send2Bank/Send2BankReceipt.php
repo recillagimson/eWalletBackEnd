@@ -3,6 +3,7 @@
 namespace App\Mail\Send2Bank;
 
 use App\Models\OutSend2Bank;
+use App\Traits\StringHelpers;
 use App\Traits\Transactions\Send2BankHelpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -11,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 class Send2BankReceipt extends Mailable
 {
     use Queueable, SerializesModels;
-    use Send2BankHelpers;
+    use Send2BankHelpers, StringHelpers;
 
     private OutSend2Bank $send2Bank;
 
@@ -32,9 +33,9 @@ class Send2BankReceipt extends Mailable
      */
     public function build(): Send2BankReceipt
     {
-        $amount = number_format($this->send2Bank->amount, 2);
-        $serviceFee = number_format($this->send2Bank->service_fee, 2);
-        $transactionDate = $this->send2Bank->transaction_date->toDayDateTimeString();
+        $amount = $this->formatAmount($this->send2Bank->amount);
+        $serviceFee = $this->formatAmount($this->send2Bank->service_fee);
+        $transactionDate = $this->formatDate($this->send2Bank->transaction_date);
         $provider = $this->getSend2BankProviderCaption($this->send2Bank->provider);
 
         return $this->view('emails.send2bank.receipt')

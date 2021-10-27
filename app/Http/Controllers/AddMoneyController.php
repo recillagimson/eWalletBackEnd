@@ -15,6 +15,11 @@ use App\Services\Encryption\IEncryptionService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Services\ThirdParty\ECPay\IECPayService;
+use App\Http\Requests\EcPayRequest\CommitPaymentRequest;
+use App\Http\Requests\EcPayRequest\ConfirmPaymentRequest;
+use App\Services\Transaction\ITransactionValidationService;
+use App\Enums\TransactionCategoryIds;
 
 class AddMoneyController extends Controller
 {
@@ -23,13 +28,17 @@ class AddMoneyController extends Controller
     private IResponseService $responseService;
     private IInAddMoneyRepository $addMoneys;
     private IAddMoneyService $addMoneyServiceV2;
+    private IECPayService $ecpayService;
+    private ITransactionValidationService $transactionValidationService;
 
     public function __construct(IHandlePostBackService $postBackService,
                                 IEncryptionService $encryptionService,
                                 IInAddMoneyService $addMoneyService,
                                 IResponseService $responseService,
                                 IInAddMoneyRepository $addMoneys,
-                                IAddMoneyService $addMoneyServiceV2)
+                                IAddMoneyService $addMoneyServiceV2,
+                                IECPayService $ecpayService,
+                                ITransactionValidationService $transactionValidationService)
     {
 
         $this->postBackService = $postBackService;
@@ -38,6 +47,8 @@ class AddMoneyController extends Controller
         $this->responseService = $responseService;
         $this->addMoneys = $addMoneys;
         $this->addMoneyServiceV2 = $addMoneyServiceV2;
+        $this->ecpayService = $ecpayService;
+        $this->transactionValidationService = $transactionValidationService;
     }
 
     public function addMoney(AddMoneyRequest $request): JsonResponse
@@ -92,5 +103,18 @@ class AddMoneyController extends Controller
         $user = $request->user();
         $updatedTransactions = $this->addMoneyServiceV2->processPending($user->id);
         return $this->responseService->successResponse($updatedTransactions, SuccessMessages::success);
+    }
+
+    public function commitPayment(CommitPaymentRequest $request): JsonResponse {
+
+        $data = $request->validated();
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($request->user(), (float)$data["amount"], TransactionCategoryIds::sendMoneyToSquidPayAccount);
+        return $this->ecpayService->commitPayment($data, $request->user());
+    }
+
+    public function confirmPayment(ConfirmPaymentRequest $request): JsonResponse {
+
+        $data = $request->validated();
+        return $this->ecpayService->confirmPayment($data, $request->user());
     }
 }

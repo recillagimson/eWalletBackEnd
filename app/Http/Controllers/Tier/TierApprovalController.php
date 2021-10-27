@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Tier;
 
+use App\Models\TierApproval;
+use Illuminate\Http\Request;
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
+use App\Repositories\Tier\ITierRepository;
+use App\Services\Tier\ITierApprovalService;
+use App\Http\Requests\Tier\TierUpgradeRequest;
 use App\Http\Requests\Tier\TierApprovalRequest;
+use App\Repositories\Tier\ITierApprovalRepository;
+use App\Services\Utilities\Responses\IResponseService;
 use App\Http\Requests\User\SendEmailRequest;
 use App\Http\Requests\User\SendSMSRequest;
-use App\Models\TierApproval;
-use App\Repositories\Tier\ITierApprovalRepository;
-use App\Services\Tier\ITierApprovalService;
-use App\Services\Utilities\Responses\IResponseService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class TierApprovalController extends Controller
 {
@@ -38,10 +38,9 @@ class TierApprovalController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
-     * @return JsonResponse
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
         $params = $request->all();
         $records = $this->iTierApprovalRepository->list($params);
@@ -52,26 +51,26 @@ class TierApprovalController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param TierApproval $tierApproval
-     * @return Response
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function show(TierApproval $tierApproval): JsonResponse
+    public function show(TierApproval $tierApproval)
     {
         return $this->responseService
             ->successResponse(
                 $this->iTierApprovalRepository
-                    ->showTierApproval($tierApproval)
-                    ->toArray(), SuccessMessages::success);
+                ->showTierApproval($tierApproval)
+                ->toArray(), SuccessMessages::success);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param TierApprovalRequest $request
-     * @param TierApproval $tierApproval
-     * @return JsonResponse
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update(TierApprovalRequest $request, TierApproval $tierApproval): JsonResponse
+    public function update(TierApprovalRequest $request, TierApproval $tierApproval)
     {
         $params = $request->all();
         $params['actioned_by'] = request()->user()->id;
@@ -82,23 +81,23 @@ class TierApprovalController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param TierApproval $tierApproval
-     * @return JsonResponse
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function destroy(TierApproval $tierApproval): JsonResponse
+    public function destroy(TierApproval $tierApproval)
     {
         $this->iTierApprovalRepository->delete($tierApproval);
         return $this->responseService->noContentResponse("", SuccessMessages::success);
     }
 
-    public function sendEmail(SendEmailRequest $request): JsonResponse
+    public function sendEmail(SendEmailRequest $request)
     {
         $email = $request->email;
         $this->iTierApprovalService->sendEmail($email, $request->message);
         return $this->responseService->successResponse([], SuccessMessages::success);
     }
 
-    public function sendSMS(SendSMSRequest $request): JsonResponse
+    public function sendSMS(SendSMSRequest $request)
     {
         $user = $request->mobile_number;
         $this->iTierApprovalService->sendSMS($user, $request->message);

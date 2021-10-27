@@ -123,10 +123,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2', [FarmerController::class, 'uploadFileToS3']);
     Route::middleware(['decrypt.request', 'auth:sanctum'])->post('/upload/process', [FarmerController::class, 'batchUploadV2']);
     Route::middleware(['require.user.token'])->post('/farmer/jobs/batch-upload', [FarmerController::class, 'processBatchUpload']);
+    // EKYC
+    Route::post('ekyc/face/auth', [KYCController::class, 'faceAuth'])->name('face.auth');
 
     Route::middleware(['require.user.token'])->post('/farmer/subsidy-batch-upload', [FarmerController::class, 'subsidyBatchUpload']);
 
     Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v2/subsidy', [FarmerController::class, 'uploadSubsidyFileToS3']);
+
+
+    Route::middleware(['require.user.token'])->post('/farmer/batch-upload/v3/subsidy', [FarmerController::class, 'uploadSubsidyFileToS3v3']);
+    Route::middleware(['require.user.token', 'decrypt.request', 'auth:sanctum'])->post('/farmer/batch-upload/v3/subsidy/process', [FarmerController::class, 'processSubsidyV3']);
+    
     Route::middleware(['require.user.token', 'decrypt.request'])->post('/farmer/batch-upload/v2/subsidy/process', [FarmerController::class, 'subsidyBatchUploadV2']);
 
     Route::middleware(['require.user.token'])->post('/farmer/id/verification', [FarmerController::class, 'farmerIdUpload']);
@@ -223,6 +230,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/{id}', [AdminUserController::class, 'delete']);
             Route::post('/search/byemail', [AdminUserController::class, 'getByEmail']);
             Route::post('/search/byname', [AdminUserController::class, 'getByName']);
+
         });
         Route::post('/photo/action', [UserPhotoController::class, 'takePhotoAction']);
         Route::post('/selfie/action', [UserPhotoController::class, 'takeSelfieAction']);
@@ -280,7 +288,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'source_of_fund' => SourceOfFundController::class
         ]);
 
-        Route::prefix('/user_accounts')->group(function () {
+        Route::prefix('/user_accounts')->group(function (){
             Route::post('/', [UserAccountController::class, 'index']);
             Route::get('/{id}', [UserAccountController::class, 'show']);
 
@@ -289,13 +297,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/roles', [UserAccountController::class, 'setAccountRole']);
         });
 
-        Route::prefix('/pending_user_updates')->group(function () {
+        Route::prefix('/pending_user_updates')->group(function (){
             Route::get('/', [TempUserDetailController::class, 'index']);
             Route::get('/{id}', [TempUserDetailController::class, 'show']);
             Route::post('/{id}/update-status', [TempUserDetailController::class, 'updateStatus']);
         });
 
-        Route::prefix('/user')->group(function () {
+        Route::prefix('/user')->group(function (){
             Route::get('/profile', [UserProfileController::class, 'show']);
             Route::post('v2/profile/tobronze', [UserProfileV2Controller::class, 'updateBronze']);
             Route::post('/profile/tobronze', [UserProfileController::class, 'updateBronze']);
@@ -311,7 +319,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::middleware(['require.user.token'])->post('/farmer/verification/account-number', [FarmerController::class, 'farmerVerificationUserAccountNumberOnly']);
             Route::middleware(['require.user.token'])->post('/farmer/print', [ReportController::class, 'print']);
             Route::middleware(['require.user.token'])->post('/farmer/tosilver/manual-override', [UserProfileController::class, 'addDAPersonel']);
-            Route::middleware(['require.user.token'])->post('/farmer/report', [FarmerController::class, 'report']);
+        Route::middleware(['require.user.token'])->post('/farmer/report', [FarmerController::class, 'report']);
 
 
             // TRANSACTION LOG HISTORY
@@ -351,6 +359,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         Route::prefix('/bpi')->group(function () {
+            Route::get('/credentials', [BPIController::class, 'getCredentials']);
             Route::post('/auth', [BPIController::class, 'bpiAuth']);
             Route::post('/accounts', [BPIController::class, 'getAccounts']);
             Route::post('/fundtopup', [BPIController::class, 'fundTopUp']);
@@ -364,6 +373,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/auth/generate', [UBPOAuthController::class, 'generateAuthorizeUrl']);
             Route::post('/auth/account/link', [UBPOAuthController::class, 'linkAccount']);
         });
+
     });
 
     Route::prefix('send/money')->middleware(['decrypt.request'])->name('send.money')->group(function () {
@@ -414,6 +424,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{tierApproval}', [TierApprovalController::class, 'show'])->name('show');
         Route::put('/{tierApproval}', [TierApprovalController::class, 'update'])->name('update');
         Route::delete('/{tierApproval}', [TierApprovalController::class, 'destroy'])->name('destroy');
+
     });
 
     Route::prefix('/tiers')->middleware(['decrypt.request'])->name('tiers.')->group(function () {
@@ -448,15 +459,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('currencies/rates', [DashboardController::class, 'getForeignCurrencyRates']);
     });
 
-    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
     });
 
-    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/admin')->middleware(['decrypt.request'])->group(function(){
         Route::get('/mytask', [MyTaskController::class, 'index']);
     });
 
-    Route::post('drcr/memos/batch', [DrcrMemoController::class, 'batchUpload']);
     Route::prefix('drcr/memos')->middleware(['decrypt.request'])->group(function () {
         Route::get('/index/{status}', [DrcrMemoController::class, 'index']);
         Route::get('/show/all/{status}', [DrcrMemoController::class, 'showAll']);
@@ -488,6 +498,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user/{role}', [RoleController::class, 'getUserRolesAndPermissionByUserAccountId'])->name('show.user.role');
         Route::put('/{role}', [RoleController::class, 'update'])->name('update');
         Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
+
     });
 
     Route::prefix('/admin/permissions')->middleware(['decrypt.request'])->name('permissions.')->group(function () {
@@ -495,18 +506,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [RoleController::class, 'setRolePermission'])->name('store');
     });
 
-    Route::prefix('/report')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/report')->middleware(['decrypt.request'])->group(function() {
         Route::post('/biller', [ReportController::class, 'billerReport']);
         Route::post('/farmers/drcr', [ReportController::class, 'DRCRMemoFarmers']);
         Route::post('/farmers/transaction', [ReportController::class, 'TransactionReportFarmers']);
         Route::post('/farmers/list', [ReportController::class, 'FarmersList']);
     });
 
-    Route::prefix('/s3')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/s3')->middleware(['decrypt.request'])->group(function() {
         Route::post('/link', [ReportController::class, 'generateS3Link']);
     });
 
-    Route::prefix('/loans')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/loans')->middleware(['decrypt.request'])->group(function() {
         Route::get('/get/reference_number', [LoanController::class, 'generateReferenceNumber']);
         Route::post('/reference_number', [LoanController::class, 'storeReferenceNumber']);
     });
@@ -520,7 +531,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // MERCHANT
-    Route::prefix('/merchant')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/merchant')->middleware(['decrypt.request'])->group(function() {
         Route::post('/list', [MerchantController::class, 'list']);
         Route::post('/toggle/active', [MerchantController::class, 'toggleMerchantStatus']);
         Route::post('/verify', [MerchantController::class, 'verifyMerchant']);
@@ -529,12 +540,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/documents/update/status', [MerchantController::class, 'updateDocumentStatus']);
     });
 
-    Route::prefix('/preferred/cashout/partner')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/preferred/cashout/partner')->middleware(['decrypt.request'])->group(function() {
         Route::get('/list', [PreferredCashOutPartnerController::class, 'list']);
         Route::post('/store', [PreferredCashOutPartnerController::class, 'store']);
     });
 
-    Route::prefix('/dbp/reports')->middleware(['decrypt.request'])->group(function () {
+    Route::prefix('/dbp/reports')->middleware(['decrypt.request'])->group(function() {
         Route::post('/customer/list', [DBPReportController::class, 'customerList']);
         Route::post('/disbursement', [DBPReportController::class, 'disbursement']);
         Route::post('/memo', [DBPReportController::class, 'memo']);
@@ -542,9 +553,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/transaction/histories', [DBPReportController::class, 'transactionHistories']);
         Route::post('/claims', [DBPReportController::class, 'claims']);
     });
+
+    Route::prefix('/merchant/accounts')->middleware(['decrypt.request'])->group(function() {
+        Route::get('/list', [MerchantController::class, 'listMerchantAccount']);
+        Route::post('/store', [MerchantController::class, 'storeMerchant']);
+        Route::post('/store/user', [MerchantController::class, 'storeMerchantAccount']);
+        Route::post('/update', [MerchantController::class, 'updateMerchantAccount']);
+        Route::post('/set/user', [MerchantController::class, 'setUserMerchantAccount']);
+    });
+
+    Route::prefix('/transactions')->middleware(['decrypt.request'])->group(function() {
+        Route::post('/generate', [UserTransactionHistoryController::class, 'generateTransactionHistory']);
+    });
+
 });
 
 Route::prefix('/cashin')->middleware(['decrypt.request'])->group(function () {
     Route::get('/postback', [AddMoneyController::class, 'postBack']);
 });
 Route::post('/hv/callback', [KYCController::class, 'callback']);
+

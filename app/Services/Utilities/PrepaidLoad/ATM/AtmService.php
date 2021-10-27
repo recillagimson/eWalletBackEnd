@@ -101,7 +101,8 @@ class AtmService implements IAtmService
                 $prefix = $prefixes->firstWhere('prefix', $prefix);
                 if (!$prefix) $this->prefixNotSupported();
 
-                return $prefix['provider'];
+                // return $prefix['provider'];
+                return ucwords(strtolower($this->convertPrefixNetworkToProductListProvider($prefix['provider'])));
             }
         }
 
@@ -122,7 +123,9 @@ class AtmService implements IAtmService
             $state = $data['responseCode'];
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
-                return $prefixes->where('provider', $provider);
+                return ($provider == TopupTypes::atm_epin) ? 
+                $prefixes->where('productType', $provider)->sortBy(['provider', 'productCode', 'denominations']) :
+                $prefixes->where('provider', $provider)->sortBy(['provider', 'productCode', 'denominations']);
             }
         }
 
@@ -221,5 +224,20 @@ class AtmService implements IAtmService
             'pwd' => $this->password,
             'data' => $data
         ];
+    }
+
+    private function convertPrefixNetworkToProductListProvider(string $provider) 
+    {
+        switch($provider)
+        {
+            case 'SUN':
+                $provider = TopupTypes::atm_sun_network;
+                break;
+            
+            default:
+                $provider;
+        };
+
+        return $provider;
     }
 }

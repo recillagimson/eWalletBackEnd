@@ -10,6 +10,8 @@ interface ITransactionService
 {
     public function processUserPending(UserAccount $user);
 
+    public function processAllPending();
+
     public function addUserBalanceInfo(string $userAccountId, string $currencyId, float $availableBalance, float $pendingBalance);
 
     public function createUserTransactionEntry(string $userAccountId, string $transactionId, string $referenceNumber, string $transactionCategoryId);

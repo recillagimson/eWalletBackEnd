@@ -58,9 +58,5 @@ trait WithDrcrMemoErrors
         $this->validationErrorMessage(ErrorCodes::invalidTypeOfMemo, 'Invalid Type Of Memo');
     }
 
-    private function controlNumberAlreadyUploaded()
-    {
-        $this->validationErrorMessage(ErrorCodes::controlNumberAlreadyUploaded, 'Control Number Already Uploaded');
-    }
 
 }

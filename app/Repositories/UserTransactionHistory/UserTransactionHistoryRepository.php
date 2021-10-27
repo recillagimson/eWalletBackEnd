@@ -26,12 +26,12 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
 
     // $this->transactionHistory->log(
-        // request()->user()->id,
-        // TransactionCategoryIds::cashinBPI,
-        // $params['transactionId'],
-        // $params['refId'],
-        // $params['amount'],
-        // Carbon::now(),
+        // request()->user()->id, 
+        // TransactionCategoryIds::cashinBPI, 
+        // $params['transactionId'], 
+        // $params['refId'], 
+        // $params['amount'], 
+        // Carbon::now(), 
         // request()->user()->id);
 
     public function log(string $userId, string $transactionCategoryId, string $transactionId, string $refNo,
@@ -265,7 +265,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             //         $q->where('first_name', 'LIKE', '%' . $filter_value . '%')
             //             ->orWhere('last_name', 'LIKE', '%' . $filter_value . '%');
             //     });
-            // }
+            // } 
             // IF CUSTOMER ACCOUNT NUMBER
             if ($filter_by == 'CUSTOMER_ID') {
                 $records = $records->where('account_number', $filter_value);
@@ -274,7 +274,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
             // IF TYPE
             // else if ($filter_by == 'TYPE') {
             //     $records = $records->where('Type', $filter_value);
-            // }
+            // } 
             // IF STATUS
             else if ($filter_by == 'STATUS') {
                 $records = $records->where('status', $filter_value);

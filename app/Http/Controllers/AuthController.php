@@ -10,8 +10,10 @@ use App\Http\Requests\Auth\GenerateTransOtpRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
 use App\Http\Requests\Auth\MobileLoginValidateRequest;
+use App\Http\Requests\Auth\OnBorderLoginRequest;
 use App\Http\Requests\Auth\PartnersLoginRequest;
 use App\Http\Requests\Auth\PartnersVerifyLoginRequest;
+use App\Http\Requests\Auth\PasswordConfirmationRequest;
 use App\Http\Requests\Auth\ResendOtpRequest;
 use App\Http\Requests\Auth\VerifyLoginRequest;
 use App\Http\Requests\Auth\VerifyTransOtpRequest;
@@ -211,6 +213,21 @@ class AuthController extends Controller
     }
 
     /**
+     * Transaction confirmation for admin module
+     *
+     * @param PasswordConfirmationRequest $request
+     * @return JsonResponse
+     */
+    public function passwordConfirmation(PasswordConfirmationRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $userId = $request->user()->id;
+        $this->authService->passwordConfirmation($userId, $data['password']);
+        return $this->responseService->successResponse([],
+        SuccessMessages::passwordConfirmationSuccessful);
+    }
+
+    /**
      * Get the authenticated user
      *
      * @param Request $request
@@ -226,5 +243,20 @@ class AuthController extends Controller
     private function getUsernameField(Request $request): string
     {
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
+    }
+
+    /**
+     * Authenticates a mobile app on border user
+     *
+     * @param MobileLoginRequest $request
+     * @return JsonResponse
+     */
+    public function onBorderLogin(OnBorderLoginRequest $request): JsonResponse
+    {
+        $login = $request->validated();
+        $usernameField = $this->getUsernameField($request);
+        $loginResponse = $this->authService->onBorderLogin($usernameField, $login);
+
+        return $this->responseService->successResponse($loginResponse, SuccessMessages::loginSuccessful);
     }
 }

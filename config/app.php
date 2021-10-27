@@ -191,6 +191,7 @@ return [
          */
         Laravel\Sanctum\SanctumServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -259,6 +260,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'SendGridMail' => \SendGrid\Mail\Mail::class,
+        'Image' => Intervention\Image\Facades\Image::class,
+        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
         //Enums
         'PayloadTypes' => PayloadTypes::class,
@@ -267,6 +271,7 @@ return [
         'OtpTypes' => OtpTypes::class,
         'NetworkTypes' => NetworkTypes::class,
         'DragonPayStatusTypes' => DragonPayStatusTypes::class,
+        'ECPayStatusTypes' => ECPayStatusTypes::class,
         'ReferenceNumberTypes' => ReferenceNumberTypes::class,
         'SquidPayModuleTypes' => SquidPayModuleTypes::class,
         'TransactionCategories' => TransactionCategories::class,
@@ -285,8 +290,6 @@ return [
 
         //Enums - Messages
         'SuccessMessages' => SuccessMessages::class,
-
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 

@@ -2,35 +2,34 @@
 
 namespace App\Services\DrcrMemo;
 
+use Carbon\Carbon;
 use App\Enums\Currencies;
 use App\Enums\DrcrStatus;
 use App\Models\UserAccount;
 use App\Enums\SuccessMessages;
-use App\Imports\DrcrMemo\DrcrMemoImport;
 use App\Exports\DRCR\DRCRReport;
 use App\Enums\TransactionStatuses;
 use App\Enums\ReferenceNumberTypes;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Enums\TransactionCategoryIds;
-use App\Repositories\DrcrMemoControlNumber\IDrcrMemoControlNumberRepository;
+use App\Traits\LogHistory\LogHistory;
+use Illuminate\Support\Facades\Storage;
+use App\Traits\Errors\WithDrcrMemoErrors;
+use App\Exports\DRCR\DRCRReportSupervisor;
+use App\Exports\DRCR\DRCRWithBalanceReport;
+use App\Services\Utilities\PDF\IPDFService;
+use Illuminate\Validation\ValidationException;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
+use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\PDF\IPDFService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
-use App\Services\Utilities\Responses\IResponseService;
-use App\Traits\Errors\WithDrcrMemoErrors;
-use App\Traits\LogHistory\LogHistory;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\DRCR\DRCRBulkErrorList;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class DrcrMemoService implements IDrcrMemoService
 {
     use WithDrcrMemoErrors, LogHistory;
 
-    private IDrcrMemoControlNumberRepository $drcrMemoControlNumberRepository;
     private IDrcrMemoRepository $drcrMemoRepository;
     private IReferenceNumberService $referenceNumberService;
     private IUserAccountRepository $userAccountRepository;
@@ -45,8 +44,7 @@ class DrcrMemoService implements IDrcrMemoService
                                 IUserAccountRepository $userAccountRepository,
                                 IUserBalanceInfoRepository $userBalanceRepository,
                                 IUserTransactionHistoryRepository $userTransHistory,
-                                IPDFService $pdfService, IResponseService $responseService,
-                                IDrcrMemoControlNumberRepository $drcrMemoControlNumberRepository)
+                                IPDFService $pdfService, IResponseService $responseService)
     {
         $this->pdfService = $pdfService;
         $this->drcrMemoRepository = $drcrMemoRepository;
@@ -55,7 +53,6 @@ class DrcrMemoService implements IDrcrMemoService
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransHistory = $userTransHistory;
         $this->responseService = $responseService;
-        $this->drcrMemoControlNumberRepository = $drcrMemoControlNumberRepository;
     }
 
     public function getList(UserAccount $user, $data, $per_page = 15, $from = '', $to ='')
@@ -103,6 +100,19 @@ class DrcrMemoService implements IDrcrMemoService
         if ($data['typeOfMemo'] == ReferenceNumberTypes::DR) {
             $isEnough = $this->checkAmount($data, $customer->id);
             if (!$isEnough) $this->insuficientBalance();
+            // Trigger available to pending
+            $wallet = $this->userBalanceRepository->getByUserAccountID($customer->id);
+            if($wallet) {
+                // deduct available balance
+                $wallet->available_balance = (Double) $wallet->available_balance -  (Double) $data['amount'];
+                // add pending balance
+                $wallet->pending_balance = (Double) $wallet->pending_balance +  (Double) $data['amount'];
+                $wallet->save();
+            } else {
+                throw ValidationException::withMessages([
+                    'wallet_not_found', 'Wallet not found'
+                ]);
+            }
         }
         return $this->drcrMemo($user, $data, $customer->id);
     }
@@ -139,9 +149,36 @@ class DrcrMemoService implements IDrcrMemoService
             if ($drcrMemo->type_of_memo == ReferenceNumberTypes::DR) {
                 if (!$isEnough) return $this->insuficientBalance();
                 $this->debitMemo($drcrMemo->user_account_id, $drcrMemo->amount);
+                // Trigger available to pending
+                $wallet = $this->userBalanceRepository->getByUserAccountID($drcrMemo->user_account_id);
+                if($wallet) {
+                    // deduct pending balance
+                    $wallet->pending_balance = (Double) $wallet->pending_balance -  (Double) $drcrMemo->amount;
+                    $wallet->save();
+                } else {
+                    throw ValidationException::withMessages([
+                        'wallet_not_found', 'Wallet not found'
+                    ]);
+                }
             }
             if ($drcrMemo->type_of_memo == ReferenceNumberTypes::CR) {
                 $this->creditMemo($drcrMemo->user_account_id, $drcrMemo->amount);
+            }
+        } else if($status == DrcrStatus::Decline) {
+            if ($drcrMemo->type_of_memo == ReferenceNumberTypes::DR) {
+                // Trigger pending to available
+                $wallet = $this->userBalanceRepository->getByUserAccountID($drcrMemo->user_account_id);
+                if($wallet) {
+                    // deduct pending balance
+                    $wallet->pending_balance = (Double) $wallet->pending_balance -  (Double) $drcrMemo->amount;
+                    // Add to available
+                    $wallet->available_balance = (Double) $wallet->available_balance +  (Double) $drcrMemo->amount;
+                    $wallet->save();
+                } else {
+                    throw ValidationException::withMessages([
+                        'wallet_not_found', 'Wallet not found'
+                    ]);
+                }
             }
         }
 
@@ -194,7 +231,7 @@ class DrcrMemoService implements IDrcrMemoService
         return $this->referenceNumberService->generate($this->setTypeOfMemo($data));
     }
 
-     private function getUserByAccountNumber($data)
+    private function getUserByAccountNumber($data)
     {
         return $this->userAccountRepository->getUserByAccountNumber($data['accountNumber']);
     }
@@ -407,74 +444,6 @@ class DrcrMemoService implements IDrcrMemoService
             Excel::store(new DRCRWithBalanceReport($data, $from, $to, $type), $fileName, 's3', \Maatwebsite\Excel\Excel::XLSX);
             $temp_url = $this->s3TempUrl($fileName);
             return $this->responseService->successResponse(['temp_url' => $temp_url], SuccessMessages::success);
-        }
-    }
-
-    public function batchUpload(UserAccount $user, $file)
-    {
-        $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-
-        $exists = $this->drcrMemoControlNumberRepository->findByControlNumber($filename);
-
-        if ($exists && $exists->status == 'Success') return $this->controlNumberAlreadyUploaded();
-
-        if ($exists) {
-            $this->drcrMemoControlNumberRepository->update($exists, [
-                'control_number' => $filename,
-                'user_updated' => $user->id,
-                'status' => 'Pending',
-    
-            ]);
-            $controlNumber = $exists;
-        } else {
-            $controlNumber = $this->drcrMemoControlNumberRepository->create([
-                'control_number' => $filename,
-                'user_created' => $user->id,
-                'user_updated' => $user->id,
-                'status' => 'Pending',
-
-            ]);
-        }
-
-        try {
-            $import = new DrcrMemoImport(
-                                         $user,
-                                         $this->referenceNumberService, 
-                                         $this->drcrMemoRepository, 
-                                         $this->userAccountRepository,
-                                         $this->userBalanceRepository,
-                                         $this->userTransHistory,
-                                         $controlNumber->id
-                                        );
-            Excel::import($import, $file);
-
-            $this->drcrMemoControlNumberRepository->update($controlNumber, [
-                'user_updated' => $user->id,
-                'status' => 'Success',
-    
-            ]);
-
-            return ;
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            $failures = $e->failures();
-            $exportName = $filename . "- Errors.xlsx";
-
-            $failData = [];
-            foreach ($failures as $key => $fail) {
-                if (isset($failData[$fail->row()])) {
-                    $failData[$fail->row()]['remarks'] = array_merge($failData[$fail->row()]['remarks'], $fail->errors());
-                } else {
-                    $failData[$fail->row()] = ['row_number' => $fail->row()] + $fail->values() + [ 'remarks' => $fail->errors()];
-                }
-            }
-
-            Excel::store(new DRCRBulkErrorList(collect($failData)), $exportName, 's3');
-
-            $temp_url = $this->s3TempUrl($exportName);
-            return [
-                'temp_url' => $temp_url,
-                'data' => $failData
-            ];
         }
     }
 }

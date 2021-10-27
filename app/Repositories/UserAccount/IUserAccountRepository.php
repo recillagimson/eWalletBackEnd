@@ -11,17 +11,21 @@ interface IUserAccountRepository extends IRepository
 
     public function getAdminUser(string $id);
 
+    public function getAdminUserByEmail(string $email);
+
     public function getAdminUsersByEmail(string $email): Collection;
 
     public function getAdminUsersByName(string $lastName, string $firstName): Collection;
 
-    public function getAllUsersPaginated($attributes, $perPage);
+    public function getAllUsersPaginated($attributes, $perPage, $isPaginated = true);
 
     public function findById(string $id);
 
     public function getUser(string $id);
 
     public function getUserByAccountNumber(string $accountNumber);
+
+    public function getUserByAccountNumberAndRsbsaNumber(string $accountNumber, string $rsbsaNumber);
 
     public function getUserByAccountNumberWithRelations(string $accountNumber);
 

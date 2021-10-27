@@ -26,14 +26,16 @@ use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Traits\Errors\WithSendMoneyErrors;
+use App\Traits\StringHelpers;
 use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Throwable;
 
 class SendMoneyService implements ISendMoneyService
 {
-    use WithSendMoneyErrors, UserHelpers;
+    use WithSendMoneyErrors, UserHelpers, StringHelpers;
 
     private IOutSendMoneyRepository $outSendMoney;
     private IInReceiveMoneyRepository $inReceiveMoney;
@@ -93,16 +95,17 @@ class SendMoneyService implements ISendMoneyService
     /**
      * Creates a new record for out_send_money, in_receive_money
      *
-     * @param string $username
+     * @param string $usernameField
      * @param array $fillRequest
-     * @param object $user
+     * @param UserAccount $user
      * @return array
+     * @throws Throwable
      */
-    public function send(string $username, array $fillRequest, UserAccount $user)
+    public function send(string $usernameField, array $fillRequest, UserAccount $user): array
     {
         $senderID = $user->id;
-        $receiverID = $this->getUserID($username, $fillRequest);
-        $receiverUser = $this->userAccounts->get($receiverID);
+        $receiverID = $this->getUserID($usernameField, $fillRequest);
+        $receiverUser = $this->userAccounts->getUser($receiverID);
 
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest, $user);
@@ -132,14 +135,15 @@ class SendMoneyService implements ISendMoneyService
             $this->addReceiverBalance($receiverID, $fillRequest, $user);
             $this->logHistories($senderID, $receiverID, $fillRequest);
             $this->userTransactionHistory($senderID, $receiverID, $outSendMoney, $inReceiveMoney, $fillRequest, $user);
-            $this->senderNotification($user, $username, $fillRequest, $receiverID, $senderID);
-            $this->recipientNotification($receiverUser, $username, $fillRequest, $senderID, $receiverID);
+            $this->senderNotification($user, $usernameField, $fillRequest, $receiverID, $senderID);
+            $this->recipientNotification($receiverUser, $usernameField, $fillRequest, $senderID, $receiverID);
 
             DB::commit();
-            return $this->sendMoneyResponse($receiverDetails, $fillRequest, $username, $user);
+            return $this->sendMoneyResponse($receiverDetails, $fillRequest, $usernameField, $user);
 
         } catch (Exception $e) {
             DB::rollBack();
+            throw $e;
         }
 
     }
@@ -150,14 +154,14 @@ class SendMoneyService implements ISendMoneyService
      *
      * @param string $username
      * @param array $fillRequest
-     * @param object $user
+     * @param UserAccount $user
      * @return array
      */
     public function sendValidate(string $username, array $fillRequest, UserAccount $user)
     {
         $senderID = $user->id;
         $receiverID = $this->getUserID($username, $fillRequest);
-
+        
         $isSelf = $this->isSelf($senderID, $receiverID);
         $isEnough = $this->checkAmount($senderID, $fillRequest, $user);
         $receiverDetails = $this->userDetails($receiverID);
@@ -218,6 +222,41 @@ class SendMoneyService implements ISendMoneyService
         return  array_merge($mobileOrEmail, $review);
     }
 
+    //c00375fe-0409-415a-b3fe-c3229535adc9
+
+    public function getQr(UserAccount $user)
+    {
+        $userDetails = $this->userDetails($user->id);
+        $qr = $this->qrTransactions->getQrWithZeroAmount($user);
+        if($qr) {
+            return [
+                'qr_code' => $qr->id,
+                'email' => $user->email,
+                'mobile_number' => $user->mobile_number,
+                'last_name' => $userDetails->last_name,
+                'first_name' => $userDetails->first_name,
+                'middle_name' => $userDetails->middle_name
+            ];
+        } 
+         
+        $qr = $this->qrTransactions->create([
+            'user_account_id' => $user->id,
+            'amount' => 0,
+            'status' => 1,
+            'user_created' => $user->id
+        ]);
+
+        return [
+            'qr_code' => $qr->id,
+            'email' => $user->email,
+            'mobile_number' => $user->mobile_number,
+            'last_name' => $userDetails->last_name,
+            'first_name' => $userDetails->first_name,
+            'middle_name' => $userDetails->middle_name
+        ];
+       
+    }
+
 
     private function hasMobileOrEmail($user, $amount)
     {
@@ -236,7 +275,7 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function sendMoneyReview(string $userID)
+    private function sendMoneyReview(string $userID): array
     {
         $user = $this->userDetailRepository->getByUserId($userID);
         return [
@@ -245,11 +284,12 @@ class SendMoneyService implements ISendMoneyService
             'middle_name' => $user->middle_name,
             'name_extension' => $user->name_extension,
             'selfie_location' => $user->selfie_loction,
+            'user_account_id' => $user->user_account_id,
         ];
     }
 
 
-    private function sendMoneyResponse($receiverDetails, $fillRequest, $username, UserAccount $user)
+    private function sendMoneyResponse($receiverDetails, $fillRequest, $username, UserAccount $user): array
     {
         return [
             'first_name' => $receiverDetails->first_name,
@@ -336,7 +376,8 @@ class SendMoneyService implements ISendMoneyService
     }
 
 
-    private function senderNotification(UserAccount $user, $username, $fillRequest, $receiverID, $senderID)
+    private function senderNotification(UserAccount $user, string $username, array $fillRequest, string $receiverID,
+                                        string      $senderID)
     {
         $userDetail = $this->userDetailRepository->getByUserId($receiverID);
         $fillRequest['serviceFee'] = $this->getServiceFee($user, true);
@@ -347,23 +388,39 @@ class SendMoneyService implements ISendMoneyService
         $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
         $notifService->sendMoneySenderNotification($username, $fillRequest, $userDetail->first_name);
 
-        $description = 'Hi Squidee! You have forwarded: ' . $fillRequest['amount'] . ' to ' . $userDetail->first_name . '. This amount has been debited to your account. Your new balance is P ' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
+        $strAmount = $this->formatAmount($fillRequest['amount']);
+        $strNewBalance = $this->formatAmount($fillRequest['newBalance']);
+
+        $description = 'You have forwarded: P ' . $strAmount . ' to ' . $userDetail->first_name .
+            '. This amount has been debited to your account. Your new balance is P ' . $strNewBalance .
+            ' with Ref No. ' . $fillRequest['refNo'] . '. Thank you for using SquidPay!';
         $title = 'SquidPay - Send Money Notification';
+
         $this->insertNotification($user, $title, $description);
     }
-
 
     private function recipientNotification(UserAccount $user, $username, $fillRequest, $senderID, $receiverID)
     {
 
-        $userDetail  = $this->userDetailRepository->getByUserId($senderID);
+        $userDetail = $this->userDetailRepository->getByUserId($senderID);
         $fillRequest['newBalance'] = round($this->userBalanceInfo->getUserBalance($receiverID), 2);
-         $usernameField = $this->getUsernameFieldByAvailability($user);
+        $fillRequest['receiverName'] = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
+
+        $usernameField = $this->getUsernameFieldByAvailability($user);
         $username = $this->getUsernameByField($user, $usernameField);
+
         $notifService = $usernameField === UsernameTypes::Email ? $this->emailService : $this->smsService;
         $notifService->sendMoneyRecipientNotification($username, $fillRequest, $userDetail->first_name);
 
-        $description = 'Hi Squidee! You have received P' . $fillRequest['amount'] . ' of SquidPay on ' . date('Y-m-d H:i:s') . ' from ' . $userDetail->first_name . '. Your new balance is P' . $fillRequest['newBalance'] . ' with Ref No. ' . $fillRequest['refNo'] . '. Use now to buy load, send money, pay bills and a lot more!';
+        $strDate = $this->formatDate(Carbon::now());
+        $strAmount = $this->formatAmount($fillRequest['amount']);
+        $strNewBalance = $this->formatAmount($fillRequest['newBalance']);
+
+        $description = 'You have received P' . $strAmount . ' of SquidPay on ' .
+            $strDate . ' from ' . $userDetail->first_name . '. Your new balance is P' .
+            $strNewBalance . ' with Ref No. ' . $fillRequest['refNo'] .
+            '. Use now to buy load, send money, pay bills and a lot more!';
+
         $title = 'SquidPay - Send Money Notification';
         $this->insertNotification($user, $title, $description);
     }
@@ -380,7 +437,7 @@ class SendMoneyService implements ISendMoneyService
             'total_amount' => $fillRequest['amount'] + $this->getServiceFee($user, true),
             'message' => $fillRequest['message'],
             'status' => 'SUCCESS',
-            'transaction_date' => date('Y-m-d H:i:s'),
+            'transaction_date' => Carbon::now(),
             'transaction_category_id' => SendMoneyConfig::CXSEND,
             'transaction_remarks' => '',
             'user_created' => $senderID,

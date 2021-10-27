@@ -64,7 +64,7 @@ class FarmerUpgradeToSilverRequest extends FormRequest
             'barangay' => 'required'
         ];
 
-
+        
         $inputs = request()->input();
 
         // check if first time to upgrade to silver
@@ -74,7 +74,7 @@ class FarmerUpgradeToSilverRequest extends FormRequest
             $required_fields_default['id_selfie_ids'] = ['required', 'array', 'min:1'];
             $required_fields_default['id_selfie_ids.*'] = ['required', 'exists:user_selfie_photos,id'];
         }
-
+        
         if(isset($inputs['birth_date'])) {
             $birthdate = Carbon::parse($inputs['birth_date']);
             $age = $birthdate->diffInYears(Carbon::now());
