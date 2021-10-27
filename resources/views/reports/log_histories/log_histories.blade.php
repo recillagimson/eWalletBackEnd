@@ -17,7 +17,7 @@
 <table class="table_data">
     <thead>
         <tr>
-            <th>Date of Transaction</th>
+            {{-- <th>Date of Transaction</th> --}}
             <th>Customer ID</th>
             <th>Customer Name</th>
             <th>Current Balance</th>
@@ -27,16 +27,18 @@
             <th>Transaction Description</th>
             <th>Available Balance</th>
             <th>Status</th>
+            <th>Created By</th>
+            <th>Approved By</th>
         </tr>
     </thead>
     <tbody>
         @foreach($records as $record)
         <tr>
-            <td>
+            {{-- <td>
                 {{ Carbon\Carbon::parse($record['0'])->format('F d, Y G:i A') }}
-            </td>
+            </td> --}}
             <td>
-                {{ $record['10'] }}
+                {{ $record['1'] }}
             </td>
             <td>
                 {{ $record['2'] }}
@@ -61,6 +63,12 @@
             </td>
             <td>
                 {{ $record['9'] }}
+            </td>
+            <td>
+                {{ $record['11'] }}
+            </td>
+            <td>
+                {{ $record['12'] }}
             </td>
         </tr>
         @endforeach
