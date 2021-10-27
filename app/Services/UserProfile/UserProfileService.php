@@ -269,11 +269,6 @@ class UserProfileService implements IUserProfileService
         try {
             // IF REQUESTING FOR TIER UPDATE
             if (request()->user() && request()->user()->tier && request()->user()->tier->id !== AccountTiers::tier2) {
-                // VALIDATE IF HAS EXISTING REQUEST
-                $findExistingRequest = $this->userApprovalRepository->getPendingApprovalRequest();
-                if ($findExistingRequest) {
-                    return $this->tierUpgradeAlreadyExist();
-                }
 
                 // Trigger auto check
                 //$ekyc_auto_check == false;
@@ -286,17 +281,22 @@ class UserProfileService implements IUserProfileService
                     ]);
                 }
 
-                // CREATE APPROVAL RECORD FOR ADMIN
-                // TU-MMDDYYY-RANDON
-                $generatedTransactionNumber = "TU" . Carbon::now()->format('YmdHi') . rand(0, 99999);
-                $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
-                    'user_account_id' => request()->user()->id,
-                    'request_tier_id' => AccountTiers::tier2,
-                    'status' => $ekyc_auto_check ? 'APPROVED' : 'PENDING',
-                    'user_created' => request()->user()->id,
-                    'user_updated' => request()->user()->id,
-                    'transaction_number' => $generatedTransactionNumber
-                ]);
+                // REMOVE THIS BECAUSE OF CHANGES ON ID IMAGE UPLOAD AUTO CREATES TIER APPROVAL
+                // VALIDATE IF HAS EXISTING REQUEST
+                $tierApproval = $this->userApprovalRepository->getPendingApprovalRequest();
+                if (!$tierApproval) {
+                    // CREATE APPROVAL RECORD FOR ADMIN
+                    // TU-MMDDYYY-RANDON
+                    $generatedTransactionNumber = "TU" . Carbon::now()->format('YmdHi') . rand(0, 99999);
+                    $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
+                        'user_account_id' => request()->user()->id,
+                        'request_tier_id' => AccountTiers::tier2,
+                        'status' => $ekyc_auto_check ? 'APPROVED' : 'PENDING',
+                        'user_created' => request()->user()->id,
+                        'user_updated' => request()->user()->id,
+                        'transaction_number' => $generatedTransactionNumber
+                    ]);
+                }
 
                 $this->verificationService->updateTierApprovalIds($attr['id_photos_ids'], $attr['id_selfie_ids'], $tierApproval->id);
 
