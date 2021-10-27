@@ -40,6 +40,8 @@ class ECPayService implements IECPayService
     private string $username;
     private string $password;
 
+    private int $serviceFee;
+
     private IApiService $apiService;
     private IHandlePostBackService $handlePostBackService;
     private IInAddMoneyEcPayRepository $addMoneyEcPayRepository;
@@ -85,6 +87,7 @@ class ECPayService implements IECPayService
         $this->emailService = $emailService;
         $this->smsService = $smsService;
         $this->balanceInfos = $balanceInfos;
+        $this->serviceFee = 2;
     }
 
     private function getXmlHeaders(): array
@@ -164,7 +167,7 @@ class ECPayService implements IECPayService
                 'transaction_response'=>$data['result'],
                 'status' => ($resultData[0]->PaymentStatus == 0) ? ECPayStatusTypes::Success : ECPayStatusTypes::Pending
             ]);
-            $remainingBalance = $this->handlePostBackService->addAmountToUserBalance($user->id, $amount);
+            $remainingBalance = ($resultData[0]->PaymentStatus == 0) ? $this->handlePostBackService->addAmountToUserBalance($user->id, $amount) : '';
             if($resultData[0]->PaymentStatus == 0) $this->sendNotification($this->getUserBalance(request()->user()->id), $refNo);
         } else {
             $amount = $inputData['amount'];
@@ -182,7 +185,7 @@ class ECPayService implements IECPayService
             $transCategoryId->id,
             $isDataExisting->id,
             $isDataExisting->reference_number,
-            $isDataExisting->amount,
+            $this->amountWithServiceFee((float)$isDataExisting->amount),
             Carbon::parse($isDataExisting->transaction_date),
             $isDataExisting->user_account_id
         );
@@ -209,6 +212,7 @@ class ECPayService implements IECPayService
             "reference_number"=>$refNo,
             "amount"=>$inputData['amount'],
             "total_amount"=>$inputData['amount'],
+            'service_fee'=>$this->serviceFee,
             "ec_pay_reference_number"=>$ecpayResult[0],
             "expiry_date"=>$expirationDate,
             "transaction_date"=>Carbon::now()->format('Y-m-d H:i:s'),
@@ -236,6 +240,8 @@ class ECPayService implements IECPayService
             "middle_name"=>$userDetail->middle_name,
             "reference_number"=>$data["reference_number"],
             "amount"=>$data["amount"],
+            'service_fee'=>$this->serviceFee,
+            'total_amount'=> (string)$this->amountWithServiceFee((float)$data["amount"]),
             "expiry_date"=>Carbon::parse($data["expiry_date"])->format('Y-m-d H:i:s P'),
             "ec_pay_reference_number"=>$data["ec_pay_reference_number"],
             "transaction_date"=>Carbon::parse($data["transaction_date"])->format('Y-m-d H:i:s P'),
@@ -318,5 +324,11 @@ class ECPayService implements IECPayService
             $this->emailService->sendEcPaySuccessPaymentNotification(request()->user()->email, request()->user()->profile, $newBalance, $referenceNumber);
         } 
         
+    }
+
+    public function amountWithServiceFee(float $amount)
+    {
+        $serviceFee = $this->serviceFee / 10;
+        return $amount + ($amount * $serviceFee);
     }
 }
