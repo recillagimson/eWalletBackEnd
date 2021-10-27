@@ -19,25 +19,25 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
     use Exportable, LogHistory;
 
     /**
-    * It's required to define the fileName within
-    * the export class when making use of Responsable.
-    */
+     * It's required to define the fileName within
+     * the export class when making use of Responsable.
+     */
 
     // $file_name = $params['from'] . "-" . $params['to'] . "." . $params['type'];
 
-    
+
     /**
      * Optional Writer Type
      */
     // private $writerType = Excel::XLSX;
-    
+
     /**
      * Optional headers
      */
     // private $headers = [
     //     'Content-Type' => 'text/xlsx',
     // ];
-    
+
     // private $fileName = $this->from . "-" . $this->to . "." . ;
 
     private $fileName;
@@ -46,7 +46,7 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
     private $type;
     private $data;
     private $records;
-    
+
     public function __construct(Collection $data, string $from, $to, $type)
     {
         $this->data = $data;
@@ -78,10 +78,10 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
         $count = count($this->records);
         $type = $this->type;
         return [
-            AfterSheet::class => function (AfterSheet $event) use($count, $type) {
+            AfterSheet::class => function (AfterSheet $event) use ($count, $type) {
                 $i = 0;
-                while($i <= $count) {
-                    $cells = 'A' . ($i + 1) . ":J" . ($i + 1);
+                while ($i <= $count) {
+                    $cells = 'A' . ($i + 1) . ":K" . ($i + 1);
                     // dd($cells);
                     $style = [
                         'borders' => [
@@ -100,7 +100,7 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
                         ]
                     ];
 
-                    if($i == 0) {
+                    if ($i == 0) {
 
                         // $style['font'] =;
                         $style['fill'] = [
@@ -110,14 +110,14 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
                     }
 
                     $event->sheet->getStyle($cells)->applyFromArray($style);
-                    if($type == 'PDF') {
+                    if ($type == 'PDF') {
                         $event->sheet->getDelegate()->getStyle($cells)->getFont()->setSize(60);
                     }
                     // $event->sheet->getDelegate()->getColumnDimension('J')->setWidth(100);
-                    $event->sheet->getDelegate()->getRowDimension($i+1)->setRowHeight(20);
+                    $event->sheet->getDelegate()->getRowDimension($i + 1)->setRowHeight(20);
                     $i++;
                 }
-                if($type == 'PDF') {
+                if ($type == 'PDF') {
                     $event->sheet->getDelegate()->getColumnDimension('A')->setWidth(100);
                     $event->sheet->getDelegate()->getColumnDimension('B')->setWidth(100);
                     $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(100);
@@ -128,6 +128,7 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
                     $event->sheet->getDelegate()->getColumnDimension('H')->setWidth(100);
                     $event->sheet->getDelegate()->getColumnDimension('I')->setWidth(100);
                     $event->sheet->getDelegate()->getColumnDimension('J')->setWidth(100);
+                    $event->sheet->getDelegate()->getColumnDimension('K')->setWidth(100);
                 } else {
                     $event->sheet->getDelegate()->getColumnDimension('A')->setWidth(50);
                     $event->sheet->getDelegate()->getColumnDimension('B')->setWidth(50);
@@ -139,11 +140,9 @@ class DRCRReport implements WithHeadings, FromView, WithEvents
                     $event->sheet->getDelegate()->getColumnDimension('H')->setWidth(50);
                     $event->sheet->getDelegate()->getColumnDimension('I')->setWidth(50);
                     $event->sheet->getDelegate()->getColumnDimension('J')->setWidth(50);
+                    $event->sheet->getDelegate()->getColumnDimension('K')->setWidth(50);
                 }
-                
             },
         ];
     }
-
-
 }

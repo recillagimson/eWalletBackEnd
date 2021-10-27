@@ -12,18 +12,19 @@ class UserRoleRepository extends Repository implements IUserRoleRepository
         parent::__construct($model);
     }
 
-    public function setUserRoles(array $attr) {
+    public function setUserRoles(array $attr)
+    {
         // REMOVE CURRENT ROLES
         $current = $this->model->whereNotIn('role_id', $attr['role_ids'])
             ->where('user_account_id', $attr['user_account_id'])
             ->get();
 
-        foreach($current as $curr) {
+        foreach ($current as $curr) {
             $curr->delete();
         }
 
         $records = [];
-        foreach($attr['role_ids'] as $role_id) {
+        foreach ($attr['role_ids'] as $role_id) {
             $record = $this->model->updateOrCreate([
                 'user_account_id' => $attr['user_account_id'],
                 'role_id' => $role_id,
@@ -34,12 +35,22 @@ class UserRoleRepository extends Repository implements IUserRoleRepository
         return $records;
     }
 
-    public function getUserRolesAndPermissionByUserAccountId(string $userAccountId) {
-        $roles =$this->model
+    public function getUserRolesAndPermissionByUserAccountId(string $userAccountId)
+    {
+        $roles = $this->model
             ->with(['role', 'role.permissions'])
             ->where('user_account_id', $userAccountId)
             ->get();
-            
+
         return $roles;
+    }
+
+    public function hasUserRole($userAccountId, $roleId)
+    {
+        $userRole = $this->model
+            ->where('user_account_id', $userAccountId)
+            ->where('role_id', $roleId)->first();
+
+        return $userRole ? true : false;
     }
 }

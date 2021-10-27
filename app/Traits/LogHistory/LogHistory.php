@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Traits\LogHistory;
 
 use Carbon\Carbon;
@@ -66,6 +67,8 @@ trait LogHistory
                     strval($available_balance),
                     $entry->Status,
                     Carbon::parse($entry->transaction_date)->setTimezone('Asia/Manila')->format('m/d/Y h:i:s A'),
+                    $entry->user_created,
+                    $entry->approved_by
                 ];
 
                 array_push($processed_data, $proc);
@@ -80,7 +83,9 @@ trait LogHistory
                     "amount" => strval($entry->total_amount),
                     "transaction_description" => $entry->reference_number,
                     "available_balance" => strval($available_balance),
-                    "status" => $entry->Status
+                    "status" => $entry->Status,
+                    "user_created" => $entry->user_created,
+                    "approved_by" => $entry->approved_by
                 ];
                 array_push($processed_data, $proc);
             }
@@ -203,7 +208,6 @@ trait LogHistory
                 ];
                 array_push($processed_data, $proc);
             }
-            
         }
 
         return $processed_data;
@@ -304,7 +308,6 @@ trait LogHistory
                 ];
                 array_push($processed_data, $proc);
             }
-            
         }
 
         return $processed_data;

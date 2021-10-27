@@ -63,7 +63,7 @@ class ErrorCodes
     const bpiFundTopUp = 424;
     const bpiTransactionError = 425;
     const bpiInvalidError = 426;
-
+    const controlNumberAlreadyUploaded = 427;
 
 
     //BUY LOAD - 500
@@ -128,6 +128,4 @@ class ErrorCodes
 
     // 1000
     const dateFromBeforeDateCreated = 1000;
-
-
 }

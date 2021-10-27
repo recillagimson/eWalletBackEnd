@@ -17,4 +17,5 @@ interface IDrcrMemoService
     public function reportFiltered(array $attr);
 
     public function reportFilteredPerUser(array $attr, $isPerUser);
+    public function batchUpload(UserAccount $user, $data);
 }
