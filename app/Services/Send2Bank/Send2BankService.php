@@ -60,23 +60,24 @@ class Send2BankService implements ISend2BankService
     protected string $provider;
     private IProviderBanksRepository $providerBanks;
 
-    public function __construct(IUBPService                       $ubpService,
-                                ISecurityBankService              $secBankService,
-                                IReferenceNumberService           $referenceNumberService,
-                                ITransactionValidationService     $transactionValidationService,
-                                INotificationService              $notificationService,
-                                ISmsService                       $smsService,
-                                IEmailService                     $emailService,
-                                IOtpService                       $otpService,
-                                ILogHistoryService                $logHistories,
-                                IUserAccountRepository            $users,
-                                IUserBalanceInfoRepository        $userBalances,
-                                IOutSend2BankRepository           $send2banks,
-                                IServiceFeeRepository             $serviceFees,
-                                IUserTransactionHistoryRepository $transactionHistories,
-                                IProviderBanksRepository          $providerBanks,
-                                INotificationRepository           $notificationRepository)
-    {
+    public function __construct(
+        IUBPService                       $ubpService,
+        ISecurityBankService              $secBankService,
+        IReferenceNumberService           $referenceNumberService,
+        ITransactionValidationService     $transactionValidationService,
+        INotificationService              $notificationService,
+        ISmsService                       $smsService,
+        IEmailService                     $emailService,
+        IOtpService                       $otpService,
+        ILogHistoryService                $logHistories,
+        IUserAccountRepository            $users,
+        IUserBalanceInfoRepository        $userBalances,
+        IOutSend2BankRepository           $send2banks,
+        IServiceFeeRepository             $serviceFees,
+        IUserTransactionHistoryRepository $transactionHistories,
+        IProviderBanksRepository          $providerBanks,
+        INotificationRepository           $notificationRepository
+    ) {
         $this->ubpService = $ubpService;
         $this->referenceNumberService = $referenceNumberService;
         $this->transactionValidationService = $transactionValidationService;
@@ -161,7 +162,7 @@ class Send2BankService implements ISend2BankService
         $totalAmount = $recipient['amount'] + $serviceFeeAmount;
 
 
-        $this->transactionValidationService->checkUserBalance($user, $totalAmount );
+        $this->transactionValidationService->checkUserBalance($user, $totalAmount);
 
         $this->transactionValidationService
             ->validate($user, $this->transactionCategoryId, $totalAmount);
@@ -188,19 +189,33 @@ class Send2BankService implements ISend2BankService
             $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
             $totalAmount = $data['amount'] + $serviceFeeAmount;
 
-            $this->transactionValidationService->checkUserBalance($user, $totalAmount );
+            $this->transactionValidationService->checkUserBalance($user, $totalAmount);
 
             $userFullName = ucwords($user->profile->full_name);
-            $recipientFullName = ucwords($data['account_name'] ?: $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
+            $recipientFullName = ucwords($data['account_name'] ?? $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
             $currentDate = Carbon::now();
             $transactionDate = $currentDate->toDateTimeLocalString('millisecond');
             $otherPurpose = $data['other_purpose'] ?? '';
 
-            $send2Bank = $this->send2banks->createTransaction($userId, $refNo, $data['bank_code'], $data['bank_name'],
-                $recipientFullName, $data['account_number'], $data['purpose'], $otherPurpose,
-                $data['amount'], $serviceFeeAmount, $serviceFeeId, $currentDate, $this->transactionCategoryId, $this->provider,
-                $data['send_receipt_to'], $userId);
+            $send2Bank = $this->send2banks->createTransaction(
+                $userId,
+                $refNo,
+                $data['bank_code'],
+                $data['bank_name'],
+                $recipientFullName,
+                $data['account_number'],
+                $data['purpose'],
+                $otherPurpose,
+                $data['amount'],
+                $serviceFeeAmount,
+                $serviceFeeId,
+                $currentDate,
+                $this->transactionCategoryId,
+                $this->provider,
+                $data['send_receipt_to'],
+                $userId
+            );
 
             if (!$send2Bank) $this->transactionFailed();
 
@@ -214,9 +229,18 @@ class Send2BankService implements ISend2BankService
                 $updateReferenceCounter = true;
                 $send2Bank = $this->handleSecBankTransferResponse($send2Bank, $transferResponse);
             } else {
-                $transferResponse = $this->ubpService->fundTransfer($refNo, $userFullName, $user->profile->postal_code,
-                    $data['bank_code'], $data['account_number'], $recipientFullName, $data['amount'],
-                    $transactionDate, ' ', $this->provider);
+                $transferResponse = $this->ubpService->fundTransfer(
+                    $refNo,
+                    $userFullName,
+                    $user->profile->postal_code,
+                    $data['bank_code'],
+                    $data['account_number'],
+                    $recipientFullName,
+                    $data['amount'],
+                    $transactionDate,
+                    ' ',
+                    $this->provider
+                );
 
                 $updateReferenceCounter = true;
                 $send2Bank = $this->handleTransferResponse($send2Bank, $transferResponse);
@@ -308,9 +332,14 @@ class Send2BankService implements ISend2BankService
 
         $remarks = "Sent $amount to account number: $accountNo.";
 
-        $this->logHistories->logUserHistory($userId, $refNo, $spModule,
-            null, $logDate, $remarks, $operation);
+        $this->logHistories->logUserHistory(
+            $userId,
+            $refNo,
+            $spModule,
+            null,
+            $logDate,
+            $remarks,
+            $operation
+        );
     }
-
-
 }

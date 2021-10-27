@@ -22,28 +22,46 @@ use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Repositories\Notification\INotificationRepository;
 
 class Send2BankSBPesonetService extends Send2BankService implements ISend2BankSBPesonetService
 {
-    public function __construct(IUBPService $ubpService,
-                                ISecurityBankService $securityBankService,
-                                IReferenceNumberService $referenceNumberService,
-                                ITransactionValidationService $transactionValidationService,
-                                INotificationService $notificationService,
-                                ISmsService $smsService,
-                                IEmailService $emailService,
-                                IOtpService $otpService,
-                                ILogHistoryService $logHistoryService,
-                                IUserAccountRepository $users,
-                                IUserBalanceInfoRepository $userBalances,
-                                IOutSend2BankRepository $send2banks,
-                                IServiceFeeRepository $serviceFees,
-                                IUserTransactionHistoryRepository $transactionHistories,
-                                IProviderBanksRepository $providerBanks)
-    {
-        parent::__construct($ubpService, $securityBankService, $referenceNumberService, $transactionValidationService,
-            $notificationService, $smsService, $emailService, $otpService, $logHistoryService,
-            $users, $userBalances, $send2banks, $serviceFees, $transactionHistories, $providerBanks);
+    public function __construct(
+        IUBPService $ubpService,
+        ISecurityBankService $securityBankService,
+        IReferenceNumberService $referenceNumberService,
+        ITransactionValidationService $transactionValidationService,
+        INotificationService $notificationService,
+        ISmsService $smsService,
+        IEmailService $emailService,
+        IOtpService $otpService,
+        ILogHistoryService $logHistoryService,
+        IUserAccountRepository $users,
+        IUserBalanceInfoRepository $userBalances,
+        IOutSend2BankRepository $send2banks,
+        IServiceFeeRepository $serviceFees,
+        IUserTransactionHistoryRepository $transactionHistories,
+        IProviderBanksRepository $providerBanks,
+        INotificationRepository $notificationRepository
+    ) {
+        parent::__construct(
+            $ubpService,
+            $securityBankService,
+            $referenceNumberService,
+            $transactionValidationService,
+            $notificationService,
+            $smsService,
+            $emailService,
+            $otpService,
+            $logHistoryService,
+            $users,
+            $userBalances,
+            $send2banks,
+            $serviceFees,
+            $transactionHistories,
+            $providerBanks,
+            $notificationRepository
+        );
 
         $this->transactionCategoryId = TransactionCategoryIds::send2BankPesoNet;
         $this->provider = TpaProviders::secBankPesonet;

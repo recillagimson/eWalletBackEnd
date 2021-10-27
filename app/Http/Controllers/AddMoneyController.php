@@ -108,7 +108,8 @@ class AddMoneyController extends Controller
     public function commitPayment(CommitPaymentRequest $request): JsonResponse {
 
         $data = $request->validated();
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($request->user(), (float)$data["amount"], TransactionCategoryIds::sendMoneyToSquidPayAccount);
+        $serviceFeeAmount = $this->ecpayService->amountWithServiceFee((float)$data["amount"]);
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit($request->user(), $serviceFeeAmount, TransactionCategoryIds::sendMoneyToSquidPayAccount);
         return $this->ecpayService->commitPayment($data, $request->user());
     }
 
