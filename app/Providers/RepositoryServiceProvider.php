@@ -139,6 +139,8 @@ use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\PreferredCashOutPartner\PreferredCashOutPartnerRepository;
 use App\Repositories\PreferredCashOutPartner\IPreferredCashOutPartnerRepository;
+use App\Repositories\WhiteList\IWhiteListRepository;
+use App\Repositories\WhiteList\WhiteListRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -296,7 +298,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IFaceAuthRepository::class, FaceAuthRepository::class);
         // CEBUANA
         $this->app->bind(IInAddMoneyCebuanaRepository::class, InAddMoneyCebuanaRepository::class);
-
+        // WHITE LISTING
+        $this->app->bind(IWhiteListRepository::class, WhiteListRepository::class);
     }
 
     /**
