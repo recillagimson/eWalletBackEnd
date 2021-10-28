@@ -204,12 +204,12 @@ class TransactionService implements ITransactionService
         if(request()->user()) {
             $dateAccountCreated = request()->user()->created_at;
             if($dateAccountCreated) {
-                if(Carbon::parse($dateAccountCreated)->greaterThan(Carbon::parse($attr['from']))) {
-                    $this->dateFromBeforeDateCreated(Carbon::parse($dateAccountCreated)->format('F m, Y'));
+                if(Carbon::parse($dateAccountCreated)->lessThan(Carbon::parse($attr['from']))) {
+                    $this->dateFromBeforeDateCreated($dateAccountCreated->format('F d, Y'));
                 }
 
-                if(Carbon::parse($dateAccountCreated)->greaterThan(Carbon::parse($attr['to']))) {
-                    $this->dateFromBeforeDateCreated(Carbon::parse($dateAccountCreated)->format('F m, Y'));
+                if(Carbon::parse($dateAccountCreated)->lessThan(Carbon::parse($attr['to']))) {
+                    $this->dateToBeforeDateCreated($dateAccountCreated->format('F d, Y'));
                 }
             }
         }
