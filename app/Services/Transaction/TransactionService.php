@@ -202,7 +202,7 @@ class TransactionService implements ITransactionService
 
         // validate by date created
         if(request()->user()) {
-            $dateAccountCreated = CArbon::parse(Carbon::parse(request()->user()->created_at)->format('Y-m-d'));
+            $dateAccountCreated = Carbon::parse(Carbon::parse(request()->user()->created_at)->format('Y-m-d'));
             if($dateAccountCreated) {
                 // BEFORE DATE CREATED VALIDATION
                 if(Carbon::parse($dateAccountCreated)->greaterThan(Carbon::parse($attr['from']))) {
