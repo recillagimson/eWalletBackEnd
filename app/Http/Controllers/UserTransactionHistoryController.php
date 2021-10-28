@@ -91,17 +91,6 @@ class UserTransactionHistoryController extends Controller
     }
 
     public function generateTransactionHistory(UserTransactionHistoryRequest $request) {
-
-        // validate by date created
-        if(request()->user()) {
-            $dateAccountCreated = request()->user()->created_at;
-            if($dateAccountCreated) {
-                if(Carbon::parse($dateAccountCreated)->greaterThan(Carbon::parse($request->from))) {
-                    $this->dateFromBeforeDateCreated(Carbon::parse($dateAccountCreated)->format('F m, Y'));
-                }
-            }
-        }
-
         $attr = $request->all();
         $attr['auth_user'] = request()->user()->id;
         $record = $this->transactionService->generateTransactionHistoryByEmail($attr);

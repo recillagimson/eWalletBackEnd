@@ -26,7 +26,7 @@ class UserTransactionHistoryRequest extends FormRequest
         $required_fields = [
             'email' => 'required|email',
             'from' => 'required|date|before:today',
-            'to' => 'required|date|before:tomorrow'
+            'to' => 'required|date|before:today'
         ];
 
         return $required_fields;

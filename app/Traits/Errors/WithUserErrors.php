@@ -92,4 +92,8 @@ trait WithUserErrors
     public function dateFromBeforeDateCreated(string $dateCreated) {
         return $this->validationErrorMessage(ErrorCodes::dateFromBeforeDateCreated, 'Date From must be equal or greater than ' . $dateCreated);
     }
+
+    public function dateToBeforeDateCreated(string $dateCreated) {
+        return $this->validationErrorMessage(ErrorCodes::dateToBeforeDateCreated, 'Date To must be equal or greater than ' . $dateCreated);
+    }
 }
