@@ -188,7 +188,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/auth/v2')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/user', [AuthV2Controller::class, 'getUser'])->name('user.show');
+        Route::get('/user', [AuthV2Controller::class, 'getUser']);
 
         Route::post('/register/validate', [RegisterV2Controller::class, 'registerValidate']);
         Route::post('/register', [RegisterV2Controller::class, 'register']);
@@ -210,11 +210,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/resend/otp', [AuthV2Controller::class, 'resendOTP']);
 
         Route::prefix('/verify')->name('verify.')->group(function () {
-            Route::post('/otp', [AuthV2Controller::class, 'verifyTransactionOtp'])->name('otp');
-            Route::post('/account', [RegisterV2Controller::class, 'verifyAccount'])->name('account');
-            Route::post('/mobile/login', [AuthV2Controller::class, 'verifyMobileLogin'])->name('mobile.login');
-            Route::post('/partners/login', [AuthV2Controller::class, 'verifyPartnersLogin'])->name('partners.login');
-            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type');
+            Route::post('/otp', [AuthV2Controller::class, 'verifyTransactionOtp'])->name('otp2');
+            Route::post('/account', [RegisterV2Controller::class, 'verifyAccount'])->name('account2');
+            Route::post('/mobile/login', [AuthV2Controller::class, 'verifyMobileLogin'])->name('mobile.login2');
+            Route::post('/partners/login', [AuthV2Controller::class, 'verifyPartnersLogin'])->name('partners.login2');
+            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type2');
         });
     });
 
@@ -374,7 +374,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::prefix('send/money')->middleware(['decrypt.request'])->name('send.money')->group(function () {
+    Route::prefix('send/money')->middleware(['decrypt.request'])->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
         Route::post('/validate', [SendMoneyController::class, 'sendValidate'])->name('send.validate');
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr'])->name('generate.qr');
