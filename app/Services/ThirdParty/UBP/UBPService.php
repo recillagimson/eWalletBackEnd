@@ -141,8 +141,8 @@ class UBPService implements IUBPService
         // ALTER REF NO FOR STAGING AND DEVSITE
         // IMPLEMENT THIS TO PREVENT DUPLICATE REFNO
         // WILL NOT TAKE EFFECT ON PROD
-        if(env('APP_ENV') == 'staging' || env('APP_ENV') == 'local') {
-            $refNo = $refNo . "-" . Str::uuid()->toString();
+        if (env('APP_ENV') == 'staging' || env('APP_ENV') == 'local') {
+            $refNo = $refNo . str_replace('-', '', Str::uuid()->toString());
         }
 
         $data = [
@@ -156,7 +156,7 @@ class UBPService implements IUBPService
                     "city" => " ",
                     "province" => " ",
                     "zipCode" => $zipCode,
-                    // CHANGE THIS FROM PH to 204 
+                    // CHANGE THIS FROM PH to 204
                     // AS REQUESTED BY UBP SUPPORT
                     // "country" => "PH"
                     "country" => 204
