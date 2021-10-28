@@ -142,7 +142,7 @@ class UBPService implements IUBPService
         // IMPLEMENT THIS TO PREVENT DUPLICATE REFNO
         // WILL NOT TAKE EFFECT ON PROD
         if (env('APP_ENV') == 'staging' || env('APP_ENV') == 'local') {
-            $refNo = $refNo . str_replace('-', '', Str::random(6)->toString());
+            $refNo = $refNo . str_replace('-', '', Str::random(6));
         }
 
         $data = [
