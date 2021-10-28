@@ -308,7 +308,7 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
         return DRCRBalance::with([])
         ->where('original_transaction_date', '>=', $from)
         ->where('original_transaction_date', '<=', $to)
-        ->where('user_account_id', 'd6dec498-029f-4c06-af42-1cbdedb0f4b9')
+        ->where('user_account_id', $authUser)
         ->get();
     }
 
