@@ -129,4 +129,6 @@ class ErrorCodes
     // 1000
     const dateFromBeforeDateCreated = 1000;
     const dateToBeforeDateCreated = 1001;
+    const dateFromBeforeDateToday = 1002;
+    const dateToBeforeDateToday = 1003;
 }
