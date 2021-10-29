@@ -344,30 +344,31 @@ class KYCService implements IKYCService
                 'hv_result' => $error,
                 'status' => $requestId ? 'PENDING' : 'ERROR'
             ]);
-
-            if ($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
-                DB::commit();
-                // WAIT FOR CALLBACK
-                sleep(5);
-                // $record = $this->kycRepository->findByRequestId($record->request_id);
-                if($from_api) {
-                    return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
-                }
-                return $record;
-            } else {
-                // \DB::rollBack();
-                DB::commit();
-                // ERROR
-                if($from_api) {
-                    // return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
-                    return $this->responseService->successResponse([
-                        'statusCode' => $response['statusCode'],
-                        'message' => $response['error'],
-                        'status' => $response['status']
-                    ], SuccessMessages::success);
-                }
-                return $record;
-            }
+            
+            DB::commit();
+            return $record;
+            // if ($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
+            //     // WAIT FOR CALLBACK
+            //     sleep(5);
+            //     // $record = $this->kycRepository->findByRequestId($record->request_id);
+            //     if($from_api) {
+            //         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+            //     }
+            //     return $record;
+            // } else {
+            //     // \DB::rollBack();
+            //     DB::commit();
+            //     // ERROR
+            //     if($from_api) {
+            //         // return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+            //         return $this->responseService->successResponse([
+            //             'statusCode' => $response['statusCode'],
+            //             'message' => $response['error'],
+            //             'status' => $response['status']
+            //         ], SuccessMessages::success);
+            //     }
+            //     return $record;
+            // }
 
         } catch (Exception $err) {
             Log::info(json_encode($err->getMessage()));
