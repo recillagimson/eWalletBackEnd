@@ -324,37 +324,51 @@ class KYCService implements IKYCService
             \Log::info('DEDUP');
             \Log::info(json_encode($response));
 
+            $requestId = '';
+            if($response && $response['result']) {
+                $res = (array) $response['result'];
+                if(isset($res['requestId'])) {
+                    $requestId = $res['requestId'];
+                }
+            }
+
+            \Log::info('REQUEST ID');
+            \Log::info($requestId);
+
+
             $record = $this->kycRepository->create([
                 'user_account_id' => $attr['user_account_id'],
-                'request_id' => isset($response['result']) ? $response['result']->requestId : $response['requestId'],
+                'request_id' => $requestId,
                 'transaction_id' => $transactionId,
                 'hv_response' => json_encode($response),
                 'hv_result' => $error,
+                'status' => $requestId ? 'PENDING' : 'ERROR'
             ]);
-
-            if ($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
-                DB::commit();
-                // WAIT FOR CALLBACK
-                sleep(5);
-                // $record = $this->kycRepository->findByRequestId($record->request_id);
-                if($from_api) {
-                    return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
-                }
-                return $record;
-            } else {
-                // \DB::rollBack();
-                DB::commit();
-                // ERROR
-                if($from_api) {
-                    // return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
-                    return $this->responseService->successResponse([
-                        'statusCode' => $response['statusCode'],
-                        'message' => $response['error'],
-                        'status' => $response['status']
-                    ], SuccessMessages::success);
-                }
-                return $record;
-            }
+            
+            DB::commit();
+            return $record;
+            // if ($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
+            //     // WAIT FOR CALLBACK
+            //     sleep(5);
+            //     // $record = $this->kycRepository->findByRequestId($record->request_id);
+            //     if($from_api) {
+            //         return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+            //     }
+            //     return $record;
+            // } else {
+            //     // \DB::rollBack();
+            //     DB::commit();
+            //     // ERROR
+            //     if($from_api) {
+            //         // return $this->responseService->successResponse($record->toArray(), SuccessMessages::success);
+            //         return $this->responseService->successResponse([
+            //             'statusCode' => $response['statusCode'],
+            //             'message' => $response['error'],
+            //             'status' => $response['status']
+            //         ], SuccessMessages::success);
+            //     }
+            //     return $record;
+            // }
 
         } catch (Exception $err) {
             Log::info(json_encode($err->getMessage()));

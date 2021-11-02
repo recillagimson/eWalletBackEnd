@@ -141,6 +141,8 @@ use App\Repositories\PreferredCashOutPartner\PreferredCashOutPartnerRepository;
 use App\Repositories\PreferredCashOutPartner\IPreferredCashOutPartnerRepository;
 use App\Repositories\WhiteList\IWhiteListRepository;
 use App\Repositories\WhiteList\WhiteListRepository;
+use App\Repositories\DrcrMemoControlNumber\DrcrMemoControlNumberRepository;
+use App\Repositories\DrcrMemoControlNumber\IDrcrMemoControlNumberRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -252,6 +254,9 @@ class RepositoryServiceProvider extends ServiceProvider
 
         //Drcr Memos Repositories
         $this->app->bind(IDrcrMemoRepository::class, DrcrMemoRepository::class);
+
+        //Drcr Memo Control Numbers Repositories
+        $this->app->bind(IDrcrMemoControlNumberRepository::class, DrcrMemoControlNumberRepository::class);
 
         // KYC Verification
         $this->app->bind(IKYCVerificationRepository::class, KYCVerificationRepository::class);

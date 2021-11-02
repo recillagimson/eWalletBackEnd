@@ -7,6 +7,7 @@ use App\Enums\SuccessMessages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\DrcrMemo\ShowRequest;
+use App\Http\Requests\DrcrMemo\DrcrMemoBatchUploadRequest;
 use App\Services\DrcrMemo\IDrcrMemoService;
 use App\Http\Requests\DRCR\DRCRReportRequest;
 use App\Http\Requests\DrcrMemo\GetUserRequest;
@@ -32,18 +33,18 @@ class DrcrMemoController extends Controller
      * Get all the list of DRCR Memo by status
      * @return JsonResponse
      */
-    public function index(ShowRequest $request) : JsonResponse
+    public function index(ShowRequest $request): JsonResponse
     {
         $data = $request->route('status');
         $per_page = 15;
-        if($request->has('per_page')) {
+        if ($request->has('per_page')) {
             $per_page = $request->per_page;
         }
 
         $from = '';
         $to = '';
 
-        if($request->has('from') && $request->has('to')) {
+        if ($request->has('from') && $request->has('to')) {
             $from = $request->from;
             $to = $request->to;
         }
@@ -60,14 +61,14 @@ class DrcrMemoController extends Controller
     public function showAll(ShowRequest $request): JsonResponse
     {
         $per_page = 15;
-        if($request->has('per_page')) {
+        if ($request->has('per_page')) {
             $per_page = $request->per_page;
         }
 
         $from = '';
         $to = '';
 
-        if($request->has('from') && $request->has('to')) {
+        if ($request->has('from') && $request->has('to')) {
             $from = $request->from;
             $to = $request->to;
         }
@@ -159,29 +160,46 @@ class DrcrMemoController extends Controller
         }
     }
 
-    public function reportFiltered(Request $request) {
-    return $this->drcrMemoService->reportFiltered($request->all());
+    public function reportFiltered(Request $request)
+    {
+        return $this->drcrMemoService->reportFiltered($request->all());
     }
 
-    public function reportFilteredPending(Request $request) {
+    public function reportFilteredPending(Request $request)
+    {
         $attr = $request->all();
         $attr['user_id'] = request()->user()->id;
         $attr['is_pending_only'] = true;
         return $this->drcrMemoService->reportFiltered($attr);
     }
 
-    public function reportFilteredPerUser(Request $request) {
+    public function reportFilteredPerUser(Request $request)
+    {
         $attr = $request->all();
         $attr['is_pending_only'] = true;
         return $this->drcrMemoService->reportFiltered($attr);
     }
 
-    public function updatedReportFilteredPerUser(Request $request) {
+    public function updatedReportFilteredPerUser(Request $request)
+    {
         return $this->drcrMemoService->reportFilteredPerUser($request->all(), true);
     }
 
-    public function updatedReportFilteredAll(Request $request) {
+    public function updatedReportFilteredAll(Request $request)
+    {
         return $this->drcrMemoService->reportFilteredPerUser($request->all(), false);
     }
 
+    /**
+     * Batch Upload Drcr memo
+     *
+     * @param DrcrMemoRequest $request
+     * @return JsonResponse
+     */
+    public function batchUpload(DrcrMemoBatchUploadRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $response = $this->drcrMemoService->batchUpload($request->user(), $data['file']);
+        return $this->responseService->successResponse($response, SuccessMessages::success);
+    }
 }

@@ -3,28 +3,32 @@
 
 namespace App\Services\Transaction;
 
-use App\Exports\TransactionReport\TransactionReport;
-use App\Exports\UserTransaction\UserTransactionHistoryExport;
+use PDF;
+use Carbon\Carbon;
 use App\Models\UserAccount;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Repositories\UserBalance\IUserBalanceRepository;
-use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\AddMoney\UBP\IUbpAddMoneyService;
-use App\Services\AddMoneyV2\IAddMoneyService;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Traits\Errors\WithUserErrors;
+use Illuminate\Support\Facades\Storage;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
-use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
 use App\Services\Utilities\CSV\ICSVService;
+use App\Services\AddMoneyV2\IAddMoneyService;
+use App\Services\AddMoney\UBP\IUbpAddMoneyService;
+use App\Exports\TransactionReport\TransactionReport;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserBalance\IUserBalanceRepository;
+use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
+use App\Exports\UserTransaction\UserTransactionHistoryExport;
 use App\Services\Utilities\Notifications\Email\IEmailService;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
-use PDF;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 
 class TransactionService implements ITransactionService
 {
+
+    use WithUserErrors;
+
     private IUserBalanceRepository $userBalanceRepository;
     private IUserTransactionHistoryRepository $userTransactionHistoryRepository;
     private ICSVService $csvService;
@@ -195,12 +199,36 @@ class TransactionService implements ITransactionService
     }
 
     public function generateTransactionHistoryByEmail(array $attr) {
+
+        // validate by date created
+        if(request()->user()) {
+            $dateAccountCreated = Carbon::parse(Carbon::parse(request()->user()->created_at)->format('Y-m-d'));
+            if($dateAccountCreated) {
+                // BEFORE DATE CREATED VALIDATION
+                if(Carbon::parse($dateAccountCreated)->greaterThan(Carbon::parse($attr['from']))) {
+                    $this->dateFromBeforeDateCreated($dateAccountCreated->format('F d, Y'));
+                }
+                
+                if(Carbon::parse($dateAccountCreated)->greaterThan(Carbon::parse($attr['to']))) {
+                    $this->dateToBeforeDateCreated($dateAccountCreated->format('F d, Y'));
+                }
+                
+                // MUST BE LESS THAN TODAY
+                if(Carbon::parse($attr['from'])->greaterThan(Carbon::now())  && Carbon::parse($dateAccountCreated)->lessThan(Carbon::parse($attr['from']))) {
+                    $this->dateFromBeforeDateToday(Carbon::now()->format('F d, Y'));
+                }
+
+                if(Carbon::parse($attr['to'])->greaterThan(Carbon::now()) && Carbon::parse($dateAccountCreated)->lessThan(Carbon::parse($attr['to']))) {
+                    $this->dateToBeforeDateToday(Carbon::now()->format('F d, Y'));
+                }
+
+            }
+        }
+        dd('awdawd');
         $records = $this->userTransactionHistoryRepo->getFilteredTransactionHistory($attr['auth_user'], $attr['from'], $attr['to']);
         $fileName = $attr['from'] . "-" . $attr['to'] . ".pdf";
         $user = $this->userDetailRepository->getByUserId($attr['auth_user']);
         $password = Carbon::parse($user->birth_date)->format('mdY');
-        // dd($password);
-        // dd($records);
         $this->emailService->sendUserTransactionHistory($attr['email'], $records->toArray(), $fileName, $user->first_name, $attr['from'], $attr['to'], $password);
         return;
     }

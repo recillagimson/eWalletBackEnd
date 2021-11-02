@@ -138,8 +138,15 @@ class UBPService implements IUBPService
     ): Response {
         $headers = $this->getAuthorizationHeaders();
 
+        // ALTER REF NO FOR STAGING AND DEVSITE
+        // IMPLEMENT THIS TO PREVENT DUPLICATE REFNO
+        // WILL NOT TAKE EFFECT ON PROD
+        if (env('APP_ENV') == 'staging' || env('APP_ENV') == 'local') {
+            $refNo = $refNo . str_replace('-', '', Str::random(6));
+        }
+
         $data = [
-            "senderRefId" => $refNo . 'DEV001',
+            "senderRefId" => $refNo,
             "tranRequestDate" => $transactionDate,
             "sender" => [
                 "name" => $this->formatName($fromFullName),
@@ -149,7 +156,10 @@ class UBPService implements IUBPService
                     "city" => " ",
                     "province" => " ",
                     "zipCode" => $zipCode,
-                    "country" => "PH"
+                    // CHANGE THIS FROM PH to 204
+                    // AS REQUESTED BY UBP SUPPORT
+                    // "country" => "PH"
+                    "country" => 204
                 ]
             ],
             "beneficiary" => [
