@@ -46,6 +46,7 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
     private IEmailService $emailService;
     private ISmsService $smsService;
     private IUserBalanceInfoRepository $userBalanceInfo;
+    private IUserAccountRepository $userAccountRepository;
 
     public function __construct(InAddMoneyCebuana $model,
                                 ITransactionValidationService $transactionValidationService,
@@ -57,7 +58,8 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
                                 IServiceFeeRepository $serviceFeeRepository,
                                 IEmailService $emailService,
                                 ISmsService $smsService,
-                                IUserBalanceInfoRepository $userBalanceInfo
+                                IUserBalanceInfoRepository $userBalanceInfo,
+                                IUserAccountRepository $userAccountRepository
                                 )
     {
         parent::__construct($model);
@@ -71,6 +73,7 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
         $this->emailService = $emailService;
         $this->smsService = $smsService;
         $this->userBalanceInfo = $userBalanceInfo;
+        $this->userAccountRepository = $userAccountRepository;
     }
 
     public function addMoney($userId, array $data)
@@ -182,12 +185,16 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
         if($amount > (Double)$attr['amount']) {
             throw $this->higherThanMaximumAmount();
         }
+        $userAccount = $this->userAccountRepository->get($record->user_account_id);
+        $serviceFee = $this->serviceFeeRepository->getByTierAndTransCategory($userAccount->tier_id, TransactionCategoryIds::cashinBPI);
 
         \DB::beginTransaction();
         try {
             $this->addMoneyCebuanaRepository->update($record, [
                 'amount' => $attr['amount'],
-                'status' => 'SUCCESS'
+                'status' => 'SUCCESS',
+                'service_fee_id' => $serviceFee ? $serviceFee->id : "",
+                'service_fee' => $serviceFee ? $serviceFee->amount : 0
             ]);
 
             // UPDATE USER BALANCE
