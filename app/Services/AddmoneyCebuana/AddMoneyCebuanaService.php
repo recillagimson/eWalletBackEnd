@@ -2,6 +2,7 @@
 
 namespace App\Services\AddmoneyCebuana;
 
+use App\Enums\Cebuana;
 use Exception;
 use Carbon\Carbon;
 use App\Traits\UserHelpers;
@@ -30,6 +31,7 @@ use App\Repositories\InAddMoneyCebuana\IInAddMoneyCebuanaRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
+use PhpParser\Node\Expr\Cast\Double;
 
 class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaService
 {
@@ -187,6 +189,11 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
         }
         $userAccount = $this->userAccountRepository->get($record->user_account_id);
         $serviceFee = $this->serviceFeeRepository->getByTierAndTransCategory($userAccount->tier_id, TransactionCategoryIds::cashinBPI);
+        $serviceFeeAmount = Cebuana::serviceFeeDefault;
+
+        if((Double) $attr['amount'] >= Cebuana::serviceFeeMinForPercentage) {
+            $serviceFeeAmount = (Double) $attr['amount'] * (Double) Cebuana::serviceFeePercentage;
+        }
 
         \DB::beginTransaction();
         try {
@@ -194,7 +201,7 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
                 'amount' => $attr['amount'],
                 'status' => 'SUCCESS',
                 'service_fee_id' => $serviceFee ? $serviceFee->id : "",
-                'service_fee' => $serviceFee ? $serviceFee->amount : 0
+                'service_fee' => $serviceFeeAmount
             ]);
 
             // UPDATE USER BALANCE
