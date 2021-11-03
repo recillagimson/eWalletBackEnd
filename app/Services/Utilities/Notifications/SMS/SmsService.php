@@ -242,4 +242,9 @@ class SmsService implements ISmsService
         
     }
 
+    public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber) {
+        $content = "Thank you for using Squidpay Add Money. You have successfully added " . $amount . " to your Squidpay wallet on " . $transactionDateTime ." with Reference Number " . $referenceNumber . ".";
+        $this->sendMessages($to, $content);
+    } 
+
 }

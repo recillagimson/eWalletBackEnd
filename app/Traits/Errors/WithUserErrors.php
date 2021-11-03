@@ -93,6 +93,22 @@ trait WithUserErrors
         return $this->validationErrorMessage(ErrorCodes::dateFromBeforeDateCreated, 'Date From must be equal or greater than ' . $dateCreated);
     }
 
+    public function referenceNumberNotFound() {
+        return $this->validationErrorMessage(ErrorCodes::cebuanaReferenceNumberNotFound, 'Reference Number not found');
+    }
+
+    public function referenceNumberExpired() {
+        return $this->validationErrorMessage(ErrorCodes::referenceNumberExpired, 'Reference Number expired');
+    }
+
+    public function lowerThanMinimumAmount() {
+        return $this->validationErrorMessage(ErrorCodes::lowerThanMinimumAmount, 'Amount lower than minimum amount');
+    }
+
+    public function higherThanMaximumAmount() {
+        return $this->validationErrorMessage(ErrorCodes::higherThanMaximumAmount, 'Amount higher than maximum amount');
+    }
+    
     public function dateToBeforeDateCreated(string $dateCreated) {
         return $this->validationErrorMessage(ErrorCodes::dateToBeforeDateCreated, 'Date To must be equal or greater than ' . $dateCreated);
     }

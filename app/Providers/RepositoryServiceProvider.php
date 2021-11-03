@@ -109,9 +109,11 @@ use App\Repositories\ReferenceCounter\ReferenceCounterRepository;
 use App\Repositories\Address\Municipality\IMunicipalityRepository;
 use App\Repositories\InReceiveFromDBP\IInReceiveFromDBPRepository;
 use App\Repositories\ReferenceCounter\IReferenceCounterRepository;
+use App\Repositories\InAddMoneyCebuana\InAddMoneyCebuanaRepository;
 use App\Repositories\UserAccountNumber\UserAccountNumberRepository;
 use App\Repositories\UserUtilities\SignupHost\SignupHostRepository;
 use App\Repositories\UserUtilities\UserDetail\UserDetailRepository;
+use App\Repositories\InAddMoneyCebuana\IInAddMoneyCebuanaRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
 use App\Repositories\UserUtilities\SignupHost\ISignupHostRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
@@ -137,6 +139,8 @@ use App\Repositories\UserTransactionHistory\UserTransactionHistoryRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\PreferredCashOutPartner\PreferredCashOutPartnerRepository;
 use App\Repositories\PreferredCashOutPartner\IPreferredCashOutPartnerRepository;
+use App\Repositories\WhiteList\IWhiteListRepository;
+use App\Repositories\WhiteList\WhiteListRepository;
 use App\Repositories\DrcrMemoControlNumber\DrcrMemoControlNumberRepository;
 use App\Repositories\DrcrMemoControlNumber\IDrcrMemoControlNumberRepository;
 
@@ -297,6 +301,10 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IMerchantAccountRepository::class, MerchantAccountRepository::class);
         // FACE AUTH
         $this->app->bind(IFaceAuthRepository::class, FaceAuthRepository::class);
+        // CEBUANA
+        $this->app->bind(IInAddMoneyCebuanaRepository::class, InAddMoneyCebuanaRepository::class);
+        // WHITE LISTING
+        $this->app->bind(IWhiteListRepository::class, WhiteListRepository::class);
     }
 
     /**

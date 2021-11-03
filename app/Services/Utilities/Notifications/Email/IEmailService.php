@@ -21,4 +21,6 @@ interface IEmailService extends INotificationService
     public function sendLoanReferenceNumber(string $firstName, string $refNo, string $to);
 
     public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password);
+
+    public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber);
 }

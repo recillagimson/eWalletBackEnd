@@ -28,6 +28,7 @@ use App\Models\UserUtilities\UserDetail;
 use App\Mail\TierUpgrade\KYCNotification;
 use App\Mail\Send2Bank\SenderNotification;
 use App\Mail\PayBills\PayBillsNotification;
+use App\Mail\Cebuana\CebuanaConfirmationMail;
 use App\Mail\Farmers\BatchUploadNotification;
 use App\Mail\Merchant\MerchantAccountCreated;
 use App\Mail\SendMoney\SendMoneyVerification;
@@ -38,9 +39,9 @@ use App\Mail\TierApproval\TierUpgradeRequestApproved;
 use App\Mail\TierUpgrade\UpgradeToSilverNotification;
 use App\Mail\SendMoney\SendMoneyRecipientNotification;
 use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Mail\UserTransactionMail\UserTransactionHistoryMail;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
-use App\Mail\UserTransactionMail\UserTransactionHistoryMail;
 
 class EmailService implements IEmailService
 {
@@ -341,5 +342,11 @@ class EmailService implements IEmailService
 
         $template = new UserTransactionHistoryMail($subject, $records, $fileName, $firstName, Carbon::parse($from)->format('F d, Y'), Carbon::parse($dateTo)->format('F d, Y'), Carbon::now()->format('m/d/Y'));
         $this->sendMessage($to, $subject, $template, $pdf->output(), $fileName);
-    }    
+    }
+
+    public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber) {
+        $subject = "Confirmation Message - Squidpay Cash In";
+        $template = new CebuanaConfirmationMail($firstName, $fullName, $accountNumber, $transactionDateTime, $addMoneyPartnerReferenceNumber, $amount, $referenceNumber);
+        $this->sendMessage($to, $subject, $template);
+    }
 }
