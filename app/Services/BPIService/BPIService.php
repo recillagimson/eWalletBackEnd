@@ -253,6 +253,28 @@ class BPIService implements IBPIService
     }
 
     public function process(array $params, string $authUser) {
+
+        $record = $this->bpiRepository->create(
+            [
+                "user_account_id" => request()->user()->id,
+                "reference_number" => $params['refId'],
+                "amount" => $params['amount'],
+                "service_fee_id" => null, // UPDATE AFTER REQUEST
+                "service_fee" => 0,
+                "total_amount" => $params['amount'],
+                "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
+                "transaction_category_id" => TransactionCategoryIds::cashinBPI,
+                "transaction_remarks" => $params['remarks'],
+                "status" => "PENDING", // UPDATE AFTER REQUEST
+                "bpi_reference" => $params['transactionId'],
+                "transaction_response" => null, // UPDATE AFTER REQUEST
+                "account_number" => $params['accountNumber'],
+                "user_created" => request()->user()->id,
+                "user_updated" => request()->user()->id,
+                "bank_name" => isset($response_raw['iss']) ? $response_raw['iss'] : '',
+            ]
+        );
+
         DB::beginTransaction();
         $error = '';
         try {
@@ -289,10 +311,31 @@ class BPIService implements IBPIService
                         if(config('bpi.BPI_426') == $response_raw['code'] || config('bpi.BPI_4262') == $response_raw['code']) {
                             $error = $response_raw['code'];
                         }
+
+
+                        // HANDLE BPI ERROR
+                        // UPDATE TRANSACTION
+                        $this->bpiRepository->update($record, [
+                            'status' => 'ERROR',
+                            'transaction_response' => json_encode($response_raw),
+                        ]);
+
+                        \DB::commit();
+
                     } else {
                         $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
+
                         
                         $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
+                        // HANDLE BPI SUCCESS TRANSACTION
+                        // UPDATE TRANSACTION
+                        $this->bpiRepository->update($record, [
+                            'status' => 'SUCCESS',
+                            'transaction_response' => json_encode($response_raw),
+                            'service_fee_id' => $serviceFee ? $serviceFee->id : null,
+                            'service_fee' => $serviceFee ? $serviceFee->amount : 0
+                        ]);
+
                        // $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee; 
                        // Wilson please fix the amount of service fee
 
@@ -319,27 +362,6 @@ class BPIService implements IBPIService
                             'user_created' => request()->user()->id
                         ]);
                         
-                        
-                        $this->bpiRepository->create(
-                            [
-                                "user_account_id" => request()->user()->id,
-                                "reference_number" => $params['refId'],
-                                "amount" => $params['amount'],
-                                "service_fee_id" => $serviceFee ? $serviceFee->id : null,
-                                "service_fee" => 0,
-                                "total_amount" => $params['amount'],
-                                "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
-                                "transaction_category_id" => TransactionCategoryIds::cashinBPI,
-                                "transaction_remarks" => $params['remarks'],
-                                "status" => $response_raw['status'],
-                                "bpi_reference" => $params['transactionId'],
-                                "transaction_response" => json_encode($response_raw),
-                                "account_number" => $params['accountNumber'],
-                                "user_created" => request()->user()->id,
-                                "user_updated" => request()->user()->id,
-                                "bank_name" => isset($response_raw['iss']) ? $response_raw['iss'] : '',
-                            ]
-                        );
                         DB::commit();
                         return $response_raw;
                     }
@@ -354,6 +376,14 @@ class BPIService implements IBPIService
         } catch (Exception $e) {
             \Log::error($e);
             DB::rollback();
+
+            // HANDLE BPI ERROR
+                        // UPDATE TRANSACTION
+            $this->bpiRepository->update($record, [
+                'status' => 'ERROR',
+                'transaction_response' => json_encode($e->getMessage()),
+            ]);
+            
             // THROW ERROR
             if($error != '') {
                 if(config('bpi.BPI_426') == $response_raw['code'] || config('bpi.BPI_4262') == $response_raw['code']) {
