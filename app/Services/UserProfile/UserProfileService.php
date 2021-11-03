@@ -307,31 +307,35 @@ class UserProfileService implements IUserProfileService
                         $idPhoto = $this->userPhotoRepository->get($attr['id_photos_ids']['0']);
                         $selfiePhoto = $this->selfiePhotoRepository->get($attr['id_selfie_ids']['0']);
 
-                        $selfie = Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30));
-                        $nid = Storage::disk('s3')->temporaryUrl($idPhoto->photo_location, Carbon::now()->addMinutes(30));
+                        if($idPhoto && $selfiePhoto) {
+                            $selfie = Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30));
+                            $nid = Storage::disk('s3')->temporaryUrl($idPhoto->photo_location, Carbon::now()->addMinutes(30));
 
-                        if($idPhoto && $idPhoto->id_number) {
-                            $res = $this->kycService->verify([
-                                'dob' => $attr['birth_date'],
-                                'name' => $attr['first_name'] . " " . $attr['last_name'],
-                                'id_number' => $idPhoto->id_number,
-                                'user_account_id' => request()->user()->id,
-                                'selfie' => $selfie,
-                                'nid_front' => $nid
-                            ], false);
-                            $dedup_responses = $res;
+                            if($idPhoto && $idPhoto->id_number) {
+                                $res = $this->kycService->verify([
+                                    'dob' => $attr['birth_date'],
+                                    'name' => $attr['first_name'] . " " . $attr['last_name'],
+                                    'id_number' => $idPhoto->id_number,
+                                    'user_account_id' => request()->user()->id,
+                                    'selfie' => $selfie,
+                                    'nid_front' => $nid
+                                ], false);
+                                $dedup_responses = $res;
 
-                            if($res->hv_result == 'failure') {
-                                $tierApproval->update([
-                                    'status' => 'PENDING'
-                                ]);
+                                if($res->hv_result == 'failure') {
+                                    $tierApproval->update([
+                                        'status' => 'PENDING'
+                                    ]);
+                                }
+
+                            } else {
+                                $dedup_responses = [
+                                    'message' => 'No ID number',
+                                    'user_id_photo' => $idPhoto->id,
+                                ];
                             }
-
                         } else {
-                            $dedup_responses = [
-                                'message' => 'No ID number',
-                                'user_id_photo' => $idPhoto->id,
-                            ];
+                            $this->updateProfileIdOrSelfieNotFound();
                         }
                     }
                 // }
@@ -353,6 +357,8 @@ class UserProfileService implements IUserProfileService
             $returnableData['dedup_responses'] = $dedup_responses;
             return $returnableData;
         } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            \Log::error(json_encode($e));
             throw $e;
         }
     }
