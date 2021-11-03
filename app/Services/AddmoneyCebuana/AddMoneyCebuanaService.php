@@ -189,11 +189,14 @@ class AddMoneyCebuanaService extends Repository implements IAddMoneyCebuanaServi
         }
         $userAccount = $this->userAccountRepository->get($record->user_account_id);
         $serviceFee = $this->serviceFeeRepository->getByTierAndTransCategory($userAccount->tier_id, TransactionCategoryIds::cashinBPI);
-        $serviceFeeAmount = Cebuana::serviceFeeDefault;
+        $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
+        
+        
+        // Cebuana::serviceFeeDefault;
 
-        if((Double) $attr['amount'] >= Cebuana::serviceFeeMinForPercentage) {
-            $serviceFeeAmount = (Double) $attr['amount'] * (Double) Cebuana::serviceFeePercentage;
-        }
+        // if((Double) $attr['amount'] >= Cebuana::serviceFeeMinForPercentage) {
+        //     $serviceFeeAmount = (Double) $attr['amount'] * (Double) Cebuana::serviceFeePercentage;
+        // }
 
         \DB::beginTransaction();
         try {
