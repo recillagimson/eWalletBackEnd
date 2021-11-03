@@ -306,8 +306,8 @@ class UserTransactionHistoryRepository extends Repository implements IUserTransa
 
     public function getFilteredTransactionHistory(string $authUser, string $from, string $to) {
         return DRCRBalance::with([])
-        ->where('original_transaction_date', '>=', $from)
-        ->where('original_transaction_date', '<=', $to)
+        ->whereDate('original_transaction_date', '>=', $from)
+        ->whereDate('original_transaction_date', '<=', $to)
         ->where('user_account_id', $authUser)
         ->get();
     }
