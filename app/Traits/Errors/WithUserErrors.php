@@ -104,4 +104,8 @@ trait WithUserErrors
     public function dateToBeforeDateToday(string $today) {
         return $this->validationErrorMessage(ErrorCodes::dateToBeforeDateToday, 'Date To must be less than or equal ' . $today);
     }
+
+    public function updateProfileIdOrSelfieNotFound() {
+        return $this->validationErrorMessage(ErrorCodes::updateProfileIdOrSelfieNotFound, 'Id or Selfie Photo not found');
+    }
 }
