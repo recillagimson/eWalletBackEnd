@@ -117,7 +117,7 @@ class VerificationService implements IVerificationService
         $recordsCreated = [];
 
         // PROCESS IDS
-        foreach($data['id_photos'] as $idPhoto) {
+        foreach($data['id_photos'] as $index => $idPhoto) {
             // Get file extension name
             $extName = $this->getFileExtensionName($idPhoto);
             // Generate new file name
@@ -134,8 +134,13 @@ class VerificationService implements IVerificationService
             ]);
 
             // Init eKYC OCR
-            $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
-            $extractData = $this->extractData($eKYC, $idType->type);
+            $extractData = [];
+
+            // EXECUTE ONLY ON FIRST PHOTO FRONT
+            if($index == 0) {
+                $eKYC = $this->getHVResponse($idPhoto, $data['id_type_id']);
+                $extractData = $this->extractData($eKYC, $idType->type);
+            }
 
             $params = [
                 'user_account_id' => $data['user_account_id'],
@@ -147,6 +152,7 @@ class VerificationService implements IVerificationService
                 'tier_approval_id' => $tierApproval->id,
                 'remarks' => isset($data['remarks']) ? $data['remarks'] : ""
             ];
+
             $record = $this->userPhotoRepository->create($params);
 
             if(isset($data['remarks'])) {
