@@ -28,6 +28,8 @@ class TransactionCategoryIds
 
     const addMoneyCebuana = 'edj4d5d0-9255-11eb-9663-1c1b0d14e218';
 
+    const adMoneyEcPay = 'edj4d5d0-9234-11eb-9663-1c1b0d14e218';
+
     const cashinTransactions = [
         self::posAddFunds,
         self::cashinDragonPay,

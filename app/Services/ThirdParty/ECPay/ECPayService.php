@@ -151,7 +151,7 @@ class ECPayService implements IECPayService
 
     private function createOrUpdateTransaction(array $data, array $inputData, object $user, string $refNo, string $expirationDate="") {
         $isDataExisting = $this->addMoneyEcPayRepository->getDataByReferenceNumber($refNo);
-        $transCategoryId = $this->transactionCategoryRepository->getById(TransactionCategoryIds::sendMoneyToSquidPayAccount);
+        $transCategoryId = $this->transactionCategoryRepository->getById(TransactionCategoryIds::adMoneyEcPay);
 
         if($isDataExisting) {
             $amount = $isDataExisting->amount;
