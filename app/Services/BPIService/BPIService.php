@@ -264,10 +264,10 @@ class BPIService implements IBPIService
                 "total_amount" => $params['amount'],
                 "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
                 "transaction_category_id" => TransactionCategoryIds::cashinBPI,
-                "transaction_remarks" => $params['remarks'],
+                "transaction_remarks" => isset($params['remarks']) ? $params['remarks'] : '',
                 "status" => "PENDING", // UPDATE AFTER REQUEST
                 "bpi_reference" => $params['transactionId'],
-                "transaction_response" => null, // UPDATE AFTER REQUEST
+                "transaction_response" => json_encode(["status" => "pending"]), // UPDATE AFTER REQUEST
                 "account_number" => $params['accountNumber'],
                 "user_created" => request()->user()->id,
                 "user_updated" => request()->user()->id,
