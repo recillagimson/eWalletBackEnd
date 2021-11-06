@@ -122,6 +122,7 @@ class DragonPayService implements IAddMoneyService
      * @param UserAccount $user
      * @param array $urlParams
      * @return array|mixed
+     * @throws ValidationException
      */
     public function addMoney(UserAccount $user, array $urlParams): array
     {
@@ -570,7 +571,7 @@ class DragonPayService implements IAddMoneyService
                 case 'F':
                     $statusShouldBe = DragonPayStatusTypes::Failure;
                     break;
-                    
+
                 case 'A':
                 case 'U':
                 case 'P':
