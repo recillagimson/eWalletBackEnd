@@ -530,10 +530,11 @@ class DrcrMemoService implements IDrcrMemoService
             Excel::store(new DRCRBulkErrorList($failData), $exportName, 's3');
 
             $temp_url = $this->s3TempUrl($exportName);
-            return [
+
+            throw ValidationException::withMessages([
                 'temp_url' => $temp_url,
                 'data' => $failData
-            ];
+            ]);
         }
     }
 }
