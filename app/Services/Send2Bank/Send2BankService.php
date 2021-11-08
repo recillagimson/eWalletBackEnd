@@ -188,9 +188,7 @@ class Send2BankService implements ISend2BankService
             $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
             $totalAmount = $data['amount'] + $serviceFeeAmount;
 
-            $this->transactionValidationService->checkUserBalance($user, $totalAmount );
-
-
+            $this->transactionValidationService->checkUserBalance($user, $totalAmount);
 
             $userFullName = ucwords($user->profile->full_name);
             $recipientFullName = ucwords($data['account_name'] ?: $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
@@ -314,6 +312,5 @@ class Send2BankService implements ISend2BankService
         $this->logHistories->logUserHistory($userId, $refNo, $spModule,
             null, $logDate, $remarks, $operation);
     }
-
 
 }

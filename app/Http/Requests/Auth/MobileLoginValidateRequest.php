@@ -26,7 +26,7 @@ class MobileLoginValidateRequest extends FormRequest
     {
         return [
             'mobile_number' => [
-                'required_without:email',
+                'required_without:email:rfc,dns',
                 'max:11',
                 new MobileNumber()
             ],
