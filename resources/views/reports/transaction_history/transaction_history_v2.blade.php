@@ -89,10 +89,10 @@
                 {{ $record['reference_number'] }}
             </td>
             <td>
-                {{ $record['type'] == 'DR' ?  number_format($record['total_amount'], 2) : '' }}
+                {{ $record['transaction_type'] == 'DR' ?  number_format($record['total_amount'], 2) : '' }}
             </td>
             <td>
-                {{ $record['type'] == 'CR' ?  number_format($record['total_amount'], 2) : '' }}
+                {{ $record['transaction_type'] == 'CR' ?  number_format($record['total_amount'], 2) : '' }}
             </td>
             <td>
                 {{ number_format($record['available_balance'], 2) }}
