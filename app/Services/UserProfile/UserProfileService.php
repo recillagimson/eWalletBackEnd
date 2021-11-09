@@ -357,6 +357,7 @@ class UserProfileService implements IUserProfileService
             $returnableData['dedup_responses'] = $dedup_responses;
             return $returnableData;
         } catch (\Exception $e) {
+            \DB::rollBack();
             \Log::error($e->getMessage());
             \Log::error(json_encode($e));
             throw $e;
