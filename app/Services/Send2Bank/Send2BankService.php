@@ -204,6 +204,11 @@ class Send2BankService implements ISend2BankService
 
             if (!$send2Bank) $this->transactionFailed();
 
+            $balanceInfo = $user->balanceInfo;
+            $balanceInfo->available_balance -= $totalAmount;
+            $balanceInfo->pending_balance += $totalAmount;
+            $balanceInfo->save();
+
             $data['sender_first_name'] = $user->profile->first_name;
             $data['sender_last_name'] = $user->profile->last_name;
             $data['refNo'] = $refNo;
@@ -222,17 +227,21 @@ class Send2BankService implements ISend2BankService
                 $send2Bank = $this->handleTransferResponse($send2Bank, $transferResponse);
             }
 
-            $balanceInfo = $user->balanceInfo;
-            $balanceInfo->available_balance -= $totalAmount;
-            if ($send2Bank->status === TransactionStatuses::pending) $balanceInfo->pending_balance += $totalAmount;
-            if ($send2Bank->status === TransactionStatuses::failed) $balanceInfo->available_balance += $totalAmount;
+            if ($send2Bank->status === TransactionStatuses::success) {
+                $balanceInfo->pending_balance -= $totalAmount;
+            }
+
+            if ($send2Bank->status === TransactionStatuses::failed) {
+                $balanceInfo->available_balance += $totalAmount;
+                $balanceInfo->pending_balance -= $totalAmount;
+            }
+
             $balanceInfo->save();
 
             DB::commit();
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             $this->logHistory($userId, $refNo, $currentDate, $totalAmount, $send2Bank->account_number);
 
-            if ($send2Bank->status === TransactionStatuses::failed) $this->transactionFailed();
             return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();

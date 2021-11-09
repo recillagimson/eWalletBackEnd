@@ -74,7 +74,15 @@ trait Send2BankHelpers
         if (!$response->successful()) {
             $errors = $response->json();
 
-            $send2Bank->status = TransactionStatuses::failed;
+            $errorResponse = $errors['errors'][0];
+            $errorCode = $errorResponse['code'];
+
+            if ($errorCode === UbpResponseCodes::processing || $errorCode === UbpResponseCodes::forConfirmation) {
+                $send2Bank->status = TransactionStatuses::pending;
+            } else {
+                $send2Bank->status = TransactionStatuses::failed;
+            }
+
             $send2Bank->transaction_response = json_encode($errors);
             $send2Bank->save();
 
@@ -244,7 +252,8 @@ trait Send2BankHelpers
             'service_fee' => $send2Bank->service_fee,
             'transaction_date' => $send2Bank->transaction_date,
             'remarks' => $send2Bank->remarks,
-            'particulars' => $send2Bank->particulars
+            'particulars' => $send2Bank->particulars,
+            'status' => $send2Bank->status
         ];
     }
 
