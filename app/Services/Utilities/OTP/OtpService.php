@@ -7,8 +7,8 @@ use App\Repositories\OtpRepository\IOtpRepository;
 use App\Traits\Errors\WithAuthErrors;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Log;
 
 class OtpService implements IOtpService
 {
@@ -131,6 +131,7 @@ class OtpService implements IOtpService
         }
 
         $otp->increment('no_times_generated');
+        Log::debug('OTP Generated: ', $otp);
 
         return (object) [
             'status' => true,
