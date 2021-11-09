@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<h2>Hi Squidee! Here is your Transaction Receipt</h2>
+<h2>Here is your Send to Bank Transaction Receipt Details:</h2>
 <table style="border: 0">
     <tr>
         <td>Amount Transferred:</td>
