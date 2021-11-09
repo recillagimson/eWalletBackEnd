@@ -40,7 +40,7 @@
     </tr>
 
     <tr>
-        <td>{{ $provider }} Remittance ID:</td>
+        <td>Remittance ID:</td>
         <th>{{ $remittanceId }}</th>
     </tr>
 </table>
