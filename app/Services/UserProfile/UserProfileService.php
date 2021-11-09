@@ -311,7 +311,7 @@ class UserProfileService implements IUserProfileService
                             $selfie = Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30));
                             $nid = Storage::disk('s3')->temporaryUrl($idPhoto->photo_location, Carbon::now()->addMinutes(30));
 
-                            if($idPhoto && $idPhoto->id_number) {
+                            if($idPhoto && $idPhoto->id_number && $idPhoto->is_ekyc == 1) {
                                 $res = $this->kycService->verify([
                                     'dob' => $attr['birth_date'],
                                     'name' => $attr['first_name'] . " " . $attr['last_name'],
