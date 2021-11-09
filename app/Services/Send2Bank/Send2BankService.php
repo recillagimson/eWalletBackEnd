@@ -175,6 +175,7 @@ class Send2BankService implements ISend2BankService
     public function fundTransfer(string $userId, array $data, bool $requireOtp = true): array
     {
         $updateReferenceCounter = false;
+        $rollBackTransactions = true;
 
         try {
             DB::beginTransaction();
@@ -263,12 +264,17 @@ class Send2BankService implements ISend2BankService
             $balanceInfo->save();
 
             DB::commit();
+
             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             $this->logHistory($userId, $refNo, $currentDate, $totalAmount, $send2Bank->account_number);
 
+            if ($send2Bank->status === TransactionStatuses::failed) {
+                $rollBackTransactions = false;
+                $this->transactionFailed();
+            }
             return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
-            DB::rollBack();
+            if ($rollBackTransactions) DB::rollBack();
 
             if ($updateReferenceCounter === true)
                 $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
