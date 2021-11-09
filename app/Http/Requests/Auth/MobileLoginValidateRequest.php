@@ -26,11 +26,11 @@ class MobileLoginValidateRequest extends FormRequest
     {
         return [
             'mobile_number' => [
-                'required_without:email:rfc,dns',
+                'required_without:email',
                 'max:11',
                 new MobileNumber()
             ],
-            'email' => 'required_without:mobile_number|max:50|email|exists:user_accounts',
+            'email' => 'required_without:mobile_number|max:50|email:rfc,dns|exists:user_accounts',
         ];
     }
 }
