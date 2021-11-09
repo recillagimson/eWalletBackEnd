@@ -109,12 +109,15 @@ class OtpService implements IOtpService
         $otp = $this->otps->getByIdentifier($identifier);
 
         if ($otp == null) {
-            $otp = $this->otps->create([
+            $data = [
                 'identifier' => $identifier,
                 'token' => $this->createPin(),
                 'validity' => $this->validity,
                 'generated_at' => Carbon::now(),
-            ]);
+            ];
+
+            $otp = $this->otps->create($data);
+            Log::debug('OTP Generated: ', $data);
         } else {
             $data = [
                 'identifier' => $identifier,
@@ -124,6 +127,7 @@ class OtpService implements IOtpService
             ];
 
             $this->otps->update($otp, $data);
+            Log::debug('OTP Updated: ', $data);
         }
 
         if ($otp->no_times_generated == $this->maximumOtpsAllowed) {
@@ -131,7 +135,6 @@ class OtpService implements IOtpService
         }
 
         $otp->increment('no_times_generated');
-        Log::debug('OTP Generated: ', $otp);
 
         return (object) [
             'status' => true,

@@ -20,7 +20,6 @@ use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\NewAccessToken;
 
 class AuthService implements IAuthService
@@ -225,12 +224,6 @@ class AuthService implements IAuthService
 
         $recipientName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
         $otp = $this->generateOTP($otpType, $user->id, $user->otp_enabled);
-
-        Log::debug('Generated OTP For User: ', [
-            'recipientName' => $recipientName,
-            'userId' => $user->id,
-            'otp' => $otp
-        ]);
 
         if (App::environment('local') || !$user->otp_enabled) return;
 
