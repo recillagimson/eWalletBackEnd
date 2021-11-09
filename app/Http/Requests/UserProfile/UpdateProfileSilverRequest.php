@@ -56,7 +56,7 @@ class UpdateProfileSilverRequest  extends FormRequest
             'source_of_fund_id'=>'required',
             'encoded_source_of_fund'=>Rule::requiredIf($this->source_of_fund_id === '0ed801a1-9131-11eb-b44f-1c1b0d14e211'),
             'mother_maidenname'=>'required',
-            'employer'=>['required', 'max:50', 'regex:/^[a-z\d\-_\s]+$/i'],
+            'employer'=>['required', 'max:50'],
             'contact_no'=>['required', 'max:11',  new MobileNumber()],
             //'ocr_response' => ['required']
            //'barangay' => 'required'

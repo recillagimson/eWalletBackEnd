@@ -134,7 +134,7 @@ class VerificationService implements IVerificationService
             ]);
 
             // Init eKYC OCR
-            $extractData = [];
+            $extractData = null;
 
             // EXECUTE ONLY ON FIRST PHOTO FRONT
             if($index == 0) {
