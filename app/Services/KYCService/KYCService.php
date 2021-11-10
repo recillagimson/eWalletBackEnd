@@ -447,6 +447,7 @@ class KYCService implements IKYCService
 
     public function verifyRequest(string $requestId): JsonResponse
     {
+        sleep(10);
         $record = $this->kycRepository->findByRequestId($requestId);
         if($record) {
             $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
