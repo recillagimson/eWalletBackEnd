@@ -9,6 +9,7 @@ use App\Traits\HasFileUploads;
 use App\Enums\SquidPayModuleTypes;
 use Illuminate\Support\Facades\DB;
 use App\Enums\TempUserDetailStatuses;
+use App\Repositories\IdType\IIdTypeRepository;
 use App\Traits\Errors\WithUserErrors;
 use Illuminate\Support\Facades\Storage;
 use App\Services\KYCService\IKYCService;
@@ -37,6 +38,7 @@ class UserProfileService implements IUserProfileService
     private ILogHistoryService $logHistoryService;
     private IKYCService $kycService;
     private IUserSelfiePhotoRepository $selfiePhotoRepository;
+    private IIdTypeRepository $idTypeRepo;
 
     public function __construct(IUserDetailRepository $userDetailRepository,
                                 IUserAccountRepository $userAccountRepository,
@@ -47,7 +49,8 @@ class UserProfileService implements IUserProfileService
                                 IVerificationService $verificationService,
                                 ILogHistoryService $logHistoryService,
                                 IKYCService $kycService,
-                                IUserSelfiePhotoRepository $selfiePhotoRepository)
+                                IUserSelfiePhotoRepository $selfiePhotoRepository,
+                                IIdTypeRepository $idTypeRepo)
     {
         $this->userAccountRepository = $userAccountRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -59,6 +62,7 @@ class UserProfileService implements IUserProfileService
         $this->logHistoryService = $logHistoryService;
         $this->kycService = $kycService;
         $this->selfiePhotoRepository = $selfiePhotoRepository;
+        $this->idTypeRepo = $idTypeRepo;
     }
 
     public function update(object $userAccount, array $details)
@@ -306,12 +310,13 @@ class UserProfileService implements IUserProfileService
                     if(isset($attr['id_selfie_ids']['0']) && isset($attr['id_selfie_ids']['0'])) {
                         $idPhoto = $this->userPhotoRepository->get($attr['id_photos_ids']['0']);
                         $selfiePhoto = $this->selfiePhotoRepository->get($attr['id_selfie_ids']['0']);
-
+                        
                         if($idPhoto && $selfiePhoto) {
+                            $idType = $this->idTypeRepo->get($idPhoto->id_type_id);
                             $selfie = Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30));
                             $nid = Storage::disk('s3')->temporaryUrl($idPhoto->photo_location, Carbon::now()->addMinutes(30));
 
-                            if($idPhoto && $idPhoto->id_number && $idPhoto->is_ekyc == 1) {
+                            if($idPhoto && $idPhoto->id_number && $idType->is_ekyc == 1) {
                                 $res = $this->kycService->verify([
                                     'dob' => $attr['birth_date'],
                                     'name' => $attr['first_name'] . " " . $attr['last_name'],
