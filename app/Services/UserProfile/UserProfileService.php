@@ -2,27 +2,30 @@
 
 namespace App\Services\UserProfile;
 
-use Carbon\Carbon;
 use App\Enums\AccountTiers;
-use App\Models\UserAccount;
-use App\Traits\HasFileUploads;
 use App\Enums\SquidPayModuleTypes;
-use Illuminate\Support\Facades\DB;
 use App\Enums\TempUserDetailStatuses;
+use App\Models\UserAccount;
 use App\Repositories\IdType\IIdTypeRepository;
-use App\Traits\Errors\WithUserErrors;
-use Illuminate\Support\Facades\Storage;
-use App\Services\KYCService\IKYCService;
-use App\Repositories\Tier\ITierRepository;
-use Illuminate\Validation\ValidationException;
 use App\Repositories\Tier\ITierApprovalRepository;
-use App\Repositories\UserPhoto\IUserPhotoRepository;
+use App\Repositories\Tier\ITierRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Repositories\UserPhoto\IUserPhotoRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
-use App\Services\Utilities\Verification\IVerificationService;
-use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
+use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\KYCService\IKYCService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
+use App\Services\Utilities\Verification\IVerificationService;
+use App\Traits\Errors\WithUserErrors;
+use App\Traits\HasFileUploads;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
+use Log;
+use Str;
 
 class UserProfileService implements IUserProfileService
 {
@@ -108,7 +111,7 @@ class UserProfileService implements IUserProfileService
         // GET EXT NAME
         $avatarPhotoExt = $this->getFileExtensionName($data['avatar_photo']);
         // GENERATE NEW FILE NAME
-        $avatarPhotoName = request()->user()->id . "/" . \Str::random(40) . "." . $avatarPhotoExt;
+        $avatarPhotoName = request()->user()->id . "/" . Str::random(40) . "." . $avatarPhotoExt;
         // PUT FILE TO STORAGE
         $avatarPhotoPath = $this->saveFile($data['avatar_photo'], $avatarPhotoName, 'avatar_photo');
         // SAVE AVATAR LOCATION ON USER DETAILS
@@ -310,7 +313,7 @@ class UserProfileService implements IUserProfileService
                     if(isset($attr['id_selfie_ids']['0']) && isset($attr['id_selfie_ids']['0'])) {
                         $idPhoto = $this->userPhotoRepository->get($attr['id_photos_ids']['0']);
                         $selfiePhoto = $this->selfiePhotoRepository->get($attr['id_selfie_ids']['0']);
-                        
+
                         if($idPhoto && $selfiePhoto) {
                             $idType = $this->idTypeRepo->get($idPhoto->id_type_id);
                             $selfie = Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30));
@@ -361,10 +364,10 @@ class UserProfileService implements IUserProfileService
             $returnableData = $addOrUpdate;
             $returnableData['dedup_responses'] = $dedup_responses;
             return $returnableData;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             \DB::rollBack();
-            \Log::error($e->getMessage());
-            \Log::error(json_encode($e));
+            Log::error($e->getMessage());
+            Log::error(json_encode($e));
             throw $e;
         }
     }

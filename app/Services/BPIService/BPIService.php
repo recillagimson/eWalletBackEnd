@@ -2,34 +2,33 @@
 
 namespace App\Services\BPIService;
 
-use DB;
-use Log;
-use Exception;
-use App\Enums\BPI;
-use Carbon\Carbon;
-use Tmilos\JoseJwt\Jwe;
-use Tmilos\JoseJwt\Jwt;
-use Illuminate\Support\Str;
-use App\Enums\SendMoneyConfig;
 use App\Enums\ReferenceNumberTypes;
-use Tmilos\JoseJwt\Jwe\JweAlgorithm;
-use Tmilos\JoseJwt\Jws\JwsAlgorithm;
+use App\Enums\SendMoneyConfig;
 use App\Enums\TransactionCategoryIds;
-use App\Traits\Errors\WithUserErrors;
-use Tmilos\JoseJwt\Jwe\JweEncryption;
-use Illuminate\Support\Facades\Storage;
-use App\Services\Utilities\API\IApiService;
-use Tmilos\JoseJwt\Context\DefaultContextFactory;
-use App\Repositories\ServiceFee\IServiceFeeRepository;
-use App\Services\BPIService\PackageExtension\Encryption;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
 use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\BPIService\PackageExtension\Encryption;
+use App\Services\Utilities\API\IApiService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Traits\Errors\WithUserErrors;
+use Carbon\Carbon;
+use DB;
+use Exception;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Log;
+use Tmilos\JoseJwt\Context\DefaultContextFactory;
+use Tmilos\JoseJwt\Jwe;
+use Tmilos\JoseJwt\Jwe\JweAlgorithm;
+use Tmilos\JoseJwt\Jwe\JweEncryption;
+use Tmilos\JoseJwt\Jws\JwsAlgorithm;
+use Tmilos\JoseJwt\Jwt;
 
 class BPIService implements IBPIService
 {
@@ -76,6 +75,7 @@ class BPIService implements IBPIService
         $this->smsService = $smsService;
         $this->emailService = $emailService;
         $this->notificationRepository = $notificationRepository;
+        $this->logHistory = $logHistory;
 
         $this->clientId = config('bpi.clientId');
         $this->clientSecret = config('bpi.clientSecret');
@@ -320,12 +320,12 @@ class BPIService implements IBPIService
                             'transaction_response' => json_encode($response_raw),
                         ]);
 
-                        \DB::commit();
+                        DB::commit();
 
                     } else {
                         $log = $this->transactionHistory->log(request()->user()->id, TransactionCategoryIds::cashinBPI, $params['transactionId'], $params['refId'], $params['amount'], Carbon::now(), request()->user()->id);
 
-                        
+
                         $serviceFee = $this->serviceFee->getByTierAndTransCategory($authUser, TransactionCategoryIds::cashinBPI);
                         // HANDLE BPI SUCCESS TRANSACTION
                         // UPDATE TRANSACTION
@@ -336,8 +336,8 @@ class BPIService implements IBPIService
                             'service_fee' => $serviceFee ? $serviceFee->amount : 0
                         ]);
 
-                       // $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee; 
-                       // Wilson please fix the amount of service fee
+                        // $serviceFeeAmount = $serviceFee ? $serviceFee->amount : BPI::serviceFee;
+                        // Wilson please fix the amount of service fee
 
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                         $cashInWithServiceFee = (Double)$params['amount'];
@@ -352,16 +352,16 @@ class BPIService implements IBPIService
                         }else {
                             // EMAIL USER FOR NOTIFICATION
                             $this->emailService->sendBPICashInNotification(request()->user()->email, request()->user()->profile, $total, $params['refId']);
-                        } 
+                        }
                         $dt = Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A');
                         $this->notificationRepository->create([
                             'title' => "SquidPay - Cash in via BPI",
                             'status' => '1',
-                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " . $dt . " . Service fee for this transaction is P 0.00. Your new balance is P " . number_format($total, 2) . " with reference no. " . $params['refId'] . ". Thank you for using SquidPay!",
+                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " . $dt . " . Service fee for this transaction is P 10.00. Your new balance is P " . number_format($total, 2) . " with reference no. " . $params['refId'] . ". Thank you for using SquidPay!",
                             'user_account_id' => request()->user()->id,
                             'user_created' => request()->user()->id
                         ]);
-                        
+
                         DB::commit();
                         return $response_raw;
                     }
@@ -374,7 +374,7 @@ class BPIService implements IBPIService
             }
             return $this->bpiTokenInvalid();
         } catch (Exception $e) {
-            \Log::error($e);
+            Log::error($e);
             DB::rollback();
 
             // HANDLE BPI ERROR
@@ -383,7 +383,7 @@ class BPIService implements IBPIService
                 'status' => 'ERROR',
                 'transaction_response' => json_encode($e->getMessage()),
             ]);
-            
+
             // THROW ERROR
             if($error != '') {
                 if(config('bpi.BPI_426') == $response_raw['code'] || config('bpi.BPI_4262') == $response_raw['code']) {
@@ -398,7 +398,8 @@ class BPIService implements IBPIService
 
     }
 
-    public function bpiEncodeJWT(array $payload) {
+    public function bpiEncodeJWT(array $payload)
+    {
         $factory = new DefaultContextFactory();
         $context = $factory->get();
         $pub = Storage::disk('local')->get('keys/squid.ph.key');
@@ -406,8 +407,8 @@ class BPIService implements IBPIService
         $token = Encryption::encode2($context, $payload, $pub, JwsAlgorithm::RS256, [
             "alg" => "RS256"
         ]);
-        \Log::info('///// - BPI Encode JWT - //////');
-        \Log::info(json_encode($token));
+        Log::info('///// - BPI Encode JWT - //////');
+        Log::info(json_encode($token));
         return $token;
     }
 
@@ -422,8 +423,8 @@ class BPIService implements IBPIService
             "enc" => "A128CBC-HS256",
             "cty" => "JWT"
         ]);
-        \Log::info('///// - BPI Encode JWE - //////');
-        \Log::info(json_encode($token));
+        Log::info('///// - BPI Encode JWE - //////');
+        Log::info(json_encode($token));
         return $token;
     }
 
@@ -437,8 +438,8 @@ class BPIService implements IBPIService
             $myPrivateKey = openssl_get_privatekey($pri, '');
 
             $payload = Jwe::decode($context, $payload, $myPrivateKey);
-            \Log::info('///// - BPI DECRYPTION JWE - //////');
-            \Log::info(json_encode($payload));
+            Log::info('///// - BPI DECRYPTION JWE - //////');
+            Log::info(json_encode($payload));
             return $payload;
         } catch (Exception $e) {
             Log::error('BPI: Invalid Private Key');
@@ -455,8 +456,8 @@ class BPIService implements IBPIService
         $partyPublicKey = openssl_get_publickey($pub);
 
         $payload = Jwt::decode($context, $payload, $partyPublicKey);
-        \Log::info('///// - BPI DECRYPTION JWT - //////');
-        \Log::info(json_encode($payload));
+        Log::info('///// - BPI DECRYPTION JWT - //////');
+        Log::info(json_encode($payload));
         return $payload;
     }
 }

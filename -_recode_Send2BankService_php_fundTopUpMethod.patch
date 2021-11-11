@@ -1,0 +1,82 @@
+Index: app/Services/Send2Bank/Send2BankService.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/Services/Send2Bank/Send2BankService.php b/app/Services/Send2Bank/Send2BankService.php
+--- a/app/Services/Send2Bank/Send2BankService.php	(revision 7326d5316e86ea2345fd58d7761b5248c508f3d1)
++++ b/app/Services/Send2Bank/Send2BankService.php	(revision 08aa0449162d286f79c606f9d7ff040b5f30e538)
+@@ -219,6 +219,11 @@
+ 
+             if (!$send2Bank) $this->transactionFailed();
+ 
++            $balanceInfo = $user->balanceInfo;
++            $balanceInfo->available_balance -= $totalAmount;
++            $balanceInfo->pending_balance += $totalAmount;
++            $balanceInfo->save();
++
+             $data['sender_first_name'] = $user->profile->first_name;
+             $data['sender_last_name'] = $user->profile->last_name;
+             $data['refNo'] = $refNo;
+@@ -246,17 +251,21 @@
+                 $send2Bank = $this->handleTransferResponse($send2Bank, $transferResponse);
+             }
+ 
+-            $balanceInfo = $user->balanceInfo;
+-            $balanceInfo->available_balance -= $totalAmount;
+-            if ($send2Bank->status === TransactionStatuses::pending) $balanceInfo->pending_balance += $totalAmount;
+-            if ($send2Bank->status === TransactionStatuses::failed) $balanceInfo->available_balance += $totalAmount;
++            if ($send2Bank->status === TransactionStatuses::success) {
++                $balanceInfo->pending_balance -= $totalAmount;
++            }
++
++            if ($send2Bank->status === TransactionStatuses::failed) {
++                $balanceInfo->available_balance += $totalAmount;
++                $balanceInfo->pending_balance -= $totalAmount;
++            }
++
+             $balanceInfo->save();
+ 
+             DB::commit();
+             $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
+             $this->logHistory($userId, $refNo, $currentDate, $totalAmount, $send2Bank->account_number);
+ 
+-            if ($send2Bank->status === TransactionStatuses::failed) $this->transactionFailed();
+             return $this->createTransferResponse($send2Bank);
+         } catch (Exception $e) {
+             DB::rollBack();
+Index: app/Traits/Transactions/Send2BankHelpers.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/Traits/Transactions/Send2BankHelpers.php b/app/Traits/Transactions/Send2BankHelpers.php
+--- a/app/Traits/Transactions/Send2BankHelpers.php	(revision 7326d5316e86ea2345fd58d7761b5248c508f3d1)
++++ b/app/Traits/Transactions/Send2BankHelpers.php	(revision 08aa0449162d286f79c606f9d7ff040b5f30e538)
+@@ -75,7 +75,15 @@
+         if (!$response->successful()) {
+             $errors = $response->json();
+ 
+-            $send2Bank->status = TransactionStatuses::failed;
++            $errorResponse = $errors['errors'][0];
++            $errorCode = $errorResponse['code'];
++
++            if ($errorCode === UbpResponseCodes::processing || $errorCode === UbpResponseCodes::forConfirmation) {
++                $send2Bank->status = TransactionStatuses::pending;
++            } else {
++                $send2Bank->status = TransactionStatuses::failed;
++            }
++
+             $send2Bank->transaction_response = json_encode($errors);
+             $send2Bank->save();
+ 
+@@ -261,7 +269,8 @@
+             'service_fee' => $send2Bank->service_fee,
+             'transaction_date' => $send2Bank->transaction_date,
+             'remarks' => $send2Bank->remarks,
+-            'particulars' => $send2Bank->particulars
++            'particulars' => $send2Bank->particulars,
++            'status' => $send2Bank->status
+         ];
+     }
+ 

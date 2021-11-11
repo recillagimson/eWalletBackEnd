@@ -86,6 +86,7 @@ class TransactionValidationService implements ITransactionValidationService
         // POS POSADDFUNDS
         // DRAGONPAY CASHINDRAGONPAY
         if ($cashin) {
+            Log::info('Cashin Transaction Validation:');
             // FOR CASH IN TRANSACTIONS
             // Stage 5 Checking if total transaction is maxed out
             $this->checkUserMonthlyTransactionLimit($user, $totalAmount, $transactionCategoryId);
@@ -136,30 +137,31 @@ class TransactionValidationService implements ITransactionValidationService
                     // $sumUp = $totalTransactionCurrentMonth + $totalAmount;
 
                 } //else {
-                    //$addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
+                //$addMoneyFromBank = (Double) $this->addMoneyRepository->getSumOfTransactions($from, $to, $user->id);
 
                 //$receiveMoney = (Double) $this->receiveMoneyRepository->getSumOfTransactions($from, $to, $user->id);
-                   // $in = $addMoneyFromBank + $receiveMoney;
-                    //$totalTransactionCurrentMonth =0;
+                // $in = $addMoneyFromBank + $receiveMoney;
+                //$totalTransactionCurrentMonth =0;
 
-                 //}
+                //}
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
+                $sumUp += $totalAmount;
 
-
-                if ((double)$sumUp <= (double)$tier->monthly_limit) return;
-
-                if (isset($customMessage) && count($customMessage) > 0) {
-                    $this->handleCustomErrorMessage($customMessage['key'], $customMessage['value']);
-                }
-
-                Log::error('Account Monthly Limit Exceeded:', [
+                Log::info('Account Monthly Limit Validation:', [
+                    'userId' => $user->id,
                     'totalFrom' => $from,
                     'totalTo' => $to,
                     'totalMonthlyAmount' => $sumUp,
                     'tierMonthlyLimit' => $tier->monthly_limit
                 ]);
+
+                if ((double)$sumUp <= (double)$tier->monthly_limit) return;
+
+                //if (isset($customMessage) && count($customMessage) > 0) {
+                //$this->handleCustomErrorMessage($customMessage['key'], $customMessage['value']);
+                //}
 
                 $this->userMonthlyLimitExceeded();
             }

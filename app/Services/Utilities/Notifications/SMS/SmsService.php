@@ -222,7 +222,7 @@ class SmsService implements ISmsService
     public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
     {
         $date = Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A');
-        $content = "Hi " . $userDetail->first_name . "! You have successfully added funds to your wallet via BPI on " . $date . " . Service fee for this transaction is P 0.00. Your new balance is P " . number_format($newBalance, 2) . " with reference no. " . $referenceNumber . ". Thank you for using SquidPay!" ;
+        $content = "Hi " . $userDetail->first_name . "! You have successfully added funds to your wallet via BPI on " . $date . " . Service fee for this transaction is P 10.00. Your new balance is P " . number_format($newBalance, 2) . " with reference no. " . $referenceNumber . ". Thank you for using SquidPay!";
         $this->sendMessages($to, $content);
     }
 
@@ -239,12 +239,12 @@ class SmsService implements ISmsService
     }
 
     public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password) {
-        
+
     }
 
     public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber) {
         $content = "Thank you for using Squidpay Add Money. You have successfully added " . $amount . " to your Squidpay wallet on " . $transactionDateTime ." with Reference Number " . $referenceNumber . ".";
         $this->sendMessages($to, $content);
-    } 
+    }
 
 }

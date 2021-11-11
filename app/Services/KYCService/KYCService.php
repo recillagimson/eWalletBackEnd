@@ -2,27 +2,27 @@
 
 namespace App\Services\KYCService;
 
-use DB;
-use Log;
-use CURLFILE;
-use Exception;
-use Carbon\Carbon;
-use App\Enums\eKYC;
 use App\Enums\AccountTiers;
-use Illuminate\Support\Str;
+use App\Enums\eKYC;
 use App\Enums\SuccessMessages;
 use App\Repositories\FaceAuth\IFaceAuthRepository;
-use Illuminate\Http\JsonResponse;
-use App\Traits\Errors\WithKYCErrors;
-use App\Traits\Errors\WithUserErrors;
-use Illuminate\Support\Facades\Storage;
-use App\Traits\Errors\WithTransactionErrors;
+use App\Repositories\KYCVerification\IKYCVerificationRepository;
 use App\Repositories\Tier\ITierApprovalRepository;
-use App\Services\Utilities\CurlService\ICurlService;
-use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserPhoto\IUserSelfiePhotoRepository;
-use App\Repositories\KYCVerification\IKYCVerificationRepository;
+use App\Services\Utilities\CurlService\ICurlService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Traits\Errors\WithKYCErrors;
+use App\Traits\Errors\WithTransactionErrors;
+use App\Traits\Errors\WithUserErrors;
+use Carbon\Carbon;
+use CURLFILE;
+use DB;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Log;
 
 class KYCService implements IKYCService
 {
@@ -191,7 +191,7 @@ class KYCService implements IKYCService
         if(isset($attr['manual_input']) && isset($attr['ocr_response'])) {
             // BOTH FULLNAME
             if(
-                isset($attr['manual_input']['full_name']) && 
+                isset($attr['manual_input']['full_name']) &&
                 isset($attr['ocr_response']['full_name'])) {
                 if(
                     strtolower($attr['ocr_response']['full_name']) == strtolower($attr['manual_input']['full_name'])) {
@@ -217,13 +217,13 @@ class KYCService implements IKYCService
             }
 
             // ALL NOT FULLNAME
-            if(
-                isset($attr['manual_input']['first_name']) && 
-                isset($attr['ocr_response']['first_name']) && 
-                isset($attr['manual_input']['last_name']) && 
+            if (
+                isset($attr['manual_input']['first_name']) &&
+                isset($attr['ocr_response']['first_name']) &&
+                isset($attr['manual_input']['last_name']) &&
                 isset($attr['ocr_response']['last_name'])) {
-                if(strtolower($attr['ocr_response']['first_name']) == strtolower($attr['manual_input']['first_name']) && 
-                strtolower($attr['ocr_response']['last_name']) == strtolower($attr['manual_input']['last_name'])) {
+                if (strtolower($attr['ocr_response']['first_name']) == strtolower($attr['manual_input']['first_name']) &&
+                    strtolower($attr['ocr_response']['last_name']) == strtolower($attr['manual_input']['last_name'])) {
                     // return [
                     //     'message' => 'OCR and Input data match'
                     // ];
@@ -316,24 +316,24 @@ class KYCService implements IKYCService
 
             $response = $this->curlService->curlPost($url, $data, $headers);
             $error = '';
-            if($response && isset($response['status'])) {
+            if ($response && isset($response['status'])) {
                 $error = $response['status'];
             }
 
             isset($response['result']) ? $response['result']->requestId : (isset($response['requestId']) ? $response['requestId'] : '');
-            \Log::info('DEDUP');
-            \Log::info(json_encode($response));
+            Log::info('DEDUP');
+            Log::info(json_encode($response));
 
             $requestId = '';
-            if($response && $response['result']) {
-                $res = (array) $response['result'];
-                if(isset($res['requestId'])) {
+            if ($response && $response['result']) {
+                $res = (array)$response['result'];
+                if (isset($res['requestId'])) {
                     $requestId = $res['requestId'];
                 }
             }
 
-            \Log::info('REQUEST ID');
-            \Log::info($requestId);
+            Log::info('REQUEST ID');
+            Log::info($requestId);
 
 
             $record = $this->kycRepository->create([
@@ -344,7 +344,7 @@ class KYCService implements IKYCService
                 'hv_result' => $error,
                 'status' => $requestId ? 'PENDING' : 'ERROR'
             ]);
-            
+
             DB::commit();
             return $record;
             // if ($response && isset($response['statusCode']) && $response['statusCode'] == 200 && isset($response['result']) && $response['result']) {
@@ -392,21 +392,21 @@ class KYCService implements IKYCService
                         'hv_result' => $attr['result']['summary']['action'],
                         'status' => 'CALLBACK_RECEIVED'
                     ]);
-                    \DB::beginTransaction();
+                    DB::beginTransaction();
                     try {
                         if($tierApproval) {
                             if($tierApproval && $attr['result']['summary']['action'] == 'Pass') {
                                 $userAccount = $this->userAccountRepository->get($record->user_account_id);
-                                Log::info(json_encode($userAccount));                        
+                                Log::info(json_encode($userAccount));
                                 if($userAccount) {
                                     $this->userAccountRepository->update($userAccount, [
                                         'tier_id' => AccountTiers::tier2,
                                         'verified' => 1,
                                     ]);
-                                    Log::info("UPDATE TRIGGERED");                        
+                                    Log::info("UPDATE TRIGGERED");
                                 } else {
-                                    Log::info(json_encode($userAccount));                        
-                                    Log::info("ERROR USER NOT FOUND");                        
+                                    Log::info(json_encode($userAccount));
+                                    Log::info("ERROR USER NOT FOUND");
                                 }
                                 $this->tierApproval->update($tierApproval, [
                                     'status' => 'APPROVED',
@@ -420,10 +420,10 @@ class KYCService implements IKYCService
                                 ]);
                             }
                         }
-                        \DB::commit();
-                    } catch(\Exception $e) {
-                        \DB::rollBack();
-                        \Log::info($e->getMessage());
+                        DB::commit();
+                    } catch (Exception $e) {
+                        DB::rollBack();
+                        Log::info($e->getMessage());
                     }
                 }
             }
