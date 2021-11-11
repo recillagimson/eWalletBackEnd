@@ -188,9 +188,7 @@ class Send2BankService implements ISend2BankService
             $serviceFeeAmount = $serviceFee ? $serviceFee->amount : 0;
             $totalAmount = $data['amount'] + $serviceFeeAmount;
 
-            $this->transactionValidationService->checkUserBalance($user, $totalAmount );
-
-
+            $this->transactionValidationService->checkUserBalance($user, $totalAmount);
 
             $userFullName = ucwords($user->profile->full_name);
             $recipientFullName = ucwords($data['account_name'] ?: $data['recipient_first_name'] . ' ' . $data['recipient_last_name']);
@@ -205,6 +203,11 @@ class Send2BankService implements ISend2BankService
                 $data['send_receipt_to'], $userId);
 
             if (!$send2Bank) $this->transactionFailed();
+
+            $balanceInfo = $user->balanceInfo;
+            $balanceInfo->available_balance -= $totalAmount;
+            $balanceInfo->pending_balance += $totalAmount;
+            $balanceInfo->save();
 
             $data['sender_first_name'] = $user->profile->first_name;
             $data['sender_last_name'] = $user->profile->last_name;
@@ -224,17 +227,21 @@ class Send2BankService implements ISend2BankService
                 $send2Bank = $this->handleTransferResponse($send2Bank, $transferResponse);
             }
 
-            $balanceInfo = $user->balanceInfo;
-            $balanceInfo->available_balance -= $totalAmount;
-            if ($send2Bank->status === TransactionStatuses::pending) $balanceInfo->pending_balance += $totalAmount;
-            if ($send2Bank->status === TransactionStatuses::failed) $balanceInfo->available_balance += $totalAmount;
+            if ($send2Bank->status === TransactionStatuses::success) {
+                $balanceInfo->pending_balance -= $totalAmount;
+            }
+
+            if ($send2Bank->status === TransactionStatuses::failed) {
+                $balanceInfo->available_balance += $totalAmount;
+                $balanceInfo->pending_balance -= $totalAmount;
+            }
+
             $balanceInfo->save();
 
-            $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             DB::commit();
+            $this->sendNotifications($user, $send2Bank, $balanceInfo->available_balance);
             $this->logHistory($userId, $refNo, $currentDate, $totalAmount, $send2Bank->account_number);
 
-            if ($send2Bank->status === TransactionStatuses::failed) $this->transactionFailed();
             return $this->createTransferResponse($send2Bank);
         } catch (Exception $e) {
             DB::rollBack();
@@ -242,6 +249,7 @@ class Send2BankService implements ISend2BankService
             if ($updateReferenceCounter === true)
                 $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
 
+            Log::error('Send 2 Bank Error: ', $e->getTrace());
             throw $e;
         }
     }
@@ -313,6 +321,5 @@ class Send2BankService implements ISend2BankService
         $this->logHistories->logUserHistory($userId, $refNo, $spModule,
             null, $logDate, $remarks, $operation);
     }
-
 
 }

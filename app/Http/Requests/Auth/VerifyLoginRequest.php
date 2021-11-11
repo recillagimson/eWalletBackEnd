@@ -30,7 +30,7 @@ class VerifyLoginRequest extends FormRequest
                 'max:11',
                 new MobileNumber()
             ],
-            'email' => 'required_without:mobile_number|max:50|email',
+            'email' => 'required_without:mobile_number|max:50|email:rfc,dns',
             'code' => 'required'
         ];
     }
