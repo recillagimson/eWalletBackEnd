@@ -79,11 +79,6 @@ class TransactionValidationService implements ITransactionValidationService
         // Stage 2 Check if Locked out
         $this->validateUser($user);
 
-        Log::info('Validating Transaction', [
-            'userId' => $user->id,
-            'transactionCategoryId' => $transactionCategoryId,
-            'totalAmount' => $totalAmount
-        ]);
         // Stage 3 Get Transaction Category
         $cashin = in_array($transactionCategoryId, TransactionCategoryIds::cashinTransactions);
         // Check if Cash in
