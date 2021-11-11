@@ -2,6 +2,8 @@
 
 namespace App\Services\Auth\UserKey;
 
+use App\Models\UserAccount;
+
 interface IUserKeyService
 {
     /**
@@ -15,7 +17,7 @@ interface IUserKeyService
      * @return mixed
      */
     public function validateKey(string $userId, string $currentKey, string $newKey, string $keyType,
-                                bool $requireOtp = true);
+                                bool   $requireOtp = true);
 
     /**
      * Generates OTP for password / pin recovery
@@ -62,5 +64,15 @@ interface IUserKeyService
      * @return mixed
      */
     public function changeKey(string $userId, string $currentKey, string $newKey, string $keyType, string $otpType,
-                              bool $requireOtp = true);
+                              bool   $requireOtp = true);
+
+    /**
+     * Validate if current pin / password matches the current user
+     *
+     * @param UserAccount|null $user
+     * @param string|null $keyType
+     * @param string|null $userKey
+     * @return mixed
+     */
+    public function validateUser(?UserAccount $user, string $keyType = null, string $userKey = null);
 }

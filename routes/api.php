@@ -243,6 +243,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/mobile/update', [UserAccountController::class, 'updateMobile']);
 
         Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey'])->name('key.type.validate');
+        Route::post('/{keyType}/validate/current', [ChangeKeyController::class, 'validateCurrentKey'])->name('key.type.validate.current');
         Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey'])->name('key.type.verify');
         Route::put('/{keyType}', [ChangeKeyController::class, 'changeKey'])->name('key.type');
     });

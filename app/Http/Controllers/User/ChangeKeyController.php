@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Enums\SuccessMessages;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ValidateCurrentKeyRequest;
 use App\Http\Requests\Auth\VerifyUserKeyRequest;
 use App\Http\Requests\ValidateKeyRequest;
 use App\Services\Auth\IAuthService;
@@ -21,12 +22,25 @@ class ChangeKeyController extends Controller
     private IResponseService $responseService;
     private IAuthService $authService;
 
-    public function __construct(IUserKeyService $keyService, IAuthService $authService,
+    public function __construct(IUserKeyService  $keyService, IAuthService $authService,
                                 IResponseService $responseService)
     {
         $this->keyService = $keyService;
         $this->authService = $authService;
         $this->responseService = $responseService;
+    }
+
+    public function validateCurrentKey(ValidateCurrentKeyRequest $request): JsonResponse
+    {
+        $keyType = $request->route('keyType');
+        $this->validateUserKeyTypes($keyType);
+
+        $data = $request->validated();
+        $userId = $request->user()->id;
+        $keyField = $this->getKeyFieldFromUserKeyType($keyType);
+
+        $this->keyService->validateUser($request->user(), $keyType, $data['current_' . $keyField]);
+        return $this->responseService->successResponse([], SuccessMessages::passwordValidationPassed);
     }
 
     /**
