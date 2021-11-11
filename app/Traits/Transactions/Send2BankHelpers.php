@@ -144,10 +144,12 @@ trait Send2BankHelpers
         return $send2Bank;
     }
 
-    private function handleStatusResponse(OutSend2Bank $send2Bank, Response $response)
+    private function handleStatusResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
     {
         if (!$response->successful()) {
-            return;
+            $errors = $response->json();
+            Log::error('UBP Error Status Response', $errors);
+            return $send2Bank;
         } else {
             if ($send2Bank->provider === TpaProviders::secBankInstapay) $data = $response->json()['records'][0];
             else $data = $response->json()['record'];

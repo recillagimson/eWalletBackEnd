@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Rules\MobileNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
-class MobileLoginRequest extends FormRequest
+class ValidateCurrentKeyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,12 +24,8 @@ class MobileLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required_without:mobile_number|email:rfc,dns',
-            'mobile_number' => [
-                'required_without:email',
-                new MobileNumber()
-            ],
-            'pin_code' => 'required|digits:4'
+            'current_password' => 'required_without:current_pin_code',
+            'current_pin_code' => 'required_without:current_password',
         ];
     }
 }

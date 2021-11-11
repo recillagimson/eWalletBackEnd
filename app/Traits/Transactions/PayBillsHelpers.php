@@ -21,10 +21,7 @@ use Carbon\Carbon;
 use DB;
 use Exception;
 use Illuminate\Http\Client\Response;
-use Str;
-use Illuminate\Validation\Rule;
-
-use function GuzzleHttp\Promise\each;
+use Illuminate\Support\Facades\Log;
 
 trait PayBillsHelpers
 {
@@ -113,14 +110,22 @@ trait PayBillsHelpers
     private function checkAmount(UserAccount $user, array $data, string $billerCode)
     {
         $balance = $this->getUserBalance($user);
+        $serviceFee = $this->getServiceFee($user);
+        $otherCharges = $billerCode === PayBillsConfig::MECOP ?
+            $this->getOtherChargesMECOP($billerCode, $data) :
+            $this->getOtherCharges($billerCode);
 
-        // To catch MECOP biller and use another way to get the otherCharges
-        if($billerCode === PayBillsConfig::MECOP) {
-            $totalAmount = $data['amount'] + $this->getServiceFee($user) + $this->getOtherChargesMECOP($billerCode, $data);
-        } else {
-            $totalAmount = $data['amount'] + $this->getServiceFee($user) + $this->getOtherCharges($billerCode);
-        }
-       
+        $totalAmount = $data['amount'] + $serviceFee + $otherCharges;
+
+        Log::info('Pay Bills Amount Info', [
+            'userId' => $user->id,
+            'balance' => $balance,
+            'amount' => $data['amount'],
+            'serviceFee' => $serviceFee,
+            'otherCharges' => $otherCharges,
+            'totalAmount' => $totalAmount,
+        ]);
+
         if ($balance >= $totalAmount) return true;
     }
 
@@ -162,7 +167,7 @@ trait PayBillsHelpers
     private function getOtherCharges(string $billerCode)
     {
         $otherCharges = $this->bayadCenterService->getOtherCharges($billerCode);
-        return $otherCharges['data']['otherCharges'];       
+        return $otherCharges['data']['otherCharges'];
     }
 
 
@@ -230,7 +235,9 @@ trait PayBillsHelpers
     private function handleStatusResponse(OutPayBills $payBill, Response $response)
     {
         if (!$response->successful()) {
-            return;
+            $errors = $response->json();
+            Log::error('Bayad Center Error Status Response', $errors);
+            return $payBill;
         } else {
             $responseData = $response->json();
             $state = $responseData['data']['status'];
@@ -299,7 +306,7 @@ trait PayBillsHelpers
     {
         $errorCode = $errorDetails['details']['code'];
         $errorMsg = $errorDetails['details']['message'];
-        
+
         // To catch bayad validation for invalid accounts
         if (in_array($errorMsg, PayBillsConfig::billerInvalidMsg)) return $this->invalidAccountNumber();
 

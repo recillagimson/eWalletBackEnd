@@ -3,45 +3,45 @@
 
 namespace App\Services\Utilities\Notifications\Email;
 
-use PDF;
-use SendGrid;
-use Carbon\Carbon;
-use App\Models\Tier;
-use App\Enums\OtpTypes;
-use SendGrid\Mail\Mail;
-use App\Mail\BPI\CashInBPI;
-use App\Models\UserAccount;
-use Illuminate\Support\Str;
 use App\Enums\EmailSubjects;
-use App\Models\OutSend2Bank;
-use App\Traits\StringHelpers;
-use Illuminate\Mail\Mailable;
-use App\Mail\LoginVerification;
-use App\Mail\Loan\LoanRefNumber;
-use App\Mail\EcPay\SuccessPayment;
-use App\Mail\User\OtpVerification;
+use App\Enums\OtpTypes;
 use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
-use App\Mail\Send2Bank\Send2BankReceipt;
-use App\Mail\User\AdminUserVerification;
-use App\Models\UserUtilities\UserDetail;
-use App\Mail\TierUpgrade\KYCNotification;
-use App\Mail\Send2Bank\SenderNotification;
-use App\Mail\PayBills\PayBillsNotification;
-use App\Mail\Cebuana\CebuanaConfirmationMail;
-use App\Mail\Farmers\BatchUploadNotification;
-use App\Mail\Merchant\MerchantAccountCreated;
-use App\Mail\SendMoney\SendMoneyVerification;
-use App\Traits\Transactions\Send2BankHelpers;
-use Illuminate\Validation\ValidationException;
-use App\Mail\SendMoney\SendMoneySenderNotification;
-use App\Mail\TierApproval\TierUpgradeRequestApproved;
-use App\Mail\TierUpgrade\UpgradeToSilverNotification;
-use App\Mail\SendMoney\SendMoneyRecipientNotification;
-use App\Repositories\UserAccount\IUserAccountRepository;
-use App\Mail\UserTransactionMail\UserTransactionHistoryMail;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+use App\Mail\BPI\CashInBPI;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
+use App\Mail\Cebuana\CebuanaConfirmationMail;
+use App\Mail\EcPay\SuccessPayment;
+use App\Mail\Farmers\BatchUploadNotification;
+use App\Mail\Loan\LoanRefNumber;
+use App\Mail\LoginVerification;
+use App\Mail\Merchant\MerchantAccountCreated;
+use App\Mail\PayBills\PayBillsNotification;
+use App\Mail\Send2Bank\Send2BankReceipt;
+use App\Mail\Send2Bank\SenderNotification;
+use App\Mail\SendMoney\SendMoneyRecipientNotification;
+use App\Mail\SendMoney\SendMoneySenderNotification;
+use App\Mail\SendMoney\SendMoneyVerification;
+use App\Mail\TierApproval\TierUpgradeRequestApproved;
+use App\Mail\TierUpgrade\KYCNotification;
+use App\Mail\TierUpgrade\UpgradeToSilverNotification;
+use App\Mail\User\AdminUserVerification;
+use App\Mail\User\OtpVerification;
+use App\Mail\UserTransactionMail\UserTransactionHistoryMail;
+use App\Models\OutSend2Bank;
+use App\Models\Tier;
+use App\Models\UserAccount;
+use App\Models\UserUtilities\UserDetail;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Traits\StringHelpers;
+use App\Traits\Transactions\Send2BankHelpers;
+use Carbon\Carbon;
+use Illuminate\Mail\Mailable;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use PDF;
+use SendGrid;
+use SendGrid\Mail\Mail;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class EmailService implements IEmailService
 {
@@ -215,18 +215,15 @@ class EmailService implements IEmailService
     }
 
     public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber,
-                                        Carbon $transactionDate, float $newBalance, string $refNo)
+                                        Carbon $transactionDate, float $newBalance, string $refNo, string $recipientName)
     {
         $subject = 'SquidPay - Buy Load Notification';
         $strAmount = $this->formatAmount($amount);
         $strBalance = $this->formatAmount($newBalance);
         $strTransactionDate = $this->formatDate($transactionDate);
 
-        $user = $this->getUser();
-        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
-
         $template = new BuyLoadSenderNotification($strAmount, $productName, $recipientMobileNumber, $strTransactionDate,
-            $strBalance, $refNo, $firstName);
+            $strBalance, $refNo, $recipientName);
         $this->sendMessage($to, $subject, $template);
     }
 
@@ -332,7 +329,8 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
-    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password) {        
+    public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password)
+    {
         $pdf = PDF::loadView('reports.transaction_history.transaction_history_v2', [
             'records' => $records
         ]);

@@ -64,7 +64,8 @@ class NotificationService implements INotificationService
         // TODO: Implement sendSend2BankSenderNotification() method.
     }
 
-    public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber, Carbon $transactionDate, float $newBalance, string $refNo)
+    public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber, Carbon $transactionDate, float $newBalance, string $refNo,
+                                        string $recipientName)
     {
         // TODO: Implement buyLoadNotification() method.
     }
@@ -74,7 +75,8 @@ class NotificationService implements INotificationService
         // TODO: Implement tierUpgradeNotification() method.
     }
 
-    public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber) {
+    public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
+    {
         // TODO: Implement sendBPICashInNotification() method.
     }
 

@@ -279,6 +279,7 @@ class Send2BankService implements ISend2BankService
             if ($updateReferenceCounter === true)
                 $this->referenceNumberService->generate(ReferenceNumberTypes::SendToBank);
 
+            Log::error('Send 2 Bank Error: ', $e->getTrace());
             throw $e;
         }
     }
@@ -357,4 +358,5 @@ class Send2BankService implements ISend2BankService
             $operation
         );
     }
+
 }

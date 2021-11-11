@@ -135,7 +135,7 @@ class UserKeyService implements IUserKeyService
      * @param string|null $userKey User account key (password / pin code) to match with the user.  Optional.
      * @throws ValidationException
      */
-    private function validateUser(?UserAccount $user, string $keyType = null, string $userKey = null)
+    public function validateUser(?UserAccount $user, string $keyType = null, string $userKey = null)
     {
         if (!$user) $this->accountDoesntExist();
         if (!$user->verified) $this->accountDoesntExist();

@@ -150,10 +150,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Route::post('ecpay/custom', [Send2BankController::class, 'sample'])->middleware(['decrypt.request']);
-    Route::middleware(['decrypt.request'])->prefix('ecpay')->group(function () {
-        Route::post('commitpayment', [AddMoneyController::class, 'commitPayment']);
-        Route::post('confirmpayment', [AddMoneyController::class, 'confirmPayment']);
-    });
+    // Route::middleware(['decrypt.request'])->prefix('ecpay')->group(function () {
+    // Route::post('commitpayment', [AddMoneyController::class, 'commitPayment']);
+    // Route::post('confirmpayment', [AddMoneyController::class, 'confirmPayment']);
+    // });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
         Route::get('/user', [AuthController::class, 'getUser'])->name('user.show');
@@ -188,7 +188,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/auth/v2')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/user', [AuthV2Controller::class, 'getUser']);
+        Route::get('/user', [AuthV2Controller::class, 'getUser'])->name('v2.user.show');
 
         Route::post('/register/validate', [RegisterV2Controller::class, 'registerValidate']);
         Route::post('/register', [RegisterV2Controller::class, 'register']);
@@ -210,11 +210,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/resend/otp', [AuthV2Controller::class, 'resendOTP']);
 
         Route::prefix('/verify')->name('verify.')->group(function () {
-            Route::post('/otp', [AuthV2Controller::class, 'verifyTransactionOtp'])->name('otp2');
-            Route::post('/account', [RegisterV2Controller::class, 'verifyAccount'])->name('account2');
-            Route::post('/mobile/login', [AuthV2Controller::class, 'verifyMobileLogin'])->name('mobile.login2');
-            Route::post('/partners/login', [AuthV2Controller::class, 'verifyPartnersLogin'])->name('partners.login2');
-            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('key.type2');
+            Route::post('/otp', [AuthV2Controller::class, 'verifyTransactionOtp'])->name('v2.otp');
+            Route::post('/account', [RegisterV2Controller::class, 'verifyAccount'])->name('v2.account');
+            Route::post('/mobile/login', [AuthV2Controller::class, 'verifyMobileLogin'])->name('v2.mobile.login');
+            Route::post('/partners/login', [AuthV2Controller::class, 'verifyPartnersLogin'])->name('v2.partners.login');
+            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('v2.key.type');
         });
     });
 
@@ -243,6 +243,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/mobile/update', [UserAccountController::class, 'updateMobile']);
 
         Route::post('/{keyType}/validate', [ChangeKeyController::class, 'validateKey'])->name('key.type.validate');
+        Route::post('/{keyType}/validate/current', [ChangeKeyController::class, 'validateCurrentKey'])->name('key.type.validate.current');
         Route::post('/{keyType}/verify', [ChangeKeyController::class, 'verifyKey'])->name('key.type.verify');
         Route::put('/{keyType}', [ChangeKeyController::class, 'changeKey'])->name('key.type');
     });
@@ -378,7 +379,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [SendMoneyController::class, 'send']);
         Route::post('/validate', [SendMoneyController::class, 'sendValidate'])->name('send.validate');
         Route::post('/generate/qr', [SendMoneyController::class, 'generateQr'])->name('generate.qr');
-        Route::get('/get/qr', [SendMoneyController::class, 'getQr']);
+        Route::get('/get/qr', [SendMoneyController::class, 'getQr'])->name('get.qr');
         Route::post('/scan/qr', [SendMoneyController::class, 'scanQr'])->name('scan.qr');
     });
 

@@ -24,7 +24,7 @@ class AdminLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required_without:mobile_number|email',
+            'email' => 'required_without:mobile_number|email:rfc,dns',
             'password' => 'required'
         ];
     }

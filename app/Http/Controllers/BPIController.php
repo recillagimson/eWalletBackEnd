@@ -3,18 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
-use Illuminate\Http\JsonResponse;
 use App\Enums\TransactionCategoryIds;
-use App\Http\Requests\BPI\BPIOTPRequest;
-use App\Services\BPIService\IBPIService;
 use App\Http\Requests\BPI\BPIAuthRequest;
-use App\Http\Requests\BPI\BPIStatusRequest;
-use App\Http\Requests\BPI\BPIProcessRequest;
 use App\Http\Requests\BPI\BPIFundTopUpRequest;
 use App\Http\Requests\BPI\BPIGetAccountRequest;
-use App\Services\Utilities\Responses\IResponseService;
-use App\Services\Transaction\ITransactionValidationService;
+use App\Http\Requests\BPI\BPIOTPRequest;
+use App\Http\Requests\BPI\BPIProcessRequest;
+use App\Http\Requests\BPI\BPIStatusRequest;
 use App\Http\Requests\BPI\BPITransactionLimitValidationRequest;
+use App\Services\BPIService\IBPIService;
+use App\Services\Transaction\ITransactionValidationService;
+use App\Services\Utilities\Responses\IResponseService;
+use Illuminate\Http\JsonResponse;
 
 class BPIController extends Controller
 {
@@ -76,7 +76,7 @@ class BPIController extends Controller
         return $this->responseService->successResponse(
             [
                 'login_url' => config('bpi.loginUrl')
-            ], 
+            ],
             SuccessMessages::success
         );
     }
@@ -86,7 +86,7 @@ class BPIController extends Controller
             [
                 'clientId' => config('bpi.clientId'),
                 'clientSecret' => config('bpi.clientSecret')
-            ], 
+            ],
             SuccessMessages::success
         );
     }
