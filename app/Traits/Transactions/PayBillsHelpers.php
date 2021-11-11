@@ -235,7 +235,9 @@ trait PayBillsHelpers
     private function handleStatusResponse(OutPayBills $payBill, Response $response)
     {
         if (!$response->successful()) {
-            return;
+            $errors = $response->json();
+            Log::error('Bayad Center Error Status Response', $errors);
+            return $payBill;
         } else {
             $responseData = $response->json();
             $state = $responseData['data']['status'];
