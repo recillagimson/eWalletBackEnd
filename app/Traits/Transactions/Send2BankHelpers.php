@@ -147,7 +147,7 @@ trait Send2BankHelpers
     private function handleStatusResponse(OutSend2Bank $send2Bank, Response $response): OutSend2Bank
     {
         if (!$response->successful()) {
-            $errors = $response->body();
+            $errors = $response->json();
             Log::error('UBP Error Status Response', $errors);
             return $send2Bank;
         } else {
