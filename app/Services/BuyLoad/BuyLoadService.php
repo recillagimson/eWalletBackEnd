@@ -320,7 +320,7 @@ class BuyLoadService implements IBuyLoadService
         if ($buyLoad->status === TransactionStatuses::success) {
             $notifService->buyLoadNotification($username, $buyLoad->total_amount, $buyLoad->product_name,
                 $buyLoad->recipient_mobile_number, $buyLoad->transaction_date, $availableBalance,
-                $buyLoad->reference_number);
+                $buyLoad->reference_number, $user->profile->first_name);
 
             $this->createAppNotification($user->id, $buyLoad->transaction_date, $buyLoad->total_amount, $availableBalance,
                 $buyLoad->reference_number, $buyLoad->product_name, $buyLoad->recipient_mobile_number);

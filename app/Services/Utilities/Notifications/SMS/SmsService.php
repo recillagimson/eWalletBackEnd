@@ -156,16 +156,13 @@ class SmsService implements ISmsService
     }
 
     public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber,
-                                        Carbon $transactionDate, float $newBalance, string $refNo)
+                                        Carbon $transactionDate, float $newBalance, string $refNo, string $recipientName)
     {
         $strDate = $this->formatDate($transactionDate);
         $strAmount = $this->formatAmount($amount);
         $strNewBalance = $this->formatAmount($newBalance);
 
-        $user = $this->getUser();
-        $firstName = $user->profile ? ucwords($user->profile->first_name) : 'Squidee';
-
-        $content = 'Hi ' . $firstName . '! You have paid P' . $strAmount . ' of SquidPay to purchase ' . $productName . ' for ' .
+        $content = 'Hi ' . $recipientName . '! You have paid P' . $strAmount . ' of SquidPay to purchase ' . $productName . ' for ' .
             $recipientMobileNumber . ' on ' . $strDate . '. Your SquidPay balance is P' . $strNewBalance .
             '. Ref. No. ' . $refNo . '.';
         $this->sendMessages($to, $content);

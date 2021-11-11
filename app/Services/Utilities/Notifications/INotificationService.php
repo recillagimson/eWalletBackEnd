@@ -32,7 +32,7 @@ interface INotificationService
                                                     string $provider, string $remittanceId);
 
     public function buyLoadNotification(string $to, float $amount, string $productName, string $recipientMobileNumber,
-                                        Carbon $transactionDate, float $newBalance, string $refNo);
+                                        Carbon $transactionDate, float $newBalance, string $refNo, string $recipientName);
 
     public function tierUpgradeNotification(string $to, UserDetail $userDetail, Tier $tier);
     public function sendBPICashInNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber);
