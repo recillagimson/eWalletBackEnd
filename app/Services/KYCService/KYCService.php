@@ -447,7 +447,8 @@ class KYCService implements IKYCService
 
     public function verifyRequest(string $requestId): JsonResponse
     {
-        sleep(20);
+        // WAIT 20 sec before execution
+        sleep(config('ekyc.delay'));
         $record = $this->kycRepository->findByRequestId($requestId);
         if($record) {
             $tierApproval = $this->tierApproval->getLatestRequestByUserAccountId($record->user_account_id);
