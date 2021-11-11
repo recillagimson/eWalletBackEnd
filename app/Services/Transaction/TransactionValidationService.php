@@ -154,15 +154,16 @@ class TransactionValidationService implements ITransactionValidationService
 
                 // $totalTransactionCurrentMonth = $this->userTransactionHistoryRepository
                 // ->getTotalTransactionAmountByUserAccountIdDateRange($user->id, $from, $to, $transactionCategory);
+                $sumUp += $totalAmount;
 
                 Log::info('Account Monthly Limit Validation:', [
+                    'userId' => $user->id,
                     'totalFrom' => $from,
                     'totalTo' => $to,
                     'totalMonthlyAmount' => $sumUp,
                     'tierMonthlyLimit' => $tier->monthly_limit
                 ]);
 
-                $sumUp += $totalAmount;
                 if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
                 //if (isset($customMessage) && count($customMessage) > 0) {
