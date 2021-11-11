@@ -73,6 +73,7 @@ class AddMoneyService implements IAddMoneyService
         $serviceFeeId = $serviceFee ? $serviceFee->id : '';
         $totalAmount = $data['amount'] + $serviceFeeAmount;
 
+
         $this->transactionValidationService->validate($user,
             TransactionCategoryIds::cashinDragonPay, $totalAmount);
 
