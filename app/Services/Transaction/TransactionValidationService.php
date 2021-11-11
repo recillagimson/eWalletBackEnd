@@ -162,7 +162,7 @@ class TransactionValidationService implements ITransactionValidationService
                     'tierMonthlyLimit' => $tier->monthly_limit
                 ]);
 
-
+                $sumUp += $totalAmount;
                 if ((double)$sumUp <= (double)$tier->monthly_limit) return;
 
                 //if (isset($customMessage) && count($customMessage) > 0) {
