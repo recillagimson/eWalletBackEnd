@@ -5,6 +5,7 @@ namespace App\Services\BuyLoad;
 
 
 use App\Enums\AtmPrepaidResponseCodes;
+use App\Enums\NetworkTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\TopupTypes;
@@ -34,7 +35,6 @@ use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Enums\NetworkTypes;
 use Illuminate\Validation\ValidationException;
 
 class BuyLoadService implements IBuyLoadService
@@ -163,6 +163,8 @@ class BuyLoadService implements IBuyLoadService
         $failCount = 0;
 
         foreach ($pendingBuyLoads as $buyLoad) {
+            if (!$buyLoad->topup_type) continue;
+
             $response = $this->atmService->checkStatus($buyLoad->reference_number, $buyLoad->topup_type);
             $buyLoad = $this->handleStatusResponse($buyLoad, $response);
             $amount = $buyLoad->total_amount;
