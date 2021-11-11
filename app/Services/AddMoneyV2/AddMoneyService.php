@@ -76,6 +76,12 @@ class AddMoneyService implements IAddMoneyService
         $this->transactionValidationService->validate($user,
             TransactionCategoryIds::cashinDragonPay, $totalAmount);
 
+        $this->transactionValidationService->checkUserMonthlyTransactionLimit(
+            $user->id, 
+            $totalAmount, 
+            TransactionCategoryIds::cashinDragonPay
+        );
+
         $fullName = $user->profile->full_name;
         $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaWebBank);
         $currentDate = Carbon::now();
