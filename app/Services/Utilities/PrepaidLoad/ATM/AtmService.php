@@ -128,7 +128,7 @@ class AtmService implements IAtmService
                 // return $prefixes->sortBy(['provider', 'productCode', 'denominations']);
                 return ($provider == TopupTypes::atm_epin) ?
                     $prefixes->where('productType', TopupTypes::atm_epin)->sortBy(['provider', 'productCode', 'denominations']) :
-                    $prefixes->where('productType', '!=', TopupTypes::atm_buy_load)->sortBy(['provider', 'productCode', 'denominations']);
+                    $prefixes->where('productType', TopupTypes::atm_buy_load)->sortBy(['provider', 'productCode', 'denominations']);
             }
         }
 
