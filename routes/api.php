@@ -152,7 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['decrypt.request'])->prefix('ecpay')->group(function () {
         Route::post('commitpayment', [AddMoneyController::class, 'commitPayment']);
         Route::post('confirmpayment', [AddMoneyController::class, 'confirmPayment']);
-        Route::post('batchconfirmpayment', [AddMoneyController::class, 'batchConfirmPayment']);
+        Route::get('batchconfirmpayment', [AddMoneyController::class, 'batchConfirmPayment']);
     });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
