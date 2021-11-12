@@ -33,5 +33,8 @@ class TransactionCategoryIds
     const cashinTransactions = [
         self::posAddFunds,
         self::cashinDragonPay,
+        self::cashinBPI,
+        self::cashinUBP,
+        self::adMoneyEcPay,
     ];
 }
