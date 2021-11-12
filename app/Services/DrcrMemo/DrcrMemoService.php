@@ -509,15 +509,17 @@ class DrcrMemoService implements IDrcrMemoService
                 $this->userTransHistory,
                 $controlNumber->id
             );
+
             Excel::import($import, $file);
 
             $this->drcrMemoControlNumberRepository->update($controlNumber, [
                 'user_updated' => $user->id,
                 'status' => 'Success',
-
             ]);
 
-            return;
+            return [
+                'total' => $import->getTotal()
+            ];
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $exportName = $filename . "- Errors.xlsx";

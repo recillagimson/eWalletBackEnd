@@ -20,6 +20,7 @@ use App\Http\Requests\EcPayRequest\CommitPaymentRequest;
 use App\Http\Requests\EcPayRequest\ConfirmPaymentRequest;
 use App\Services\Transaction\ITransactionValidationService;
 use App\Enums\TransactionCategoryIds;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 
 class AddMoneyController extends Controller
 {
@@ -30,7 +31,8 @@ class AddMoneyController extends Controller
     private IAddMoneyService $addMoneyServiceV2;
     private IECPayService $ecpayService;
     private ITransactionValidationService $transactionValidationService;
-
+    private IInAddMoneyEcPayRepository $inAddMoneyEcPayRepository;
+    
     public function __construct(IHandlePostBackService $postBackService,
                                 IEncryptionService $encryptionService,
                                 IInAddMoneyService $addMoneyService,
@@ -38,7 +40,8 @@ class AddMoneyController extends Controller
                                 IInAddMoneyRepository $addMoneys,
                                 IAddMoneyService $addMoneyServiceV2,
                                 IECPayService $ecpayService,
-                                ITransactionValidationService $transactionValidationService)
+                                ITransactionValidationService $transactionValidationService,
+                                IInAddMoneyEcPayRepository $inAddMoneyEcPayRepository)
     {
 
         $this->postBackService = $postBackService;
@@ -49,6 +52,7 @@ class AddMoneyController extends Controller
         $this->addMoneyServiceV2 = $addMoneyServiceV2;
         $this->ecpayService = $ecpayService;
         $this->transactionValidationService = $transactionValidationService;
+        $this->inAddMoneyEcPayRepository = $inAddMoneyEcPayRepository;
     }
 
     public function addMoney(AddMoneyRequest $request): JsonResponse
@@ -117,5 +121,17 @@ class AddMoneyController extends Controller
 
         $data = $request->validated();
         return $this->ecpayService->confirmPayment($data, $request->user());
+    }
+
+    public function batchConfirmPayment(Request $request): JsonResponse {
+        
+        $data = $this->inAddMoneyEcPayRepository->getRefNoInPendingStatusFromUser(request()->user()->id);      
+        $arr = [];
+        foreach($data as $refno) {
+            $ref = ["referenceno" => $refno->reference_number];
+            array_push($arr, $this->ecpayService->batchConfirmPayment($ref, $request->user()));
+        }
+
+        return $this->responseService->successResponse($arr, SuccessMessages::success);
     }
 }

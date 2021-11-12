@@ -23,4 +23,12 @@ class InAddMoneyEcPayRepository extends Repository implements IInAddMoneyEcPayRe
             ->where('user_account_id', $userId)
             ->sum('amount');
     }
+
+    public function getRefNoInPendingStatusFromUser(string $userId) {
+        return $this->model
+            ->select('reference_number')
+            ->where('user_account_id', '=', $userId)
+            ->where('status', '=', 'pending')
+            ->get();
+    }
 }
