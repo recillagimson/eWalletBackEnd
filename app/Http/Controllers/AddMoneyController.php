@@ -118,4 +118,16 @@ class AddMoneyController extends Controller
         $data = $request->validated();
         return $this->ecpayService->confirmPayment($data, $request->user());
     }
+
+    public function batchConfirmPayment(ConfirmPaymentRequest $request): JsonResponse {
+
+        $data = $request->validated();
+        $arr = [];
+        foreach($data["referenceno"] as $refno) {
+            $ref = ["referenceno" => $refno];
+            array_push($arr, $this->ecpayService->batchConfirmPayment($ref, $request->user()));
+        }
+
+        return $this->responseService->successResponse($arr, SuccessMessages::success);
+    }
 }

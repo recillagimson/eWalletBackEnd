@@ -123,12 +123,29 @@ class ECPayService implements IECPayService
 
     public function confirmPayment(array $data, object $user): object
     {
+        \Log::info('///// - ECPAY Confirm Payment - //////');
+        $res = $this->processConfirmPayment($data, $user);
+
+        return $this->responseService->successResponse(
+            $res,
+            SuccessMessages::addMoneySuccess
+        );
+    }
+
+    public function batchConfirmPayment(array $data, object $user): array
+    {
+        \Log::info('///// - ECPAY Batch Confirm Payment - //////');
+
+        return $this->processConfirmPayment($data, $user);
+    }
+
+    private function processConfirmPayment(array $data, object $user): array {
         $result = $this->generateXmlBody($data, "ConfirmPayment");
         $response = $this->apiService->postXml($this->ecpayUrl, $result, $this->getXmlHeaders());
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->ConfirmPaymentResponse->ConfirmPaymentResult, true)[0];
 
-        \Log::info('///// - ECPAY Confirm Payment - //////');
+        \Log::info('///// - ECPAY Process Confirm Payment - //////');
         \Log::info(json_encode($jsondecode));
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
@@ -136,10 +153,7 @@ class ECPayService implements IECPayService
 
         $res = $this->returnResponseBodyFormat($user, $result);
 
-        return $this->responseService->successResponse(
-            $res,
-            SuccessMessages::addMoneySuccess
-        );
+        return $res;
     }
 
     private function xmlBodyParser(string $data): object {
