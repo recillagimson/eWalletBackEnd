@@ -258,9 +258,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/process/all/pending', [Send2BankController::class, 'processUsersWithPending'])->name('ubp.process.pending.all');
 
         //Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect'])->name('direct.ubp');
-       // Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP'])->name('validate.ubp');
-        //Route::post('/{provider}', [Send2BankController::class, 'fundTransfer'])->name('provider');
-       // Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction'])->name('provider.transaction.update');
+       //Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP'])->name('validate.ubp');
+        Route::post('/{provider}', [Send2BankController::class, 'fundTransfer'])->name('provider');
+       Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction'])->name('provider.transaction.update');
     });
 
     Route::prefix('/load')->middleware(['decrypt.request'])->name('load.')->group(function () {
