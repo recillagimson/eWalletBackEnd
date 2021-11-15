@@ -21,6 +21,7 @@ use Carbon\Carbon;
 class DrcrMemoImport implements ToCollection, WithValidation, WithHeadingRow
 {
 
+    protected $total;
     protected $numbers;
     private $user;
     private $controlNumber;
@@ -55,6 +56,8 @@ class DrcrMemoImport implements ToCollection, WithValidation, WithHeadingRow
      */
     public function collection(Collection $collection)
     {
+        $this->total = $collection->sum('amount');
+
         foreach ($collection as $key => $item) {
             $customer = $this->userAccountRepository->getUserByAccountNumber($item['account_number']);;
 
@@ -132,5 +135,10 @@ class DrcrMemoImport implements ToCollection, WithValidation, WithHeadingRow
             'account_number.exists' => ':attribute doesn\'t exist.',
             'type_of_memo.in' => 'Invalid Type Of Memo',
         ];
+    }
+
+    public function getTotal()
+    {
+        return $this->total;
     }
 }
