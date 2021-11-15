@@ -124,4 +124,8 @@ trait WithUserErrors
     public function updateProfileIdOrSelfieNotFound() {
         return $this->validationErrorMessage(ErrorCodes::updateProfileIdOrSelfieNotFound, 'Id or Selfie Photo not found');
     }
+
+    public function serviceFeeNotFound() {
+        return $this->validationErrorMessage(ErrorCodes::serviceFeeNotFound, 'Service Fee not found');
+    }
 }

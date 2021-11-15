@@ -65,6 +65,7 @@ class ErrorCodes
     const bpiInvalidError = 426;
     const controlNumberAlreadyUploaded = 427;
     const updateProfileIdOrSelfieNotFound = 428;
+    const serviceFeeNotFound = 429;
 
 
     //BUY LOAD - 500

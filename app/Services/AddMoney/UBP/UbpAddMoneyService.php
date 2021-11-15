@@ -259,5 +259,15 @@ class UbpAddMoneyService implements IUbpAddMoneyService
         }
     }
 
+    public function getServiceFeeByTierAuthUser(string $userAccountId) {
+        $userAccount = $this->userAccounts->get($userAccountId);
+        if(!$userAccount) $this->userAccountNotFound();
+
+        $serviceFee = $this->serviceFees->getByTierAndTransCategory($userAccount->tier_id, TransactionCategoryIds::cashinUBP);
+        if(!$serviceFee) $this->serviceFeeNotFound();
+
+        return $serviceFee;
+    }
+
 
 }

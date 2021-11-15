@@ -449,6 +449,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/update/transactions', [AddMoneyController::class, 'updateUserTrans'])->name('update.user.transactions');
 
         Route::post('/ubp', [UBPAddmoneyController::class, 'addMoney']);
+        Route::get('/ubp/service/fee', [UBPAddmoneyController::class, 'serviceFee']);
         Route::get('/ubp/process/pending', [UBPAddmoneyController::class, 'processPending']);
     });
 

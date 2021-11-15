@@ -33,4 +33,9 @@ class UBPAddmoneyController extends Controller
         $response = $this->addMoneyService->processPending($userId);
         return $this->responseService->successResponse($response);
     }
+
+    public function serviceFee(): JsonResponse {
+        $response = $this->addMoneyService->getServiceFeeByTierAuthUser(request()->user()->id);
+        return $this->responseService->successResponse($response->toArray());
+    }
 }
