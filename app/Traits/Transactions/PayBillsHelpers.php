@@ -133,7 +133,7 @@ trait PayBillsHelpers
     private function subtractUserBalance(UserAccount $user, string $billerCode, $response)
     {
         $balance = $this->getUserBalance($user);
-        $totalAmount = $response['data']['amount'] + $this->getServiceFee($user) + $this->getOtherCharges($billerCode);
+        $totalAmount = $response['data']['amount'] + $this->getServiceFee($user) + $this->getOtherCharges($billerCode, $response['data']);
         $balance -= $totalAmount;
 
         $pendingBalance = $this->userBalanceInfo->getUserPendingBalance($user->id);
@@ -164,10 +164,16 @@ trait PayBillsHelpers
     }
 
 
-    private function getOtherCharges(string $billerCode)
+    private function getOtherCharges(string $billerCode, $data=null)
     {
-        $otherCharges = $this->bayadCenterService->getOtherCharges($billerCode);
-        return $otherCharges['data']['otherCharges'];
+        if($billerCode === PayBillsConfig::MECOP) {
+            $otherCharges = $this->getOtherChargesMECOP($billerCode, $data);
+            return $otherCharges;
+        } else {
+            $otherCharges = $this->bayadCenterService->getOtherCharges($billerCode);
+            return $otherCharges['data']['otherCharges'];
+        }
+        
     }
 
 
