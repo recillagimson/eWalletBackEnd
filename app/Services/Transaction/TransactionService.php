@@ -13,6 +13,7 @@ use App\Services\AddMoneyV2\IAddMoneyService;
 use App\Services\BuyLoad\IBuyLoadService;
 use App\Services\PayBills\IPayBillsService;
 use App\Services\Send2Bank\Pesonet\ISend2BankPesonetService;
+use App\Services\ThirdParty\ECPay\IECPayService;
 use App\Services\Utilities\CSV\ICSVService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Traits\Errors\WithUserErrors;
@@ -38,6 +39,7 @@ class TransactionService implements ITransactionService
     private IUserTransactionHistoryRepository $userTransactionHistoryRepo;
     private IEmailService $emailService;
     private IUserDetailRepository $userDetailRepository;
+    private IECPayService $ecPayService;
 
     public function __construct(IUserBalanceRepository            $userBalanceRepository,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepository,
@@ -49,7 +51,8 @@ class TransactionService implements ITransactionService
                                 IUbpAddMoneyService               $ubpAddMoneyService,
                                 IUserTransactionHistoryRepository $userTransactionHistoryRepo,
                                 IEmailService                     $emailService,
-                                IUserDetailRepository             $userDetailRepository)
+                                IUserDetailRepository             $userDetailRepository,
+                                IECPayService                     $ecPayService)
     {
         $this->userBalanceRepository = $userBalanceRepository;
         $this->userTransactionHistoryRepository = $userTransactionHistoryRepository;
@@ -62,6 +65,7 @@ class TransactionService implements ITransactionService
         $this->userTransactionHistoryRepo = $userTransactionHistoryRepo;
         $this->emailService = $emailService;
         $this->userDetailRepository = $userDetailRepository;
+        $this->ecPayService = $ecPayService;
     }
 
     public function processUserPending(UserAccount $user)
@@ -79,6 +83,10 @@ class TransactionService implements ITransactionService
 
         $buyLoadResponse = $this->buyLoadService->processPending($user->id);
         Log::info('Buy Load Process Pending Result:', $buyLoadResponse);
+
+        $ecPayResponse = $this->ecPayService->
+
+
     }
 
     public function processAllPending()
