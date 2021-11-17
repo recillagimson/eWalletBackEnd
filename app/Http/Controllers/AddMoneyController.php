@@ -3,24 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SuccessMessages;
+use App\Enums\TransactionCategoryIds;
 use App\Http\Requests\DragonPay\AddMoneyCancelRequest;
 use App\Http\Requests\DragonPay\AddMoneyRequest;
 use App\Http\Requests\DragonPay\AddMoneyStatusRequest;
 use App\Http\Requests\DragonPay\DragonPayPostBackRequest;
+use App\Http\Requests\EcPayRequest\CommitPaymentRequest;
+use App\Http\Requests\EcPayRequest\ConfirmPaymentRequest;
 use App\Repositories\InAddMoney\IInAddMoneyRepository;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Services\AddMoney\IInAddMoneyService;
 use App\Services\AddMoneyV2\IAddMoneyService;
 use App\Services\Encryption\IEncryptionService;
+use App\Services\ThirdParty\ECPay\IECPayService;
+use App\Services\Transaction\ITransactionValidationService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Services\ThirdParty\ECPay\IECPayService;
-use App\Http\Requests\EcPayRequest\CommitPaymentRequest;
-use App\Http\Requests\EcPayRequest\ConfirmPaymentRequest;
-use App\Services\Transaction\ITransactionValidationService;
-use App\Enums\TransactionCategoryIds;
-use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 
 class AddMoneyController extends Controller
 {
@@ -32,7 +32,7 @@ class AddMoneyController extends Controller
     private IECPayService $ecpayService;
     private ITransactionValidationService $transactionValidationService;
     private IInAddMoneyEcPayRepository $inAddMoneyEcPayRepository;
-    
+
     public function __construct(IHandlePostBackService $postBackService,
                                 IEncryptionService $encryptionService,
                                 IInAddMoneyService $addMoneyService,
@@ -124,14 +124,7 @@ class AddMoneyController extends Controller
     }
 
     public function batchConfirmPayment(Request $request): JsonResponse {
-        
-        $data = $this->inAddMoneyEcPayRepository->getRefNoInPendingStatusFromUser(request()->user()->id);      
-        $arr = [];
-        foreach($data as $refno) {
-            $ref = ["referenceno" => $refno->reference_number];
-            array_push($arr, $this->ecpayService->batchConfirmPayment($ref, $request->user()));
-        }
-
-        return $this->responseService->successResponse($arr, SuccessMessages::success);
+        $arr = $this->ecpayService->batchConfirmPayment($request->user()->id);
+        return $this->responseService->successResponse($arr);
     }
 }

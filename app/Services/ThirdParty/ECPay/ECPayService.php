@@ -4,32 +4,29 @@
 namespace App\Services\ThirdParty\ECPay;
 
 
-use App\Enums\TpaProviders;
-use Log;
-use App\Services\Utilities\API\IApiService;
-use App\Traits\Errors\WithTpaErrors;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Str;
-use App\Services\Utilities\XML\XmlService;
-use Illuminate\Support\Stringable;
-use App\Services\AddMoney\DragonPay\IHandlePostBackService;
-use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
-use Illuminate\Validation\ValidationException;
-use Carbon\Carbon;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Enums\ECPayStatusTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\SuccessMessages;
 use App\Enums\TransactionCategoryIds;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\AddMoney\DragonPay\IHandlePostBackService;
+use App\Services\Utilities\API\IApiService;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
+use App\Services\Utilities\Responses\IResponseService;
+use App\Traits\Errors\WithTpaErrors;
+use Carbon\Carbon;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Stringable;
+use Illuminate\Validation\ValidationException;
 
 class ECPayService implements IECPayService
 {
@@ -54,6 +51,7 @@ class ECPayService implements IECPayService
     private IEmailService $emailService;
     private ISmsService $smsService;
     private IUserBalanceInfoRepository $balanceInfos;
+    private IUserAccountRepository $users;
 
     public function __construct(IApiService $apiService,
                                 IHandlePostBackService $handlePostBackService,
@@ -66,7 +64,8 @@ class ECPayService implements IECPayService
                                 IUserDetailRepository $userDetailRepository,
                                 IEmailService $emailService,
                                 ISmsService $smsService,
-                                IUserBalanceInfoRepository $balanceInfos)
+                                IUserBalanceInfoRepository $balanceInfos,
+                                IUserAccountRepository $users)
     {
 
         $this->ecpayUrl = config('ecpay.ecpay_url');
@@ -88,6 +87,7 @@ class ECPayService implements IECPayService
         $this->smsService = $smsService;
         $this->balanceInfos = $balanceInfos;
         $this->serviceFee = 2;
+        $this->users = $users;
     }
 
     private function getXmlHeaders(): array
@@ -132,11 +132,18 @@ class ECPayService implements IECPayService
         );
     }
 
-    public function batchConfirmPayment(array $data, object $user): array
+    public function batchConfirmPayment(string $userId): array
     {
-        \Log::info('///// - ECPAY Batch Confirm Payment - //////');
+        $user = $this->users->getUser($userId);
+        $data = $this->inAddMoneyEcPayRepository->getRefNoInPendingStatusFromUser($userId);
+        $arr = [];
 
-        return $this->processConfirmPayment($data, $user);
+        foreach($data as $refno) {
+            $ref = ["referenceno" => $refno->reference_number];
+            array_push($arr,  $this->processConfirmPayment($ref, $user));
+        }
+
+        return $arr;
     }
 
     private function processConfirmPayment(array $data, object $user): array {
@@ -325,7 +332,7 @@ class ECPayService implements IECPayService
 
     private function getUserBalance(string $userAccountID) {
         $userBalanceInfo = $this->balanceInfos->getByUserAccountID($userAccountID);
-        
+
         return $userBalanceInfo->available_balance;
     }
 
@@ -336,8 +343,8 @@ class ECPayService implements IECPayService
         }else {
             // EMAIL USER FOR NOTIFICATION
             $this->emailService->sendEcPaySuccessPaymentNotification(request()->user()->email, request()->user()->profile, $newBalance, $referenceNumber);
-        } 
-        
+        }
+
     }
 
     public function amountWithServiceFee(float $amount)
