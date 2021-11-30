@@ -85,7 +85,7 @@ class TransactionService implements ITransactionService
         Log::info('Buy Load Process Pending Result:', $buyLoadResponse);
 
         $ecPayResponse = $this->ecPayService->batchConfirmPayment($user->id);
-        Log::info('ECPay Process Pending Result:', $ecPayResponse);
+        Log::info('ECPay Add Money Process Pending Result:', $ecPayResponse);
     }
 
     public function processAllPending()

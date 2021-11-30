@@ -4,29 +4,33 @@
 namespace App\Services\ThirdParty\ECPay;
 
 
+use App\Enums\TpaProviders;
+use App\Repositories\UserAccount\IUserAccountRepository;
+use Log;
+use App\Services\Utilities\API\IApiService;
+use App\Traits\Errors\WithTpaErrors;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Str;
+use App\Services\Utilities\XML\XmlService;
+use Illuminate\Support\Stringable;
+use App\Services\AddMoney\DragonPay\IHandlePostBackService;
+use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
+use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
+use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Enums\ECPayStatusTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
 use App\Enums\SuccessMessages;
 use App\Enums\TransactionCategoryIds;
-use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
-use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
-use App\Services\AddMoney\DragonPay\IHandlePostBackService;
-use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Utilities\Responses\IResponseService;
-use App\Traits\Errors\WithTpaErrors;
-use Carbon\Carbon;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Stringable;
-use Illuminate\Validation\ValidationException;
 
 class ECPayService implements IECPayService
 {
@@ -51,7 +55,8 @@ class ECPayService implements IECPayService
     private IEmailService $emailService;
     private ISmsService $smsService;
     private IUserBalanceInfoRepository $balanceInfos;
-    private IUserAccountRepository $users;
+    private IUserAccountRepository $userAccounts;
+    private IInAddMoneyEcPayRepository $ecPayAddMoneyRepository;
 
     public function __construct(IApiService $apiService,
                                 IHandlePostBackService $handlePostBackService,
@@ -65,7 +70,8 @@ class ECPayService implements IECPayService
                                 IEmailService $emailService,
                                 ISmsService $smsService,
                                 IUserBalanceInfoRepository $balanceInfos,
-                                IUserAccountRepository $users)
+                                IUserAccountRepository $userAccounts,
+                                IInAddMoneyEcPayRepository $ecPayAddMoneyRepository)
     {
 
         $this->ecpayUrl = config('ecpay.ecpay_url');
@@ -87,7 +93,8 @@ class ECPayService implements IECPayService
         $this->smsService = $smsService;
         $this->balanceInfos = $balanceInfos;
         $this->serviceFee = 2;
-        $this->users = $users;
+        $this->userAccounts = $userAccounts;
+        $this->ecPayAddMoneyRepository = $ecPayAddMoneyRepository;
     }
 
     private function getXmlHeaders(): array
@@ -134,13 +141,13 @@ class ECPayService implements IECPayService
 
     public function batchConfirmPayment(string $userId): array
     {
-        $user = $this->users->getUser($userId);
-        $data = $this->inAddMoneyEcPayRepository->getRefNoInPendingStatusFromUser($userId);
+        $user = $this->userAccounts->getUser($userId);
+        $data = $this->ecPayAddMoneyRepository->getRefNoInPendingStatusFromUser($userId);
         $arr = [];
 
         foreach($data as $refno) {
             $ref = ["referenceno" => $refno->reference_number];
-            array_push($arr,  $this->processConfirmPayment($ref, $user));
+            array_push($arr, $this->processConfirmPayment($ref, $user));
         }
 
         return $arr;
