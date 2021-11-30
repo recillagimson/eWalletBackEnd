@@ -5,6 +5,7 @@ namespace App\Services\ThirdParty\ECPay;
 
 
 use App\Enums\TpaProviders;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use Log;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
@@ -54,6 +55,8 @@ class ECPayService implements IECPayService
     private IEmailService $emailService;
     private ISmsService $smsService;
     private IUserBalanceInfoRepository $balanceInfos;
+    private IUserAccountRepository $userAccounts;
+    private IInAddMoneyEcPayRepository $ecPayAddMoneyRepository;
 
     public function __construct(IApiService $apiService,
                                 IHandlePostBackService $handlePostBackService,
@@ -66,7 +69,9 @@ class ECPayService implements IECPayService
                                 IUserDetailRepository $userDetailRepository,
                                 IEmailService $emailService,
                                 ISmsService $smsService,
-                                IUserBalanceInfoRepository $balanceInfos)
+                                IUserBalanceInfoRepository $balanceInfos,
+                                IUserAccountRepository $userAccounts,
+                                IInAddMoneyEcPayRepository $ecPayAddMoneyRepository)
     {
 
         $this->ecpayUrl = config('ecpay.ecpay_url');
@@ -88,6 +93,8 @@ class ECPayService implements IECPayService
         $this->smsService = $smsService;
         $this->balanceInfos = $balanceInfos;
         $this->serviceFee = 2;
+        $this->userAccounts = $userAccounts;
+        $this->ecPayAddMoneyRepository = $ecPayAddMoneyRepository;
     }
 
     private function getXmlHeaders(): array
@@ -132,11 +139,18 @@ class ECPayService implements IECPayService
         );
     }
 
-    public function batchConfirmPayment(array $data, object $user): array
+    public function batchConfirmPayment(string $userId): array
     {
-        \Log::info('///// - ECPAY Batch Confirm Payment - //////');
+        $user = $this->userAccounts->getUser($userId);
+        $data = $this->ecPayAddMoneyRepository->getRefNoInPendingStatusFromUser($userId);
+        $arr = [];
 
-        return $this->processConfirmPayment($data, $user);
+        foreach($data as $refno) {
+            $ref = ["referenceno" => $refno->reference_number];
+            array_push($arr, $this->processConfirmPayment($ref, $user));
+        }
+
+        return $arr;
     }
 
     private function processConfirmPayment(array $data, object $user): array {
@@ -325,7 +339,7 @@ class ECPayService implements IECPayService
 
     private function getUserBalance(string $userAccountID) {
         $userBalanceInfo = $this->balanceInfos->getByUserAccountID($userAccountID);
-        
+
         return $userBalanceInfo->available_balance;
     }
 
@@ -336,8 +350,8 @@ class ECPayService implements IECPayService
         }else {
             // EMAIL USER FOR NOTIFICATION
             $this->emailService->sendEcPaySuccessPaymentNotification(request()->user()->email, request()->user()->profile, $newBalance, $referenceNumber);
-        } 
-        
+        }
+
     }
 
     public function amountWithServiceFee(float $amount)
