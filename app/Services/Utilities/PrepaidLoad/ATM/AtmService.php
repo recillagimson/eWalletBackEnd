@@ -90,9 +90,11 @@ class AtmService implements IAtmService
 
         $url = $this->baseUrl . $this->prefixUrl;
         $response = $this->apiService->post($url, $data, $headers);
+        $data = $response->json();
+
+        Log::info('Get ATM Product List: ', $data);
 
         if ($response->successful()) {
-            $data = $response->json();
             $state = $data['responseCode'];
 
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
