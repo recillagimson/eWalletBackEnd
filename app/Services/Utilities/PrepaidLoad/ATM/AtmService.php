@@ -92,8 +92,6 @@ class AtmService implements IAtmService
         $response = $this->apiService->post($url, $data, $headers);
         $data = $response->json();
 
-        Log::info('Get ATM Product List: ', $data);
-
         if ($response->successful()) {
             $state = $data['responseCode'];
 
