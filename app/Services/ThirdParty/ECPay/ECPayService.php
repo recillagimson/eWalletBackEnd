@@ -108,7 +108,7 @@ class ECPayService implements IECPayService
     public function commitPayment(array $data, object $user): object
     {
         $refNo = $this->referenceNumberService->generateRefNoWithThirteenLength(ReferenceNumberTypes::AddMoneyViaOTC);
-        $expirationDate = Carbon::now()->addHours($this->expirationPerHour)->format('Y-m-d H:i:s');
+        $expirationDate = Carbon::now()->addDays($this->expirationPerHour)->format('Y-m-d H:i:s');
         $result = $this->generateXmlBody($this->createBodyCommitPaymentFormat($refNo, $expirationDate, $data), "CommitPayment");
         $response = $this->apiService->postXml($this->ecpayUrl, $result, $this->getXmlHeaders());
         $xmlData = $this->xmlBodyParser($response->body());
