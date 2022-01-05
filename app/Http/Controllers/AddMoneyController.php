@@ -32,7 +32,7 @@ class AddMoneyController extends Controller
     private IECPayService $ecpayService;
     private ITransactionValidationService $transactionValidationService;
     private IInAddMoneyEcPayRepository $inAddMoneyEcPayRepository;
-    
+
     public function __construct(IHandlePostBackService $postBackService,
                                 IEncryptionService $encryptionService,
                                 IInAddMoneyService $addMoneyService,
@@ -124,8 +124,8 @@ class AddMoneyController extends Controller
     }
 
     public function batchConfirmPayment(Request $request): JsonResponse {
-        
-        $data = $this->inAddMoneyEcPayRepository->getRefNoInPendingStatusFromUser(request()->user()->id);      
+
+        $data = $this->inAddMoneyEcPayRepository->getRefNoInPendingStatusFromUser(request()->user()->id);
         $arr = [];
         foreach($data as $refno) {
             $ref = ["referenceno" => $refno->reference_number];

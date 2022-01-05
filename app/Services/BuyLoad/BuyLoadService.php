@@ -5,6 +5,8 @@ namespace App\Services\BuyLoad;
 
 
 use App\Enums\AtmPrepaidResponseCodes;
+use App\Enums\Currencies;
+use App\Enums\DrcrStatus;
 use App\Enums\NetworkTypes;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SquidPayModuleTypes;
@@ -15,6 +17,8 @@ use App\Enums\TransactionStatuses;
 use App\Enums\UsernameTypes;
 use App\Models\OutBuyLoad;
 use App\Models\UserAccount;
+use App\Models\UserBalanceInfo;
+use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\OutBuyLoad\IOutBuyLoadRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
@@ -54,6 +58,9 @@ class BuyLoadService implements IBuyLoadService
     private IUserTransactionHistoryRepository $transactionHistories;
     private IUserAccountRepository $users;
     private INotificationRepository $notificationRepository;
+    private IDrcrMemoRepository $drcrMemoRepository;
+
+    private array $atmSmartPromos;
 
     public function __construct(IAtmService                       $atmService,
                                 IOtpService                       $otpService,
@@ -65,7 +72,8 @@ class BuyLoadService implements IBuyLoadService
                                 IOutBuyLoadRepository             $buyLoads,
                                 IUserTransactionHistoryRepository $transactionHistories,
                                 ILogHistoryService                $logHistoryService,
-                                INotificationRepository           $notificationRepository)
+                                INotificationRepository           $notificationRepository,
+                                IDrcrMemoRepository               $drcrMemoRepository)
     {
         $this->atmService = $atmService;
         $this->transactionValidationService = $transactionValidationService;
@@ -80,6 +88,18 @@ class BuyLoadService implements IBuyLoadService
         $this->transactionHistories = $transactionHistories;
         $this->notificationRepository = $notificationRepository;
 
+        $this->drcrMemoRepository = $drcrMemoRepository;
+        $this->atmSmartPromos = [
+            'W100',
+            'W1000',
+            'W115',
+            'W200',
+            'W30',
+            'W300',
+            'W50',
+            'W500',
+            'W60',
+        ];
     }
 
     public function getEpinProducts(): array
@@ -139,6 +159,7 @@ class BuyLoadService implements IBuyLoadService
             if ($buyLoad->status === TransactionStatuses::failed) $balanceInfo->available_balance += $amount;
             $balanceInfo->save();
 
+            $this->processSmartPromo($buyLoad, $balanceInfo);
             $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance);
             DB::commit();
 
@@ -179,6 +200,8 @@ class BuyLoadService implements IBuyLoadService
             }
 
             $balanceInfo->save();
+
+            $this->processSmartPromo($buyLoad, $balanceInfo);
             $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance);
 
             if ($buyLoad->status === TransactionStatuses::success) $successCount++;
@@ -219,7 +242,6 @@ class BuyLoadService implements IBuyLoadService
               return $provider;
           }
     }
-
 
     private function handleLoadTopupResponse(OutBuyLoad $buyLoad, Response $response): OutBuyLoad
     {
@@ -369,5 +391,36 @@ class BuyLoadService implements IBuyLoadService
             'user_account_id' => $userId,
             'user_created' => $userId
         ]);
+    }
+
+    private function processSmartPromo(OutBuyLoad $buyLoad, UserBalanceInfo $balanceInfo)
+    {
+        if($buyLoad->status === TransactionStatuses::success && in_array($buyLoad->product_code, $this->atmSmartPromos))
+        {
+            $amount = 0.05 * $buyLoad->total_amount;
+            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::CR);
+            $currentTime = Carbon::now();
+
+            $balanceInfo->available_balance += $amount;
+            $balanceInfo->save();
+
+            $crMemo = [
+                'user_account_id' => $buyLoad->user_account_id,
+                'type_of_memo' => ReferenceNumberTypes::CR,
+                'reference_number' => $refNo,
+                'transaction_category_id' => TransactionCategoryIds::crMemo,
+                'amount' => $amount,
+                'currency_id' => Currencies::philippinePeso,
+                'category' => 'Adjustment',
+                'description' => 'Credit Memo for Smart Promo',
+                'status' => DrcrStatus::A,
+                'created_by' => $buyLoad->user_account_id,
+                'approved_at' => $currentTime
+            ];
+
+            $this->drcrMemoRepository->create($crMemo);
+            $this->transactionHistories->log($buyLoad->user_account_id, TransactionCategoryIds::crMemo,
+                $buyLoad->id, $refNo, $amount, $currentTime, $buyLoad->user_account_id);
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Auth\UserKey\IUserKeyService;
 use Exception;
 use App\Enums\NetworkTypes;
 use App\Enums\TpaProviders;
@@ -59,12 +60,10 @@ use App\Services\SendMoney\SendMoneyService;
 use App\Services\ThirdParty\UBP\IUBPService;
 use App\Http\Controllers\Send2BankController;
 use App\Services\AddMoney\IInAddMoneyService;
-use App\Services\Auth\UserKey\UserKeyService;
 use App\Services\Dashboard\IDashboardService;
 use App\Services\DBPReport\IDBPReportService;
 use App\Services\Send2Bank\ISend2BankService;
 use App\Services\SendMoney\ISendMoneyService;
-use App\Services\Auth\UserKey\IUserKeyService;
 use App\Services\Encryption\EncryptionService;
 use App\Services\OutBuyLoad\OutBuyLoadService;
 use App\Services\Encryption\IEncryptionService;
