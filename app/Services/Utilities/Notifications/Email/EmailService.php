@@ -9,6 +9,7 @@ use App\Mail\Auth\AccountVerification;
 use App\Mail\Auth\PasswordRecoveryEmail;
 use App\Mail\BPI\CashInBPI;
 use App\Mail\BuyLoad\SenderNotification as BuyLoadSenderNotification;
+use App\Mail\BuyLoad\SmartPromoNotification;
 use App\Mail\Cebuana\CebuanaConfirmationMail;
 use App\Mail\EcPay\SuccessPayment;
 use App\Mail\Farmers\BatchUploadNotification;
@@ -95,6 +96,7 @@ class EmailService implements IEmailService
      *
      * @param string $to
      * @param string $otp
+     * @param string $recipientName
      */
     public function sendLoginVerification(string $to, string $otp, string $recipientName)
     {
@@ -345,6 +347,13 @@ class EmailService implements IEmailService
     public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber) {
         $subject = "Confirmation Message - Squidpay Cash In";
         $template = new CebuanaConfirmationMail($firstName, $fullName, $accountNumber, $transactionDateTime, $addMoneyPartnerReferenceNumber, $amount, $referenceNumber);
+        $this->sendMessage($to, $subject, $template);
+    }
+
+    public function sendSmartPromoNotification(string $to, string $firstName, float $amount, string $productName, string $refNo)
+    {
+        $subject = "Squidpay - Promo Notification";
+        $template = new SmartPromoNotification($firstName, $amount, $productName, $refNo);
         $this->sendMessage($to, $subject, $template);
     }
 }

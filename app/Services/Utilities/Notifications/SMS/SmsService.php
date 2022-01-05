@@ -244,4 +244,11 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
+    public function sendSmartPromoNotification(string $to, string $firstName, float $amount, string $productName, string $refNo)
+    {
+        $content = 'Hi ' . $firstName . '! P' . $amount . ' have been refunded to your account for purchasing ' . $productName . '.' .
+            'Ref. No. ' . $refNo . '.';
+        $this->sendMessages($to, $content);
+    }
+
 }

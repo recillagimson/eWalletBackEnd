@@ -15,6 +15,7 @@ use App\Enums\TransactionCategories;
 use App\Enums\TransactionCategoryIds;
 use App\Enums\TransactionStatuses;
 use App\Enums\UsernameTypes;
+use App\Models\DrcrMemo;
 use App\Models\OutBuyLoad;
 use App\Models\UserAccount;
 use App\Models\UserBalanceInfo;
@@ -159,8 +160,8 @@ class BuyLoadService implements IBuyLoadService
             if ($buyLoad->status === TransactionStatuses::failed) $balanceInfo->available_balance += $amount;
             $balanceInfo->save();
 
-            $this->processSmartPromo($buyLoad, $balanceInfo);
-            $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance);
+            $memo = $this->processSmartPromo($buyLoad, $balanceInfo);
+            $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance, $memo);
             DB::commit();
 
             $this->logHistory($userId, $refNo, $currentDate, $productCode, $recipientMobileNumber);
@@ -201,8 +202,8 @@ class BuyLoadService implements IBuyLoadService
 
             $balanceInfo->save();
 
-            $this->processSmartPromo($buyLoad, $balanceInfo);
-            $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance);
+            $memo = $this->processSmartPromo($buyLoad, $balanceInfo);
+            $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance, $memo);
 
             if ($buyLoad->status === TransactionStatuses::success) $successCount++;
             if ($buyLoad->status === TransactionStatuses::failed) $failCount++;
@@ -239,8 +240,8 @@ class BuyLoadService implements IBuyLoadService
                 break;
 
             default:
-              return $provider;
-          }
+                return $provider;
+        }
     }
 
     private function handleLoadTopupResponse(OutBuyLoad $buyLoad, Response $response): OutBuyLoad
@@ -333,7 +334,7 @@ class BuyLoadService implements IBuyLoadService
         $this->transactionFailed();
     }
 
-    private function sendNotifications(UserAccount $user, OutBuyLoad $buyLoad, float $availableBalance)
+    private function sendNotifications(UserAccount $user, OutBuyLoad $buyLoad, float $availableBalance, ?DrcrMemo $memo)
     {
         $usernameField = $this->getUsernameFieldByAvailability($user);
         $username = $this->getUsernameByField($user, $usernameField);
@@ -346,6 +347,13 @@ class BuyLoadService implements IBuyLoadService
 
             $this->createAppNotification($user->id, $buyLoad->transaction_date, $buyLoad->total_amount, $availableBalance,
                 $buyLoad->reference_number, $buyLoad->product_name, $buyLoad->recipient_mobile_number);
+
+            if (in_array($buyLoad->product_code, $this->atmSmartPromos)) {
+                $notifService->sendSmartPromoNotification($username, $user->profile->first_name, $memo->amount,
+                    $buyLoad->product_name, $memo->reference_number);
+
+                $this->createPromoNotification($user->id, $memo->amount, $buyLoad->product_name, $memo->reference_number);
+            }
         }
     }
 
@@ -393,10 +401,25 @@ class BuyLoadService implements IBuyLoadService
         ]);
     }
 
-    private function processSmartPromo(OutBuyLoad $buyLoad, UserBalanceInfo $balanceInfo)
+    private function createPromoNotification(string $userId, float $amount, string $productName, string $refNo)
     {
-        if($buyLoad->status === TransactionStatuses::success && in_array($buyLoad->product_code, $this->atmSmartPromos))
-        {
+        $strAmount = number_format($amount, 2);
+        $title = 'SquidPay - Promo Notification';
+        $description = $strAmount . ' have been refunded to your account for purchasing ' . $productName .
+            'Ref. No. ' . $refNo . '.';
+
+        $this->notificationRepository->create([
+            'title' => $title,
+            'status' => 1,
+            'description' => $description,
+            'user_account_id' => $userId,
+            'user_created' => $userId
+        ]);
+    }
+
+    private function processSmartPromo(OutBuyLoad $buyLoad, UserBalanceInfo $balanceInfo): ?DrcrMemo
+    {
+        if ($buyLoad->status === TransactionStatuses::success && in_array($buyLoad->product_code, $this->atmSmartPromos)) {
             $amount = 0.05 * $buyLoad->total_amount;
             $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::CR);
             $currentTime = Carbon::now();
@@ -418,9 +441,13 @@ class BuyLoadService implements IBuyLoadService
                 'approved_at' => $currentTime
             ];
 
-            $this->drcrMemoRepository->create($crMemo);
+            $memo = $this->drcrMemoRepository->create($crMemo);
             $this->transactionHistories->log($buyLoad->user_account_id, TransactionCategoryIds::crMemo,
                 $buyLoad->id, $refNo, $amount, $currentTime, $buyLoad->user_account_id);
+
+            return $memo;
         }
+
+        return null;
     }
 }
