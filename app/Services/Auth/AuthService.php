@@ -20,6 +20,7 @@ use App\Traits\UserHelpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\NewAccessToken;
 
 class AuthService implements IAuthService
@@ -75,6 +76,8 @@ class AuthService implements IAuthService
 
     public function login(string $usernameField, array $creds, string $ip): array
     {
+        Log::debug($usernameField);
+
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
         if (!$user) $this->accountDoesntExist();
         $this->validateInternalUsers($user);

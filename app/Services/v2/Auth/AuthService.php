@@ -81,6 +81,11 @@ class AuthService implements IAuthService
 
     public function login(string $usernameField, array $creds, string $ip): array
     {
+        Log::debug('User Field and Email on Login: ', [
+            'usernameField' => $usernameField,
+            'usernameValue' => $creds[$usernameField]
+        ]);
+
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
         if (!$user) $this->accountDoesntExist();
         $this->validateInternalUsers($user);
@@ -344,7 +349,7 @@ class AuthService implements IAuthService
             if ($updateLockout) {
                 $this->logHistory($user->id);
                 $user->updateLockout($this->maxLoginAttempts);
-            }; 
+            };
 
             if (!$forConfirmation) $this->loginFailed();
             $this->confirmationFailed();
@@ -362,7 +367,7 @@ class AuthService implements IAuthService
 
     public function logHistory(string $userId)
     {
-        $remarks = "Account locked for User Account ID $userId.";  
+        $remarks = "Account locked for User Account ID $userId.";
         $currentDate = Carbon::now();
 
         $this->logHistories->logUserHistory($userId,
