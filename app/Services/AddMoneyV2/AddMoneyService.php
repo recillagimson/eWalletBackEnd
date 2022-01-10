@@ -176,7 +176,7 @@ class AddMoneyService implements IAddMoneyService
             $responseData = $response->json();
             $updatedStatus = $responseData['Status'];
 
-            if ($updatedStatus === DragonPayStatusTypes::Pending) {
+            if ($updatedStatus === DragonPayStatusTypes::Pending || $updatedStatus === DragonPayStatusTypes::Unknown) {
                 $addMoney->transaction_response = $responseData;
 
                 $currentDate = Carbon::now();

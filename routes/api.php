@@ -152,7 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['decrypt.request'])->prefix('ecpay')->group(function () {
         Route::post('commitpayment', [AddMoneyController::class, 'commitPayment']);
         Route::post('confirmpayment', [AddMoneyController::class, 'confirmPayment']);
-        Route::get('batchconfirmpayment', [AddMoneyController::class, 'batchConfirmPayment']);
+//        Route::get('batchconfirmpayment', [AddMoneyController::class, 'batchConfirmPayment']);
     });
 
     Route::prefix('/auth')->middleware(['decrypt.request'])->group(function () {
@@ -257,10 +257,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/process/pending', [Send2BankController::class, 'processPending'])->name('ubp.process.pending');
         Route::get('/process/all/pending', [Send2BankController::class, 'processUsersWithPending'])->name('ubp.process.pending.all');
 
-        Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect'])->name('direct.ubp');
-        Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP'])->name('validate.ubp');
+        //Route::post('/direct/ubp', [Send2BankController::class, 'send2BankUBPDirect'])->name('direct.ubp');
+       //Route::post('/validate/ubp', [Send2BankController::class, 'validateFundTransferDirectUBP'])->name('validate.ubp');
         Route::post('/{provider}', [Send2BankController::class, 'fundTransfer'])->name('provider');
-        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction'])->name('provider.transaction.update');
+       Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction'])->name('provider.transaction.update');
     });
 
     Route::prefix('/load')->middleware(['decrypt.request'])->name('load.')->group(function () {

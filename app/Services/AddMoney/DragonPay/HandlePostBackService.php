@@ -140,7 +140,7 @@ class HandlePostBackService implements IHandlePostBackService
             throw ValidationException::withMessages(['Message' => 'Add money Failed']);
         }
 
-        if ($status == 'P') {
+        if ($status === 'P' || $status === 'U') {
 
             $this->addMoneys->update($addMoneyRow, [
                 'dragonpay_reference' => $dragonpayReference,

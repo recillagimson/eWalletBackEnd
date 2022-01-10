@@ -24,13 +24,13 @@ use App\Enums\SquidPayModuleTypes;
 use App\Enums\SuccessMessages;
 use App\Enums\TransactionCategoryIds;
 use App\Repositories\TransactionCategory\ITransactionCategoryRepository;
+use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
-use App\Services\Utilities\LogHistory\ILogHistoryService;
-use App\Services\Utilities\Responses\IResponseService;
 use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
+use App\Services\Utilities\LogHistory\ILogHistoryService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
-use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
+use App\Services\Utilities\Responses\IResponseService;
 
 class ECPayService implements IECPayService
 {
@@ -108,7 +108,7 @@ class ECPayService implements IECPayService
     public function commitPayment(array $data, object $user): object
     {
         $refNo = $this->referenceNumberService->generateRefNoWithThirteenLength(ReferenceNumberTypes::AddMoneyViaOTC);
-        $expirationDate = Carbon::now()->addHours($this->expirationPerHour)->format('Y-m-d H:i:s');
+        $expirationDate = Carbon::now()->addDays($this->expirationPerHour)->format('Y-m-d H:i:s');
         $result = $this->generateXmlBody($this->createBodyCommitPaymentFormat($refNo, $expirationDate, $data), "CommitPayment");
         $response = $this->apiService->postXml($this->ecpayUrl, $result, $this->getXmlHeaders());
         $xmlData = $this->xmlBodyParser($response->body());

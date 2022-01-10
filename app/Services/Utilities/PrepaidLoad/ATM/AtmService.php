@@ -90,9 +90,9 @@ class AtmService implements IAtmService
 
         $url = $this->baseUrl . $this->prefixUrl;
         $response = $this->apiService->post($url, $data, $headers);
+        $data = $response->json();
 
         if ($response->successful()) {
-            $data = $response->json();
             $state = $data['responseCode'];
 
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
@@ -125,10 +125,13 @@ class AtmService implements IAtmService
             \Log::info(json_encode($data));
             if ($state === AtmPrepaidResponseCodes::requestReceived) {
                 $prefixes = collect($data['data']);
-                // return $prefixes->sortBy(['provider', 'productCode', 'denominations']);
-                return ($provider == TopupTypes::atm_epin) ?
-                    $prefixes->where('productType', TopupTypes::atm_epin)->sortBy(['provider', 'productCode', 'denominations']) :
-                    $prefixes->where('productType', TopupTypes::atm_buy_load)->sortBy(['provider', 'productCode', 'denominations']);
+                return $prefixes
+                    ->where('provider', '=', $provider)
+                    ->sortBy(['provider', 'productCode', 'denominations'])
+                    ->unique('productCode');
+//                return ($provider == TopupTypes::atm_epin) ?
+//                    $prefixes->where('productType', TopupTypes::atm_epin)->sortBy(['provider', 'productCode', 'denominations']) :
+//                    $prefixes->where('productType', TopupTypes::atm_buy_load)->sortBy(['provider', 'productCode', 'denominations']);
             }
         }
 
