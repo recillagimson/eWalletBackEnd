@@ -2,11 +2,15 @@
 
 namespace App\Services\BPIService;
 
+use App\Enums\Currencies;
+use App\Enums\DrcrStatus;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SendMoneyConfig;
 use App\Enums\TransactionCategoryIds;
+use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
 use App\Repositories\Notification\INotificationRepository;
+use App\Repositories\OutPayMerchants\IOutPayMerchantRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
@@ -44,6 +48,8 @@ class BPIService implements IBPIService
     private ISmsService $smsService;
     private IEmailService $emailService;
     private INotificationRepository $notificationRepository;
+    private IOutPayMerchantRepository $outPayMerchantRepository;
+    private IDrcrMemoRepository $drcrMemoRepository;
 
     private $clientId;
     private $clientSecret;
@@ -54,7 +60,6 @@ class BPIService implements IBPIService
     private $fundTopUpStatusUrl;
     private $processUrl;
 
-
     public function __construct(IApiService                       $apiService,
                                 IReferenceNumberService           $referenceNumberService,
                                 ILogHistoryService                $logHistory,
@@ -64,7 +69,9 @@ class BPIService implements IBPIService
                                 IServiceFeeRepository             $serviceFee,
                                 ISmsService                       $smsService,
                                 IEmailService                     $emailService,
-                                INotificationRepository              $notificationRepository)
+                                INotificationRepository           $notificationRepository,
+                                IOutPayMerchantRepository         $outPayMerchantRepository,
+                                IDrcrMemoRepository               $drcrMemoRepository)
     {
         $this->apiService = $apiService;
         $this->referenceNumberService = $referenceNumberService;
@@ -76,6 +83,8 @@ class BPIService implements IBPIService
         $this->emailService = $emailService;
         $this->notificationRepository = $notificationRepository;
         $this->logHistory = $logHistory;
+        $this->outPayMerchantRepository = $outPayMerchantRepository;
+        $this->drcrMemoRepository = $drcrMemoRepository;
 
         $this->clientId = config('bpi.clientId');
         $this->clientSecret = config('bpi.clientSecret');
@@ -87,7 +96,8 @@ class BPIService implements IBPIService
         $this->processUrl = config('bpi.processUrl');
     }
 
-    private function getHeaders(string $token) {
+    private function getHeaders(string $token)
+    {
         return [
             'x-ibm-client-id' => $this->clientId,
             'x-ibm-client-secret' => $this->clientSecret,
@@ -96,7 +106,8 @@ class BPIService implements IBPIService
         ];
     }
 
-    public function bpiAuth(string $code) {
+    public function bpiAuth(string $code)
+    {
         $body = [
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
@@ -106,14 +117,15 @@ class BPIService implements IBPIService
         return $this->apiService->postAsForm($this->authUrl, $body, ['accept' => 'application/json', 'content-type' => 'application/x-www-form-urlencoded'])->json();
     }
 
-    public function getAccounts(string $token) {
+    public function getAccounts(string $token)
+    {
 
         $token = $this->getHeaders($token);
         $response = $this->apiService->get($this->transactionalUrl, $token)->json();
-        if($response && isset($response['token'])) {
+        if ($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
             Log::info($jwt);
-            if($jwt) {
+            if ($jwt) {
                 $val = $this->bpiDecryptionJWT($jwt);
                 Log::info($jwt);
                 return $val;
@@ -124,7 +136,8 @@ class BPIService implements IBPIService
         $this->bpiTokenInvalid();
     }
 
-    public function fundTopUp(Array $array, string $rawToken) {
+    public function fundTopUp(array $array, string $rawToken)
+    {
         $array['remarks'] = 'BPI Cashin';
         $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::AddMoneyViaWebBank);
         $token = $this->getHeaders($rawToken);
@@ -181,7 +194,8 @@ class BPIService implements IBPIService
         $this->bpiTokenInvalid();
     }
 
-    public function otp(array $params) {
+    public function otp(array $params)
+    {
         $headers = $this->getHeaders($params['token']);
         $headers['transactionId'] = $params['transactionId'];
         $otp_url = $this->fundTopUpOtpUrl;
@@ -199,9 +213,9 @@ class BPIService implements IBPIService
 
         Log::info($response);
 
-        if($response && isset($response['token'])) {
+        if ($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
-            if($jwt) {
+            if ($jwt) {
                 $jwt_response = $this->bpiDecryptionJWE($response['token']);
                 $response_raw = $this->bpiDecryptionJWT($jwt_response);
                 return $response_raw;
@@ -211,24 +225,25 @@ class BPIService implements IBPIService
         $this->bpiTokenInvalid();
     }
 
-    public function status(array $params) {
+    public function status(array $params)
+    {
         DB::beginTransaction();
         try {
             $headers = $this->getHeaders($params['token']);
             $status_url = $this->fundTopUpStatusUrl;
 
             $processedTransactions = [];
-            foreach($params['transactionIds'] as $transactionId) {
+            foreach ($params['transactionIds'] as $transactionId) {
                 $transaction = $this->bpiRepository->get($transactionId);
-                if($transaction && $transaction->status != 'success') {
+                if ($transaction && $transaction->status != 'success') {
                     $headers['transactionId'] = $transaction->bpi_reference;
                     $response = $this->apiService->get($status_url, $headers);
-                    if($response && isset($response->json()['token'])) {
+                    if ($response && isset($response->json()['token'])) {
                         $jwt = $this->bpiDecryptionJWE($response['token']);
-                        if($jwt) {
+                        if ($jwt) {
                             $jwt_response = $this->bpiDecryptionJWE($response['token']);
                             $response_raw = $this->bpiDecryptionJWT($jwt_response);
-                            if($response_raw && $response_raw['status'] == 'success') {
+                            if ($response_raw && $response_raw['status'] == 'success') {
                                 $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
                                 $cashInWithServiceFee = $transaction->total_amount + SendMoneyConfig::ServiceFee;
                                 $total = $cashInWithServiceFee + $balance;
@@ -252,7 +267,8 @@ class BPIService implements IBPIService
         }
     }
 
-    public function process(array $params, string $authUser) {
+    public function process(array $params, string $authUser)
+    {
 
         $record = $this->bpiRepository->create(
             [
@@ -264,14 +280,14 @@ class BPIService implements IBPIService
                 "total_amount" => $params['amount'],
                 "transaction_date" => Carbon::now()->format('Y-m-d H:i:s'),
                 "transaction_category_id" => TransactionCategoryIds::cashinBPI,
-                "transaction_remarks" => isset($params['remarks']) ? $params['remarks'] : '',
+                "transaction_remarks" => $params['remarks'] ?? '',
                 "status" => "PENDING", // UPDATE AFTER REQUEST
                 "bpi_reference" => $params['transactionId'],
                 "transaction_response" => json_encode(["status" => "pending"]), // UPDATE AFTER REQUEST
                 "account_number" => $params['accountNumber'],
                 "user_created" => request()->user()->id,
                 "user_updated" => request()->user()->id,
-                "bank_name" => isset($response_raw['iss']) ? $response_raw['iss'] : '',
+                "bank_name" => $response_raw['iss'] ?? '',
             ]
         );
 
@@ -294,24 +310,24 @@ class BPIService implements IBPIService
             $jwe = $this->bpiEncodeJWE($jwt);
 
             $response = $this->apiService->post($otp_url, ['token' => $jwe], $headers);
-            if($response && isset($response->json()['token'])) {
+            if ($response && isset($response->json()['token'])) {
                 $jwt = $this->bpiDecryptionJWE($response['token']);
-                if($jwt) {
+                if ($jwt) {
                     $jwt_response = $this->bpiDecryptionJWE($response['token']);
                     $response_raw = $this->bpiDecryptionJWT($jwt_response);
 
                     // CHECK ERRORS
-                    if($response_raw && isset($response_raw['code']) && $response_raw['status'] == 'error') {
+                    if ($response_raw && isset($response_raw['code']) && $response_raw['status'] == 'error') {
                         $bpi_codes = config('bpi.bpi_codes');
-                        foreach($bpi_codes as $key => $code) {
-                            if($response_raw['code'] == $key) {
+                        foreach ($bpi_codes as $key => $code) {
+                            if ($response_raw['code'] == $key) {
                                 $error = $code;
                             }
                         }
-                        if(config('bpi.BPI_426') == $response_raw['code'] || config('bpi.BPI_4262') == $response_raw['code']) {
+
+                        if (config('bpi.BPI_426') == $response_raw['code'] || config('bpi.BPI_4262') == $response_raw['code']) {
                             $error = $response_raw['code'];
                         }
-
 
                         // HANDLE BPI ERROR
                         // UPDATE TRANSACTION
@@ -340,59 +356,123 @@ class BPIService implements IBPIService
                         // Wilson please fix the amount of service fee
 
                         $balance = $this->userBalanceInfo->getUserBalance(request()->user()->id);
-                        $cashInWithServiceFee = (Double)$params['amount'];
-                        $total = (Double)$params['amount'] + (Double)$balance;
-                        if($response_raw['status'] == 'success') {
+                        $cashInWithServiceFee = (double)$params['amount'];
+                        $total = (double)$params['amount'] + (double)$balance;
+
+                        if ($response_raw['status'] == 'success') {
                             $this->userBalanceInfo->updateUserBalance(request()->user()->id, $total);
                         }
 
-                        if(request()->user() && request()->user()->is_login_email == 0) {
+                        if (request()->user() && request()->user()->is_login_email == 0) {
                             // SMS USER FOR NOTIFICATION
                             $this->smsService->sendBPICashInNotification(request()->user()->mobile_number, request()->user()->profile, $total, $params['refId']);
-                        }else {
+                        } else {
                             // EMAIL USER FOR NOTIFICATION
                             $this->emailService->sendBPICashInNotification(request()->user()->email, request()->user()->profile, $total, $params['refId']);
                         }
+
                         $dt = Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A');
                         $this->notificationRepository->create([
                             'title' => "SquidPay - Cash in via BPI",
                             'status' => '1',
-                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " . $dt . " . Service fee for this transaction is P 10.00. Your new balance is P " . number_format($total, 2) . " with reference no. " . $params['refId'] . ". Thank you for using SquidPay!",
+                            'description' => "Hi " . request()->user()->profile->first_name . "! You have successfully added funds to your wallet via BPI on " .
+                                $dt . " . Service fee for this transaction is P 10.00. Your new balance is P " . number_format($total, 2) .
+                                " with reference no. " . $params['refId'] . ". Thank you for using SquidPay!",
                             'user_account_id' => request()->user()->id,
                             'user_created' => request()->user()->id
                         ]);
 
+                        $minPromoDate = Carbon::create(2022, 1, 15);
+                        $maxPromoDate = Carbon::create(2022, 2, 28);
+                        $transactionDate = $record->transaction_date;
+
+                        if ($transactionDate->greaterThanOrEqualTo($minPromoDate) && $transactionDate->lessThanOrEqualTo($maxPromoDate)) {
+
+                            if ($record->amount >= 1000) {
+
+                                $balanceInfo = $this->userBalanceInfo->getByUserAccountID(request()->user()->id);
+                                $payMerchantTransactions = $this->outPayMerchantRepository->getByUser($record->user_account_id);
+
+                                if ($payMerchantTransactions->count() < 2) {
+
+                                    $payMerchRefNo = $this->referenceNumberService->generate('PM');
+                                    $memoRefNo = $this->referenceNumberService->generate(ReferenceNumberTypes::CR);
+                                    $promoAmount = 50;
+
+                                    $newPayMerchant = $this->outPayMerchantRepository->create([
+                                        'user_account_id' => $record->user_account_id,
+                                        'reference_number' => $payMerchRefNo,
+                                        'amount' => $promoAmount,
+                                        'service_fee_id' => null,
+                                        'service_fee' => 0,
+                                        'total_amount' => $promoAmount,
+                                        'transaction_date' => $record->transaction_date,
+                                        'transaction_category_id' => TransactionCategoryIds::payMerchant,
+                                        'description' => 'Pay Merchant',
+                                    ]);
+
+                                    $crMemo = [
+                                        'user_account_id' => request()->user()->id,
+                                        'type_of_memo' => ReferenceNumberTypes::CR,
+                                        'reference_number' => $memoRefNo,
+                                        'transaction_category_id' => TransactionCategoryIds::crMemo,
+                                        'amount' => $promoAmount,
+                                        'currency_id' => Currencies::philippinePeso,
+                                        'category' => 'Adjustment',
+                                        'description' => 'Credit Memo for BPI Add Money Cashback',
+                                        'status' => DrcrStatus::A,
+                                        'created_by' => request()->user()->id,
+                                        'approved_at' => $record->transaction_date
+                                    ];
+
+                                    $memo = $this->drcrMemoRepository->create($crMemo);
+                                    $balanceInfo->available_balance += 50;
+                                    $balanceInfo->save();
+
+                                    $this->transactionHistory->log(request()->user()->id,
+                                        TransactionCategoryIds::crMemo,
+                                        $memo->id,
+                                        $memoRefNo,
+                                        $promoAmount,
+                                        $record->transaction_date,
+                                        request()->user()->id);
+                                }
+                            }
+                        }
+
                         DB::commit();
                         return $response_raw;
                     }
+
                     // Trigger error here then trigger again in catch for error handling
-                    if($error != '')
-                     {
+                    if ($error != '') {
                         $this->bpiTransactionError($error);
                     }
                 }
             }
-            return $this->bpiTokenInvalid();
+
+            $this->bpiTokenInvalid();
         } catch (Exception $e) {
             Log::error($e);
             DB::rollback();
 
             // HANDLE BPI ERROR
-                        // UPDATE TRANSACTION
+            // UPDATE TRANSACTION
             $this->bpiRepository->update($record, [
                 'status' => 'ERROR',
                 'transaction_response' => json_encode($e->getMessage()),
             ]);
 
             // THROW ERROR
-            if($error != '') {
-                if(config('bpi.BPI_426') == $response_raw['code'] || config('bpi.BPI_4262') == $response_raw['code']) {
+            if ($error != '') {
+                if (config('bpi.BPI_426') == $response_raw['code'] || config('bpi.BPI_4262') == $response_raw['code']) {
                     $bpi_codes = config('bpi.bpi_codes');
                     $this->bpiInvalidError($bpi_codes[$error]);
-                }else {
+                } else {
                     $this->bpiTransactionError($error);
                 }
             }
+
             $this->bpiTokenInvalid();
         }
 
@@ -412,7 +492,8 @@ class BPIService implements IBPIService
         return $token;
     }
 
-    public function bpiEncodeJWE(string $payload) {
+    public function bpiEncodeJWE(string $payload)
+    {
         $factory = new DefaultContextFactory();
         $context = $factory->get();
 

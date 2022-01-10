@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
+use App\Repositories\OutPayMerchants\IOutPayMerchantRepository;
+use App\Repositories\OutPayMerchants\OutPayMerchantRepository;
 use Illuminate\Http\Request;
 use App\Repositories\DBP\DBPRepository;
 use Illuminate\Support\ServiceProvider;
@@ -299,12 +301,18 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // MERCHANT ACCOUNT
         $this->app->bind(IMerchantAccountRepository::class, MerchantAccountRepository::class);
+
         // FACE AUTH
         $this->app->bind(IFaceAuthRepository::class, FaceAuthRepository::class);
+
         // CEBUANA
         $this->app->bind(IInAddMoneyCebuanaRepository::class, InAddMoneyCebuanaRepository::class);
+
         // WHITE LISTING
         $this->app->bind(IWhiteListRepository::class, WhiteListRepository::class);
+
+        // OUT PAY MERCHANT
+        $this->app->bind(IOutPayMerchantRepository::class, OutPayMerchantRepository::class);
     }
 
     /**
