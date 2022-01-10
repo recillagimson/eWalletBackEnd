@@ -2,11 +2,11 @@
 
 namespace App\Imports\Farmers;
 
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Model;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
@@ -18,8 +18,6 @@ use App\Repositories\UserUtilities\UserDetail\IUserDetailRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Enums\AccountTiers;
 use App\Enums\Currencies;
-use Hash;
-use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
@@ -27,22 +25,22 @@ use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\RemembersRowNumber;
 use App\Rules\RSBSARule;
 use App\Rules\RSBSAUniqueRule;
-use App\Rules\MobileNumber;
 use App\Models\UserUtilities\MaritalStatus;
 use App\Models\UserUtilities\Nationality;
 use App\Models\UserUtilities\NatureOfWork;
 use App\Models\UserUtilities\SourceOfFund;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+use Throwable;
 
 class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnError, WithEvents, WithChunkReading, WithBatchInserts, WithValidation
 {
     use RegistersEventListeners, RemembersRowNumber;
 
-    private $infos;
+    private Collection $infos;
     private $userId;
-    private $fails;
-    private $successes;
-    private $rsbsaNumbers;
+    private Collection $fails;
+    private Collection $successes;
+    private Collection $rsbsaNumbers;
     private $maritalStatus;
     private $nationality;
     private $profession;
@@ -89,16 +87,16 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
         if(!$this->prov && $row['province']) {
             $this->prov = $row['province'];
         }
-        
+
         if (!$this->userDetail->getIsExistingByNameAndBirthday(
-                $row['firstname'], 
-                $row['middlename'], 
-                $row['lastname'], 
+                $row['firstname'],
+                $row['middlename'],
+                $row['lastname'],
                 $row['birthdateyyyy_mm_dd']) &&
             !$this->isExistingInFile(
-                $row['firstname'], 
-                $row['middlename'], 
-                $row['lastname'], 
+                $row['firstname'],
+                $row['middlename'],
+                $row['lastname'],
                 $row['birthdateyyyy_mm_dd'],
                 $this->getRowNumber(),
                 $row
@@ -107,7 +105,7 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
             $user = $this->setupUserAccount($row);
             $this->setupUserProfile($user->id, $row);
             $this->setupUserBalance($user->id);
-            
+
             $usr = ['account_number' => $user->account_number];
 
             $this->successes->push(array_merge($usr, $row));
@@ -129,7 +127,7 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
                     if (in_array($value, $this->rsbsaNumbers->toArray())) {
                          $onFailure('RSBSA Duplicate');
                     }
-                    
+
                     $this->rsbsaNumbers->push($value);
                 }
             ], //rsbsa_reference_number = user_accounts.rsbsa_number
@@ -190,12 +188,12 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
         ];
     }
 
-    
+
     public function chunkSize(): int
     {
         return 50;
     }
-    
+
     public function batchSize(): int
     {
         return 50;
@@ -214,15 +212,14 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
             $data = array_merge($remark, $fail->values());
             $this->fails->push($data);
         }
-        
+
     }
 
     /**
      * @param $e
      */
-    public function onError(\Throwable $e)
+    public function onError(Throwable $e)
     {
-        dd('asd');
         return Excel::store(new FailedUploadExport($failures), 'failedUploadList.xlsx');
     }
 
@@ -231,7 +228,7 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
         $rsbsa = preg_replace("/[^0-9]/", "", $row['rsbsa_reference_number']);
         $password = $rsbsa;
         $pin = substr($rsbsa, -4); //last 4 chars of rsbsa_number
-        
+
         $farmer = [
             'rsbsa_number' => $rsbsa,
             'password' => bcrypt($password),
@@ -251,7 +248,7 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
         $national = isset($row['nationality'])&& $row['nationality'] ? $this->nationality[ucwords(strtolower($row['nationality']))] : null;
         $profession = isset($row['profession'])&& $row['profession'] ? $this->profession[ucwords(strtolower($row['profession']))] : null;
         $sourceoffund = isset($row['sourceoffunds'])&& $row['sourceoffunds'] ? $this->sourceOfFund[ucwords(strtolower($row['sourceoffunds']))] : null;
-        $dob = is_numeric($row['birthdateyyyy_mm_dd']) ? \Carbon\Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['birthdateyyyy_mm_dd'])) : \Carbon\Carbon::parse(strtotime($row['birthdateyyyy_mm_dd']));
+        $dob = is_numeric($row['birthdateyyyy_mm_dd']) ? Carbon::instance(Date::excelToDateTimeObject($row['birthdateyyyy_mm_dd'])) : Carbon::parse(strtotime($row['birthdateyyyy_mm_dd']));
 
         $profile = [
             'entity_id' => null,
@@ -319,9 +316,9 @@ class FarmersImport implements ToModel, WithHeadingRow, SkipsOnFailure, SkipsOnE
         if ($this->infos->contains("$fname $mname $lname $birthday")) {
             return true;
         }
-        
+
         $this->infos->push("$fname $mname $lname $birthday");
-        
+
         return false;
     }
 

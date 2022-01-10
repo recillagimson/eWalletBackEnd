@@ -91,4 +91,9 @@ class NotificationService implements INotificationService
     public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber) {
         // TODO: Implement sendCebuanaConfirmation() method.
     }
+
+    public function sendSmartPromoNotification(string $to, string $firstName, float $amount, string $productName, string $refNo)
+    {
+        // TODO: Implement sendSmartPromoNotification() method.
+    }
 }
