@@ -539,6 +539,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}/documents', [MerchantController::class, 'showDocument']);
         Route::post('/documents/update/status', [MerchantController::class, 'updateDocumentStatus']);
         Route::get('/documents/update/status', [MerchantController::class, 'updateDocumentStatus']);
+
+        Route::post('/pay', [MerchantController::class, 'pay']);
+        Route::get('/pay/{refNo}', [MerchantController::class, 'getByRefNo']);
     });
 
     Route::prefix('/preferred/cashout/partner')->middleware(['decrypt.request'])->group(function () {

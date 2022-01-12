@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Services\Auth\UserKey\IUserKeyService;
+use App\Services\OutPayMerchant\IPayMerchantService;
+use App\Services\OutPayMerchant\PayMerchantService;
 use Exception;
 use App\Enums\NetworkTypes;
 use App\Enums\TpaProviders;
@@ -284,6 +286,9 @@ class AppServiceProvider extends ServiceProvider
         // DBP
         $this->app->bind(IDBPReportService::class, DBPReportService::class);
         $this->app->bind(IDBPUploadService::class, DBPUploadService::class);
+
+        // Pay Merchant
+        $this->app->bind(IPayMerchantService::class, PayMerchantService::class);
     }
 
     /**

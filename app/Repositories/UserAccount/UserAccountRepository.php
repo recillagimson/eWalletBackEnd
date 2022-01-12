@@ -132,7 +132,7 @@ class UserAccountRepository extends Repository implements IUserAccountRepository
 
     public function getUserByAccountNumber(string $accountNumber)
     {
-        return $this->model->where(['account_number' => $accountNumber])->first();
+        return $this->getBaseQuery()->where('account_number', $accountNumber)->first();
     }
 
     public function getUserByAccountNumberAndRsbsaNumber(string $accountNumber, string $rsbsaNumber)

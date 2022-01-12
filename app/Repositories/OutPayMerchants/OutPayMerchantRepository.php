@@ -4,7 +4,7 @@ namespace App\Repositories\OutPayMerchants;
 
 use App\Models\OutPayMerchant;
 use App\Repositories\Repository;
-use FontLib\TrueType\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class OutPayMerchantRepository extends Repository implements IOutPayMerchantRepository
 {
@@ -19,4 +19,8 @@ class OutPayMerchantRepository extends Repository implements IOutPayMerchantRepo
     }
 
 
+    public function getByRefNo(string $refNo): Collection
+    {
+        return $this->model->where('reference_number', $refNo)->get();
+    }
 }

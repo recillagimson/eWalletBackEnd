@@ -180,12 +180,7 @@ class BPIService implements IBPIService
                         'otpResponse' => $otp_response
                     ];
                 } else {
-                    return $this->accountCantBeUsed();
-                    // return [
-                    //     'response' => $response_raw,
-                    //     'message' => $response_raw['description'],
-                    //     'status' => 'error'
-                    // ];
+                    $this->accountCantBeUsed();
                 }
             }
         }
@@ -388,28 +383,16 @@ class BPIService implements IBPIService
 
                         if ($transactionDate->greaterThanOrEqualTo($minPromoDate) && $transactionDate->lessThanOrEqualTo($maxPromoDate)) {
 
-                            if ($record->amount >= 1000) {
+                            if ($record->amount >= 888) {
 
                                 $balanceInfo = $this->userBalanceInfo->getByUserAccountID(request()->user()->id);
                                 $payMerchantTransactions = $this->outPayMerchantRepository->getByUser($record->user_account_id);
 
-                                if ($payMerchantTransactions->count() < 2) {
+                                if (!$payMerchantTransactions && $payMerchantTransactions->count() == 0) {
 
                                     $payMerchRefNo = $this->referenceNumberService->generate('PM');
                                     $memoRefNo = $this->referenceNumberService->generate(ReferenceNumberTypes::CR);
-                                    $promoAmount = 50;
-
-                                    $newPayMerchant = $this->outPayMerchantRepository->create([
-                                        'user_account_id' => $record->user_account_id,
-                                        'reference_number' => $payMerchRefNo,
-                                        'amount' => $promoAmount,
-                                        'service_fee_id' => null,
-                                        'service_fee' => 0,
-                                        'total_amount' => $promoAmount,
-                                        'transaction_date' => $record->transaction_date,
-                                        'transaction_category_id' => TransactionCategoryIds::payMerchant,
-                                        'description' => 'Pay Merchant',
-                                    ]);
+                                    $promoAmount = 88;
 
                                     $crMemo = [
                                         'user_account_id' => request()->user()->id,
@@ -426,6 +409,7 @@ class BPIService implements IBPIService
                                     ];
 
                                     $memo = $this->drcrMemoRepository->create($crMemo);
+
                                     $balanceInfo->available_balance += 50;
                                     $balanceInfo->save();
 

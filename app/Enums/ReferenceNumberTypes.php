@@ -20,4 +20,5 @@ class ReferenceNumberTypes
     const ReceiveMoneyDBP = 'RF';
     const Loan = 'LO';
     const AddMoneyCebuana = 'CEB';
+    const PayMerchant = 'PM';
 }
