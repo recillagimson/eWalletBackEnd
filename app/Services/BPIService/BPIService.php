@@ -391,7 +391,7 @@ class BPIService implements IBPIService
                                 $balanceInfo = $this->userBalanceInfo->getByUserAccountID(request()->user()->id);
                                 $bpiTransactions = $this->bpiRepository->getPromoTransaction($minPromoDate, $maxPromoDate, $minPromoAmount, $record->id);
 
-                                Log::debug('Transaction Count', $bpiTransactions->count());
+                                Log::debug('Transaction Count', [ 'count' => $bpiTransactions->count() ]);
 
                                 if ($bpiTransactions->count() == 0) {
                                     Log::info('Passed transaction count validation');
