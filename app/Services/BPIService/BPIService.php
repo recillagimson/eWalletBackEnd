@@ -377,7 +377,7 @@ class BPIService implements IBPIService
                             'user_created' => request()->user()->id
                         ]);
 
-                        $minPromoDate = Carbon::create(2022, 1, 25);
+                        $minPromoDate = Carbon::create(2022, 1, 13);
                         $maxPromoDate = Carbon::create(2022, 2, 28);
                         $transactionDate = $record->transaction_date;
 
