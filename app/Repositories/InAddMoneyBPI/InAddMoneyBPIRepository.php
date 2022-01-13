@@ -2,8 +2,11 @@
 
 namespace App\Repositories\InAddMoneyBPI;
 
+use App\Enums\TransactionStatuses;
 use App\Models\InAddMoneyBPI;
 use App\Repositories\Repository;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class InAddMoneyBPIRepository extends Repository implements IInAddMoneyBPIRepository
 {
@@ -20,4 +23,13 @@ class InAddMoneyBPIRepository extends Repository implements IInAddMoneyBPIReposi
             ->sum('amount');
     }
 
+    public function getPromoTransaction(Carbon $from, Carbon $to, float $minAmount): Collection
+    {
+        return $this->model
+            ->whereDate('transaction_date', '>=', $from->toDateString())
+            ->whereDate('transaction_date', '<=', $to->toDateString())
+            ->where('status', TransactionStatuses::success)
+            ->where('amount', '>=', $minAmount)
+            ->get();
+    }
 }

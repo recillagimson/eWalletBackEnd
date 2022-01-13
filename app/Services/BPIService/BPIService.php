@@ -377,18 +377,20 @@ class BPIService implements IBPIService
                             'user_created' => request()->user()->id
                         ]);
 
-                        $minPromoDate = Carbon::create(2022, 1, 15);
+                        $minPromoDate = Carbon::create(2022, 1, 25);
                         $maxPromoDate = Carbon::create(2022, 2, 28);
                         $transactionDate = $record->transaction_date;
 
                         if ($transactionDate->greaterThanOrEqualTo($minPromoDate) && $transactionDate->lessThanOrEqualTo($maxPromoDate)) {
 
-                            if ($record->amount >= 888) {
+                            $minPromoAmount = 888;
+
+                            if ($record->amount >= $minPromoAmount) {
 
                                 $balanceInfo = $this->userBalanceInfo->getByUserAccountID(request()->user()->id);
-                                $payMerchantTransactions = $this->outPayMerchantRepository->getByUser($record->user_account_id);
+                                $bpiTransactions = $this->bpiRepository->getPromoTransaction($minPromoDate, $maxPromoDate, $minPromoAmount);
 
-                                if (!$payMerchantTransactions && $payMerchantTransactions->count() == 0) {
+                                if (!$bpiTransactions && $bpiTransactions->count() == 0) {
 
                                     $payMerchRefNo = $this->referenceNumberService->generate('PM');
                                     $memoRefNo = $this->referenceNumberService->generate(ReferenceNumberTypes::CR);

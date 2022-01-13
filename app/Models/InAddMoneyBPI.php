@@ -32,4 +32,8 @@ class InAddMoneyBPI extends Model
         "user_updated",
         "account_number"
     ];
+
+    protected $casts = [
+        'transaction_date' => 'datetime'
+    ];
 }
