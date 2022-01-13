@@ -23,13 +23,14 @@ class InAddMoneyBPIRepository extends Repository implements IInAddMoneyBPIReposi
             ->sum('amount');
     }
 
-    public function getPromoTransaction(Carbon $from, Carbon $to, float $minAmount): Collection
+    public function getPromoTransaction(Carbon $from, Carbon $to, float $minAmount, string $currentTransactionId): Collection
     {
         return $this->model
             ->whereDate('transaction_date', '>=', $from->toDateString())
             ->whereDate('transaction_date', '<=', $to->toDateString())
             ->where('status', TransactionStatuses::success)
             ->where('amount', '>=', $minAmount)
+            ->where('id', '!=', $currentTransactionId)
             ->get();
     }
 }

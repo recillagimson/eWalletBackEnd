@@ -389,7 +389,7 @@ class BPIService implements IBPIService
                                 Log::info('Passed promo min amount validation');
 
                                 $balanceInfo = $this->userBalanceInfo->getByUserAccountID(request()->user()->id);
-                                $bpiTransactions = $this->bpiRepository->getPromoTransaction($minPromoDate, $maxPromoDate, $minPromoAmount);
+                                $bpiTransactions = $this->bpiRepository->getPromoTransaction($minPromoDate, $maxPromoDate, $minPromoAmount, $record->id);
 
                                 Log::debug('Transaction Count', $bpiTransactions->toArray());
 
