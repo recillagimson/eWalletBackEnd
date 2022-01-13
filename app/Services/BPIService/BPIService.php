@@ -413,7 +413,7 @@ class BPIService implements IBPIService
 
                                     $memo = $this->drcrMemoRepository->create($crMemo);
 
-                                    $balanceInfo->available_balance += 50;
+                                    $balanceInfo->available_balance += $promoAmount;
                                     $balanceInfo->save();
 
                                     $this->transactionHistory->log(request()->user()->id,
