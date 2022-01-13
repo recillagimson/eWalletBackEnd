@@ -24,9 +24,9 @@ use App\Traits\Errors\WithUserErrors;
 use Carbon\Carbon;
 use DB;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Log;
 use Tmilos\JoseJwt\Context\DefaultContextFactory;
 use Tmilos\JoseJwt\Jwe;
 use Tmilos\JoseJwt\Jwe\JweAlgorithm;
@@ -382,15 +382,17 @@ class BPIService implements IBPIService
                         $transactionDate = $record->transaction_date;
 
                         if ($transactionDate->greaterThanOrEqualTo($minPromoDate) && $transactionDate->lessThanOrEqualTo($maxPromoDate)) {
-
+                            Log::info('Passed promo date validation');
                             $minPromoAmount = 10;
 
                             if ($record->amount >= $minPromoAmount) {
+                                Log::info('Passed promo min amount validation');
 
                                 $balanceInfo = $this->userBalanceInfo->getByUserAccountID(request()->user()->id);
                                 $bpiTransactions = $this->bpiRepository->getPromoTransaction($minPromoDate, $maxPromoDate, $minPromoAmount);
 
                                 if (!$bpiTransactions && $bpiTransactions->count() == 0) {
+                                    Log::info('Passed transaction count validation');
 
                                     $memoRefNo = $this->referenceNumberService->generate(ReferenceNumberTypes::CR);
                                     $promoAmount = 88;
