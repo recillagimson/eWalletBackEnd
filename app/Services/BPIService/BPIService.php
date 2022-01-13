@@ -392,7 +392,6 @@ class BPIService implements IBPIService
 
                                 if (!$bpiTransactions && $bpiTransactions->count() == 0) {
 
-                                    $payMerchRefNo = $this->referenceNumberService->generate('PM');
                                     $memoRefNo = $this->referenceNumberService->generate(ReferenceNumberTypes::CR);
                                     $promoAmount = 88;
 
