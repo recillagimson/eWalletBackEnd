@@ -383,7 +383,7 @@ class BPIService implements IBPIService
 
                         if ($transactionDate->greaterThanOrEqualTo($minPromoDate) && $transactionDate->lessThanOrEqualTo($maxPromoDate)) {
 
-                            $minPromoAmount = 888;
+                            $minPromoAmount = 10;
 
                             if ($record->amount >= $minPromoAmount) {
 
