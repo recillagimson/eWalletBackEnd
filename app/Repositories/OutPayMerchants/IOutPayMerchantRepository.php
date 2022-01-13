@@ -3,7 +3,7 @@
 namespace App\Repositories\OutPayMerchants;
 
 use App\Repositories\IRepository;
-use FontLib\TrueType\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 interface IOutPayMerchantRepository extends IRepository
 {
