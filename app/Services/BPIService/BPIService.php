@@ -419,7 +419,7 @@ class BPIService implements IBPIService
                                     $balanceInfo->save();
 
                                     $this->transactionHistory->log(request()->user()->id,
-                                        TransactionCategoryIds::crMemo,
+                                        TransactionCategoryIds::bpiPromo,
                                         $memo->id,
                                         $memoRefNo,
                                         $promoAmount,

@@ -442,7 +442,7 @@ class BuyLoadService implements IBuyLoadService
             ];
 
             $memo = $this->drcrMemoRepository->create($crMemo);
-            $this->transactionHistories->log($buyLoad->user_account_id, TransactionCategoryIds::crMemo,
+            $this->transactionHistories->log($buyLoad->user_account_id, TransactionCategoryIds::smartPromo,
                 $buyLoad->id, $refNo, $amount, $currentTime, $buyLoad->user_account_id);
 
             return $memo;
