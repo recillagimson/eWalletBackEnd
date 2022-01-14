@@ -403,7 +403,7 @@ class BPIService implements IBPIService
                                         'user_account_id' => request()->user()->id,
                                         'type_of_memo' => ReferenceNumberTypes::CR,
                                         'reference_number' => $memoRefNo,
-                                        'transaction_category_id' => TransactionCategoryIds::crMemo,
+                                        'transaction_category_id' => TransactionCategoryIds::bpiPromo,
                                         'amount' => $promoAmount,
                                         'currency_id' => Currencies::philippinePeso,
                                         'category' => 'Adjustment',

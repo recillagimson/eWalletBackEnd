@@ -100,15 +100,6 @@ class AtmController extends Controller
         $userId = $request->user()->id;
         $data = $request->validated();
 
-        // ADD ONLY FOR CODE REUSE
-        // $usernameField = $this->getUsernameField($request);
-        // $review = $this->sendMoneyService->sendValidate($usernameField, $request->all(), $request->user());
-        // $userDetail = $this->userDetail->getByUserId($review['user_account_id']);
-        // $data = array_merge($request->all(),$review);
-        // if($userDetail) {
-        //     $data['avatar_link'] = $userDetail->avatar_link;
-        // }
-
         $this->buyLoadService->validateTopup($userId, $data['mobile_number'], $data['product_code'],
             $data['product_name'], $data['amount']);
 

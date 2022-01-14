@@ -431,7 +431,7 @@ class BuyLoadService implements IBuyLoadService
                 'user_account_id' => $buyLoad->user_account_id,
                 'type_of_memo' => ReferenceNumberTypes::CR,
                 'reference_number' => $refNo,
-                'transaction_category_id' => TransactionCategoryIds::crMemo,
+                'transaction_category_id' => TransactionCategoryIds::smartPromo,
                 'amount' => $amount,
                 'currency_id' => Currencies::philippinePeso,
                 'category' => 'Adjustment',

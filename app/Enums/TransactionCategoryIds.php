@@ -30,6 +30,8 @@ class TransactionCategoryIds
     const adMoneyEcPay = 'edj4d5d0-9234-11eb-9663-1c1b0d14e218';
 
     const payMerchant = '4a5613b8-1dac-4238-b124-8edfd24b1700';
+    const bpiPromo = '0ec22514-9131-11eb-b44f-1c1b0d14e411';
+    const smartPromo = '0ec22514-9131-16eb-b44f-1c1b0d142411';
 
 
     const cashinTransactions = [
