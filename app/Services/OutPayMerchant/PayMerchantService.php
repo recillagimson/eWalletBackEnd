@@ -13,7 +13,7 @@ use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
 use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use Carbon\Carbon;
-use FontLib\TrueType\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class PayMerchantService implements IPayMerchantService
 {
@@ -47,6 +47,7 @@ class PayMerchantService implements IPayMerchantService
             'merchant_account_number' => $data['merchant_account_number'],
             'reference_number' => $refNo,
             'amount' => $data['amount'],
+            'service_fee_id' => null,
             'total_amount' => $data['amount'],
             'transaction_date' => Carbon::now(),
             'transaction_category_id' => TransactionCategoryIds::payMerchant,
@@ -64,13 +65,13 @@ class PayMerchantService implements IPayMerchantService
             'currency_id' => Currencies::philippinePeso,
             'category' => 'Adjustment',
             'description' => 'Debit Memo for Pay Merchant',
-            'stataus' => DrcrStatus::A,
+            'status' => DrcrStatus::A,
             'created_by' => $user->id,
             'approved_at' => $payment->transaction_date
         ]);
 
         $balanceInfo = $user->balanceInfo;
-        $balanceInfo->available_balance -= $data['available_balance'];
+        $balanceInfo->available_balance -= $data['amount'];
         $balanceInfo->save();
 
         $this->transactionHistories->log($user->id, TransactionCategoryIds::drMemo,

@@ -26,7 +26,7 @@ class MerchantPayRequest extends FormRequest
         return [
             'account_number' => 'required|max:30',
             'merchant_account_number' => 'required|max:30',
-            'total_amount' => 'required|numeric|min:1'
+            'amount' => 'required|numeric|min:1'
         ];
     }
 }
