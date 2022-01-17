@@ -6,6 +6,7 @@ use App\Enums\TransactionStatuses;
 use App\Models\OutBuyLoad;
 use App\Repositories\Repository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
 {
@@ -29,7 +30,7 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
             ->groupBy('user_account_id')
             ->select('user_account_id')
             ->get();
-        
+
     }
 
     public function createTransaction(string $userId, string $refNo, string $productCode, string $productName,
@@ -64,5 +65,16 @@ class OutBuyLoadRepository extends Repository implements IOutBuyLoadRepository
     public function totalBuyload()
     {
         return $this->model->where('transaction_date','<=',Carbon::now()->subDay())->where('status','=','SUCCESS')->sum('total_amount');
+    }
+
+    public function getSmartPromoTransaction(string $userId, int $month, int $year, string $currentTransactionId): Collection
+    {
+        return $this->model
+            ->where('user_account_id', $userId)
+            ->whereMonth('transaction_date', $month)
+            ->whereYear('transaction_date', $year)
+            ->where('status', TransactionStatuses::success)
+            ->where('id', '!=', $currentTransactionId)
+            ->get();
     }
 }

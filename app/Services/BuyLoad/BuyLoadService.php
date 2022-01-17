@@ -4,6 +4,7 @@
 namespace App\Services\BuyLoad;
 
 
+use App\Enums\AccountTiers;
 use App\Enums\AtmPrepaidResponseCodes;
 use App\Enums\Currencies;
 use App\Enums\DrcrStatus;
@@ -160,7 +161,7 @@ class BuyLoadService implements IBuyLoadService
             if ($buyLoad->status === TransactionStatuses::failed) $balanceInfo->available_balance += $amount;
             $balanceInfo->save();
 
-            $memo = $this->processSmartPromo($buyLoad, $balanceInfo);
+            $memo = $this->processSmartPromo($user, $buyLoad, $balanceInfo);
             $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance, $memo);
             DB::commit();
 
@@ -202,7 +203,7 @@ class BuyLoadService implements IBuyLoadService
 
             $balanceInfo->save();
 
-            $memo = $this->processSmartPromo($buyLoad, $balanceInfo);
+            $memo = $this->processSmartPromo($user, $buyLoad, $balanceInfo);
             $this->sendNotifications($user, $buyLoad, $balanceInfo->available_balance, $memo);
 
             if ($buyLoad->status === TransactionStatuses::success) $successCount++;
@@ -417,35 +418,51 @@ class BuyLoadService implements IBuyLoadService
         ]);
     }
 
-    private function processSmartPromo(OutBuyLoad $buyLoad, UserBalanceInfo $balanceInfo): ?DrcrMemo
+    private function processSmartPromo(UserAccount $user, OutBuyLoad $buyLoad, UserBalanceInfo $balanceInfo): ?DrcrMemo
     {
-        if ($buyLoad->status === TransactionStatuses::success && in_array($buyLoad->product_code, $this->atmSmartPromos)) {
-            $amount = 0.05 * $buyLoad->total_amount;
-            $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::CR);
-            $currentTime = Carbon::now();
+        $minPromoDate = Carbon::create(2021, 12, 16);
+        $maxPromoDate = Carbon::create(2022, 3, 15);
+        $transactionDate = $buyLoad->transaction_date;
 
-            $balanceInfo->available_balance += $amount;
-            $balanceInfo->save();
+        if(in_array($user->tier_id, AccountTiers::smartPromoTiers)) {
+            if ($buyLoad->status === TransactionStatuses::success
+                    && in_array($buyLoad->product_code, $this->atmSmartPromos)
+                    && $transactionDate->greaterThanOrEqualTo($minPromoDate)
+                    && $transactionDate->lessThanOrEqualTo($maxPromoDate)) {
 
-            $crMemo = [
-                'user_account_id' => $buyLoad->user_account_id,
-                'type_of_memo' => ReferenceNumberTypes::CR,
-                'reference_number' => $refNo,
-                'transaction_category_id' => TransactionCategoryIds::smartPromo,
-                'amount' => $amount,
-                'currency_id' => Currencies::philippinePeso,
-                'category' => 'Adjustment',
-                'description' => 'Credit Memo for Smart Promo',
-                'status' => DrcrStatus::A,
-                'created_by' => $buyLoad->user_account_id,
-                'approved_at' => $currentTime
-            ];
+                $month = $buyLoad->transaction_date->month;
+                $year = $buyLoad->transaction_date->year;
+                $promoTransactionCount = $this->buyLoads->getSmartPromoTransaction($user->id, $month, $year, $buyLoad->id)->count();
 
-            $memo = $this->drcrMemoRepository->create($crMemo);
-            $this->transactionHistories->log($buyLoad->user_account_id, TransactionCategoryIds::smartPromo,
-                $buyLoad->id, $refNo, $amount, $currentTime, $buyLoad->user_account_id);
+                if($promoTransactionCount >= 4) return null;
 
-            return $memo;
+                $amount = 0.05 * $buyLoad->total_amount;
+                $refNo = $this->referenceNumberService->generate(ReferenceNumberTypes::CR);
+                $currentTime = Carbon::now();
+
+                $balanceInfo->available_balance += $amount;
+                $balanceInfo->save();
+
+                $crMemo = [
+                    'user_account_id' => $buyLoad->user_account_id,
+                    'type_of_memo' => ReferenceNumberTypes::CR,
+                    'reference_number' => $refNo,
+                    'transaction_category_id' => TransactionCategoryIds::smartPromo,
+                    'amount' => $amount,
+                    'currency_id' => Currencies::philippinePeso,
+                    'category' => 'Adjustment',
+                    'description' => 'Credit Memo for Smart Promo',
+                    'status' => DrcrStatus::A,
+                    'created_by' => $buyLoad->user_account_id,
+                    'approved_at' => $currentTime
+                ];
+
+                $memo = $this->drcrMemoRepository->create($crMemo);
+                $this->transactionHistories->log($buyLoad->user_account_id, TransactionCategoryIds::smartPromo,
+                    $buyLoad->id, $refNo, $amount, $currentTime, $buyLoad->user_account_id);
+
+                return $memo;
+            }
         }
 
         return null;

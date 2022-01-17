@@ -5,6 +5,7 @@ namespace App\Repositories\OutBuyLoad;
 use App\Models\OutBuyLoad;
 use App\Repositories\IRepository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 interface IOutBuyLoadRepository extends IRepository
 {
@@ -19,5 +20,7 @@ interface IOutBuyLoadRepository extends IRepository
     public function getSumOfTransactions(string $from, string $to, string $userAccountId);
 
     public function totalBuyload();
+
+    public function getSmartPromoTransaction(string $userId, int $month, int $year, string $currentTransactionId): Collection;
 
 }
