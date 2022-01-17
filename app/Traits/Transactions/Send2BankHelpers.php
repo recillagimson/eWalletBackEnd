@@ -151,7 +151,12 @@ trait Send2BankHelpers
             Log::error('UBP Error Status Response', $errors);
             return $send2Bank;
         } else {
-            if ($send2Bank->provider === TpaProviders::secBankInstapay) $data = $response->json()['records'][0];
+            $logResponse = $response->json();
+
+            Log::debug('Send2bank Provider', [ 'provider' => $send2Bank->provider ]);
+            Log::debug('UBP Response', $logResponse);
+
+            if ($send2Bank->provider === TpaProviders::ubpInstapay) $data = $response->json()['records'][0];
             else $data = $response->json()['record'];
 
             $state = $data['code'];
