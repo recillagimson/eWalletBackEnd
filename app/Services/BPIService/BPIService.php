@@ -383,7 +383,7 @@ class BPIService implements IBPIService
 
                         if ($transactionDate->greaterThanOrEqualTo($minPromoDate) && $transactionDate->lessThanOrEqualTo($maxPromoDate)) {
                             Log::info('Passed promo date validation');
-                            $minPromoAmount = 10;
+                            $minPromoAmount = 888;
 
                             if ($record->amount >= $minPromoAmount) {
                                 Log::info('Passed promo min amount validation');
