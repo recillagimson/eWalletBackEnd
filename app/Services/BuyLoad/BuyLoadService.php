@@ -406,13 +406,14 @@ class BuyLoadService implements IBuyLoadService
     {
         $strAmount = number_format($amount, 2);
         $title = 'SquidPay - Promo Notification';
-        $description = $strAmount . ' have been refunded to your account for purchasing ' . $productName .
-            'Ref. No. ' . $refNo . '.';
+        $content = 'Hi ' . $firstName . '! Thank you for puchasing ' . $productName . '. We have successfully credited the amount Php' . $strAmount .
+            ' to your account as part of the SquidPay Libreng Credits to Smart. Promo period from 2021-12-16 to 2022-03-15. ' .
+            'Ref. No. ' . $refNo . '. DTI Fair Trade Permit No. FTEB-133969 Series of 2021';
 
         $this->notificationRepository->create([
             'title' => $title,
             'status' => 1,
-            'description' => $description,
+            'description' => $content,
             'user_account_id' => $userId,
             'user_created' => $userId
         ]);

@@ -521,6 +521,8 @@ class BPIService implements IBPIService
             $this->bpiNotifService->sendPromoEmail($user->email, $params);
         else
             $this->bpiNotifService->sendPromoSms($user->mobile_number, $params);
+
+        $this->bpiNotifService->createPromoAppNotification($user, $params);
     }
 
     private function bpiDecryptionJWE(string $payload)
