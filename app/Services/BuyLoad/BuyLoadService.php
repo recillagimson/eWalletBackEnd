@@ -96,11 +96,10 @@ class BuyLoadService implements IBuyLoadService
             'W1000',
             'W115',
             'W200',
-            'W30',
             'W300',
             'W50',
             'W500',
-            'W60',
+
         ];
     }
 
@@ -406,7 +405,7 @@ class BuyLoadService implements IBuyLoadService
     {
         $strAmount = number_format($amount, 2);
         $title = 'SquidPay - Promo Notification';
-        $content = 'Hi ' . $firstName . '! Thank you for puchasing ' . $productName . '. We have successfully credited the amount Php' . $strAmount .
+        $content = 'Hi ' . $firstName . '! Thank you for purchasing ' . $productName . '. We have successfully credited the amount Php' . $strAmount .
             ' to your account as part of the SquidPay Libreng Credits to Smart. Promo period from 2021-12-16 to 2022-03-15. ' .
             'Ref. No. ' . $refNo . '. DTI Fair Trade Permit No. FTEB-133969 Series of 2021';
 
