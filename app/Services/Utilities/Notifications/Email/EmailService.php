@@ -245,7 +245,7 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
-    private function sendMessage(string $to, string $subject, Mailable $template, $file = null, $fileName = null): void
+    public function sendMessage(string $to, string $subject, Mailable $template, $file = null, $fileName = null): void
     {
         $mail = new Mail();
         $mail->setFrom($this->fromAddress, $this->fromName);

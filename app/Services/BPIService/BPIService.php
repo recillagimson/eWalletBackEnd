@@ -7,13 +7,17 @@ use App\Enums\DrcrStatus;
 use App\Enums\ReferenceNumberTypes;
 use App\Enums\SendMoneyConfig;
 use App\Enums\TransactionCategoryIds;
+use App\Models\DrcrMemo;
+use App\Models\UserAccount;
 use App\Repositories\DrcrMemo\IDrcrMemoRepository;
 use App\Repositories\InAddMoneyBPI\IInAddMoneyBPIRepository;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\OutPayMerchants\IOutPayMerchantRepository;
 use App\Repositories\ServiceFee\IServiceFeeRepository;
+use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserTransactionHistory\IUserTransactionHistoryRepository;
+use App\Services\BPIService\Models\BPIPromoNotifcation;
 use App\Services\BPIService\PackageExtension\Encryption;
 use App\Services\Utilities\API\IApiService;
 use App\Services\Utilities\LogHistory\ILogHistoryService;
@@ -59,6 +63,8 @@ class BPIService implements IBPIService
     private $fundTopUpOtpUrl;
     private $fundTopUpStatusUrl;
     private $processUrl;
+    private IBPINotificationService $bpiNotifService;
+    private IUserAccountRepository $userAccounts;
 
     public function __construct(IApiService                       $apiService,
                                 IReferenceNumberService           $referenceNumberService,
@@ -69,9 +75,11 @@ class BPIService implements IBPIService
                                 IServiceFeeRepository             $serviceFee,
                                 ISmsService                       $smsService,
                                 IEmailService                     $emailService,
+                                IBPINotificationService           $bpiNotifService,
                                 INotificationRepository           $notificationRepository,
                                 IOutPayMerchantRepository         $outPayMerchantRepository,
-                                IDrcrMemoRepository               $drcrMemoRepository)
+                                IDrcrMemoRepository               $drcrMemoRepository,
+                                IUserAccountRepository            $userAccounts)
     {
         $this->apiService = $apiService;
         $this->referenceNumberService = $referenceNumberService;
@@ -85,6 +93,7 @@ class BPIService implements IBPIService
         $this->logHistory = $logHistory;
         $this->outPayMerchantRepository = $outPayMerchantRepository;
         $this->drcrMemoRepository = $drcrMemoRepository;
+        $this->bpiNotifService = $bpiNotifService;
 
         $this->clientId = config('bpi.clientId');
         $this->clientSecret = config('bpi.clientSecret');
@@ -94,6 +103,7 @@ class BPIService implements IBPIService
         $this->fundTopUpOtpUrl = config('bpi.fundTopUpOtpUrl');
         $this->fundTopUpStatusUrl = config('bpi.fundTopUpStatusUrl');
         $this->processUrl = config('bpi.processUrl');
+        $this->userAccounts = $userAccounts;
     }
 
     private function getHeaders(string $token)
@@ -393,7 +403,7 @@ class BPIService implements IBPIService
                                 $bpiTransactions = $this->bpiRepository->getPromoTransaction(request()->user()->id, $minPromoDate,
                                     $maxPromoDate, $minPromoAmount, $record->id);
 
-                                Log::debug('Transaction Count', [ 'count' => $bpiTransactions->count() ]);
+                                Log::debug('Transaction Count', ['count' => $bpiTransactions->count()]);
 
                                 if ($bpiTransactions->count() == 0) {
                                     Log::info('Passed transaction count validation');
@@ -414,7 +424,6 @@ class BPIService implements IBPIService
                                         'created_by' => request()->user()->id,
                                         'approved_at' => $record->transaction_date
                                     ];
-
                                     $memo = $this->drcrMemoRepository->create($crMemo);
 
                                     $balanceInfo->available_balance += $promoAmount;
@@ -427,6 +436,8 @@ class BPIService implements IBPIService
                                         $promoAmount,
                                         $record->transaction_date,
                                         request()->user()->id);
+
+                                    $this->sendPromoNotification(request()->user()->id, $memo);
                                 }
                             }
                         }
@@ -498,6 +509,18 @@ class BPIService implements IBPIService
         Log::info('///// - BPI Encode JWE - //////');
         Log::info(json_encode($token));
         return $token;
+    }
+
+    private function sendPromoNotification(string $userId, DrcrMemo $memo)
+    {
+        $user = $this->userAccounts->getUser($userId);
+        $params = new BPIPromoNotifcation($user->profile->first_name, $memo->amount, $memo->reference_number);
+        $isLoginEmail = $user->is_login_email;
+
+        if($isLoginEmail)
+            $this->bpiNotifService->sendPromoEmail($user->email, $params);
+        else
+            $this->bpiNotifService->sendPromoSms($user->mobile_number, $params);
     }
 
     private function bpiDecryptionJWE(string $payload)

@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Services\Auth\UserKey\IUserKeyService;
+use App\Services\BPIService\BPINotificationService;
+use App\Services\BPIService\IBPINotificationService;
 use App\Services\OutPayMerchant\IPayMerchantService;
 use App\Services\OutPayMerchant\PayMerchantService;
 use Exception;
@@ -261,8 +263,9 @@ class AppServiceProvider extends ServiceProvider
         // BPI SERVICE
         $this->app->bind(IDisbursementDbpService::class, DisbursementDbpService::class);
 
-        // BPI SERVICE
+        // BPI SERVICES
         $this->app->bind(IBPIService::class, BPIService::class);
+        $this->app->bind(IBPINotificationService::class, BPINotificationService::class);
 
         // My Task
         $this->app->bind(IMyTaskService::class, MyTaskService::class);

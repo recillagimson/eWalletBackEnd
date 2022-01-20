@@ -5,6 +5,7 @@ namespace App\Services\Utilities\Notifications\Email;
 use App\Models\OutSend2Bank;
 use App\Models\UserAccount;
 use App\Services\Utilities\Notifications\INotificationService;
+use Illuminate\Mail\Mailable;
 
 interface IEmailService extends INotificationService
 {
@@ -23,4 +24,6 @@ interface IEmailService extends INotificationService
     public function sendUserTransactionHistory(string $to, array $records, string $fileName, string $firstName, string $from, string $dateTo, string $password);
 
     public function sendCebuanaConfirmation(string $to, string $fullName, string $firstName, string $accountNumber, string $transactionDateTime, string $addMoneyPartnerReferenceNumber, string $amount, string $referenceNumber);
+
+    public function sendMessage(string $to, string $subject, Mailable $template, $file = null, $fileName = null): void;
 }

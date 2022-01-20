@@ -168,7 +168,7 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
-    private function sendMessages(string $to, string $content)
+    public function sendMessages(string $to, string $content)
     {
         $message = $this->buildMessage($to, $content);
         $response = $this->apiService->post($this->broadcastUrl, $message);
@@ -246,8 +246,9 @@ class SmsService implements ISmsService
 
     public function sendSmartPromoNotification(string $to, string $firstName, float $amount, string $productName, string $refNo)
     {
-        $content = 'Hi ' . $firstName . '! P' . $amount . ' have been refunded to your account for purchasing ' . $productName . '.' .
-            'Ref. No. ' . $refNo . '.';
+        $content = 'Hi ' . $firstName . '! Thank you for puchasing ' . $productName . '. We have successfully credited the amount Php' . $amount .
+            ' to your account as part of the SquidPay Libreng Credits to Smart Promo. Promo period from 2021-12-16 to 2022-03-15. ' .
+            'Ref. No. ' . $refNo . '. DTI Fair Trade Permit No. FTEB-133969 Series of 2021';
         $this->sendMessages($to, $content);
     }
 
