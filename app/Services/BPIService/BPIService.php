@@ -174,11 +174,11 @@ class BPIService implements IBPIService
         if ($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
 
-            Log::info('Decrypted JWT', [ 'decryptedJWT' => $jwt ]);
-
             if ($jwt) {
                 $jwt_response = $this->bpiDecryptionJWE($response['token']);
                 $response_raw = $this->bpiDecryptionJWT($jwt_response);
+
+                Log::info('BPI Fund Topup Response', $response_raw);
 
                 if ($response_raw && isset($response_raw['status']) && $response_raw['status'] != 'error') {
                     $transactionId = $response->getHeaders()['transactionId']['0'];
