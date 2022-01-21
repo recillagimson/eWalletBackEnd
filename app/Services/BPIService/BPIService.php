@@ -173,9 +173,10 @@ class BPIService implements IBPIService
 
         if ($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
+
+            Log::info('Decrypted JWT', [ 'decryptedJWT' => $jwt ]);
+
             if ($jwt) {
-
-
                 $jwt_response = $this->bpiDecryptionJWE($response['token']);
                 $response_raw = $this->bpiDecryptionJWT($jwt_response);
 
