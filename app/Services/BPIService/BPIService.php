@@ -132,6 +132,9 @@ class BPIService implements IBPIService
 
         $token = $this->getHeaders($token);
         $response = $this->apiService->get($this->transactionalUrl, $token)->json();
+
+        Log::debug('BPI Get Accounts Response', $response);
+
         if ($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
             Log::info($jwt);
