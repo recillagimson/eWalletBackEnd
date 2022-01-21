@@ -166,7 +166,7 @@ class BPIService implements IBPIService
         // Send API request
         $response = $this->apiService->post($this->fundTopUpUrl, ['token' => $jwe], $token);
 
-        Log::info($response);
+        Log::info('BPI Fund Topup Response', $response->json());
 
         if ($response && isset($response['token'])) {
             $jwt = $this->bpiDecryptionJWE($response['token']);
