@@ -35,7 +35,8 @@ class DrcrMemo extends Model
         'approved_at',
         'declinet_at',
         'user_created',
-        'user_updated'
+        'user_updated',
+        'recipient_number',
     ];
 
     public function user_account() {

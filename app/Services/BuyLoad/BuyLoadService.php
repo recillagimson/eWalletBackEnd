@@ -454,7 +454,8 @@ class BuyLoadService implements IBuyLoadService
                     'description' => 'Credit Memo for Smart Promo',
                     'status' => DrcrStatus::A,
                     'created_by' => $buyLoad->user_account_id,
-                    'approved_at' => $currentTime
+                    'approved_at' => $currentTime,
+                    'recipient_number' => $buyLoad->recipient_mobile_number
                 ];
 
                 $memo = $this->drcrMemoRepository->create($crMemo);
