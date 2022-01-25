@@ -279,14 +279,14 @@ class UserProfileService implements IUserProfileService
 
                 // Trigger auto check
                 //$ekyc_auto_check == false;
-                $ekyc_auto_check = $this->kycService->isEKYCValidated($attr);
+                //$ekyc_auto_check = $this->kycService->isEKYCValidated($attr);
 
 
-                if ($ekyc_auto_check) {
-                    $this->userAccountRepository->update(request()->user(), [
-                        'tier_id' => AccountTiers::tier2
-                    ]);
-                }
+//                if ($ekyc_auto_check) {
+//                    $this->userAccountRepository->update(request()->user(), [
+//                        'tier_id' => AccountTiers::tier2
+//                    ]);
+//                }
 
                 // REMOVE THIS BECAUSE OF CHANGES ON ID IMAGE UPLOAD AUTO CREATES TIER APPROVAL
                 // VALIDATE IF HAS EXISTING REQUEST
@@ -310,42 +310,42 @@ class UserProfileService implements IUserProfileService
                 // WORK IN PROGRESS
                 // INIT DEDUP
                 // foreach($attr['id_photos_ids'] as $photo) {
-                    if(isset($attr['id_selfie_ids']['0']) && isset($attr['id_selfie_ids']['0'])) {
-                        $idPhoto = $this->userPhotoRepository->get($attr['id_photos_ids']['0']);
-                        $selfiePhoto = $this->selfiePhotoRepository->get($attr['id_selfie_ids']['0']);
-
-                        if($idPhoto && $selfiePhoto) {
-                            $idType = $this->idTypeRepo->get($idPhoto->id_type_id);
-                            $selfie = Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30));
-                            $nid = Storage::disk('s3')->temporaryUrl($idPhoto->photo_location, Carbon::now()->addMinutes(30));
-
-                            if($idPhoto && $idPhoto->id_number && $idType && $idType->is_ekyc == 1) {
-                                $res = $this->kycService->verify([
-                                    'dob' => $attr['birth_date'],
-                                    'name' => $attr['first_name'] . " " . $attr['last_name'],
-                                    'id_number' => $idPhoto->id_number,
-                                    'user_account_id' => request()->user()->id,
-                                    'selfie' => $selfie,
-                                    'nid_front' => $nid
-                                ], false);
-                                $dedup_responses = $res;
-
-                                if($res->hv_result == 'failure') {
-                                    $tierApproval->update([
-                                        'status' => 'PENDING'
-                                    ]);
-                                }
-
-                            } else {
-                                $dedup_responses = [
-                                    'message' => 'No ID number',
-                                    'user_id_photo' => $idPhoto->id,
-                                ];
-                            }
-                        } else {
-                            $this->updateProfileIdOrSelfieNotFound();
-                        }
-                    }
+//                    if(isset($attr['id_selfie_ids']['0']) && isset($attr['id_selfie_ids']['0'])) {
+//                        $idPhoto = $this->userPhotoRepository->get($attr['id_photos_ids']['0']);
+//                        $selfiePhoto = $this->selfiePhotoRepository->get($attr['id_selfie_ids']['0']);
+//
+//                        if($idPhoto && $selfiePhoto) {
+//                            $idType = $this->idTypeRepo->get($idPhoto->id_type_id);
+//                            $selfie = Storage::disk('s3')->temporaryUrl($selfiePhoto->photo_location, Carbon::now()->addMinutes(30));
+//                            $nid = Storage::disk('s3')->temporaryUrl($idPhoto->photo_location, Carbon::now()->addMinutes(30));
+//
+//                            if($idPhoto && $idPhoto->id_number && $idType && $idType->is_ekyc == 1) {
+//                                $res = $this->kycService->verify([
+//                                    'dob' => $attr['birth_date'],
+//                                    'name' => $attr['first_name'] . " " . $attr['last_name'],
+//                                    'id_number' => $idPhoto->id_number,
+//                                    'user_account_id' => request()->user()->id,
+//                                    'selfie' => $selfie,
+//                                    'nid_front' => $nid
+//                                ], false);
+//                                $dedup_responses = $res;
+//
+//                                if($res->hv_result == 'failure') {
+//                                    $tierApproval->update([
+//                                        'status' => 'PENDING'
+//                                    ]);
+//                                }
+//
+//                            } else {
+//                                $dedup_responses = [
+//                                    'message' => 'No ID number',
+//                                    'user_id_photo' => $idPhoto->id,
+//                                ];
+//                            }
+//                        } else {
+//                            $this->updateProfileIdOrSelfieNotFound();
+//                        }
+//                    }
                 // }
 
 
