@@ -426,7 +426,8 @@ class BPIService implements IBPIService
                                         'description' => 'Credit Memo for BPI Add Money Cashback',
                                         'status' => DrcrStatus::A,
                                         'created_by' => request()->user()->id,
-                                        'approved_at' => $record->transaction_date
+                                        'approved_at' => $record->transaction_date,
+                                        'recipient_number' => $record->account_number
                                     ];
                                     $memo = $this->drcrMemoRepository->create($crMemo);
 
