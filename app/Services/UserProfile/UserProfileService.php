@@ -43,17 +43,17 @@ class UserProfileService implements IUserProfileService
     private IUserSelfiePhotoRepository $selfiePhotoRepository;
     private IIdTypeRepository $idTypeRepo;
 
-    public function __construct(IUserDetailRepository $userDetailRepository,
-                                IUserAccountRepository $userAccountRepository,
-                                IUserPhotoRepository $userPhotoRepository,
-                                ITempUserDetailRepository $tempUserDetail,
-                                ITierRepository $tierRepository,
-                                ITierApprovalRepository $userApprovalRepository,
-                                IVerificationService $verificationService,
-                                ILogHistoryService $logHistoryService,
-                                IKYCService $kycService,
+    public function __construct(IUserDetailRepository      $userDetailRepository,
+                                IUserAccountRepository     $userAccountRepository,
+                                IUserPhotoRepository       $userPhotoRepository,
+                                ITempUserDetailRepository  $tempUserDetail,
+                                ITierRepository            $tierRepository,
+                                ITierApprovalRepository    $userApprovalRepository,
+                                IVerificationService       $verificationService,
+                                ILogHistoryService         $logHistoryService,
+                                IKYCService                $kycService,
                                 IUserSelfiePhotoRepository $selfiePhotoRepository,
-                                IIdTypeRepository $idTypeRepo)
+                                IIdTypeRepository          $idTypeRepo)
     {
         $this->userAccountRepository = $userAccountRepository;
         $this->userDetailRepository = $userDetailRepository;
@@ -83,23 +83,25 @@ class UserProfileService implements IUserProfileService
             $this->userDetailRepository->getByUserId($userAccount->id)->toArray();
     }
 
-    public function addUserInput(array $details, object $userAccount, object $data=null) {
+    public function addUserInput(array $details, object $userAccount, object $data = null)
+    {
 
-        if(!$data) {
+        if (!$data) {
             $details['user_created'] = $userAccount->id;
             $details['user_updated'] = $userAccount->id;
-        }else {
+        } else {
             $details['user_updated'] = $userAccount->id;
         }
         return $details;
     }
 
-    public function changeAvatar(array $data) {
+    public function changeAvatar(array $data)
+    {
         // Delete existing first
         // Get details first
         $userDetails = $this->userDetailRepository->getByUserId(request()->user()->id);
         // If no user Details
-        if(!$userDetails) {
+        if (!$userDetails) {
             throw ValidationException::withMessages([
                 'user_detail_not_found' => 'User Detail not found'
             ]);
@@ -133,7 +135,7 @@ class UserProfileService implements IUserProfileService
 
         $userDetail = $this->userDetailRepository->getByUserId($userAccount->id);
 
-        if(!$userDetail) {
+        if (!$userDetail) {
             throw ValidationException::withMessages([
                 'user_detail_not_found' => 'User Detail not found'
             ]);
@@ -179,7 +181,7 @@ class UserProfileService implements IUserProfileService
 
         $userDetail = $this->userDetailRepository->getByUserId($userAccount->id);
 
-        if(!$userDetail) {
+        if (!$userDetail) {
             throw ValidationException::withMessages([
                 'user_detail_not_found' => 'User Detail not found'
             ]);
@@ -270,7 +272,8 @@ class UserProfileService implements IUserProfileService
         return true;
     }
 
-    public function upgradeToSilver(array $attr) {
+    public function upgradeToSilver(array $attr)
+    {
         $dedup_responses = [];
         DB::beginTransaction();
         try {
@@ -298,7 +301,8 @@ class UserProfileService implements IUserProfileService
                     $tierApproval = $this->userApprovalRepository->updateOrCreateApprovalRequest([
                         'user_account_id' => request()->user()->id,
                         'request_tier_id' => AccountTiers::tier2,
-                        'status' => $ekyc_auto_check ? 'APPROVED' : 'PENDING',
+//                        'status' => $ekyc_auto_check ? 'APPROVED' : 'PENDING',
+                        'status' => 'PENDING',
                         'user_created' => request()->user()->id,
                         'user_updated' => request()->user()->id,
                         'transaction_number' => $generatedTransactionNumber
