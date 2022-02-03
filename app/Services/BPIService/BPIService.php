@@ -247,6 +247,8 @@ class BPIService implements IBPIService
                 if ($transaction && $transaction->status != 'success') {
                     $headers['transactionId'] = $transaction->bpi_reference;
                     $response = $this->apiService->get($status_url, $headers);
+
+                    Log::debug('BPI Status Response', $response->json());
                     if ($response && isset($response->json()['token'])) {
                         $jwt = $this->bpiDecryptionJWE($response['token']);
                         if ($jwt) {
