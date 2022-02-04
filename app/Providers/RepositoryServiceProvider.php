@@ -3,6 +3,15 @@
 namespace App\Providers;
 
 use App\Enums\UserKeyTypes;
+use App\Models\Dashboard\TransactionCountDailyView;
+use App\Repositories\Dashboard\Dashboard2022Repository;
+use App\Repositories\Dashboard\IDashboard2022Repository;
+use App\Repositories\Dashboard\ITransactionCountDailyRepository;
+use App\Repositories\Dashboard\ITransactionCountMonthlyRepository;
+use App\Repositories\Dashboard\ITransactionCountWeeklyRepository;
+use App\Repositories\Dashboard\TransactionCountDailyRepository;
+use App\Repositories\Dashboard\TransactionCountMonthlyRepository;
+use App\Repositories\Dashboard\TransactionCountWeeklyRepository;
 use App\Repositories\OutPayMerchants\IOutPayMerchantRepository;
 use App\Repositories\OutPayMerchants\OutPayMerchantRepository;
 use Illuminate\Http\Request;
@@ -283,6 +292,10 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // Dashboard
         $this->app->bind(IDashboardRepository::class, DashboardRepository::class);
+        $this->app->bind(IDashboard2022Repository::class, Dashboard2022Repository::class);
+        $this->app->bind(ITransactionCountDailyRepository::class, TransactionCountDailyRepository::class);
+        $this->app->bind(ITransactionCountMonthlyRepository::class, TransactionCountMonthlyRepository::class);
+        $this->app->bind(ITransactionCountWeeklyRepository::class, TransactionCountWeeklyRepository::class);
 
         // Loan
         $this->app->bind(ILoanRepository::class, LoanRepository::class);
