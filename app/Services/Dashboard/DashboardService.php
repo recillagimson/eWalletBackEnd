@@ -4,6 +4,9 @@ namespace App\Services\Dashboard;
 
 use App\Jobs\Transactions\ProcessUserPending;
 use App\Repositories\Dashboard\IDashboard2022Repository;
+use App\Repositories\Dashboard\ISignUpCountDailyRepository;
+use App\Repositories\Dashboard\ISignUpCountMonthlyRepository;
+use App\Repositories\Dashboard\ISignUpCountWeeklyRepository;
 use App\Repositories\Dashboard\ITransactionCountDailyRepository;
 use App\Repositories\Dashboard\ITransactionCountMonthlyRepository;
 use App\Repositories\Dashboard\ITransactionCountWeeklyRepository;
@@ -23,6 +26,9 @@ class DashboardService implements IDashboardService
     private ITransactionCountDailyRepository $transactionCountDaily;
     private ITransactionCountMonthlyRepository $transactionCountMonthly;
     private ITransactionCountWeeklyRepository $transactionCountWeekly;
+    private ISignUpCountDailyRepository $dailySignups;
+    private ISignUpCountWeeklyRepository $weeklySignups;
+    private ISignUpCountMonthlyRepository $monthlySignups;
 
     public function __construct(IUserAccountRepository             $userdetail,
                                 IUserAccountRepository             $userAccounts,
@@ -30,7 +36,10 @@ class DashboardService implements IDashboardService
                                 IDashboard2022Repository           $dashboard2022,
                                 ITransactionCountDailyRepository   $transactionCountDaily,
                                 ITransactionCountMonthlyRepository $transactionCountMonthly,
-                                ITransactionCountWeeklyRepository  $transactionCountWeekly)
+                                ITransactionCountWeeklyRepository  $transactionCountWeekly,
+                                ISignUpCountDailyRepository        $dailySignups,
+                                ISignUpCountWeeklyRepository $weeklySignups,
+                                ISignUpCountMonthlyRepository $monthlySignups)
     {
         $this->userDetail = $userdetail;
         $this->transactionService = $transactionService;
@@ -39,6 +48,9 @@ class DashboardService implements IDashboardService
         $this->transactionCountDaily = $transactionCountDaily;
         $this->transactionCountMonthly = $transactionCountMonthly;
         $this->transactionCountWeekly = $transactionCountWeekly;
+        $this->dailySignups = $dailySignups;
+        $this->weeklySignups = $weeklySignups;
+        $this->monthlySignups = $monthlySignups;
     }
 
     public function dashboard(string $userID)
@@ -76,5 +88,20 @@ class DashboardService implements IDashboardService
     public function getTransactionCountWeekly(): Collection
     {
         return $this->transactionCountWeekly->getAll();
+    }
+
+    public function getDailySignups(): Collection
+    {
+        return $this->dailySignups->getAll();
+    }
+
+    public function getWeeklySignups(): Collection
+    {
+        return $this->weeklySignups->getAll();
+    }
+
+    public function getMonthlySignups(): Collection
+    {
+        return $this->monthlySignups->getAll();
     }
 }

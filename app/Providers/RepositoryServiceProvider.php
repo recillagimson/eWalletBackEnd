@@ -6,9 +6,15 @@ use App\Enums\UserKeyTypes;
 use App\Models\Dashboard\TransactionCountDailyView;
 use App\Repositories\Dashboard\Dashboard2022Repository;
 use App\Repositories\Dashboard\IDashboard2022Repository;
+use App\Repositories\Dashboard\ISignUpCountDailyRepository;
+use App\Repositories\Dashboard\ISignUpCountMonthlyRepository;
+use App\Repositories\Dashboard\ISignUpCountWeeklyRepository;
 use App\Repositories\Dashboard\ITransactionCountDailyRepository;
 use App\Repositories\Dashboard\ITransactionCountMonthlyRepository;
 use App\Repositories\Dashboard\ITransactionCountWeeklyRepository;
+use App\Repositories\Dashboard\SignUpCountMonthlyRepository;
+use App\Repositories\Dashboard\SignUpCountWeeklyRepository;
+use App\Repositories\Dashboard\SignUpUpCountDailyRepository;
 use App\Repositories\Dashboard\TransactionCountDailyRepository;
 use App\Repositories\Dashboard\TransactionCountMonthlyRepository;
 use App\Repositories\Dashboard\TransactionCountWeeklyRepository;
@@ -296,6 +302,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ITransactionCountDailyRepository::class, TransactionCountDailyRepository::class);
         $this->app->bind(ITransactionCountMonthlyRepository::class, TransactionCountMonthlyRepository::class);
         $this->app->bind(ITransactionCountWeeklyRepository::class, TransactionCountWeeklyRepository::class);
+        $this->app->bind(ISignUpCountDailyRepository::class, SignUpUpCountDailyRepository::class);
+        $this->app->bind(ISignUpCountWeeklyRepository::class, SignUpCountWeeklyRepository::class);
+        $this->app->bind(ISignUpCountMonthlyRepository::class, SignUpCountMonthlyRepository::class);
 
         // Loan
         $this->app->bind(ILoanRepository::class, LoanRepository::class);

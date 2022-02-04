@@ -6,6 +6,7 @@ use App\Enums\SuccessMessages;
 use App\Services\Dashboard\IDashboardService;
 use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
 use App\Services\Utilities\Responses\IResponseService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -70,6 +71,24 @@ class DashboardController extends Controller
     public function getTransactionWeekly(): JsonResponse
     {
         $response = $this->dashboardService->getTransactionCountWeekly();
+        return $this->responseService->successResponse($response->toArray());
+    }
+
+    public function getDailySignups(): JsonResponse
+    {
+        $response = $this->dashboardService->getDailySignups();
+        return $this->responseService->successResponse($response->toArray());
+    }
+
+    public function getWeeklySignups(): JsonResponse
+    {
+        $response = $this->dashboardService->getWeeklySignups();
+        return $this->responseService->successResponse($response->toArray());
+    }
+
+    public function getMonthlySignups(): JsonResponse
+    {
+        $response = $this->dashboardService->getMonthlySignups();
         return $this->responseService->successResponse($response->toArray());
     }
 

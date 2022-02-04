@@ -13,4 +13,7 @@ interface IDashboardService
     public function getTransactionCountDaily(): Collection;
     public function getTransactionCountMonthly(): Collection;
     public function getTransactionCountWeekly(): Collection;
+    public function getDailySignups(): Collection;
+    public function getWeeklySignups(): Collection;
+    public function getMonthlySignups(): Collection;
 }

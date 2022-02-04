@@ -458,6 +458,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/transactions/daily', [DashboardController::class, 'getTransactionCountDaily']);
         Route::get('/transactions/monthly', [DashboardController::class, 'getTransactionCountMonthly']);
         Route::get('/transactions/weekly', [DashboardController::class, 'getTransactionWeekly']);
+        Route::get('/signups/daily', [DashboardController::class, 'getDailySignups']);
+        Route::get('/signups/monthly', [DashboardController::class, 'getMonthlySignups']);
+        Route::get('/signups/weekly', [DashboardController::class, 'getWeeklySignups']);
         Route::get('currencies/rates', [DashboardController::class, 'getForeignCurrencyRates']);
     });
 
