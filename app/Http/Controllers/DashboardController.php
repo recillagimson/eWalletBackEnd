@@ -49,4 +49,28 @@ class DashboardController extends Controller
         return $this->responseService->successResponse($data->toArray(), SuccessMessages::success);
     }
 
+    public function getDashboard2022(): JsonResponse
+    {
+        $response = $this->dashboardService->getDashboard2022();
+        return $this->responseService->successResponse($response->first()->toArray());
+    }
+
+    public function getTransactionCountDaily(): JsonResponse
+    {
+        $response = $this->dashboardService->getTransactionCountDaily();
+        return $this->responseService->successResponse($response->toArray());
+    }
+
+    public function getTransactionCountMonthly(): JsonResponse
+    {
+        $response = $this->dashboardService->getTransactionCountMonthly();
+        return $this->responseService->successResponse($response->toArray());
+    }
+
+    public function getTransactionWeekly(): JsonResponse
+    {
+        $response = $this->dashboardService->getTransactionCountWeekly();
+        return $this->responseService->successResponse($response->toArray());
+    }
+
 }
