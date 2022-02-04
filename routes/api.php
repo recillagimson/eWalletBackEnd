@@ -455,9 +455,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/dashboard')->middleware(['decrypt.request'])->group(function () {
         Route::get('/', [DashboardController::class, 'index']);
         Route::get('/2022', [DashboardController::class, 'getDashboard2022']);
-        Route::get('/transaction/daily', [DashboardController::class, 'getTransactionCountDaily']);
-        Route::get('/transaction/monthly', [DashboardController::class, 'getTransactionCountMonthly']);
-        Route::get('/transaction/weekly', [DashboardController::class, 'getTransactionWeekly']);
+        Route::get('/transactions/daily', [DashboardController::class, 'getTransactionCountDaily']);
+        Route::get('/transactions/monthly', [DashboardController::class, 'getTransactionCountMonthly']);
+        Route::get('/transactions/weekly', [DashboardController::class, 'getTransactionWeekly']);
         Route::get('currencies/rates', [DashboardController::class, 'getForeignCurrencyRates']);
     });
 
