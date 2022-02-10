@@ -126,12 +126,12 @@ class VerificationService implements IVerificationService
             $path = $this->saveFile($idPhoto, $idPhotoName, 'id_photo');
             // Save record to DB
 
-//            $tierApproval = $this->tierApproval->updateOrCreateApprovalRequest([
-//                'user_account_id' => $data['user_account_id'],
-//                'request_tier_id' => AccountTiers::tier2,
-//                'user_created' => request()->user()->id,
-//                'user_updated' => request()->user()->id,
-//            ]);
+            $tierApproval = $this->tierApproval->updateOrCreateApprovalRequest([
+                'user_account_id' => $data['user_account_id'],
+                'request_tier_id' => AccountTiers::tier2,
+                'user_created' => request()->user()->id,
+                'user_updated' => request()->user()->id,
+            ]);
 
             // Init eKYC OCR
             $extractData = null;
@@ -156,17 +156,17 @@ class VerificationService implements IVerificationService
             $record = $this->userPhotoRepository->create($params);
 
             if(isset($data['remarks'])) {
-                $this->iTierApprovalCommentRepository->create([
-                    'tier_approval_id' => $tierApproval->id,
-                    'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
-                    'user_created' => $data['user_created'] = request()->user()->id,
-                    'user_updated' => $data['user_updated'] = request()->user()->id
-                ]);
+//                $this->iTierApprovalCommentRepository->create([
+//                    'tier_approval_id' => $tierApproval->id,
+//                    'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
+//                    'user_created' => $data['user_created'] = request()->user()->id,
+//                    'user_updated' => $data['user_updated'] = request()->user()->id
+//                ]);
             }
 
             // Collect created record
             $record->ekyc = $extractData;
-            $record->tier_approval = $tierApproval;
+//            $record->tier_approval = $tierApproval;
             array_push($recordsCreated, $record);
 
             $audit_remarks = request()->user()->account_number . "  has uploaded " . $idType->type . ", " . $idType->description;
