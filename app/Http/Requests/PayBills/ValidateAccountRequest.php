@@ -139,8 +139,46 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::MECOP => [
             'account_number' => 'required',
             'amount' => 'required|numeric|in:100.00,200.00,300.00,500.00,1000.00',
-        ]
-            
+        ],
+        PayBillsConfig::WLDVS => [
+            'account_number' => 'required|digits:9',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => "required|max:100",
+            'otherInfo.DueDate' => "required|date_format:m/Y",
+            'otherInfo.Pledge' => "required|in:RD"
+        ],
+        PayBillsConfig::PELC2 => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.DueDate' => "required|date_format:m/d/Y",
+            'otherInfo.ConsumerName' => "required|max:100"
+        ],    
+        PayBillsConfig::INNOV => [
+            'account_number' => 'required|digits:9',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.Telephone_Number' => "required|numeric|digits:10",
+        ],    
+        PayBillsConfig::NHA01 => [
+            'account_number' => 'required|max:9',
+            'amount' => 'required|numeric|min:200.00|max:100000.00',
+            'otherInfo.BeneficiaryName' => "required|max:50" 
+        ], 
+        PayBillsConfig::AECOR => [
+            'account_number' => 'required|digits:16',
+            'amount' => 'required|numeric|min:1.00|max:99999.99',
+            'otherInfo.DueDate' => "required|date_format:m/d/Y",
+            'otherInfo.CustomerName' => 'required|max:100'
+        ], 
+        PayBillsConfig::HDMF3 => [
+            'account_number' => 'required|between:10,20',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.PaymentType' => "required|in:MC,HL,MP2,ST",
+            'otherInfo.Region' => "required",
+            'otherInfo.ContactNo' => "required|between:10,20",
+            'otherInfo.PeriodFrom' => "required|date_format:Y/m",
+            'otherInfo.PeriodTo' => "required|date_format:Y/m",
+        ], 
+
 
     ];
 

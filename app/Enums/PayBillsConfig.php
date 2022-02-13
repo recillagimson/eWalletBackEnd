@@ -35,14 +35,20 @@ class PayBillsConfig
         PayBillsConfig::PILAM,
         PayBillsConfig::AEON1,
         PayBillsConfig::BNECO,
-
-        //PRULIFE
         PayBillsConfig::PRULI,
         PayBillsConfig::SSS03,
         PayBillsConfig::MECOP,
+        PayBillsConfig::WLDVS,
+        PayBillsConfig::PELC2,
+        PayBillsConfig::INNOV,
+        PayBillsConfig::NHA01,
+        PayBillsConfig::AECOR,
+        PayBillsConfig::HDMF3
     ];
 
 
+
+    // to catch invalid account numbers
     const billerInvalidMsg = [
         PayBillsConfig::MECOR_INVALID_ACCT,
         PayBillsConfig::PLDT6_INVALID_ACCT,
@@ -64,7 +70,12 @@ class PayBillsConfig
         PayBillsConfig::AEON1_INVALID_ACCT,
         PayBillsConfig::BNECO_INVALID_ACCT,
         PayBillsConfig::SSS03_INVALID_ACCT,
-        PayBillsConfig::MECOP_INVALID_ACCT
+        PayBillsConfig::MECOP_INVALID_ACCT,
+        PayBillsConfig::NHA01_INVALID_ACCT,
+        PayBillsConfig::AECOR_INVALID_ACCT,
+        PayBillsConfig::HDMF3_INVALID_ACCT
+        // PayBillsConfig::WLDVS_INVALID_ACCT,  no validation for invalid account 
+        // PayBillsConfig::PELC2_INVALID_ACCT,  no validation for invalid account  
     ];
 
 
@@ -88,14 +99,18 @@ class PayBillsConfig
     const MBCCC = 'MBCCC';
     const BNKRD = 'BNKRD';
     const BPI00 = 'BPI00';
-
-    // old billers
     const PILAM = 'PILAM';
     const AEON1 = 'AEON1';
     const BNECO = 'BNECO';
     const PRULI = 'PRULI';
     const SSS03 = 'SSS03';
     const MECOP = 'MECOP';
+    const WLDVS = 'WLDVS';
+    const PELC2 = 'PELC2';
+    const INNOV = 'INNOV';
+    const NHA01 = 'NHA01';
+    const AECOR = 'AECOR';
+    const HDMF3 = 'HDMF3';
 
     // invalid account numbers
 
@@ -120,6 +135,29 @@ class PayBillsConfig
     const BNECO_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const SSS03_INVALID_ACCT = "SS # is invalid."; // code 26
     const MECOP_INVALID_ACCT = 'Subscriber not found'; // code 26
+
+    const AECOR_INVALID_ACCT = 'Please provide the correct A T M Reference Number.'; // code 34
+    const HDMF3_INVALID_ACCT = 'Please provide the correct Account No.'; // code 34
+    const NHA01_INVALID_ACCT = 'Please provide the correct B I N.'; // code 34
     // request time out
     const endpointRequestTimeOut = 'Endpoint request timed out.';
 }
+
+
+// ANGELES CITY WATER DISTRICT                  Does not have data
+// ANGELES ELECTRIC CORPORATION                 DONE
+// CITY OF SAN FERNANDO WATER DISTRICT          Does not have data
+// PAMPANGA II ELECTRIC COOPERATIVE, INC.       DONE
+// DEPARTMENT OF FOREIGN AFFAIRS                Does not have data
+// NATIONAL BUREAU OF INVESTIGATION             Does not have data
+// NATIONAL HOUSING AUTHORITY                   DONE
+// Innove                                       There was an error in generating the access token.Check to be sure you are using the correct client key and secret values. 
+// BENECO,                                      Undefined index:DATA                     
+// PRIME WATER,                                 Does not have data      
+// CLEARWATER,                                  Does not have data    
+// WORLD VISION,                                DONE
+// AEON                                         DONE   
+// Baguio Water District,                       Does not have data   
+// PAG-IBIG                                     DONE
+// PAG-IBIG OFW                                 DONE  
+
