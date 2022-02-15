@@ -95,10 +95,6 @@ class ValidateAccountRequest extends FormRequest
             'amount' => 'required|numeric|min:1.00',
             'otherInfo.DueDate' => "required|date_format:m/d/Y"
         ],
-        PayBillsConfig::AEON1 => [
-            'account_number' => 'required|digits:10',
-            'amount' => 'required|numeric|min:1.00|max:100000.00',
-        ],
         PayBillsConfig::BNECO => [
             'account_number' => 'required|digits:11',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
@@ -139,9 +135,92 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::MECOP => [
             'account_number' => 'required',
             'amount' => 'required|numeric|in:100.00,200.00,300.00,500.00,1000.00',
-        ]
-            
-
+        ],
+        PayBillsConfig::WLDVS => [
+            'account_number' => 'required|digits:9',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => "required|max:100",
+            'otherInfo.DueDate' => "required|date_format:m/Y",
+            'otherInfo.Pledge' => "required|in:RD,OT"
+        ],
+        PayBillsConfig::PELC2 => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.DueDate' => "required|date_format:m/d/Y",
+            'otherInfo.ConsumerName' => "required|max:100"
+        ],    
+        PayBillsConfig::INNOV => [
+            'account_number' => 'required|digits:9',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.Telephone_Number' => "required|numeric|digits:10",
+        ],    
+        PayBillsConfig::NHA01 => [
+            'account_number' => 'required|max:9',
+            'amount' => 'required|numeric|min:200.00|max:100000.00',
+            'otherInfo.BeneficiaryName' => "required|max:50" 
+        ], 
+        PayBillsConfig::HDMF3 => [
+            'account_number' => 'required|between:10,20',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.PaymentType' => "required|in:MC,HL,MP2,ST",
+            'otherInfo.Region' => "required",
+            'otherInfo.ContactNo' => "required|between:10,20",
+            'otherInfo.PeriodFrom' => "required|date_format:Y/m",
+            'otherInfo.PeriodTo' => "required|date_format:Y/m",
+        ], 
+        PayBillsConfig::ADMSN => [
+            'account_number' => 'required|digits:9',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.LastName' => 'required|max:40',
+            'otherInfo.FirstName' => 'required|max:40',
+            'otherInfo.MiddleName' => 'required|max:40',
+            'otherInfo.PaymentType' => 'required|in:B2,DP,MT,FT',
+            'otherInfo.Course' => 'required|max:10',
+            'otherInfo.TotalAssessment' => 'required|min:0.00',
+            'otherInfo.SchoolYear' => 'required',  // I removed the date format coz it has an error
+            'otherInfo.Term' => 'required|in:1,2,3'
+        ],
+        PayBillsConfig::ADNU1 => [
+            'account_number' => 'required|alpha_num',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.Name' => 'required|max:40',
+            'otherInfo.AccountType' => 'required|in:ADNU1'
+        ],
+        PayBillsConfig::AECOR => [
+            'account_number' => 'required|digits:16',
+            'amount' => 'required|numeric|min:1.00|max:99999.99',
+            'otherInfo.DueDate' => "required|date_format:m/d/Y",
+            'otherInfo.CustomerName' => 'required|max:100'
+        ], 
+        PayBillsConfig::ANTEC => [
+            'account_number' => 'required|digits:11',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y',
+            'otherInfo.AccountName' => 'required',
+            'otherInfo.BillMonth' => 'required|date_format:m/Y'
+        ],
+        PayBillsConfig::APEC1 => [
+            'account_number' => 'required|between:15,20',
+            'amount' => 'required|numeric|min:1.00',
+            "otherInfo.BillAmount" => "required",
+            "otherInfo.SOA" => "required|in:1",
+            "otherInfo.BillAmount" => "required|between:1,12",
+            "otherInfo.BillMonth" => "required|between:1,12",
+            "otherInfo.BillYear" => "required|date_format:Y",
+            "otherInfo.PaymentType" => "required|in:S",
+            "otherInfo.InvoiceNo" => "required",
+            "otherInfo.DeliveryDate" => "required|date_format:Y-m-d",
+            "otherInfo.DueDate" => "required|date_format:Y-m-d",
+            "otherInfo.AccountName" => "required|max:100"
+        ],
+        PayBillsConfig::APECS => [
+            'account_number' => 'required|max:13|alpha-dash',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.BranchCode' => 'required|in:B04,A07,C02,B03,A02,B11,B05,A09,B12,B10,C01,A08,B01,C03,A04,B09,B07,B06,D01,B02,B08,A10,A01,Others',
+            'otherInfo.PaymentType' => 'required|in:AF,TF,MISC,OTH',
+            'otherInfo.FirstName' => 'required:max:100',
+            'otherInfo.LastName' => 'required:max:100'
+        ],
     ];
 
 

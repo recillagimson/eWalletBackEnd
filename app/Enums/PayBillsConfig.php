@@ -35,14 +35,25 @@ class PayBillsConfig
         PayBillsConfig::PILAM,
         PayBillsConfig::AEON1,
         PayBillsConfig::BNECO,
-
-        //PRULIFE
         PayBillsConfig::PRULI,
         PayBillsConfig::SSS03,
         PayBillsConfig::MECOP,
+        PayBillsConfig::WLDVS,
+        PayBillsConfig::PELC2,
+        PayBillsConfig::INNOV,
+        PayBillsConfig::NHA01,
+        PayBillsConfig::HDMF3,
+        PayBillsConfig::ADMSN,
+        PayBillsConfig::ADNU1,
+        PayBillsConfig::AECOR,
+        PayBillsConfig::ANTEC,
+        PayBillsConfig::APEC1,
+        PayBillsConfig::APECS,
     ];
 
 
+
+    // to catch invalid account numbers
     const billerInvalidMsg = [
         PayBillsConfig::MECOR_INVALID_ACCT,
         PayBillsConfig::PLDT6_INVALID_ACCT,
@@ -64,9 +75,16 @@ class PayBillsConfig
         PayBillsConfig::AEON1_INVALID_ACCT,
         PayBillsConfig::BNECO_INVALID_ACCT,
         PayBillsConfig::SSS03_INVALID_ACCT,
-        PayBillsConfig::MECOP_INVALID_ACCT
+        PayBillsConfig::MECOP_INVALID_ACCT,
+        PayBillsConfig::NHA01_INVALID_ACCT,
+        PayBillsConfig::AECOR_INVALID_ACCT,
+        PayBillsConfig::HDMF3_INVALID_ACCT,
+        // PayBillsConfig::WLDVS_INVALID_ACCT,  no validation for invalid account 
+        // PayBillsConfig::PELC2_INVALID_ACCT,  no validation for invalid account 
+        // PayBillsConfig::ADMSN_INVALID_ACCT,  no validation for invalid account  
+        // PayBillsConfig::ADNU1_INVALID_ACCT,  no validation for invalid account  
+        PayBillsConfig::ANTEC_OVERDUE
     ];
-
 
     const MECOR = 'MECOR';
     const PLDT6 = 'PLDT6';
@@ -88,14 +106,23 @@ class PayBillsConfig
     const MBCCC = 'MBCCC';
     const BNKRD = 'BNKRD';
     const BPI00 = 'BPI00';
-
-    // old billers
     const PILAM = 'PILAM';
     const AEON1 = 'AEON1';
     const BNECO = 'BNECO';
     const PRULI = 'PRULI';
     const SSS03 = 'SSS03';
     const MECOP = 'MECOP';
+    const WLDVS = 'WLDVS';
+    const PELC2 = 'PELC2';
+    const INNOV = 'INNOV';
+    const NHA01 = 'NHA01';
+    const HDMF3 = 'HDMF3';
+    const ADMSN = 'ADMSN';
+    const ADNU1 = 'ADNU1';
+    const AECOR = 'AECOR';
+    const ANTEC = 'ANTEC';
+    const APEC1 = 'APEC1';
+    const APECS = 'APECS';
 
     // invalid account numbers
 
@@ -120,6 +147,92 @@ class PayBillsConfig
     const BNECO_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const SSS03_INVALID_ACCT = "SS # is invalid."; // code 26
     const MECOP_INVALID_ACCT = 'Subscriber not found'; // code 26
+
+    const AECOR_INVALID_ACCT = 'Please provide the correct A T M Reference Number.'; // code 34
+    const HDMF3_INVALID_ACCT = 'Please provide the correct Account No.'; // code 34
+    const NHA01_INVALID_ACCT = 'Please provide the correct B I N.'; // code 34
+    const ANTEC_OVERDUE = 'Please provide the correct B I N.'; // code 34
+
     // request time out
-    const endpointRequestTimeOut = 'Endpoint request timed out.';
+    const endpointRequestTimeOut = 'This biller does not accept overdue bill. Please pay directly to the biller.';
+    
 }
+
+
+// DONE
+
+// Angeles City Water District           
+// Angeles Electric Corporation 
+// Pampanga II Electric Cooperative, Inc.
+// National Housing Authority  
+// World Vision
+// Aeon Creit Service Philippines Inc.
+// Pag-ibig  
+// Pag-ibig ofw  
+
+// ADDING ERROR MESSAGES
+
+// Adamson University
+// Ateneo De Naga University
+// Antique Electric
+// Albay Power
+// Apec Schools
+
+
+// EZ BILLERS TO ADD
+
+// EQPMC
+// MBCCC
+// MOLD1
+// DVOLT
+// MSPCI
+// MWSIN
+// RFID1
+// RTI01
+// VIECO
+// ASFIN
+// ASVCA
+// AVONC
+// BAYAN
+// BLKWC
+// BNKRD
+// BPIMS
+// CLNK1
+// CLPCO
+// CNVRG
+// CRMWD
+// CSBNK
+// CSHLO
+// CVMFI
+// DASCA
+// DCTV1
+// ECNSS
+// EQPMC
+// FUSEL
+// GLOBE
+// GNTWC
+// HCPHL
+// ILEC2
+// INEC1
+// LARC1
+// LCWD1
+// LGNWC
+// LOPCI
+// LPU01
+// MAMEM
+// MCLAC
+// MIICO
+// MLIFE
+// MNWD1
+// OMPCC
+// RVSCI
+// RYLCV
+// SEZCO
+// SLIFE
+// SONYL
+// SPLAN
+// SSS02
+// TWDIS
+// UBNK4
+// UBNK7
+// UNBNK
