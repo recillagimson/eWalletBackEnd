@@ -49,7 +49,7 @@ trait PayBillsHelpers
     {
         $isEnough = $this->checkAmount($user, $data, $billerCode);
         if (!$isEnough) $this->payBillsNotEnoughBalance($this->getOtherCharges($billerCode) ,$this->getServiceFee($user));
-        $this->checkMonthlyLimit($user, $data);
+        // $this->checkMonthlyLimit($user, $data);
     }
 
 
