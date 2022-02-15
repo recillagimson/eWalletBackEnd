@@ -10,6 +10,50 @@ use App\Models\UserDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * App\Models\UserUtilities\UserTransactionHistoryView
+ *
+ * @property string $user_account_id
+ * @property string|null $rsbsa_number
+ * @property string|null $account_number
+ * @property string $transaction_id
+ * @property string|null $reference_number
+ * @property float|null $total_amount
+ * @property string|null $transaction_category_id
+ * @property string|null $user_updated
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property string|null $original_transaction_date
+ * @property string|null $transaction_date
+ * @property string $status
+ * @property string|null $provider_reference
+ * @property-read mixed $manila_time_transaction_date
+ * @property-read mixed $signed_total_amount
+ * @property-read mixed $transactable
+ * @property-read mixed $transaction_type
+ * @property-read TransactionCategory|null $transaction_category
+ * @property-read UserDetail|null $user_detail
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereAccountNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereOriginalTransactionDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereProviderReference($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereReferenceNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereRsbsaNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereTransactionCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereTransactionDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereUserAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistoryView whereUserUpdated($value)
+ * @mixin \Eloquent
+ */
 class UserTransactionHistoryView extends Model
 {
     use HasFactory;

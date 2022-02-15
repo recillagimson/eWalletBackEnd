@@ -6,6 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * App\Models\DBP\DBPTransactionHistories
+ *
+ * @property-read mixed $manila_time_transaction_date
+ * @method static \Illuminate\Database\Eloquent\Builder|DBPTransactionHistories newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DBPTransactionHistories newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DBPTransactionHistories query()
+ * @mixin \Eloquent
+ */
 class DBPTransactionHistories extends Model
 {
     use HasFactory;

@@ -32,7 +32,8 @@
         "niklasravnsborg/laravel-pdf": "^4.0",
         "predis/predis": "^1.1",
         "ricorocks-digital-agency/soap": "^1.4",
-        "sendgrid/sendgrid": "^7.9",
+        "sendgrid/sendgrid": "^7.11.4",
+        "sendgrid/php-http-client": "^3.14.3",
         "tmilos/jose-jwt": "^2.0"
     },
     "require-dev": {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Auth\UserKey;
+namespace App\Services\v2\Auth\UserKey;
 
 interface IUserKeyService
 {

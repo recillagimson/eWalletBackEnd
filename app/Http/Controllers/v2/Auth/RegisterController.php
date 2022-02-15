@@ -8,7 +8,7 @@ use App\Http\Requests\Auth\v2\RegisterUserRequest;
 use App\Http\Requests\Auth\ValidateNewUserRequest;
 use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Http\Requests\Auth\ValidatePinRequest;
-use App\Services\v2\Auth\Registration\IRegistrationService;
+use App\Services\Auth\Registration\IRegistrationService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
 use Illuminate\Http\JsonResponse;
@@ -55,7 +55,7 @@ class RegisterController extends Controller
         $data = $request->validated();
         $usernameField = $this->getUsernameField($request);
         $token = $this->registrationService->registerPin($data, $usernameField);
-        
+
         return $this->responseService->createdResponse($token, SuccessMessages::pinValidationPassed);
     }
 

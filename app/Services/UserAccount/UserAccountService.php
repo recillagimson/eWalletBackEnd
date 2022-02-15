@@ -8,7 +8,7 @@ use App\Models\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
 use App\Repositories\UserUtilities\TempUserDetail\ITempUserDetailRepository;
-use App\Services\Auth\IAuthService;
+use App\Services\v2\Auth\IAuthService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;

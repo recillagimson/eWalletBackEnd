@@ -16,9 +16,9 @@ use App\Enums\UsernameTypes;
 use Illuminate\Http\Request;
 use App\Enums\PayBillsConfig;
 use App\Enums\AddMoneyProviders;
-use App\Services\Auth\AuthService;
+use App\Services\v2\Auth\AuthService;
 use App\Services\Loan\LoanService;
-use App\Services\Auth\IAuthService;
+use App\Services\v2\Auth\IAuthService;
 use App\Services\Loan\ILoanService;
 use App\Services\MyTask\MyTaskService;
 use App\Services\Report\ReportService;
@@ -150,8 +150,8 @@ use App\Services\Utilities\ReferenceNumber\IReferenceNumberService;
 use App\Services\Dashboard\ForeignExchange\ForeignExchangeRateService;
 use App\Services\Dashboard\ForeignExchange\IForeignExchangeRateService;
 use App\Services\ThirdParty\DragonPay\DragonPayService as DragonPayServiceV2;
-use App\Services\v2\Auth\Registration\RegistrationService as RegistrationV2Service;
-use App\Services\v2\Auth\Registration\IRegistrationService as IRegistrationV2Service;
+use App\Services\Auth\Registration\RegistrationService as RegistrationV2Service;
+use App\Services\Auth\Registration\IRegistrationService as IRegistrationV2Service;
 
 
 class AppServiceProvider extends ServiceProvider

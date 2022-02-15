@@ -13,7 +13,7 @@ use App\Repositories\UserAccountNumber\IUserAccountNumberRepository;
 use App\Repositories\UserBalanceInfo\IUserBalanceInfoRepository;
 use App\Repositories\UserKeys\PasswordHistory\IPasswordHistoryRepository;
 use App\Repositories\UserKeys\PinCodeHistory\IPinCodeHistoryRepository;
-use App\Services\Auth\IAuthService;
+use App\Services\v2\Auth\IAuthService;
 use App\Traits\Errors\WithAuthErrors;
 use Illuminate\Support\Facades\Hash;
 
