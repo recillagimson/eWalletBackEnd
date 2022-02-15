@@ -42,8 +42,13 @@ class PayBillsConfig
         PayBillsConfig::PELC2,
         PayBillsConfig::INNOV,
         PayBillsConfig::NHA01,
+        PayBillsConfig::HDMF3,
+        PayBillsConfig::ADMSN,
+        PayBillsConfig::ADNU1,
         PayBillsConfig::AECOR,
-        PayBillsConfig::HDMF3
+        PayBillsConfig::ANTEC,
+        PayBillsConfig::APEC1,
+        PayBillsConfig::APECS,
     ];
 
 
@@ -73,11 +78,13 @@ class PayBillsConfig
         PayBillsConfig::MECOP_INVALID_ACCT,
         PayBillsConfig::NHA01_INVALID_ACCT,
         PayBillsConfig::AECOR_INVALID_ACCT,
-        PayBillsConfig::HDMF3_INVALID_ACCT
+        PayBillsConfig::HDMF3_INVALID_ACCT,
         // PayBillsConfig::WLDVS_INVALID_ACCT,  no validation for invalid account 
-        // PayBillsConfig::PELC2_INVALID_ACCT,  no validation for invalid account  
+        // PayBillsConfig::PELC2_INVALID_ACCT,  no validation for invalid account 
+        // PayBillsConfig::ADMSN_INVALID_ACCT,  no validation for invalid account  
+        // PayBillsConfig::ADNU1_INVALID_ACCT,  no validation for invalid account  
+        PayBillsConfig::ANTEC_OVERDUE
     ];
-
 
     const MECOR = 'MECOR';
     const PLDT6 = 'PLDT6';
@@ -109,8 +116,13 @@ class PayBillsConfig
     const PELC2 = 'PELC2';
     const INNOV = 'INNOV';
     const NHA01 = 'NHA01';
-    const AECOR = 'AECOR';
     const HDMF3 = 'HDMF3';
+    const ADMSN = 'ADMSN';
+    const ADNU1 = 'ADNU1';
+    const AECOR = 'AECOR';
+    const ANTEC = 'ANTEC';
+    const APEC1 = 'APEC1';
+    const APECS = 'APECS';
 
     // invalid account numbers
 
@@ -139,25 +151,88 @@ class PayBillsConfig
     const AECOR_INVALID_ACCT = 'Please provide the correct A T M Reference Number.'; // code 34
     const HDMF3_INVALID_ACCT = 'Please provide the correct Account No.'; // code 34
     const NHA01_INVALID_ACCT = 'Please provide the correct B I N.'; // code 34
+    const ANTEC_OVERDUE = 'Please provide the correct B I N.'; // code 34
+
     // request time out
-    const endpointRequestTimeOut = 'Endpoint request timed out.';
+    const endpointRequestTimeOut = 'This biller does not accept overdue bill. Please pay directly to the biller.';
+    
 }
 
 
-// ANGELES CITY WATER DISTRICT                  Does not have data
-// ANGELES ELECTRIC CORPORATION                 DONE
-// CITY OF SAN FERNANDO WATER DISTRICT          Does not have data
-// PAMPANGA II ELECTRIC COOPERATIVE, INC.       DONE
-// DEPARTMENT OF FOREIGN AFFAIRS                Does not have data
-// NATIONAL BUREAU OF INVESTIGATION             Does not have data
-// NATIONAL HOUSING AUTHORITY                   DONE
-// Innove                                       There was an error in generating the access token.Check to be sure you are using the correct client key and secret values. 
-// BENECO,                                      Undefined index:DATA                     
-// PRIME WATER,                                 Does not have data      
-// CLEARWATER,                                  Does not have data    
-// WORLD VISION,                                DONE
-// AEON                                         DONE   
-// Baguio Water District,                       Does not have data   
-// PAG-IBIG                                     DONE
-// PAG-IBIG OFW                                 DONE  
+// DONE
 
+// Angeles City Water District           
+// Angeles Electric Corporation 
+// Pampanga II Electric Cooperative, Inc.
+// National Housing Authority  
+// World Vision
+// Aeon Creit Service Philippines Inc.
+// Pag-ibig  
+// Pag-ibig ofw  
+
+// ADDING ERROR MESSAGES
+
+// Adamson University
+// Ateneo De Naga University
+// Antique Electric
+// Albay Power
+// Apec Schools
+
+
+// EZ BILLERS TO ADD
+
+// EQPMC
+// MBCCC
+// MOLD1
+// DVOLT
+// MSPCI
+// MWSIN
+// RFID1
+// RTI01
+// VIECO
+// ASFIN
+// ASVCA
+// AVONC
+// BAYAN
+// BLKWC
+// BNKRD
+// BPIMS
+// CLNK1
+// CLPCO
+// CNVRG
+// CRMWD
+// CSBNK
+// CSHLO
+// CVMFI
+// DASCA
+// DCTV1
+// ECNSS
+// EQPMC
+// FUSEL
+// GLOBE
+// GNTWC
+// HCPHL
+// ILEC2
+// INEC1
+// LARC1
+// LCWD1
+// LGNWC
+// LOPCI
+// LPU01
+// MAMEM
+// MCLAC
+// MIICO
+// MLIFE
+// MNWD1
+// OMPCC
+// RVSCI
+// RYLCV
+// SEZCO
+// SLIFE
+// SONYL
+// SPLAN
+// SSS02
+// TWDIS
+// UBNK4
+// UBNK7
+// UNBNK
