@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\ClientLoginRequest;
-use App\Services\Auth\IAuthService;
+use App\Services\v2\Auth\IAuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 

@@ -6,6 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * App\Models\DBP\DBPCustomerList
+ *
+ * @property-read mixed $manila_time_created_at
+ * @method static \Illuminate\Database\Eloquent\Builder|DBPCustomerList newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DBPCustomerList newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DBPCustomerList query()
+ * @mixin \Eloquent
+ */
 class DBPCustomerList extends Model
 {
     use HasFactory;

@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ValidateCurrentKeyRequest;
 use App\Http\Requests\Auth\VerifyUserKeyRequest;
 use App\Http\Requests\ValidateKeyRequest;
-use App\Services\Auth\IAuthService;
+use App\Services\v2\Auth\IAuthService;
 use App\Services\Auth\UserKey\IUserKeyService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\RouteParamHelpers;

@@ -126,12 +126,8 @@ class VerificationService implements IVerificationService
             $path = $this->saveFile($idPhoto, $idPhotoName, 'id_photo');
             // Save record to DB
 
-//            $tierApproval = $this->tierApproval->updateOrCreateApprovalRequest([
-//                'user_account_id' => $data['user_account_id'],
-//                'request_tier_id' => AccountTiers::tier2,
-//                'user_created' => request()->user()->id,
-//                'user_updated' => request()->user()->id,
-//            ]);
+            if(isset($data['tier_approval_id']))
+                $tierApproval = $this->tierApproval->get($data['tier_approval_id']);
 
             // Init eKYC OCR
             $extractData = null;
@@ -149,7 +145,7 @@ class VerificationService implements IVerificationService
                 'user_created' => request()->user()->id,
                 'user_updated' => request()->user()->id,
                 'id_number' => isset($extractData['id_number']) && $extractData['id_number'] != 'N/A' ? $extractData['id_number'] : $data['id_number'],
-//                'tier_approval_id' => $tierApproval->id,
+                'tier_approval_id' => $tierApproval ? $tierApproval->id : null,
                 'remarks' => isset($data['remarks']) ? $data['remarks'] : ""
             ];
 

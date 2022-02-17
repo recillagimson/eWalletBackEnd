@@ -7,6 +7,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * App\Models\NewsAndUpdate
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|NewsAndUpdate newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|NewsAndUpdate newQuery()
+ * @method static \Illuminate\Database\Query\Builder|NewsAndUpdate onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|NewsAndUpdate query()
+ * @method static \Illuminate\Database\Query\Builder|NewsAndUpdate withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|NewsAndUpdate withoutTrashed()
+ * @mixin \Eloquent
+ */
 class NewsAndUpdate extends Model
 {
     use UsesUuid, HasFactory, SoftDeletes;

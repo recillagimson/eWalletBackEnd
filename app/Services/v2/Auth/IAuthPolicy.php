@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services\Auth;
+namespace App\Services\v2\Auth;
 
 
 interface IAuthPolicy

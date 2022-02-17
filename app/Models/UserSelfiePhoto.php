@@ -9,6 +9,45 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * App\Models\UserSelfiePhoto
+ *
+ * @property string $id
+ * @property string|null $tier_approval_id
+ * @property string $user_account_id
+ * @property string $photo_location
+ * @property string $status
+ * @property string|null $remarks
+ * @property string|null $reviewed_by
+ * @property string|null $reviewed_date
+ * @property string $user_created
+ * @property string $user_updated
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ * @property-read mixed $selfie_link
+ * @property-read \App\Models\UserDetail|null $reviewer
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto newQuery()
+ * @method static \Illuminate\Database\Query\Builder|UserSelfiePhoto onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto wherePhotoLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereRemarks($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereReviewedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereReviewedDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereTierApprovalId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereUserAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereUserCreated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserSelfiePhoto whereUserUpdated($value)
+ * @method static \Illuminate\Database\Query\Builder|UserSelfiePhoto withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|UserSelfiePhoto withoutTrashed()
+ * @mixin \Eloquent
+ */
 class UserSelfiePhoto extends Model
 {
     use HasFactory, UsesUuid, SoftDeletes, HasS3Links;

@@ -5,6 +5,36 @@ namespace App\Models\Utilities;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Utilities\Otp
+ *
+ * @property int $id
+ * @property string $identifier
+ * @property string $token
+ * @property int $validity
+ * @property int $expired
+ * @property int $no_times_generated
+ * @property int $no_times_attempted
+ * @property \Illuminate\Support\Carbon $generated_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $validated
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereExpired($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereGeneratedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereIdentifier($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereNoTimesAttempted($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereNoTimesGenerated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereValidated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Otp whereValidity($value)
+ * @mixin \Eloquent
+ */
 class Otp extends Model
 {
     /**

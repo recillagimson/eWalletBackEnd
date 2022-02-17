@@ -6,6 +6,14 @@ use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\HelpCenter
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|HelpCenter newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|HelpCenter newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|HelpCenter query()
+ * @mixin \Eloquent
+ */
 class HelpCenter extends Model
 {
     use UsesUuid, HasFactory;

@@ -8,6 +8,47 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * App\Models\UserTransactionHistory
+ *
+ * @property string $id
+ * @property string $user_account_id
+ * @property string $transaction_id
+ * @property string $reference_number
+ * @property string $total_amount
+ * @property string $transaction_category_id
+ * @property string $user_created
+ * @property string|null $user_updated
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property \Illuminate\Support\Carbon|null $transaction_date
+ * @property-read mixed $signed_total_amount
+ * @property-read mixed $transactable
+ * @property-read mixed $transaction_type
+ * @property-read \App\Models\TransactionCategory|null $transaction_category
+ * @property-read \App\Models\UserAccount|null $user_account
+ * @property-read \App\Models\UserDetail|null $user_details
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory newQuery()
+ * @method static \Illuminate\Database\Query\Builder|UserTransactionHistory onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereReferenceNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereTransactionCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereTransactionDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereTransactionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereUserAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereUserCreated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserTransactionHistory whereUserUpdated($value)
+ * @method static \Illuminate\Database\Query\Builder|UserTransactionHistory withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|UserTransactionHistory withoutTrashed()
+ * @mixin \Eloquent
+ */
 class UserTransactionHistory extends Model
 {
     use HasFactory, SoftDeletes;
