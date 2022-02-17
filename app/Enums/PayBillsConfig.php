@@ -49,6 +49,7 @@ class PayBillsConfig
         PayBillsConfig::ANTEC,
         PayBillsConfig::APEC1,
         PayBillsConfig::APECS,
+        // PayBillsConfig::EQPMC,
     ];
 
 
@@ -83,7 +84,6 @@ class PayBillsConfig
         // PayBillsConfig::PELC2_INVALID_ACCT,  no validation for invalid account 
         // PayBillsConfig::ADMSN_INVALID_ACCT,  no validation for invalid account  
         // PayBillsConfig::ADNU1_INVALID_ACCT,  no validation for invalid account  
-        PayBillsConfig::ANTEC_OVERDUE
     ];
 
     const MECOR = 'MECOR';
@@ -150,10 +150,7 @@ class PayBillsConfig
 
     const AECOR_INVALID_ACCT = 'Please provide the correct A T M Reference Number.'; // code 34
     const HDMF3_INVALID_ACCT = 'Please provide the correct Account No.'; // code 34
-    const NHA01_INVALID_ACCT = 'Please provide the correct B I N.'; // code 34
-    const ANTEC_OVERDUE = 'Please provide the correct B I N.'; // code 34
-
-    // request time out
+    const NHA01_INVALID_ACCT = 'Please provide the correct B I N.'; // code 36
     const endpointRequestTimeOut = 'This biller does not accept overdue bill. Please pay directly to the biller.';
     
 }
@@ -169,9 +166,6 @@ class PayBillsConfig
 // Aeon Creit Service Philippines Inc.
 // Pag-ibig  
 // Pag-ibig ofw  
-
-// ADDING ERROR MESSAGES
-
 // Adamson University
 // Ateneo De Naga University
 // Antique Electric
@@ -182,24 +176,18 @@ class PayBillsConfig
 // EZ BILLERS TO ADD
 
 // EQPMC
-// MBCCC
 // MOLD1
-// DVOLT
 // MSPCI
 // MWSIN
-// RFID1
 // RTI01
-// VIECO
 // ASFIN
 // ASVCA
 // AVONC
 // BAYAN
 // BLKWC
-// BNKRD
 // BPIMS
 // CLNK1
 // CLPCO
-// CNVRG
 // CRMWD
 // CSBNK
 // CSHLO
@@ -207,13 +195,10 @@ class PayBillsConfig
 // DASCA
 // DCTV1
 // ECNSS
-// EQPMC
 // FUSEL
 // GLOBE
 // GNTWC
-// HCPHL
 // ILEC2
-// INEC1
 // LARC1
 // LCWD1
 // LGNWC

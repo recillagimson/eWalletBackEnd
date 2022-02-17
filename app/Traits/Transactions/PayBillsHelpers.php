@@ -345,7 +345,7 @@ trait PayBillsHelpers
         if ($errorCode == 27) return $this->theAccountNumberisNotSupportedByTheBank($errorMsg);
         if ($errorCode == 28) return $this->theAccountNumberMustStartWithAnyOf($errorMsg);
         if ($errorCode == 30) return $this->possibleDuplicateDetected($errorMsg);
-
+        if ($errorCode == 36 && $errorMsg == "This biller does not accept overdue bill. Please pay directly to the biller.") return $this->overDueBills($errorMsg);
     }
 
     // old function
