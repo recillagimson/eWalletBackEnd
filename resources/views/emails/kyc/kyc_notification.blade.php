@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8"/>
-    <title>{{$subject}}</title>
+    <title>{{ $subject }}</title>
 </head>
 
 <body>

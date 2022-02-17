@@ -11,15 +11,17 @@ class KYCNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private string $text;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($subject, $text)
+    public function __construct(string $subject, string $text)
     {
-        $this->text = $text;
         $this->subject = $subject;
+        $this->text = $text;
     }
 
     /**
@@ -32,6 +34,7 @@ class KYCNotification extends Mailable
         return $this->view('emails.kyc.kyc_notification')
             ->subject($this->subject)
             ->with([
+                'subject' => $this->subject,
                 'text' => $this->text,
             ]);
     }

@@ -15,6 +15,110 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * App\Models\UserAccount
+ *
+ * @property string $id
+ * @property string|null $entity_id
+ * @property string|null $merchant_id
+ * @property string|null $username
+ * @property string|null $email
+ * @property string|null $mobile_number
+ * @property string $password
+ * @property int|null $is_merchant
+ * @property string|null $merchant_type_id
+ * @property int $is_admin
+ * @property string|null $status
+ * @property string|null $old_creation_date_time_from_v3_DB
+ * @property string|null $pin_code
+ * @property string|null $tier_id
+ * @property string|null $user_created
+ * @property string|null $user_updated
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property string|null $expires_at
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int $verified
+ * @property int $is_lockout
+ * @property int $login_failed_attempts
+ * @property \Illuminate\Support\Carbon|null $last_failed_attempt
+ * @property int $is_active
+ * @property string $accept_tac_consent_date
+ * @property int|null $is_accept_tac_consent
+ * @property string $accept_dpa_consent_date
+ * @property int|null $is_accept_dpa_consent
+ * @property string|null $account_number
+ * @property string|null $merchant_account_id
+ * @property \Illuminate\Support\Carbon|null $last_login
+ * @property string|null $rsbsa_number
+ * @property int $is_onboarder
+ * @property int $otp_enabled
+ * @property int|null $is_login_email
+ * @property int $is_lockout_admin
+ * @property-read \App\Models\UserBalanceInfo|null $balanceInfo
+ * @property-read string $manila_time_created_at
+ * @property-read \App\Models\TierApproval|null $lastTierApproval
+ * @property-read \App\Models\MerchantAccount|null $merchant_account
+ * @property-read UserDetail|null $profile
+ * @property-read \Illuminate\Database\Eloquent\Collection|Role[] $roles
+ * @property-read int|null $roles_count
+ * @property-read \App\Models\Tier|null $tier
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\TierApproval[] $tierApprovals
+ * @property-read int|null $tier_approvals_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
+ * @property-read int|null $tokens_count
+ * @property-read UserDetail|null $userDetail
+ * @property-read \App\Models\UserBalanceInfo|null $user_balance_info
+ * @property-read \App\Models\AdminUserVerifyToken|null $verificationToken
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount newQuery()
+ * @method static \Illuminate\Database\Query\Builder|UserAccount onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount query()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereAcceptDpaConsentDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereAcceptTacConsentDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereAccountNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereEntityId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereIsAcceptDpaConsent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereIsAcceptTacConsent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereIsAdmin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereIsLockout($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereIsLockoutAdmin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereIsLoginEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereIsMerchant($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereIsOnboarder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereLastFailedAttempt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereLastLogin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereLoginFailedAttempts($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereMerchantAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereMerchantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereMerchantTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereMobileNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereOldCreationDateTimeFromV3DB($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereOtpEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount wherePinCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereRsbsaNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereTierId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereUserCreated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereUserUpdated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereUsername($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserAccount whereVerified($value)
+ * @method static \Illuminate\Database\Query\Builder|UserAccount withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|UserAccount withoutTrashed()
+ * @mixin \Eloquent
+ */
 class UserAccount extends Authenticatable
 {
     use UsesUuid, HasS3Links;

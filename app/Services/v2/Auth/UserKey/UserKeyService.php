@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Services\Auth\UserKey;
+namespace App\Services\v2\Auth\UserKey;
 
 
 use App\Enums\UserKeyTypes;
@@ -9,7 +9,7 @@ use App\Enums\UsernameTypes;
 use App\Models\UserAccount;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Repositories\UserKeys\IUserKeyLogsRepository;
-use App\Services\Auth\IAuthService;
+use App\Services\v2\Auth\IAuthService;
 use App\Services\Utilities\Notifications\Email\IEmailService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 use App\Services\Utilities\OTP\IOtpService;

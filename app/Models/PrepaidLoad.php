@@ -7,6 +7,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * App\Models\PrepaidLoad
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|PrepaidLoad newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PrepaidLoad newQuery()
+ * @method static \Illuminate\Database\Query\Builder|PrepaidLoad onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|PrepaidLoad query()
+ * @method static \Illuminate\Database\Query\Builder|PrepaidLoad withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|PrepaidLoad withoutTrashed()
+ * @mixin \Eloquent
+ */
 class PrepaidLoad extends Model
 {
     use UsesUuid, HasFactory, SoftDeletes;

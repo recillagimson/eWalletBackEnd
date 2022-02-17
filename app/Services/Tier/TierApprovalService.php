@@ -21,7 +21,7 @@ use App\Services\Utilities\Notifications\INotificationService;
 use App\Services\Utilities\Notifications\SMS\ISmsService;
 
 class TierApprovalService implements ITierApprovalService
-{   
+{
     public ITierApprovalRepository $tierApprovalRepository;
     public IUserPhotoRepository $userPhotoRepository;
     public IUserAccountRepository $userAccountRepository;
@@ -86,7 +86,7 @@ class TierApprovalService implements ITierApprovalService
                 if($user_account->email) {
                     // EMAIL USER FOR NOTIFICATION
                     $this->emailService->tierUpgradeNotification($user_account->email, $details, $tier);
-                }                
+                }
             } else if($attr['status'] === 'DECLINED') {
 
                 $this->tierApprovalRepository->update($tierApproval, [
@@ -176,8 +176,8 @@ class TierApprovalService implements ITierApprovalService
 
         $this->emailService->kycNotification($user, $message);
     }
-    
-    public function sendSMS($mobile_number, string $message) {
+
+    public function sendSMS(string $mobile_number, string $message) {
         $user = $this->userAccountRepository->getAccountByMobileNumber($mobile_number);
 
         if (!$user) {
@@ -186,6 +186,6 @@ class TierApprovalService implements ITierApprovalService
             ]);
         }
 
-        $this->smsService->kycNotification($user, $message);
+        $this->smsService->kycNotification($mobile_number, $message);
     }
 }

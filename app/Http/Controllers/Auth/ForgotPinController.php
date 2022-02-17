@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ForgotKeyRequest;
 use App\Http\Requests\Auth\ResetPinRequest;
 use App\Http\Requests\Auth\VerifyKeyRequest;
-use App\Services\Auth\IAuthService;
+use App\Services\v2\Auth\IAuthService;
 use App\Services\Utilities\Responses\IResponseService;
 use App\Traits\UserHelpers;
 use Illuminate\Http\JsonResponse;

@@ -18,7 +18,7 @@ use App\Http\Requests\Auth\ResendOtpRequest;
 use App\Http\Requests\Auth\VerifyLoginRequest;
 use App\Http\Requests\Auth\VerifyTransOtpRequest;
 use App\Models\UserAccount;
-use App\Services\Auth\IAuthService;
+use App\Services\v2\Auth\IAuthService;
 use App\Services\Utilities\Responses\IResponseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
