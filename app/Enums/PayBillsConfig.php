@@ -49,10 +49,14 @@ class PayBillsConfig
         PayBillsConfig::ANTEC,
         PayBillsConfig::APEC1,
         PayBillsConfig::APECS,
-        // PayBillsConfig::EQPMC,
+        PayBillsConfig::EQPMC,
+        PayBillsConfig::MOLD1,
+        PayBillsConfig::MSPCI,
+        PayBillsConfig::ASFIN,
+        PayBillsConfig::ASVCA,
+        PayBillsConfig::AVONC,
+        PayBillsConfig::BAYAN,
     ];
-
-
 
     // to catch invalid account numbers
     const billerInvalidMsg = [
@@ -123,6 +127,13 @@ class PayBillsConfig
     const ANTEC = 'ANTEC';
     const APEC1 = 'APEC1';
     const APECS = 'APECS';
+    const EQPMC = 'EQPMC';
+    const MOLD1 = 'MOLD1';
+    const MSPCI = 'MSPCI';
+    const ASFIN = 'ASFIN';
+    const ASVCA = 'ASVCA';
+    const AVONC = 'AVONC';
+    const BAYAN = 'BAYAN';
 
     // invalid account numbers
 
@@ -131,8 +142,8 @@ class PayBillsConfig
     const ETRIP_INVALID_ACCT = "NOT_FOUND"; // "data": "NOT_FOUND"
     const HCPHL_INVALID_ACCT = "Invalid Account Number";  // code 26
     const MWCOM_INVALID_ACCT = "ContractAccountNumber is invalid."; // code 26
-    const SMART_INVALID_ACCT =  "AccountNo is invalid."; // code 26
-    const MWSIN_INVALID_ACCT =  "AccountNo is invalid."; // code 26
+    const SMART_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    const MWSIN_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const CNVRG_INVALID_ACCT = "Invalid customer"; // code 26
     const HDMF1_INVALID_ACCT = "RC002|The Reference number/ID provided is not valid."; // code 26
     const INEC1_INVALID_ACCT = "AcountNo not found."; // code 26
@@ -178,8 +189,6 @@ class PayBillsConfig
 // EQPMC
 // MOLD1
 // MSPCI
-// MWSIN
-// RTI01
 // ASFIN
 // ASVCA
 // AVONC
