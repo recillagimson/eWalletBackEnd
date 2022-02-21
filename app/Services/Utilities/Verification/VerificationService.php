@@ -126,6 +126,8 @@ class VerificationService implements IVerificationService
             $path = $this->saveFile($idPhoto, $idPhotoName, 'id_photo');
             // Save record to DB
 
+            $tierApproval = null;
+
             if(isset($data['tier_approval_id']))
                 $tierApproval = $this->tierApproval->get($data['tier_approval_id']);
 
