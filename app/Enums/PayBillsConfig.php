@@ -56,6 +56,11 @@ class PayBillsConfig
         PayBillsConfig::ASVCA,
         PayBillsConfig::AVONC,
         PayBillsConfig::BAYAN,
+        PayBillsConfig::BLKWC,
+        PayBillsConfig::BPIMS,
+        PayBillsConfig::CLNK1,
+        PayBillsConfig::CLPCO,
+        PayBillsConfig::CRMWD,
     ];
 
     // to catch invalid account numbers
@@ -134,6 +139,11 @@ class PayBillsConfig
     const ASVCA = 'ASVCA';
     const AVONC = 'AVONC';
     const BAYAN = 'BAYAN';
+    const BLKWC = 'BLKWC';
+    const BPIMS = 'BPIMS';
+    const CLNK1 = 'CLNK1';
+    const CLPCO = 'CLPCO';
+    const CRMWD = 'CRMWD';
 
     // invalid account numbers
 
@@ -182,10 +192,6 @@ class PayBillsConfig
 // Antique Electric
 // Albay Power
 // Apec Schools
-
-
-// EZ BILLERS TO ADD
-
 // EQPMC
 // MOLD1
 // MSPCI
@@ -193,11 +199,20 @@ class PayBillsConfig
 // ASVCA
 // AVONC
 // BAYAN
+
 // BLKWC
 // BPIMS
 // CLNK1
 // CLPCO
 // CRMWD
+
+// EZ BILLERS TO ADD
+
+
+
+
+
+
 // CSBNK
 // CSHLO
 // CVMFI

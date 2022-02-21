@@ -264,6 +264,34 @@ class ValidateAccountRequest extends FormRequest
             'amount' => 'required|numeric|min:1.00',
             'otherInfo.PhoneNo' => 'required|digits:10'
         ],
+        PayBillsConfig::BLKWC => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+        ],
+        PayBillsConfig::BPIMS => [
+            'account_number' => 'required|digits_between:8,16',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => "required|numeric",
+        ],
+        PayBillsConfig::CLNK1 => [
+            'account_number' => 'required|digits:9',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.AccountName' => "required|max:100",
+            'otherInfo.ContactNo' => "required|digits_between:7,11",
+        ],
+        PayBillsConfig::CLPCO => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.PowerCompany' => 'required|in:CLPC'
+        ],
+        PayBillsConfig::CRMWD => [
+            'account_number' => 'required|numeric',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => "required|max:30",
+            'otherInfo.DueDate' => "required|date_format:m/d/Y",
+        ],
+
+
     ];
 
 
