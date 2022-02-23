@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class KYCNotification extends Mailable
 {
@@ -31,6 +32,7 @@ class KYCNotification extends Mailable
      */
     public function build()
     {
+        Log::info('Email Text String:', [ 'emailContent' => $this->text ]);
         return $this->view('emails.kyc.kyc_notification')
             ->subject($this->subject)
             ->with([

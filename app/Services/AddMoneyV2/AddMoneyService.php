@@ -89,7 +89,7 @@ class AddMoneyService implements IAddMoneyService
 
         if (!$response->successful()) {
             $errors = $response->json();
-            Log::error('DragonPay Error', $errors);
+            Log::error('DragonPay Error', [ 'errors' => $errors ]);
             $this->transactionFailed();
         } else {
             $responseData = $response->json();
