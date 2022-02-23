@@ -9,7 +9,7 @@
 <body>
     <pre>
         {{ $text }}
-    </p>
+    </pre>
 </body>
 
 </html>
