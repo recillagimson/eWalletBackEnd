@@ -8,7 +8,7 @@
 
 <body>
     <p style="white-space: pre-wrap">
-        {!! $text !!}
+        {{ $text }}
     </p>
 </body>
 
