@@ -7,7 +7,9 @@
 </head>
 
 <body>
-    {!! $text !!}
+    <p style="white-space: pre-wrap">
+        {!! $text !!}
+    </p>
 </body>
 
 </html>
