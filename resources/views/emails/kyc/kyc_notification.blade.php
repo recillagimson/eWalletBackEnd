@@ -7,9 +7,7 @@
 </head>
 
 <body>
-    <pre style="font-family: Arial, Helvetica, sans-serif">
-        {{ trim($text) }}
-    </pre>
+    <pre style="font-family: Arial, Helvetica, sans-serif">{{ trim($text) }}</pre>
 </body>
 
 </html>
