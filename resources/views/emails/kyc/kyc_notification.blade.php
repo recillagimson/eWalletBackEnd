@@ -7,8 +7,8 @@
 </head>
 
 <body>
-    <pre>
-        {{ $text }}
+    <pre style="font-family: Arial, Helvetica, sans-serif">
+        {{ trim($text) }}
     </pre>
 </body>
 
