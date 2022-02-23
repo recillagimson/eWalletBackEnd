@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <p style="white-space: pre-wrap">
+    <pre>
         {{ $text }}
     </p>
 </body>
