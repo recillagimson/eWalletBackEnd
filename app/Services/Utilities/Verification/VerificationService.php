@@ -126,6 +126,8 @@ class VerificationService implements IVerificationService
             $path = $this->saveFile($idPhoto, $idPhotoName, 'id_photo');
             // Save record to DB
 
+            $tierApproval = null;
+
             if(isset($data['tier_approval_id']))
                 $tierApproval = $this->tierApproval->get($data['tier_approval_id']);
 
@@ -152,17 +154,17 @@ class VerificationService implements IVerificationService
             $record = $this->userPhotoRepository->create($params);
 
             if(isset($data['remarks'])) {
-                $this->iTierApprovalCommentRepository->create([
-                    'tier_approval_id' => $tierApproval->id,
-                    'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
-                    'user_created' => $data['user_created'] = request()->user()->id,
-                    'user_updated' => $data['user_updated'] = request()->user()->id
-                ]);
+//                $this->iTierApprovalCommentRepository->create([
+//                    'tier_approval_id' => $tierApproval->id,
+//                    'remarks' => isset($data['remarks']) ? $data['remarks'] : "",
+//                    'user_created' => $data['user_created'] = request()->user()->id,
+//                    'user_updated' => $data['user_updated'] = request()->user()->id
+//                ]);
             }
 
             // Collect created record
             $record->ekyc = $extractData;
-            $record->tier_approval = $tierApproval;
+//            $record->tier_approval = $tierApproval;
             array_push($recordsCreated, $record);
 
             $audit_remarks = request()->user()->account_number . "  has uploaded " . $idType->type . ", " . $idType->description;
