@@ -49,9 +49,19 @@ class PayBillsConfig
         PayBillsConfig::ANTEC,
         PayBillsConfig::APEC1,
         PayBillsConfig::APECS,
+        PayBillsConfig::EQPMC,
+        PayBillsConfig::MOLD1,
+        PayBillsConfig::MSPCI,
+        PayBillsConfig::ASFIN,
+        PayBillsConfig::ASVCA,
+        PayBillsConfig::AVONC,
+        PayBillsConfig::BAYAN,
+        PayBillsConfig::BLKWC,
+        PayBillsConfig::BPIMS,
+        PayBillsConfig::CLNK1,
+        PayBillsConfig::CLPCO,
+        PayBillsConfig::CRMWD,
     ];
-
-
 
     // to catch invalid account numbers
     const billerInvalidMsg = [
@@ -83,7 +93,6 @@ class PayBillsConfig
         // PayBillsConfig::PELC2_INVALID_ACCT,  no validation for invalid account 
         // PayBillsConfig::ADMSN_INVALID_ACCT,  no validation for invalid account  
         // PayBillsConfig::ADNU1_INVALID_ACCT,  no validation for invalid account  
-        PayBillsConfig::ANTEC_OVERDUE
     ];
 
     const MECOR = 'MECOR';
@@ -123,6 +132,18 @@ class PayBillsConfig
     const ANTEC = 'ANTEC';
     const APEC1 = 'APEC1';
     const APECS = 'APECS';
+    const EQPMC = 'EQPMC';
+    const MOLD1 = 'MOLD1';
+    const MSPCI = 'MSPCI';
+    const ASFIN = 'ASFIN';
+    const ASVCA = 'ASVCA';
+    const AVONC = 'AVONC';
+    const BAYAN = 'BAYAN';
+    const BLKWC = 'BLKWC';
+    const BPIMS = 'BPIMS';
+    const CLNK1 = 'CLNK1';
+    const CLPCO = 'CLPCO';
+    const CRMWD = 'CRMWD';
 
     // invalid account numbers
 
@@ -131,8 +152,8 @@ class PayBillsConfig
     const ETRIP_INVALID_ACCT = "NOT_FOUND"; // "data": "NOT_FOUND"
     const HCPHL_INVALID_ACCT = "Invalid Account Number";  // code 26
     const MWCOM_INVALID_ACCT = "ContractAccountNumber is invalid."; // code 26
-    const SMART_INVALID_ACCT =  "AccountNo is invalid."; // code 26
-    const MWSIN_INVALID_ACCT =  "AccountNo is invalid."; // code 26
+    const SMART_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    const MWSIN_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const CNVRG_INVALID_ACCT = "Invalid customer"; // code 26
     const HDMF1_INVALID_ACCT = "RC002|The Reference number/ID provided is not valid."; // code 26
     const INEC1_INVALID_ACCT = "AcountNo not found."; // code 26
@@ -150,10 +171,7 @@ class PayBillsConfig
 
     const AECOR_INVALID_ACCT = 'Please provide the correct A T M Reference Number.'; // code 34
     const HDMF3_INVALID_ACCT = 'Please provide the correct Account No.'; // code 34
-    const NHA01_INVALID_ACCT = 'Please provide the correct B I N.'; // code 34
-    const ANTEC_OVERDUE = 'Please provide the correct B I N.'; // code 34
-
-    // request time out
+    const NHA01_INVALID_ACCT = 'Please provide the correct B I N.'; // code 36
     const endpointRequestTimeOut = 'This biller does not accept overdue bill. Please pay directly to the biller.';
     
 }
@@ -169,51 +187,42 @@ class PayBillsConfig
 // Aeon Creit Service Philippines Inc.
 // Pag-ibig  
 // Pag-ibig ofw  
-
-// ADDING ERROR MESSAGES
-
 // Adamson University
 // Ateneo De Naga University
 // Antique Electric
 // Albay Power
 // Apec Schools
-
-
-// EZ BILLERS TO ADD
-
 // EQPMC
-// MBCCC
 // MOLD1
-// DVOLT
 // MSPCI
-// MWSIN
-// RFID1
-// RTI01
-// VIECO
 // ASFIN
 // ASVCA
 // AVONC
 // BAYAN
+
 // BLKWC
-// BNKRD
 // BPIMS
 // CLNK1
 // CLPCO
-// CNVRG
 // CRMWD
+
+// EZ BILLERS TO ADD
+
+
+
+
+
+
 // CSBNK
 // CSHLO
 // CVMFI
 // DASCA
 // DCTV1
 // ECNSS
-// EQPMC
 // FUSEL
 // GLOBE
 // GNTWC
-// HCPHL
 // ILEC2
-// INEC1
 // LARC1
 // LCWD1
 // LGNWC
