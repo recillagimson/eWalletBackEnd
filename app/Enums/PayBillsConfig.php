@@ -61,7 +61,49 @@ class PayBillsConfig
         PayBillsConfig::CLNK1,
         PayBillsConfig::CLPCO,
         PayBillsConfig::CRMWD,
+        PayBillsConfig::CSBNK,
+        PayBillsConfig::CSHLO,
+        PayBillsConfig::CVMFI,
+        PayBillsConfig::DASCA,
+        PayBillsConfig::DCTV1,
+        PayBillsConfig::ECNSS,
+        PayBillsConfig::FUSEL,
+        PayBillsConfig::GLOBE,
+        PayBillsConfig::GNTWC,
+        PayBillsConfig::ILEC2,
+        PayBillsConfig::LARC1,
+        PayBillsConfig::LCWD1,
+        PayBillsConfig::LGNWC,
+        PayBillsConfig::LOPCI,
+        PayBillsConfig::LPU01,
+        PayBillsConfig::MAMEM,
+        PayBillsConfig::MCLAC,
+        PayBillsConfig::MIICO,
+        PayBillsConfig::MLIFE,
+        PayBillsConfig::MNWD1,
+        PayBillsConfig::OMPCC,
+        PayBillsConfig::RVSCI,
+        PayBillsConfig::RYLCV,
+        PayBillsConfig::SEZCO,
+        PayBillsConfig::SLIFE,
+        PayBillsConfig::SONYL,
+        PayBillsConfig::SPLAN,
+        PayBillsConfig::TWDIS,
+        PayBillsConfig::UBNK4,
+        PayBillsConfig::UBNK7,
+        PayBillsConfig::UNBNK,
+
+
+
+        
+
+
+
+
+
     ];
+
+
 
     // to catch invalid account numbers
     const billerInvalidMsg = [
@@ -69,30 +111,54 @@ class PayBillsConfig
         PayBillsConfig::PLDT6_INVALID_ACCT,
         PayBillsConfig::ETRIP_INVALID_ACCT,
         PayBillsConfig::HCPHL_INVALID_ACCT,
+        // SSS01
         PayBillsConfig::MWCOM_INVALID_ACCT,
         PayBillsConfig::SMART_INVALID_ACCT,
+        // RFID1
         PayBillsConfig::MWSIN_INVALID_ACCT,
         PayBillsConfig::CNVRG_INVALID_ACCT,
+        // PWCOR
         PayBillsConfig::HDMF1_INVALID_ACCT,
         PayBillsConfig::INEC1_INVALID_ACCT,
         PayBillsConfig::VIECO_INVALID_ACCT,
         PayBillsConfig::DVOLT_INVALID_ACCT,
         PayBillsConfig::CGNAL_INVALID_ACCT,
+        // SKY01
         PayBillsConfig::MBCCC_INVALID_ACCT,
         PayBillsConfig::BNKRD_INVALID_ACCT,
         PayBillsConfig::BPI00_INVALID_ACCT,
         PayBillsConfig::PILAM_INVALID_ACCT,
         PayBillsConfig::AEON1_INVALID_ACCT,
         PayBillsConfig::BNECO_INVALID_ACCT,
+        // PRULI
         PayBillsConfig::SSS03_INVALID_ACCT,
         PayBillsConfig::MECOP_INVALID_ACCT,
+        // WLDVS 
+        // PELC2
+        // INNOV
         PayBillsConfig::NHA01_INVALID_ACCT,
-        PayBillsConfig::AECOR_INVALID_ACCT,
         PayBillsConfig::HDMF3_INVALID_ACCT,
-        // PayBillsConfig::WLDVS_INVALID_ACCT,  no validation for invalid account 
-        // PayBillsConfig::PELC2_INVALID_ACCT,  no validation for invalid account 
-        // PayBillsConfig::ADMSN_INVALID_ACCT,  no validation for invalid account  
-        // PayBillsConfig::ADNU1_INVALID_ACCT,  no validation for invalid account  
+        // ADMSN
+        // ADNU1
+        PayBillsConfig::AECOR_INVALID_ACCT,
+        PayBillsConfig::ANTEC_OVERDUE,
+        // APEC1
+        // APECS
+        // EQPMC
+        // MOLD1
+        // MSPCI
+        // ASFIN
+        // ASVCA
+        // AVONC
+        // BAYAN
+        // BLKWC
+        // BPIMS
+        PayBillsConfig::CSBNK_INVALID_ACCT,
+        PayBillsConfig::CSHLO_INVALID_ACCT,
+        // CLNK1
+        // CLPCO
+        // CRMWD
+
     ];
 
     const MECOR = 'MECOR';
@@ -144,6 +210,40 @@ class PayBillsConfig
     const CLNK1 = 'CLNK1';
     const CLPCO = 'CLPCO';
     const CRMWD = 'CRMWD';
+    const CSBNK = 'CSBNK';
+    const CSHLO = 'CSHLO';
+    const CVMFI = 'CVMFI';
+    const DASCA = 'DASCA';
+    const DCTV1 = 'DCTV1';
+    const ECNSS = 'ECNSS';
+    const FUSEL = 'FUSEL';
+    const GLOBE = 'GLOBE';
+    const GNTWC = 'GNTWC';
+    const ILEC2 = 'ILEC2';
+    const LARC1 = 'LARC1';
+    const LCWD1 = 'LCWD1';
+    const LGNWC = 'LGNWC';
+    const LOPCI = 'LOPCI';
+    const LPU01 = 'LPU01';
+    const MAMEM = 'MAMEM';
+    const MCLAC = 'MCLAC';
+    const MIICO = 'MIICO';
+    const MLIFE = 'MLIFE';
+    const MNWD1 = 'MNWD1';
+    const OMPCC = 'OMPCC';
+    const RVSCI = 'RVSCI';
+    const RYLCV = 'RYLCV';
+    const SEZCO = 'SEZCO';
+    const SLIFE = 'SLIFE';
+    const SONYL = 'SONYL';
+    const SPLAN = 'SPLAN';
+    const TWDIS = 'TWDIS';
+    const UBNK4 = 'UBNK4';
+    const UBNK7 = 'UBNK7';
+    const UNBNK = 'UNBNK';
+
+
+
 
     // invalid account numbers
 
@@ -151,27 +251,61 @@ class PayBillsConfig
     const PLDT6_INVALID_ACCT = "AccountNo is invalid.";   // code 26
     const ETRIP_INVALID_ACCT = "NOT_FOUND"; // "data": "NOT_FOUND"
     const HCPHL_INVALID_ACCT = "Invalid Account Number";  // code 26
+    // SSS01
     const MWCOM_INVALID_ACCT = "ContractAccountNumber is invalid."; // code 26
-    const SMART_INVALID_ACCT = "AccountNo is invalid."; // code 26
-    const MWSIN_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    const SMART_INVALID_ACCT =  "AccountNo is invalid."; // code 26
+    // RFID1
+    const MWSIN_INVALID_ACCT =  "AccountNo is invalid."; // code 26
     const CNVRG_INVALID_ACCT = "Invalid customer"; // code 26
+    // PWCOR
     const HDMF1_INVALID_ACCT = "RC002|The Reference number/ID provided is not valid."; // code 26
     const INEC1_INVALID_ACCT = "AcountNo not found."; // code 26
     const VIECO_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const DVOLT_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const CGNAL_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    // SKY01
     const MBCCC_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
     const BNKRD_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
     const BPI00_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
     const PILAM_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const AEON1_INVALID_ACCT = "AccountNo is invalid."; //  "message": "Endpoint request timed out"
     const BNECO_INVALID_ACCT = "AccountNo is invalid."; // code 26
+    // PRULI
     const SSS03_INVALID_ACCT = "SS # is invalid."; // code 26
     const MECOP_INVALID_ACCT = 'Subscriber not found'; // code 26
-
-    const AECOR_INVALID_ACCT = 'Please provide the correct A T M Reference Number.'; // code 34
+    // WLDVS 
+    // PELC2
+    // INNOV
+    const NHA01_INVALID_ACCT = 'Please provide the correct B I N.'; // code 34
     const HDMF3_INVALID_ACCT = 'Please provide the correct Account No.'; // code 34
-    const NHA01_INVALID_ACCT = 'Please provide the correct B I N.'; // code 36
+    // ADMSN
+    // ADNU1
+    const AECOR_INVALID_ACCT = 'Please provide the correct A T M Reference Number.'; // code 34
+    const ANTEC_OVERDUE = 'Please provide the correct B I N.'; // code 34
+    // APEC1
+    // APECS
+    // EQPMC
+    // MOLD1
+    // MSPCI
+    // ASFIN
+    // ASVCA
+    // AVONC
+    // BAYAN
+    // BLKWC
+    // BPIMS
+    // CLNK1
+    // CLPCO
+    // CRMWD
+    const CSBNK_INVALID_ACCT = 'The account number is not valid.'; // code 34    
+    const CSHLO_INVALID_ACCT = "The Loan ID can't be found. Please provide the correct Loan ID.";
+    // CVMFI
+    // DASCA
+    // DCTV1
+   
+    
+
+    
+    // request time out
     const endpointRequestTimeOut = 'This biller does not accept overdue bill. Please pay directly to the biller.';
     
 }
@@ -179,41 +313,49 @@ class PayBillsConfig
 
 // DONE
 
-// Angeles City Water District           
-// Angeles Electric Corporation 
+// Angeles Electric Corporation
 // Pampanga II Electric Cooperative, Inc.
-// National Housing Authority  
+// National Housing Authority
 // World Vision
-// Aeon Creit Service Philippines Inc.
 // Pag-ibig  
-// Pag-ibig ofw  
+// Pag-ibig OFW 
 // Adamson University
 // Ateneo De Naga University
 // Antique Electric
 // Albay Power
 // Apec Schools
+// Spring Clear Equiland
+// Moldex Realty Inc
+// M Spectrum
+// Phil. Life Financial Assurance
+// Asian Vision
+// Avon
+// Bayantel
+// Bulakan Water Company Inc
+// BPI MS Insurance Corp
+// Cablelink
+// Cotabato Light
+// Carmona Water District.
+// City Saving Bank
+// Cashalo
+// CVM Finance
+// DASCA Cable Services Inc.
+// DCTV Cable Network Broadband
+
 // EQPMC
 // MOLD1
 // MSPCI
-// ASFIN
 // ASVCA
 // AVONC
 // BAYAN
-
 // BLKWC
 // BPIMS
 // CLNK1
 // CLPCO
 // CRMWD
-
-// EZ BILLERS TO ADD
-
-
-
-
-
-
 // CSBNK
+
+
 // CSHLO
 // CVMFI
 // DASCA
@@ -240,8 +382,73 @@ class PayBillsConfig
 // SLIFE
 // SONYL
 // SPLAN
-// SSS02
 // TWDIS
 // UBNK4
 // UBNK7
 // UNBNK
+
+// EZ BILLERS TO ADD
+
+// ASLNK  -   with error
+// ASPAY
+// BCWD1
+// BLKWC
+// BPWWI
+// BTCO1
+// BTCO2
+// CARFP
+// CARHS
+// CARWD
+// CDOWD
+// CELCO
+// CGNAL
+// CLCTS
+// CLIFE
+// EPLAN
+// ESBNK
+// FINAS
+// GHWSI
+// GLDFI
+// GREPA
+// HMRKI
+// HWMCS
+// ILEC2
+// ILECO
+// ISLC1
+// LAZAE
+// LEYC2
+// LIFE1
+// LPU01
+// LUELC
+// MAREC
+// MCARE
+// MCWD1
+// MKLGU
+// MMDA1
+// MPLAN
+// MVCOR
+// NBI02
+// NBMAP
+// NHMFC
+// NORWD
+// PALEX
+// PHLTH
+// PHLT1
+// PILTS
+// PNCO1
+// POEA1
+// PRXCL
+// RADIO
+// RCTEL
+// RTI01
+// SJEC1
+// SKYAF
+// SLWI1
+// SSS02
+// STICO
+// STLCW
+// STMWD
+// SWSCO
+// TRBNK
+
+
