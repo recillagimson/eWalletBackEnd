@@ -221,6 +221,77 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.FirstName' => 'required:max:100',
             'otherInfo.LastName' => 'required:max:100'
         ],
+        PayBillsConfig::APECS => [
+            'account_number' => 'required|max:13|alpha-dash',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.BranchCode' => 'required|in:B04,A07,C02,B03,A02,B11,B05,A09,B12,B10,C01,A08,B01,C03,A04,B09,B07,B06,D01,B02,B08,A10,A01,Others',
+            'otherInfo.PaymentType' => 'required|in:AF,TF,MISC,OTH',
+            'otherInfo.FirstName' => 'required:max:100',
+            'otherInfo.LastName' => 'required:max:100'
+        ],
+        PayBillsConfig::EQPMC => [
+            'account_number' => 'required|max:13|alpha-dash',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+        ],
+        PayBillsConfig::MOLD1 => [
+            'account_number' => 'required|digits:13',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+        ],
+        PayBillsConfig::MSPCI => [
+            'account_number' => 'required|numeric',
+            'amount' => 'required|numeric|min:100.00',
+        ],
+        PayBillsConfig::ASFIN => [
+            'account_number' => 'required|digits:11',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.AccountName' => 'required|max:100',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y'
+        ],
+        PayBillsConfig::ASVCA => [
+            'account_number' => 'required|numeric|digits:6',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => 'required|max:100',
+            'otherInfo.AffiliateBranch' => 'required|in:ASVCA1,ASVCA2,ASVCA3,ASVCA4,ASVCA5,ASVCA6,ASVCA7,ASVCA8,ASVCA9,ASVCA10,ASVCA11,ASVCA12,ASVCA13,ASVCA14,ASVCA15,ASVCA27,ASVCA35'
+        ],
+        PayBillsConfig::AVONC => [
+            'account_number' => 'required|digits:13',
+            'amount' => 'required|numeric|max:100000.00',
+            'otherInfo.Name' => 'required|max:30',
+            'otherInfo.Branch' => 'required|max:30'
+        ],
+        PayBillsConfig::BAYAN => [
+            'account_number' => 'required|between:9,11',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.PhoneNo' => 'required|digits:10'
+        ],
+        PayBillsConfig::BLKWC => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+        ],
+        PayBillsConfig::BPIMS => [
+            'account_number' => 'required|digits_between:8,16',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => "required|numeric",
+        ],
+        PayBillsConfig::CLNK1 => [
+            'account_number' => 'required|digits:9',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.AccountName' => "required|max:100",
+            'otherInfo.ContactNo' => "required|digits_between:7,11",
+        ],
+        PayBillsConfig::CLPCO => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.PowerCompany' => 'required|in:CLPC'
+        ],
+        PayBillsConfig::CRMWD => [
+            'account_number' => 'required|numeric',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => "required|max:30",
+            'otherInfo.DueDate' => "required|date_format:m/d/Y",
+        ],
+
+
     ];
 
 

@@ -195,6 +195,23 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::invalidAccountNumber, 'Invalid Account Number.');
     }
 
+    private function overDueBills()
+    {
+        $this->validationErrorMessage(ErrorCodes::overDue, "This biller does not accept overdue bill. Please pay directly to the biller.");
+    }
+
+    private function correctAccountName()
+    {
+        $this->validationErrorMessage(ErrorCodes::correctAccountName, "Please provide the correct Account Name.");
+    }
+
+    
+    private function lettersSpaces()
+    {
+        $this->validationErrorMessage(ErrorCodes::lettersSpaces, "The account name only accepts letters and spaces.");
+    }
+
+
     private function endpointRequestTimeOut()
     {
         $this->validationErrorMessage(ErrorCodes::endpointRequestTimeOut, PayBillsConfig::endpointRequestTimeOut);
