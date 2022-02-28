@@ -292,7 +292,7 @@ class ValidateAccountRequest extends FormRequest
             'amount' => 'required|numeric|min:1.00|max:100000.00',
             'otherInfo.ContactNo' => 'required|numeric|digits_between:10,11',
         ],
-        PayBillsConfig::CVMFICVMFI => [
+        PayBillsConfig::CVMFI => [
             'account_number' => 'required|numeric',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
             'otherInfo.AccountName' => 'required|between:10,50',
@@ -335,7 +335,7 @@ class ValidateAccountRequest extends FormRequest
         ],
         PayBillsConfig::ILEC2 => [
             'account_number' => 'required|digits:9',
-            'amount' => 'required|in:CASH',
+            'amount' => 'required',
             'otherInfo.Name' => 'max:100|required',
             'otherInfo.DueDate' => 'required|date:m/d/Y',
         ],
@@ -348,7 +348,7 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::LCWD1 => [
             'account_number' => 'required|digits:9',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.BillMonth' => 'required|date:m/Y',
+            'otherInfo.BillMonth' => 'required',
             'otherInfo.AccountName' => 'required|max:30',
         ],
 

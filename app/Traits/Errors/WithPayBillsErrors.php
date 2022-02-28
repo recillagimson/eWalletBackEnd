@@ -205,10 +205,14 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::correctAccountName, "Please provide the correct Account Name.");
     }
 
-    
     private function lettersSpaces()
     {
         $this->validationErrorMessage(ErrorCodes::lettersSpaces, "The account name only accepts letters and spaces.");
+    }
+
+    private function correctAmountDue()
+    {
+        $this->validationErrorMessage(ErrorCodes::correctAmountDue, "Please provide the correct Amount Due.");
     }
 
 

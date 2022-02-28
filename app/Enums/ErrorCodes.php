@@ -116,6 +116,7 @@ class ErrorCodes
     const overDue = 736;
     const correctAccountName = 737;
     const lettersSpaces = 738;
+    const correctAmountDue = 739;
 
     // Merchant 800
     const merchantClientToken = 801;
