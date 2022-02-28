@@ -309,9 +309,6 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.AccountName' => 'max:30|required',
             'otherInfo.BillMonth' => 'required',
         ],
-
-        // STOP here
-
         PayBillsConfig::ECNSS => [
             'account_number' => 'required|digits:16',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
@@ -328,13 +325,12 @@ class ValidateAccountRequest extends FormRequest
             'amount' => 'required|numeric|min:1.00',
             'otherInfo.AccountName' => 'max:100',
             'otherInfo.Telephone_Number' => 'digits_between:7,11',
-            'otherInfo.BankAccountNumber' => 'required_if:paymentMethod,CHECK|max:14',
-            
+            'otherInfo.BankAccountNumber' => 'digits:14',
         ],
         PayBillsConfig::GNTWC => [
             'account_number' => 'required|between:1,20',
             'amount' => 'required|numeric|min:1.00',
-            'otherInfo.Name' => 'between:1,40|required',
+            'otherInfo.Name' => 'max:40|required',
             'otherInfo.ContactNo' => 'required|date:m/d/Y',
         ],
         PayBillsConfig::ILEC2 => [
@@ -346,15 +342,18 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::LARC1 => [
             'account_number' => 'required|between:8,9',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.AccountName' => 'max:100|required',
+            'otherInfo.AccountName' => 'max:30|required',
             'otherInfo.DueDate' => 'required|date:m/d/Y',
         ],
         PayBillsConfig::LCWD1 => [
             'account_number' => 'required|digits:9',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.BillMonth' => 'required',
+            'otherInfo.BillMonth' => 'required|date:m/Y',
             'otherInfo.AccountName' => 'required|max:30',
         ],
+
+        // Start here
+
         PayBillsConfig::LGNWC => [
             'account_number' => 'required|digits:8|starts_with:3',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
