@@ -221,14 +221,6 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.FirstName' => 'required:max:100',
             'otherInfo.LastName' => 'required:max:100'
         ],
-        PayBillsConfig::APECS => [
-            'account_number' => 'required|max:13|alpha-dash',
-            'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.BranchCode' => 'required|in:B04,A07,C02,B03,A02,B11,B05,A09,B12,B10,C01,A08,B01,C03,A04,B09,B07,B06,D01,B02,B08,A10,A01,Others',
-            'otherInfo.PaymentType' => 'required|in:AF,TF,MISC,OTH',
-            'otherInfo.FirstName' => 'required:max:100',
-            'otherInfo.LastName' => 'required:max:100'
-        ],
         PayBillsConfig::EQPMC => [
             'account_number' => 'required|max:13|alpha-dash',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
@@ -271,7 +263,7 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::BPIMS => [
             'account_number' => 'required|digits_between:8,16',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.AccountName' => "required|numeric",
+            'otherInfo.ContactNo' => "required|numeric",
         ],
         PayBillsConfig::CLNK1 => [
             'account_number' => 'required|digits:9',
@@ -290,8 +282,195 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.AccountName' => "required|max:30",
             'otherInfo.DueDate' => "required|date_format:m/d/Y",
         ],
+        PayBillsConfig::CSBNK => [
+            'account_number' => 'required|numeric',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.ContactNo' => "required|digits:11|numeric",
+        ],
+        PayBillsConfig::CSHLO => [
+            'account_number' => 'required|alpha-num|max:64',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.ContactNo' => 'required|numeric|digits_between:10,11',
+        ],
+        PayBillsConfig::CVMFI => [
+            'account_number' => 'required|numeric',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => 'required|between:10,50',
+        ],
+        PayBillsConfig::DASCA => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.LastName' => 'max:15|required',
+            'otherInfo.FirstName' => 'max:15|required',
+        ],
+        PayBillsConfig::DCTV1 => [
+            'account_number' => 'required|between:9,11',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => 'max:30|required',
+            'otherInfo.BillMonth' => 'required',
+        ],
+        PayBillsConfig::ECNSS => [
+            'account_number' => 'required|digits:16',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.PayorName' => 'max:40|required',
+            'otherInfo.ContactNo' => 'max:20|required',
+        ],
+        PayBillsConfig::FUSEL => [
+            'account_number' => 'required|digits:11',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.CustomerName' => 'max:30|required',
+        ],
+        PayBillsConfig::GLOBE => [
+            'account_number' => 'required|digits_between:8,10|numeric',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.AccountName' => 'max:100',
+            'otherInfo.Telephone_Number' => 'digits_between:7,11',
+            'otherInfo.BankAccountNumber' => 'digits:14',
+        ],
+        PayBillsConfig::GNTWC => [
+            'account_number' => 'required|between:1,20',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.Name' => 'max:40|required',
+            'otherInfo.ContactNo' => 'required|date:m/d/Y',
+        ],
+        PayBillsConfig::ILEC2 => [
+            'account_number' => 'required|digits:9',
+            'amount' => 'required',
+            'otherInfo.Name' => 'max:100|required',
+            'otherInfo.DueDate' => 'required|date:m/d/Y',
+        ],
+        PayBillsConfig::LARC1 => [
+            'account_number' => 'required|between:8,9',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.AccountName' => 'max:30|required',
+            'otherInfo.DueDate' => 'required|date:m/d/Y',
+        ],
+        PayBillsConfig::LCWD1 => [
+            'account_number' => 'required|digits:9',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.BillMonth' => 'required',
+            'otherInfo.AccountName' => 'required|max:30',
+        ],
 
+        // Start here
 
+        PayBillsConfig::LGNWC => [
+            'account_number' => 'required|digits:8|starts_with:3',
+            'amount' => 'required|numeric|min:1.00|max:100000.00',
+            'otherInfo.DueDate' => 'required|date:m/d/Y',
+        ],
+        PayBillsConfig::LOPCI => [
+            'account_number' => 'required|digits:8',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.BankPaymentCode' => 'required|digits:9|numeric',
+            'otherInfo.CheckDate' => 'date:m/d/Y|required_if:paymentMethod,CHECK',
+            'otherInfo.ClientName' => 'max:100',
+        ],
+        PayBillsConfig::LPU01 => [
+            'account_number' => 'required|digits:8',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.Campus' => 'required|in:Manila,Cavite',
+            'otherInfo.StudentName' => 'required',
+        ],
+        PayBillsConfig::MAMEM => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.AccountName' => 'required|max:100',
+        ],
+        PayBillsConfig::MCLAC => [
+            'account_number' => 'required|digits:10|numeric',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.AccountName' => 'required|max:100',
+        ],
+        PayBillsConfig::MIICO => [
+            'account_number' => 'required|digits:16',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+            'otherInfo.Name' => 'required|max:40',
+            
+        ],
+        PayBillsConfig::MLIFE => [
+            'account_number' => 'required|size:9',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            
+        ],
+        PayBillsConfig::MNWD1 => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+        ],
+        PayBillsConfig::OMPCC => [
+            'account_number' => 'required|alpha_num|between:1,20',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+            'otherInfo.Name' => 'required|between:1,40',
+            'otherInfo.ContactNumber' => 'required|digits:11|numeric',
+        ],
+        PayBillsConfig::RVSCI => [
+            'account_number' => 'required|size:6',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+            'otherInfo.FirstName' => 'required|max:20',
+            'otherInfo.LastName' => 'required|max:20',
+        ],
+        PayBillsConfig::RYLCV => [
+            'account_number' => 'required|digits_between:1,9',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.AccountName' => 'required|max:100',
+        ],
+        PayBillsConfig::SEZCO => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.PowerCompany' => 'required|in:SEZ',
+        ],
+        PayBillsConfig::SLIFE => [
+            'account_number' => 'required|digits_between:7,10',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.ProductType' => 'required|in:SLife1,SLife2',
+            'otherInfo.AccountName' => 'required|max:100',
+        ],
+        PayBillsConfig::SONYL => [
+            'account_number' => 'required|digits:10|numeric',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+            'otherInfo.DueDate' => 'required|date:m/d/Y',
+        ],
+        PayBillsConfig::SPLAN => [
+            'account_number' => 'required|size:15',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.PlanType' => 'required|in:P,E',
+            'otherInfo.AccountName' => 'required|max:100',
+        ],
+        // PayBillsConfig::SSS02 => [
+        //     'account_number' => 'required|size:14',
+        //     'amount' => 'required|numeric|min:1.00|max:100000',
+        //     'otherInfo.PaymentType' => 'in:I,R',
+        //     'otherInfo.LoanType' => 'in:SL,CL,EL,EDL,SIL,SLE',
+        //     'otherInfo.PlatformType' => 'required|in:OTC,SS',
+        //     'otherInfo.CountryCode' => 'required_if:otherInfo.PlatformType,SS|size:3',
+        // ],
+        PayBillsConfig::TWDIS => [
+            'account_number' => 'required|digits:6|numeric',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+            'otherInfo.Name' => 'required|max:100',
+            'otherInfo.DueDate' => 'required|date:m/d/Y',
+        ],
+        PayBillsConfig::UBNK4 => [
+            'account_number' => 'required|between:8,15|alpha_num',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+            'otherInfo.StudentName' => 'required|between:8,30',
+            'otherInfo.Branch' => 'required|max:99',
+        ],
+        PayBillsConfig::UBNK7 => [
+            'account_number' => 'required|digits_between:2,10',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+            'otherInfo.StudentName' => 'required|between:8,30',
+            'otherInfo.Campus' => 'required|in:1,2,3,4,5',
+        ],
+        PayBillsConfig::UNBNK => [
+            'account_number' => 'required|digits:16',
+            'amount' => 'required|numeric|min:1.00|max:100000',
+            'otherInfo.Service' => 'required|in:0,1',
+            'otherInfo.ConsName' => 'required|max:100',
+        ],
     ];
 
 
