@@ -331,19 +331,19 @@ class ValidateAccountRequest extends FormRequest
             'account_number' => 'required|between:1,20',
             'amount' => 'required|numeric|min:1.00',
             'otherInfo.Name' => 'max:40|required',
-            'otherInfo.ContactNo' => 'required|date:m/d/Y',
+            'otherInfo.ContactNo' => 'required|date_format:m/d/Y',
         ],
         PayBillsConfig::ILEC2 => [
             'account_number' => 'required|digits:9',
             'amount' => 'required',
             'otherInfo.Name' => 'max:100|required',
-            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y',
         ],
         PayBillsConfig::LARC1 => [
             'account_number' => 'required|between:8,9',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
             'otherInfo.AccountName' => 'max:30|required',
-            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y',
         ],
         PayBillsConfig::LCWD1 => [
             'account_number' => 'required|digits:9',
@@ -357,31 +357,31 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::LGNWC => [
             'account_number' => 'required|digits:8|starts_with:3',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
-            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y',
         ],
         PayBillsConfig::LOPCI => [
             'account_number' => 'required|digits:8',
             'amount' => 'required|numeric|min:1.00',
             'otherInfo.BankPaymentCode' => 'required|digits:9|numeric',
-            'otherInfo.CheckDate' => 'date:m/d/Y|required_if:paymentMethod,CHECK',
+            'otherInfo.CheckDate' => 'date_format:m/d/Y',
             'otherInfo.ClientName' => 'max:100',
         ],
         PayBillsConfig::LPU01 => [
-            'account_number' => 'required|digits:8',
+            'account_number' => 'required|max:20',
             'amount' => 'required|numeric|min:1.00',
             'otherInfo.Campus' => 'required|in:Manila,Cavite',
-            'otherInfo.StudentName' => 'required',
+            'otherInfo.StudentName' => 'required|max:100',
         ],
         PayBillsConfig::MAMEM => [
-            'account_number' => 'required',
+            'account_number' => 'required|digits:8',
             'amount' => 'required|numeric|min:1.00',
-            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y',
             'otherInfo.AccountName' => 'required|max:100',
         ],
         PayBillsConfig::MCLAC => [
             'account_number' => 'required|digits:10|numeric',
             'amount' => 'required|numeric|min:1.00|max:100000',
-            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y',
             'otherInfo.AccountName' => 'required|max:100',
         ],
         PayBillsConfig::MIICO => [
@@ -393,9 +393,12 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::MLIFE => [
             'account_number' => 'required|size:9',
             'amount' => 'required|numeric|min:1.00',
-            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y',
             
         ],
+
+        // End here
+
         PayBillsConfig::MNWD1 => [
             'account_number' => 'required',
             'amount' => 'required|numeric|min:1.00|max:100000',
@@ -431,7 +434,7 @@ class ValidateAccountRequest extends FormRequest
         PayBillsConfig::SONYL => [
             'account_number' => 'required|digits:10|numeric',
             'amount' => 'required|numeric|min:1.00|max:100000',
-            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y',
         ],
         PayBillsConfig::SPLAN => [
             'account_number' => 'required|size:15',
@@ -451,7 +454,7 @@ class ValidateAccountRequest extends FormRequest
             'account_number' => 'required|digits:6|numeric',
             'amount' => 'required|numeric|min:1.00|max:100000',
             'otherInfo.Name' => 'required|max:100',
-            'otherInfo.DueDate' => 'required|date:m/d/Y',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y',
         ],
         PayBillsConfig::UBNK4 => [
             'account_number' => 'required|between:8,15|alpha_num',
