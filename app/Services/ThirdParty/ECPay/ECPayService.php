@@ -225,7 +225,7 @@ class ECPayService implements IECPayService
             $this->addMoneyEcPayRepository->update($isDataExisting, [
                 'status' => ECPayStatusTypes::Pending
             ]);
-            $logStringResult = 'Successfully created ECPay transaction with the amount of ' . number_format($amount, 2) . 'and with pending status.';
+            $logStringResult = 'Successfully created ECPay transaction with the amount of ' . number_format($amount, 2) . ' and with pending status.';
             $this->logHistoryService->logUserHistoryUnauthenticated($user->id, $refNo, SquidPayModuleTypes::AddMoneyViaOTCECPay, __METHOD__, Carbon::now(), $logStringResult);
 
             $this->userTransactionHistoryRepository->log(
