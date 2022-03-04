@@ -111,7 +111,11 @@ class ECPayService implements IECPayService
         $expirationDate = Carbon::now()->addDays($this->expirationPerHour)->format('Y-m-d H:i:s');
 
         Log::info('ECPay Data: ', [ 'data' => $data ]);
-        $result = $this->generateXmlBody($this->createBodyCommitPaymentFormat($refNo, $expirationDate, $data), "CommitPayment");
+        $ecPayData = [
+            'amount' => $data['amount'] + ($data['amount'] * 0.02)
+        ];
+
+        $result = $this->generateXmlBody($this->createBodyCommitPaymentFormat($refNo, $expirationDate, $ecPayData), "CommitPayment");
         $response = $this->apiService->postXml($this->ecpayUrl, $result, $this->getXmlHeaders());
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->CommitPaymentResponse->CommitPaymentResult, true)[0];
@@ -242,7 +246,7 @@ class ECPayService implements IECPayService
             "reference_number"=>$refNo,
             "amount"=>$inputData['amount'],
             "total_amount"=>$inputData['amount'],
-            'service_fee'=>$this->serviceFee,
+            'service_fee'=>$inputData['amount'] * 0.02,
             "ec_pay_reference_number"=>$ecpayResult[0],
             "expiry_date"=>$expirationDate,
             "transaction_date"=>Carbon::now()->format('Y-m-d H:i:s'),
