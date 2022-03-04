@@ -110,10 +110,12 @@ class ECPayService implements IECPayService
         $refNo = $this->referenceNumberService->generateRefNoWithThirteenLength(ReferenceNumberTypes::AddMoneyViaOTC);
         $expirationDate = Carbon::now()->addDays($this->expirationPerHour)->format('Y-m-d H:i:s');
 
-        Log::info('ECPay Data: ', [ 'data' => $data ]);
         $ecPayData = [
             'amount' => $data['amount'] + ($data['amount'] * 0.02)
         ];
+
+        Log::info('ECPay Data: ', [ 'data' => $ecPayData ]);
+
 
         $result = $this->generateXmlBody($this->createBodyCommitPaymentFormat($refNo, $expirationDate, $ecPayData), "CommitPayment");
         $response = $this->apiService->postXml($this->ecpayUrl, $result, $this->getXmlHeaders());
