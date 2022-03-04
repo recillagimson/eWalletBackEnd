@@ -192,7 +192,7 @@ class ECPayService implements IECPayService
         if($isDataExisting) {
             $amount = $isDataExisting->amount;
             $refNo = $isDataExisting->reference_number;
-            $logStringResult = 'Successfully updated money from EcPay with amount of ' . $amount;
+            $logStringResult = 'Successfully added money from EcPay with amount of ' . number_format($amount, 2);
             $resultData = json_decode($data["result"]);
 
             \Log::info('///// - ECPAY Create or Update Payment - //////');
@@ -204,27 +204,43 @@ class ECPayService implements IECPayService
                 'status' => ($resultData[0]->PaymentStatus == 0) ? ECPayStatusTypes::Success : ECPayStatusTypes::Pending
             ]);
             $remainingBalance = ($resultData[0]->PaymentStatus == 0) ? $this->handlePostBackService->addAmountToUserBalance($user->id, $amount) : '';
-            if($resultData[0]->PaymentStatus == 0) $this->sendNotification($this->getUserBalance(request()->user()->id), $refNo);
+            if($resultData[0]->PaymentStatus == 0) {
+                $this->sendNotification($this->getUserBalance(request()->user()->id), $refNo);
+
+                $this->logHistoryService->logUserHistoryUnauthenticated($user->id, $refNo, SquidPayModuleTypes::AddMoneyViaOTCECPay, __METHOD__, Carbon::now(), $logStringResult);
+
+                $this->userTransactionHistoryRepository->log(
+                    $user->id,
+                    $transCategoryId->id,
+                    $isDataExisting->id,
+                    $isDataExisting->reference_number,
+                    $this->amountWithServiceFee((float)$isDataExisting->amount),
+                    Carbon::parse($isDataExisting->transaction_date),
+                    $isDataExisting->user_account_id
+                );
+            }
         } else {
             $amount = $inputData['amount'];
             $isDataExisting = $this->addMoneyEcPayRepository->create($this->createBodyFormat($data, $inputData, $user, $refNo, $transCategoryId, $expirationDate));
             $this->addMoneyEcPayRepository->update($isDataExisting, [
                 'status' => ECPayStatusTypes::Pending
             ]);
-            $logStringResult = 'Successfully added money from EcPay with amount of ' . $amount;
+            $logStringResult = 'Successfully created ECPay transaction with the amount of ' . number_format($amount, 2) . 'and with pending status.';
+            $this->logHistoryService->logUserHistoryUnauthenticated($user->id, $refNo, SquidPayModuleTypes::AddMoneyViaOTCECPay, __METHOD__, Carbon::now(), $logStringResult);
+
+            $this->userTransactionHistoryRepository->log(
+                $user->id,
+                $transCategoryId->id,
+                $isDataExisting->id,
+                $isDataExisting->reference_number,
+                $this->amountWithServiceFee((float)$isDataExisting->amount),
+                Carbon::parse($isDataExisting->transaction_date),
+                $isDataExisting->user_account_id
+            );
+
         }
 
-        $this->logHistoryService->logUserHistoryUnauthenticated($user->id, $refNo, SquidPayModuleTypes::AddMoneyViaOTCECPay, __METHOD__, Carbon::now(), $logStringResult);
 
-        $this->userTransactionHistoryRepository->log(
-            $user->id,
-            $transCategoryId->id,
-            $isDataExisting->id,
-            $isDataExisting->reference_number,
-            $this->amountWithServiceFee((float)$isDataExisting->amount),
-            Carbon::parse($isDataExisting->transaction_date),
-            $isDataExisting->user_account_id
-        );
 
         return $isDataExisting;
     }
