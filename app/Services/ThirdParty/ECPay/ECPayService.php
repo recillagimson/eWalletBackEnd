@@ -6,10 +6,10 @@ namespace App\Services\ThirdParty\ECPay;
 
 use App\Enums\TpaProviders;
 use App\Repositories\UserAccount\IUserAccountRepository;
-use Log;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Services\Utilities\XML\XmlService;
 use Illuminate\Support\Stringable;
@@ -109,13 +109,15 @@ class ECPayService implements IECPayService
     {
         $refNo = $this->referenceNumberService->generateRefNoWithThirteenLength(ReferenceNumberTypes::AddMoneyViaOTC);
         $expirationDate = Carbon::now()->addDays($this->expirationPerHour)->format('Y-m-d H:i:s');
+
+        Log::info('ECPay Data: ', [ 'data' => $data ]);
         $result = $this->generateXmlBody($this->createBodyCommitPaymentFormat($refNo, $expirationDate, $data), "CommitPayment");
         $response = $this->apiService->postXml($this->ecpayUrl, $result, $this->getXmlHeaders());
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->CommitPaymentResponse->CommitPaymentResult, true)[0];
 
-        \Log::info('///// - ECPAY Commit Payment - //////');
-        \Log::info(json_encode($jsondecode));
+        Log::info('///// - ECPAY Commit Payment - //////');
+        Log::info(json_encode($jsondecode));
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $refNo, $expirationDate);
@@ -130,7 +132,7 @@ class ECPayService implements IECPayService
 
     public function confirmPayment(array $data, object $user): object
     {
-        \Log::info('///// - ECPAY Confirm Payment - //////');
+        Log::info('///// - ECPAY Confirm Payment - //////');
         $res = $this->processConfirmPayment($data, $user);
 
         return $this->responseService->successResponse(
@@ -159,8 +161,8 @@ class ECPayService implements IECPayService
         $xmlData = $this->xmlBodyParser($response->body());
         $jsondecode = json_decode($xmlData->soapBody->ConfirmPaymentResponse->ConfirmPaymentResult, true)[0];
 
-        \Log::info('///// - ECPAY Process Confirm Payment - //////');
-        \Log::info(json_encode($jsondecode));
+        Log::info('///// - ECPAY Process Confirm Payment - //////');
+        Log::info(json_encode($jsondecode));
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $data["referenceno"]);
