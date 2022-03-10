@@ -579,7 +579,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('/users')->middleware(['decrypt.request'])->group(function () {
-        Route::get('/{userId}', [UsersController::class, 'getBalanceInfo']);
+        Route::get('/{userId}/balance', [UsersController::class, 'getBalanceInfo']);
     });
 });
 
