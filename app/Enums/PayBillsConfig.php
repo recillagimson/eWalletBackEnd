@@ -92,7 +92,58 @@ class PayBillsConfig
         PayBillsConfig::UBNK4,
         PayBillsConfig::UBNK7,
         PayBillsConfig::UNBNK,
-
+        PayBillsConfig::ASLNK,
+        PayBillsConfig::ASPAY,
+        PayBillsConfig::BCWD1,
+        PayBillsConfig::BLKWC,
+        PayBillsConfig::BPWWI,
+        PayBillsConfig::BTCO1,
+        PayBillsConfig::BTCO2,
+        PayBillsConfig::CARFP,
+        PayBillsConfig::CARHS,
+        PayBillsConfig::CARWD,
+        PayBillsConfig::CDOWD,
+        PayBillsConfig::CELCO,
+        PayBillsConfig::CLCTS,
+        PayBillsConfig::CLIFE,
+        PayBillsConfig::EPLAN,
+        PayBillsConfig::ESBNK,
+        PayBillsConfig::FINAS,
+        PayBillsConfig::GHWSI,
+        PayBillsConfig::GLDFI,
+        PayBillsConfig::GREPA,
+        PayBillsConfig::HMRKI,
+        PayBillsConfig::HWMCS,
+        PayBillsConfig::ILECO,
+        // PayBillsConfig::ISLC1,
+        PayBillsConfig::LAZAE,
+        PayBillsConfig::LEYC2,
+        PayBillsConfig::LIFE1,
+        PayBillsConfig::LUELC,
+        PayBillsConfig::MAREC,
+        PayBillsConfig::MCARE,
+        PayBillsConfig::MCWD1,
+        // PayBillsConfig::MKLGU, no data
+        PayBillsConfig::MMDA1,
+        PayBillsConfig::MPLAN,
+        PayBillsConfig::MVCOR,
+        // PayBillsConfig::NBI02, no data
+        PayBillsConfig::NORWD,
+        PayBillsConfig::PHLT1,
+        PayBillsConfig::PNCO1,
+        PayBillsConfig::PRXCL,
+        PayBillsConfig::RADIO,
+        PayBillsConfig::RCTEL,
+        // PayBillsConfig::RTI01,
+        PayBillsConfig::SJEC1,
+        PayBillsConfig::SKYAF,
+        PayBillsConfig::SLWI1,
+        // PayBillsConfig::SSS02, to follow
+        PayBillsConfig::STICO,
+        PayBillsConfig::STLCW,
+        PayBillsConfig::STMWD,
+        PayBillsConfig::SWSCO,
+        PayBillsConfig::TRBNK,
 
 
         
@@ -241,7 +292,58 @@ class PayBillsConfig
     const UBNK4 = 'UBNK4';
     const UBNK7 = 'UBNK7';
     const UNBNK = 'UNBNK';
-
+    const ASLNK = 'ASLNK';
+    const ASPAY = 'ASPAY';
+    const BCWD1 = 'BCWD1';
+    // const BLKWC = 'BLKWC';
+    const BPWWI = 'BPWWI';
+    const BTCO1 = 'BTCO1';
+    const BTCO2 = 'BTCO2';
+    const CARFP = 'CARFP';
+    const CARHS = 'CARHS';
+    const CARWD = 'CARWD';
+    const CDOWD = 'CDOWD';
+    const CELCO = 'CELCO';
+    const CLCTS = 'CLCTS';
+    const CLIFE = 'CLIFE';
+    const EPLAN = 'EPLAN';
+    const ESBNK = 'ESBNK';
+    const FINAS = 'FINAS';
+    const GHWSI = 'GHWSI';
+    const GLDFI = 'GLDFI';
+    const GREPA = 'GREPA';
+    const HMRKI = 'HMRKI';
+    const HWMCS = 'HWMCS';
+    const ILECO = 'ILECO';
+    // const ISLC1 = 'ISLC1';
+    const LAZAE = 'LAZAE';
+    const LEYC2 = 'LEYC2';
+    const LIFE1 = 'LIFE1';
+    const LUELC = 'LUELC';
+    const MAREC = 'MAREC';
+    const MCARE = 'MCARE';
+    const MCWD1 = 'MCWD1';
+    // const MKLGU = 'MKLGU'; no data  
+    const MMDA1 = 'MMDA1';
+    const MPLAN = 'MPLAN';  
+    const MVCOR = 'MVCOR';
+    // const NBI02 = 'NBI02'; no data
+    const NORWD = 'NORWD';
+    const PHLT1 = 'PHLT1';
+    const PNCO1 = 'PNCO1';
+    const PRXCL = 'PRXCL';
+    const RADIO = "RADIO";
+    const RCTEL = 'RCTEL';
+    // const RTI01 = 'RTI01';
+    const SJEC1 = 'SJEC1';
+    const SKYAF = 'SKYAF';
+    const SLWI1 = 'SLWI1';
+    // const SSS02 = 'SSS02'; to follow
+    const STICO = 'STICO';
+    const STLCW = 'STLCW';
+    const STMWD = "STMWD";
+    const SWSCO = 'SWSCO';
+    const TRBNK = 'TRBNK';
 
 
 
