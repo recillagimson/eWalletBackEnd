@@ -5,6 +5,8 @@ namespace App\Services\ThirdParty\ECPay;
 
 
 use App\Enums\TpaProviders;
+use App\Models\UserDetail;
+use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use Log;
 use App\Services\Utilities\API\IApiService;
@@ -57,6 +59,7 @@ class ECPayService implements IECPayService
     private IUserBalanceInfoRepository $balanceInfos;
     private IUserAccountRepository $userAccounts;
     private IInAddMoneyEcPayRepository $ecPayAddMoneyRepository;
+    private INotificationRepository $appNotifications;
 
     public function __construct(IApiService $apiService,
                                 IHandlePostBackService $handlePostBackService,
@@ -71,7 +74,8 @@ class ECPayService implements IECPayService
                                 ISmsService $smsService,
                                 IUserBalanceInfoRepository $balanceInfos,
                                 IUserAccountRepository $userAccounts,
-                                IInAddMoneyEcPayRepository $ecPayAddMoneyRepository)
+                                IInAddMoneyEcPayRepository $ecPayAddMoneyRepository,
+                                INotificationRepository $appNotifications)
     {
 
         $this->ecpayUrl = config('ecpay.ecpay_url');
@@ -95,6 +99,7 @@ class ECPayService implements IECPayService
         $this->serviceFee = 2;
         $this->userAccounts = $userAccounts;
         $this->ecPayAddMoneyRepository = $ecPayAddMoneyRepository;
+        $this->appNotifications = $appNotifications;
     }
 
     private function getXmlHeaders(): array
@@ -196,7 +201,7 @@ class ECPayService implements IECPayService
                 'status' => ($resultData[0]->PaymentStatus == 0) ? ECPayStatusTypes::Success : ECPayStatusTypes::Pending
             ]);
             $remainingBalance = ($resultData[0]->PaymentStatus == 0) ? $this->handlePostBackService->addAmountToUserBalance($user->id, $amount) : '';
-            if($resultData[0]->PaymentStatus == 0) $this->sendNotification($this->getUserBalance(request()->user()->id), $refNo);
+            if($resultData[0]->PaymentStatus == 0) $this->sendNotification($this->getUserBalance(request()->user()->id), $refNo, $isDataExisting->transaction_date);
         } else {
             $amount = $inputData['amount'];
             $isDataExisting = $this->addMoneyEcPayRepository->create($this->createBodyFormat($data, $inputData, $user, $refNo, $transCategoryId, $expirationDate));
@@ -343,15 +348,32 @@ class ECPayService implements IECPayService
         return $userBalanceInfo->available_balance;
     }
 
-    private function sendNotification($newBalance, $referenceNumber): void {
+    private function sendNotification(float $newBalance, string $referenceNumber, Carbon $transactionDate): void {
         if(request()->user() && request()->user()->is_login_email == 0) {
             // SMS USER FOR NOTIFICATION
-            $this->smsService->sendEcPaySuccessPaymentNotification(request()->user()->mobile_number, request()->user()->profile, $newBalance, $referenceNumber);
+            $this->smsService->sendEcPaySuccessPaymentNotification(request()->user()->mobile_number, request()->user()->profile, $newBalance, $referenceNumber, $transactionDate);
         }else {
             // EMAIL USER FOR NOTIFICATION
-            $this->emailService->sendEcPaySuccessPaymentNotification(request()->user()->email, request()->user()->profile, $newBalance, $referenceNumber);
+            $this->emailService->sendEcPaySuccessPaymentNotification(request()->user()->email, request()->user()->profile, $newBalance, $referenceNumber, $transactionDate);
         }
 
+        $this->createAppNotification(request()->user()->id, $newBalance, $referenceNumber, $transactionDate);
+    }
+
+    private function createAppNotification(string $userId, float $newBalance, string $refNo, Carbon $transactionDate) {
+        $date = $transactionDate->setTimezone('Asia/Manila')->format('D, M d, Y h:m A');
+        $content = "You have successfully added funds to your wallet via EC Pay on " .
+            $date . " . Service fee for this transaction is P 0.00. Your new balance is P " . number_format($newBalance, 2) .
+            " with reference no. " . $referenceNumber . ". Thank you for using SquidPay!" ;
+
+        $title = "SquidPay - Payment via ECPay";
+        $this->appNotifications->create([
+            'title' => $title,
+            'status' => 1,
+            'description' => $content,
+            'user_account_id' => $userId,
+            'user_created' => $userId
+        ]);
     }
 
     public function amountWithServiceFee(float $amount)

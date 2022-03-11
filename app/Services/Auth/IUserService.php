@@ -8,5 +8,5 @@ use App\Models\UserAccount;
 
 interface IUserService
 {
-    public function updatePassword(UserAccount $user, $password);
+    public function getBalanceInfo(string $userId): array;
 }
