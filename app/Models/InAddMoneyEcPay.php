@@ -86,4 +86,8 @@ class InAddMoneyEcPay extends Model
         "updated_at",
         'transaction_response',
     ];
+
+    protected $casts = [
+        'transaction_date' => 'datetime'
+    ];
 }

@@ -113,6 +113,10 @@ class ErrorCodes
     const invalidAccountNumber = 732;
     const endpointRequestTimeOut = 734;
     const payBillsNotEnoughBalance = 735;
+    const overDue = 736;
+    const correctAccountName = 737;
+    const lettersSpaces = 738;
+    const correctAmountDue = 739;
 
     // Merchant 800
     const merchantClientToken = 801;

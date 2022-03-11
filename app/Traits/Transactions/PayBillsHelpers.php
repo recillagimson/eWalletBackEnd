@@ -49,7 +49,7 @@ trait PayBillsHelpers
     {
         $isEnough = $this->checkAmount($user, $data, $billerCode);
         if (!$isEnough) $this->payBillsNotEnoughBalance($this->getOtherCharges($billerCode) ,$this->getServiceFee($user));
-        $this->checkMonthlyLimit($user, $data);
+        // $this->checkMonthlyLimit($user, $data);
     }
 
 
@@ -345,7 +345,10 @@ trait PayBillsHelpers
         if ($errorCode == 27) return $this->theAccountNumberisNotSupportedByTheBank($errorMsg);
         if ($errorCode == 28) return $this->theAccountNumberMustStartWithAnyOf($errorMsg);
         if ($errorCode == 30) return $this->possibleDuplicateDetected($errorMsg);
-
+        if ($errorCode == 36 && $errorMsg == "This biller does not accept overdue bill. Please pay directly to the biller.") return $this->overDueBills($errorMsg);
+        if ($errorCode == 34 && $errorMsg == "Please provide the correct Account Name.") return $this->correctAccountName($errorMsg);
+        if ($errorCode == 34 && $errorMsg == "Please provide the correct Amount Due.") return $this->correctAmountDue($errorMsg);
+        if ($errorCode == 31 && $errorMsg == "The account name only accepts letters and spaces.") return $this->correctAccountName($errorMsg);
     }
 
     // old function

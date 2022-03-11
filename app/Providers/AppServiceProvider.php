@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Services\Auth\IUserService;
 use App\Services\Auth\UserKey\IUserKeyService;
 use App\Services\Auth\UserKey\UserKeyService;
+use App\Services\Auth\UserService;
 use App\Services\BPIService\BPINotificationService;
 use App\Services\BPIService\IBPINotificationService;
 use App\Services\OutPayMerchant\IPayMerchantService;
@@ -280,6 +282,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Auth v2 SERVICE
         $this->app->bind(IAuthV2Service::class, AuthV2Service::class);
+
         // Registration v2 SERVICE
         $this->app->bind(IRegistrationV2Service::class, RegistrationV2Service::class);
 
@@ -293,6 +296,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Pay Merchant
         $this->app->bind(IPayMerchantService::class, PayMerchantService::class);
+
+        $this->app->bind(IUserService::class, UserService::class);
     }
 
     /**
