@@ -96,4 +96,9 @@ class NotificationService implements INotificationService
     {
         // TODO: Implement sendSmartPromoNotification() method.
     }
+
+    public function sendEcPaySuccessPaymentNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber, Carbon $transactionDate)
+    {
+        // TODO: Implement sendEcPaySuccessPaymentNotification() method.
+    }
 }
