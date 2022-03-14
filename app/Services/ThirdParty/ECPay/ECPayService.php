@@ -177,9 +177,7 @@ class ECPayService implements IECPayService
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $data["referenceno"]);
-
         $res = $this->returnResponseBodyFormat($user, $result);
-
         return $res;
     }
 
@@ -200,8 +198,7 @@ class ECPayService implements IECPayService
             $logStringResult = 'Successfully added money from EcPay with amount of ' . number_format($amount, 2);
             $resultData = json_decode($data["result"]);
 
-            \Log::info('///// - ECPAY Create or Update Payment - //////');
-            \Log::info(json_encode($data));
+            Log::info('///// - ECPAY Create or Update Payment - //////', [ 'data' => $resultData ]);
             if(!$resultData) throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
             $this->addMoneyEcPayRepository->update($isDataExisting, [
@@ -211,7 +208,6 @@ class ECPayService implements IECPayService
             $remainingBalance = ($resultData[0]->PaymentStatus == 0) ? $this->handlePostBackService->addAmountToUserBalance($user->id, $amount) : '';
             if($resultData[0]->PaymentStatus == 0) {
                 $this->sendNotification($this->getUserBalance(request()->user()->id), $refNo, $isDataExisting->transaction_date);
-
                 $this->logHistoryService->logUserHistoryUnauthenticated($user->id, $refNo, SquidPayModuleTypes::AddMoneyViaOTCECPay, __METHOD__, Carbon::now(), $logStringResult);
 
                 $this->userTransactionHistoryRepository->log(
