@@ -134,9 +134,6 @@ return [
         'otherInfo.Service' => [
             'in' => "The service selected is invalid. Please try selecting PL for PLDT Landline,  PD for PLDT DSL and PU for PLDT Ultera.",
         ],
-        'otherInfo.PaymentType' => [
-            'in' => "The selected other info. payment type is invalid. Please try selecting 'MC' for Membership Saving,  'HL' for Housing Loan, 'MP2' for Modified Pag-IBIG 2 or 'ST' for Short Term Loan.",
-        ], 
         'otherInfo.ExternalEntityName' => [
             'in' => "The selected other info. external entity name is invalid. Please try selecting 'BAYAD' for ExternalEntityName.",
         ],

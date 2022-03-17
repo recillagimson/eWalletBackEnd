@@ -189,7 +189,6 @@ trait WithPayBillsErrors
         $this->validationErrorMessage(ErrorCodes::possibleDuplicateDetected, $errorMessage);
     }
 
-    // invalid account number
     private function invalidAccountNumber()
     {
         $this->validationErrorMessage(ErrorCodes::invalidAccountNumber, 'Invalid Account Number.');
@@ -213,6 +212,16 @@ trait WithPayBillsErrors
     private function correctAmountDue()
     {
         $this->validationErrorMessage(ErrorCodes::correctAmountDue, "Please provide the correct Amount Due.");
+    }
+
+    private function correctDueDate()
+    {
+        $this->validationErrorMessage(ErrorCodes::correctDueDate, "Please provide the correct Due Date and amount.");
+    }
+
+    private function correctRegion()
+    {
+        $this->validationErrorMessage(ErrorCodes::correctRegion, "Please provide the correct Region.");
     }
 
 
