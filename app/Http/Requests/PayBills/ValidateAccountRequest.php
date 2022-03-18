@@ -107,9 +107,9 @@ class ValidateAccountRequest extends FormRequest
             'account_number' => 'required',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
             'otherInfo.PaymentType' => "required|in:MC,HL,MP2,ST",
-            'otherInfo.ContactNo' => "required|between:7,11",
-            'otherInfo.BillDate' => "required",
-            'otherInfo.DueDate' => "required",
+            'otherInfo.BillDate' => "required_if:otherInfo.PaymentType,MC",
+            'otherInfo.DueDate' => "required_if:otherInfo.PaymentType,MC",
+            'otherInfo.ContactNo' => "required|digits_between:7,11",
         ],
         PayBillsConfig::PRULI => [
             'account_number' => 'required',
