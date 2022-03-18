@@ -121,16 +121,25 @@ class ValidateAccountRequest extends FormRequest
             'account_number' => 'required',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
         ],
+        PayBillsConfig::SSS01 => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1.00',
+            'otherInfo.PayFor' => 'required|in:PRN,BRN',
+            'otherInfo.PaymentType' => 'required_if:otherInfo.PayFor,BRN|in:R,H',
+            'otherInfo.PlatformType' => 'required|in:OTC,SS'
+        ],
         PayBillsConfig::SSS03 => [
-            'account_number' => 'required|between:10,13',
+            'account_number' => 'required|digits_between:10,13',
             'amount' => 'required|numeric|min:1.00|max:200000.00',
             'otherInfo.PayorType' => 'required|in:I,R',
             'otherInfo.RelType' => 'required|in:LP',
-            'otherInfo.LoanAccountNo' => 'required|numeric|digits:10',
-            'otherInfo.LastName' => 'required|max:100',
-            'otherInfo.FirstName' => 'required|max:100',
-            'otherInfo.MI' => 'required|max:2',
-            'otherInfo.PlatformType' => 'required|in:OTC,SS'
+            'otherInfo.LoanAccountNo' => 'numeric|digits_between:1,10', // dito na me
+            'otherInfo.CompanyName' => 'required_if:otherInfo.PayorType,R|max:100',
+            'otherInfo.LastName' => 'required_if:otherInfo.PayorType,I|max:100',
+            'otherInfo.FirstName' => 'required_if:otherInfo.PayorType,I|max:100',
+            'otherInfo.MI' => 'required_if:otherInfo.PayorType,I|max:2',
+            'otherInfo.PlatformType' => 'required|in:OTC,SS',
+            'otherInfo.CountryCode' => 'required_if:otherInfo.PlatformType,SS|size:3'
         ],
         PayBillsConfig::MECOP => [
             'account_number' => 'required',
@@ -160,15 +169,15 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.BeneficiaryName' => "required|max:50" 
         ], 
         PayBillsConfig::HDMF3 => [
-            'account_number' => 'required|digits_between:10,20',
+            'account_number' => 'required|between:10,20',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
             'otherInfo.PaymentType' => "required|in:MC,HL,MP2,ST,CL",
             'otherInfo.Region' => "required",
             'otherInfo.ContactNo' => "required|digits_between:7,11",
-            'otherInfo.PaymentOption' => "required_if:otherInfo.PaymentType,HL|in:E,R,F",
+            'otherInfo.PaymentOption' => 'required_if:otherInfo.PaymentType,HL|in:E,R,F',
             'otherInfo.PeriodFrom' => "required_if:otherInfo.PaymentType,MC|date_format:Y/m",
             'otherInfo.PeriodTo' => "required_if:otherInfo.PaymentType,MC|date_format:Y/m",
-        ], 
+        ],
         PayBillsConfig::ADMSN => [
             'account_number' => 'required|digits:9',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
@@ -858,13 +867,6 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.MiddleName' => 'required|max:100',
             'otherInfo.LastName' => 'required|max:100',
             'otherInfo.TelephoneNo' => 'required|numeric|digits_between:7,11'
-        ],
-        PayBillsConfig::SSS01 => [
-            'account_number' => 'required',
-            'amount' => 'required|numeric|min:1',
-            'otherInfo.PayFor' => 'required|in:PRN,BRN',
-            'otherInfo.PaymentType' => 'required_if:otherInfo.PayFor,BRN|in:R,H',
-            'otherInfo.PlatformType' => 'required|in:OTC,SS'
         ],
     ];
 

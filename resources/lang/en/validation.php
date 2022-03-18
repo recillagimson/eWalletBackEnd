@@ -119,6 +119,14 @@ return [
     'url' => 'The :attribute format is invalid.',
     'uuid' => 'The :attribute must be a valid UUID.',
 
+
+    // 'values' => [
+    //     'otherInfo.PayorType' => [
+    //         'I' => 'Individual',
+    //         'R' => 'Employer',
+    //     ],
+    // ],
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
@@ -131,27 +139,11 @@ return [
     */
 
     'custom' => [
-        'otherInfo.Service' => [
-            'in' => "The service selected is invalid. Please try selecting PL for PLDT Landline,  PD for PLDT DSL and PU for PLDT Ultera.",
-        ],
-        'otherInfo.ExternalEntityName' => [
-            'in' => "The selected other info. external entity name is invalid. Please try selecting 'BAYAD' for ExternalEntityName.",
-        ],
-        'otherInfo.Product' => [
-            'in' => "The product code selected is invalid. Please try selecting 'c' for Cellular/SUN or 'b' for Bro.",
-        ],
-        'otherInfo.PayorType' => [
-            'in' => "The product code selected is invalid. Please try selecting 'I' for Individual or 'R' for Employer.",
-        ],
-        'otherInfo.RelType' => [
-            'in' => "Relation type with default value LP (Loan Payment).",
-        ],
-        'otherInfo.PlatformType' => [
-            'in' => "The product code selected is invalid. Please try selecting 'OTC' for Over the Counter or 'SS' for Self Service.",
-        ],
-        'amount' => [
-            'in' => "The amount selected is invalid. Please try selecting '100.00' or '200.00' or '300.00' or '500' or '1000'"
-        ],
+        // 'otherInfo.Service' => [
+        //     'in' => "The service selected is invalid. Please try selecting PL for PLDT Landline,  PD for PLDT DSL and PU for PLDT Ultera.",
+        // ],
+
+      
     ],
 
     /*
