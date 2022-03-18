@@ -46,6 +46,7 @@ use App\Http\Controllers\UBP\UBPOAuthController;
 use App\Http\Controllers\User\AdminUserController;
 use App\Http\Controllers\User\ChangeKeyController;
 use App\Http\Controllers\User\UserAccountController;
+use App\Http\Controllers\User\UsersController;
 use App\Http\Controllers\UserPhotoController;
 use App\Http\Controllers\UserTransactionHistoryController;
 use App\Http\Controllers\UserUtilities\CountryController;
@@ -575,6 +576,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('/transactions')->middleware(['decrypt.request'])->group(function () {
         Route::post('/generate', [UserTransactionHistoryController::class, 'generateTransactionHistory']);
+    });
+
+    Route::prefix('/users')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/{userId}/balance', [UsersController::class, 'getBalanceInfo']);
     });
 });
 

@@ -223,10 +223,12 @@ class SmsService implements ISmsService
         $this->sendMessages($to, $content);
     }
 
-    public function sendEcPaySuccessPaymentNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
+    public function sendEcPaySuccessPaymentNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber, Carbon $transactionDate)
     {
-        $date = Carbon::now()->setTimezone('Asia/Manila')->format('D, M d, Y h:m A');
-        $content = "Hi " . $userDetail->first_name . "! You have successfully added funds to your wallet via EC Pay on " . $date . " . Service fee for this transaction is P 0.00. Your new balance is P " . number_format($newBalance, 2) . " with reference no. " . $referenceNumber . ". Thank you for using SquidPay!" ;
+        $date = $transactionDate->setTimezone('Asia/Manila')->format('D, M d, Y h:m A');
+        $content = "Hi " . $userDetail->first_name . "! You have successfully added funds to your wallet via EC Pay on " .
+            $date . " . Service fee for this transaction is P 0.00. Your new balance is P " . number_format($newBalance, 2) .
+            " with reference no. " . $referenceNumber . ". Thank you for using SquidPay!" ;
         $this->sendMessages($to, $content);
     }
 

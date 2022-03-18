@@ -320,7 +320,7 @@ class EmailService implements IEmailService
         $this->sendMessage($to, $subject, $template);
     }
 
-    public function sendEcPaySuccessPaymentNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber)
+    public function sendEcPaySuccessPaymentNotification(string $to, UserDetail $userDetail, $newBalance, string $referenceNumber, Carbon $transactionDate)
     {
         $subject = "Payment via EcPay";
         $template = new SuccessPayment($userDetail, $newBalance, $referenceNumber);
