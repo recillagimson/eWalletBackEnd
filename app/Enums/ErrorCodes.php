@@ -117,6 +117,8 @@ class ErrorCodes
     const correctAccountName = 737;
     const lettersSpaces = 738;
     const correctAmountDue = 739;
+    const correctDueDate = 740;
+    const correctRegion = 741;
 
     // Merchant 800
     const merchantClientToken = 801;

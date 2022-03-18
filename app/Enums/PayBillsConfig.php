@@ -144,7 +144,7 @@ class PayBillsConfig
         PayBillsConfig::STMWD,
         PayBillsConfig::SWSCO,
         PayBillsConfig::TRBNK,
-
+          PayBillsConfig::TRBNK,
 
         
 
@@ -403,8 +403,7 @@ class PayBillsConfig
     // CVMFI
     // DASCA
     // DCTV1
-   
-    
+    const ECNSS_INVALID_ACCT = "Please provide the correct Reference No."; // code 34
 
     
     // request time out
