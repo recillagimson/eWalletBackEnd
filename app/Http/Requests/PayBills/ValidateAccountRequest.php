@@ -868,6 +868,84 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.LastName' => 'required|max:100',
             'otherInfo.TelephoneNo' => 'required|numeric|digits_between:7,11'
         ],
+        PayBillsConfig::ASCLG => [
+            'account_number' => 'required|numeric|digits_between:10,12',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.FirstName' => 'required|max:100',
+            'otherInfo.MI' => 'required|max:2',
+            'otherInfo.LastName' => 'required|max:100',
+            'otherInfo.Course' => 'required|in:BSIT,BSCS,ACT,DAT,BSCE,ECT,BSBA,BSHM,BSTM,BSCR,CG6',
+            'otherInfo.Semester' => 'required|in:1,2,3',
+            'otherInfo.SchoolYear' => 'required'
+        ],
+        PayBillsConfig::BOCWD => [
+            'account_number' => 'required|max:20|alpha_num',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.Name' => 'required|between:1,50',
+            'otherInfo.Location' => 'required|max:100'
+        ],
+        PayBillsConfig::CRTYD => [
+            'account_number' => 'required|size:13|alpha_dash',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.TransactionType' => 'required|in:ME,AD,BOTH'
+        ],
+        PayBillsConfig::DIGOS => [
+            'account_number' => 'required|alpha_num',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.Name' => 'required|between:1,50',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y'
+        ],
+        PayBillsConfig::HEVHA => [
+            'account_number' => 'required|size:13|alpha_dash',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.TransactionType' => 'required|in:ME,AD,BOTH'
+        ],
+        PayBillsConfig::ISLC2 => [
+            'account_number' => 'required|digits:10',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.ConsumerName' => 'required',
+            'otherInfo.DueDate' => 'required|date_format:m/d/Y'
+        ],
+        PayBillsConfig::LLDC1 => [
+            'account_number' => 'required|alpha_num',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.Name' => 'required',
+            'otherInfo.ProjectName' => 'required'
+        ],
+        PayBillsConfig::MCECO => [
+            'account_number' => 'required',
+            'amount' => 'required|numeric|min:1|max:100000'
+        ],
+        PayBillsConfig::MTLGO => [
+            'account_number' => 'required|size:13|alpha_dash',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.TransactionType' => 'required|in:ME,AD,BOTH'
+        ],
+        PayBillsConfig::PAZHA => [
+            'account_number' => 'required|size:13|alpha_dash',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.TransactionType' => 'required|in:ME,AD,BOTH'
+        ],
+        PayBillsConfig::PLCTG => [
+            'account_number' => 'required|size:13|alpha_dash',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.TransactionType' => 'required|in:ME,AD,BOTH'
+        ],
+        PayBillsConfig::PLYHA => [
+            'account_number' => 'required|size:13|alpha_dash',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.TransactionType' => 'required|in:ME,AD,BOTH'
+        ],
+        PayBillsConfig::SBC01 => [
+            'account_number' => 'required|between:1,20',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.Name' => 'required'
+        ],
+        PayBillsConfig::STDIC => [
+            'account_number' => 'required|between:12,17',
+            'amount' => 'required|numeric|min:1|max:100000',
+            'otherInfo.CustomerName' => 'required'
+        ],
     ];
 
 
