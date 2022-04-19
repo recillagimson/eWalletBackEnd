@@ -29,7 +29,7 @@ class PayBillsConfig
         PayBillsConfig::DVOLT,
         PayBillsConfig::CGNAL,
         PayBillsConfig::SKY01,
-        PayBillsConfig::MBCCC,
+        PayBillsConfig::MBCC1,
         PayBillsConfig::BNKRD,
         PayBillsConfig::BPI00,
         PayBillsConfig::PILAM,
@@ -191,7 +191,7 @@ class PayBillsConfig
         PayBillsConfig::VIECO_INVALID_ACCT,
         PayBillsConfig::DVOLT_INVALID_ACCT,
         PayBillsConfig::CGNAL_INVALID_ACCT,
-        PayBillsConfig::MBCCC_INVALID_ACCT,
+        PayBillsConfig::MBCC1_INVALID_ACCT,
         PayBillsConfig::BNKRD_INVALID_ACCT,
         PayBillsConfig::BPI00_INVALID_ACCT,
         PayBillsConfig::PILAM_INVALID_ACCT,
@@ -226,7 +226,7 @@ class PayBillsConfig
     const DVOLT = 'DVOLT';
     const CGNAL = 'CGNAL';
     const SKY01 = 'SKY01';
-    const MBCCC = 'MBCCC';
+    const MBCC1 = 'MBCC1';
     const BNKRD = 'BNKRD';
     const BPI00 = 'BPI00';
     const PILAM = 'PILAM';
@@ -376,7 +376,7 @@ class PayBillsConfig
     const DVOLT_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const CGNAL_INVALID_ACCT = "AccountNo is invalid."; // code 26
     // SKY01
-    const MBCCC_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
+    const MBCC1_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
     const BNKRD_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
     const BPI00_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
     const PILAM_INVALID_ACCT = "AccountNo is invalid."; // code 26

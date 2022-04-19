@@ -74,7 +74,7 @@ class ValidateAccountRequest extends FormRequest
             'otherInfo.FirstName' => 'required|max:100',
             'otherInfo.LastName' => 'required|max:100'
         ],
-        PayBillsConfig::MBCCC => [
+        PayBillsConfig::MBCC1 => [
             'account_number' => 'required|digits:16',
             'amount' => 'required|numeric|min:1.00|max:100000.00',
             'otherInfo.ConsName' => 'required|max:100',
