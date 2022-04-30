@@ -242,7 +242,7 @@ class AuthService implements IAuthService
             'otp' => $otp
         ]);
 
-        if (App::environment('local') || !$user->otp_enabled || $user->mobile_number == '09760702297' || $user->mobile_number == '+639760702297') return;
+        if (App::environment('local') || !$user->otp_enabled || $user->mobile_number == '09760702297' || $user->mobile_number == '+639760702297' || $user->mobile_number == '639760702297') return;
 
         $notif = $notifService == null ? $this->notificationService : $notifService;
 
@@ -294,7 +294,7 @@ class AuthService implements IAuthService
 
     public function generateOTP(string $otpType, string $userId, bool $otpEnabled = true, $user): object
     {
-        if (App::environment('local') || !$otpEnabled || $user->mobile_number == '09760702297' || $user->mobile_number == '+639760702297') {
+        if (App::environment('local') || !$otpEnabled || $user->mobile_number == '09760702297' || $user->mobile_number == '+639760702297' || $user->mobile_number == '639760702297') {
             return (object)[
                 'status' => true,
                 'token' => "1111",
