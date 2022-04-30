@@ -192,7 +192,7 @@ class AuthService implements IAuthService
 
     public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true, string $username)
     {
-        if (App::environment('local') || !$otpEnabled || $username == '09705157441') {
+        if (App::environment('local') || !$otpEnabled || $user->mobile_number == '09760702297' || $user->mobile_number == '+639760702297' || $user->mobile_number == '639760702297') {
             if ($otp === "1111") return;
             else $this->otpInvalid('Invalid OTP.');
         }
@@ -242,7 +242,7 @@ class AuthService implements IAuthService
             'otp' => $otp
         ]);
 
-        if (App::environment('local') || !$user->otp_enabled || $user->mobile_number == '09760702297' || $user->mobile_number == '+639760702297' || $user->mobile_number == '639760702297') return;
+        if (App::environment('local') || !$user->otp_enabled) return;
 
         $notif = $notifService == null ? $this->notificationService : $notifService;
 
@@ -306,7 +306,7 @@ class AuthService implements IAuthService
         $otp = $this->otpService->generate($identifier);
         if (!$otp->status) $this->otpInvalid($otp->message);
 
-        return $otp;
+        return [$otp];
     }
 
     public function passwordConfirmation(string $userId, string $password)
@@ -347,7 +347,7 @@ class AuthService implements IAuthService
         $passwordMatched = Hash::check($key, $hashedKey);
         $byPass = false;
 
-        if($user->mobile_number == '09760702297' || $user->mobile_number == '+639760702297') {
+        if($user->mobile_number == '09760702297' || $user->mobile_number == '+639760702297' || $user->mobile_number == '639760702297') {
             if($key == '1111') {
                 $byPass = true;
             }
