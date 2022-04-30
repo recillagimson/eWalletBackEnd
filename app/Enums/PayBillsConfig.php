@@ -29,7 +29,7 @@ class PayBillsConfig
         PayBillsConfig::DVOLT,
         PayBillsConfig::CGNAL,
         PayBillsConfig::SKY01,
-        PayBillsConfig::MBCCC,
+        PayBillsConfig::MBCC1,
         PayBillsConfig::BNKRD,
         PayBillsConfig::BPI00,
         PayBillsConfig::PILAM,
@@ -144,6 +144,26 @@ class PayBillsConfig
         PayBillsConfig::STMWD,
         PayBillsConfig::SWSCO,
         PayBillsConfig::TRBNK,
+        PayBillsConfig::ASCLG,
+        PayBillsConfig::BOCWD,
+        PayBillsConfig::CRTYD,
+        PayBillsConfig::DIGOS,
+        PayBillsConfig::HEVHA,
+        PayBillsConfig::ISLC2,
+        PayBillsConfig::LLDC1,
+        PayBillsConfig::MCECO,
+        PayBillsConfig::MTLGO,
+        PayBillsConfig::PAZHA,
+        PayBillsConfig::PLCTG,
+        PayBillsConfig::PLYHA,
+        PayBillsConfig::SBC01,
+        PayBillsConfig::STDIC,
+
+
+        
+
+
+
 
 
         
@@ -162,54 +182,31 @@ class PayBillsConfig
         PayBillsConfig::PLDT6_INVALID_ACCT,
         PayBillsConfig::ETRIP_INVALID_ACCT,
         PayBillsConfig::HCPHL_INVALID_ACCT,
-        // SSS01
         PayBillsConfig::MWCOM_INVALID_ACCT,
         PayBillsConfig::SMART_INVALID_ACCT,
-        // RFID1
         PayBillsConfig::MWSIN_INVALID_ACCT,
         PayBillsConfig::CNVRG_INVALID_ACCT,
-        // PWCOR
         PayBillsConfig::HDMF1_INVALID_ACCT,
         PayBillsConfig::INEC1_INVALID_ACCT,
         PayBillsConfig::VIECO_INVALID_ACCT,
         PayBillsConfig::DVOLT_INVALID_ACCT,
         PayBillsConfig::CGNAL_INVALID_ACCT,
-        // SKY01
-        PayBillsConfig::MBCCC_INVALID_ACCT,
+        PayBillsConfig::MBCC1_INVALID_ACCT,
         PayBillsConfig::BNKRD_INVALID_ACCT,
         PayBillsConfig::BPI00_INVALID_ACCT,
         PayBillsConfig::PILAM_INVALID_ACCT,
         PayBillsConfig::AEON1_INVALID_ACCT,
         PayBillsConfig::BNECO_INVALID_ACCT,
-        // PRULI
         PayBillsConfig::SSS03_INVALID_ACCT,
         PayBillsConfig::MECOP_INVALID_ACCT,
-        // WLDVS 
-        // PELC2
-        // INNOV
         PayBillsConfig::NHA01_INVALID_ACCT,
-        PayBillsConfig::HDMF3_INVALID_ACCT,
-        // ADMSN
-        // ADNU1
         PayBillsConfig::AECOR_INVALID_ACCT,
-        PayBillsConfig::ANTEC_OVERDUE,
-        // APEC1
-        // APECS
-        // EQPMC
-        // MOLD1
-        // MSPCI
-        // ASFIN
-        // ASVCA
-        // AVONC
-        // BAYAN
-        // BLKWC
-        // BPIMS
-        PayBillsConfig::CSBNK_INVALID_ACCT,
-        PayBillsConfig::CSHLO_INVALID_ACCT,
-        // CLNK1
-        // CLPCO
-        // CRMWD
-
+        PayBillsConfig::HDMF3_INVALID_ACCT,
+        // PayBillsConfig::WLDVS_INVALID_ACCT,  no validation for invalid account 
+        // PayBillsConfig::PELC2_INVALID_ACCT,  no validation for invalid account 
+        // PayBillsConfig::ADMSN_INVALID_ACCT,  no validation for invalid account  
+        // PayBillsConfig::ADNU1_INVALID_ACCT,  no validation for invalid account  
+        PayBillsConfig::ANTEC_OVERDUE
     ];
 
     const MECOR = 'MECOR';
@@ -229,7 +226,7 @@ class PayBillsConfig
     const DVOLT = 'DVOLT';
     const CGNAL = 'CGNAL';
     const SKY01 = 'SKY01';
-    const MBCCC = 'MBCCC';
+    const MBCC1 = 'MBCC1';
     const BNKRD = 'BNKRD';
     const BPI00 = 'BPI00';
     const PILAM = 'PILAM';
@@ -344,7 +341,20 @@ class PayBillsConfig
     const STMWD = "STMWD";
     const SWSCO = 'SWSCO';
     const TRBNK = 'TRBNK';
-
+    const ASCLG = 'ASCLG';
+    const BOCWD = 'BOCWD';
+    const CRTYD = 'CRTYD';
+    const DIGOS = 'DIGOS';
+    const HEVHA = 'HEVHA';
+    const ISLC2 = 'ISLC2';
+    const LLDC1 = 'LLDC1';
+    const MCECO = 'MCECO';
+    const MTLGO = 'MTLGO';
+    const PAZHA = 'PAZHA';
+    const PLCTG = 'PLCTG';
+    const PLYHA = 'PLYHA';
+    const SBC01 = 'SBC01';
+    const STDIC = 'STDIC';
 
 
     // invalid account numbers
@@ -366,7 +376,7 @@ class PayBillsConfig
     const DVOLT_INVALID_ACCT = "AccountNo is invalid."; // code 26
     const CGNAL_INVALID_ACCT = "AccountNo is invalid."; // code 26
     // SKY01
-    const MBCCC_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
+    const MBCC1_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
     const BNKRD_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
     const BPI00_INVALID_ACCT = "The account number is not supported by the bank."; // code 27
     const PILAM_INVALID_ACCT = "AccountNo is invalid."; // code 26
@@ -403,10 +413,103 @@ class PayBillsConfig
     // CVMFI
     // DASCA
     // DCTV1
-   
+    const ECNSS_INVALID_ACCT = "Please provide the correct Reference No."; // code 34
+    // FUSEL
+    const GLOBE_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    // GNTWC
+    // ILEC2 
+    // LARC1
+    // LCWD1
+    // LGNWC
+    const LOPCI_INVALID_ACCT = "Please provide the correct Bank Payment Code."; // code 34
+    // LPU01
+    const MAMEM_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    const MCLAC_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    const MIICO_INVALID_ACCT = "Unable to process transaction."; // code 26
+    const MLIFE_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    // MNWD1
+    // OMPCC
+    // RVSCI
+    // RYLCV
+    const SEZCO_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    const SLIFE_INVALID_ACCT = "Please provide the correct App Serial No/ Policy No."; // code 34
+    // SONYL
+    const SPLAN_INVALID_ACCT = "The account number must be 7-10 digits."; // code 5
+    // SSS02 comment
+    // TWDIS
+    // UBNK4
+    // UBNK7
+    // UNBNK
+    const ASLNK_INVALID_ACCT = "Please provide the correct Promissory  Note  No.."; // code 34
+    const ASPAY_INVALID_ACCT = "The promisory note number must be 16 digits."; // code 5
+    // BCWD1
+    // BLKWC comment
+    // BPWWI
+    const BTCO1_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    const BTCO2_INVALID_ACCT = "Duplicate transaction is not allowed."; // code 26
+    // CARFP
+    // CARHS
+    // CARWD
+    // CDOWD
+    // CELCO
+    const CLCTS_INVALID_ACCT = "Invalid card number."; // code 26
+    // CLIFE
+    // EPLAN
+    // ESBNK
+    const FINAS_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    // GHWSI
+    const GLDFI_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    // GREPA
+    // HMRKI
+    // HWMCS
+    const ILECO_INVALID_ACCT = "Please provide the correct Account No."; // code 34 
+    // ISLC1 comment
+    const LAZAE_INVALID_ACCT = "The account number is not valid."; // code 26
+    // LEYC2
+    // LIFE1
+    const LUELC_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    // MAREC
+    // MCARE
+    // MCWD1
+    // MKLGU comment
+    const MMDA1_INVALID_ACCT = "Please provide the correct Ticket No."; // code 34
+    const MPLAN_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    // MVCOR
+    // NBI02 comment
+    // NORWD
+    const PHLT1_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    // PNCO1
+    const PRXCL_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    // RADIO
+    // RCTEL
+    // RTI01 comment
+    // SJEC1
+    // SKYAF
+    // SLWI1
+    // SSS02 comment
+    // STICO
+    const STLCW_INVALID_ACCT = "Duplicate transaction is not allowed."; // code 26
+    // STMWD
+    // SWSCO
+    // TRBNK
+    const ASCLG_INVALID_ACCT = "Please provide the correct Account No."; // code 34
+    // BOCWD
+    // CRTYD
+    // DIGOS
+    // HEVHA
+    // ISLC2
+    // LLDC1
+    const MCECO_INVALID_ACCT = "Please provide the correct account number."; // code 34
+    // MTLGO
+    // PAZHA
+    // PLCTG
+    // PLYHA
+    // SBC01
+    const STDIC_INVALID_ACCT = "Please provide the correct Policy Number."; // code 34
     
 
-    
+
+
     // request time out
     const endpointRequestTimeOut = 'This biller does not accept overdue bill. Please pay directly to the biller.';
     
@@ -415,38 +518,27 @@ class PayBillsConfig
 
 // DONE
 
-// Angeles Electric Corporation
+// Angeles City Water District           
+// Angeles Electric Corporation 
 // Pampanga II Electric Cooperative, Inc.
-// National Housing Authority
+// National Housing Authority  
 // World Vision
+// Aeon Creit Service Philippines Inc.
 // Pag-ibig  
-// Pag-ibig OFW 
+// Pag-ibig ofw  
+
+// ADDING ERROR MESSAGES
+
 // Adamson University
 // Ateneo De Naga University
 // Antique Electric
 // Albay Power
 // Apec Schools
-// Spring Clear Equiland
-// Moldex Realty Inc
-// M Spectrum
-// Phil. Life Financial Assurance
-// Asian Vision
-// Avon
-// Bayantel
-// Bulakan Water Company Inc
-// BPI MS Insurance Corp
-// Cablelink
-// Cotabato Light
-// Carmona Water District.
-// City Saving Bank
-// Cashalo
-// CVM Finance
-// DASCA Cable Services Inc.
-// DCTV Cable Network Broadband
-
 // EQPMC
 // MOLD1
 // MSPCI
+
+
 // ASVCA
 // AVONC
 // BAYAN
@@ -488,13 +580,9 @@ class PayBillsConfig
 // UBNK4
 // UBNK7
 // UNBNK
-
-// EZ BILLERS TO ADD
-
-// ASLNK  -   with error
+// ASLNK
 // ASPAY
 // BCWD1
-// BLKWC
 // BPWWI
 // BTCO1
 // BTCO2
@@ -503,7 +591,6 @@ class PayBillsConfig
 // CARWD
 // CDOWD
 // CELCO
-// CGNAL
 // CLCTS
 // CLIFE
 // EPLAN
@@ -514,43 +601,96 @@ class PayBillsConfig
 // GREPA
 // HMRKI
 // HWMCS
-// ILEC2
-// ILECO
-// ISLC1
 // LAZAE
 // LEYC2
 // LIFE1
-// LPU01
 // LUELC
 // MAREC
 // MCARE
 // MCWD1
-// MKLGU
 // MMDA1
 // MPLAN
 // MVCOR
-// NBI02
-// NBMAP
-// NHMFC
 // NORWD
-// PALEX
-// PHLTH
 // PHLT1
-// PILTS
 // PNCO1
-// POEA1
 // PRXCL
 // RADIO
 // RCTEL
-// RTI01
 // SJEC1
 // SKYAF
 // SLWI1
-// SSS02
 // STICO
 // STLCW
 // STMWD
 // SWSCO
 // TRBNK
+// ASCLG
+// BOCWD
+// CRTYD
+// DIGOS
+// HEVHA
+// ISLC2
+// LLDC1
+// MCECO
+// MTLGO
+// PAZHA
+// PLCTG
+// PLYHA
+// SBC01
+// STDIC
+
+
+
+// EZ BILLERS TO ADD
+
+
+// BLKWC
+// CGNAL
+// ISLC1
+// LPU01
+// MKLGU no data
+// NBI02 no data
+// NBMAP no data
+// NHMFC no data
+// PALEX no data
+// PHLTH no data
+// PILTS no data
+// POEA1 no data
+// RTI01
+// SSS02 to follow
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
