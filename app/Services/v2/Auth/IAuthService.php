@@ -126,7 +126,7 @@ interface IAuthService
      * @param bool $otpEnabled
      * @return object
      */
-    public function generateOTP(string $otpType, string $userId, bool $otpEnabled = true, UserAccount $user): object;
+    public function generateOTP(string $otpType, string $userId, bool $otpEnabled = true): object;
 
     /**
      * Send OTP
