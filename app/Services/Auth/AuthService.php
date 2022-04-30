@@ -214,6 +214,7 @@ class AuthService implements IAuthService
 
     public function generateMobileLoginOTP(string $usernameField, string $username)
     {
+        return 'here';
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
