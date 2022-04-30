@@ -4,17 +4,11 @@
 namespace App\Services\ThirdParty\ECPay;
 
 
-use App\Enums\TpaProviders;
-use App\Models\UserDetail;
 use App\Repositories\Notification\INotificationRepository;
 use App\Repositories\UserAccount\IUserAccountRepository;
 use App\Services\Utilities\API\IApiService;
 use App\Traits\Errors\WithTpaErrors;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use App\Services\Utilities\XML\XmlService;
-use Illuminate\Support\Stringable;
 use App\Services\AddMoney\DragonPay\IHandlePostBackService;
 use App\Repositories\InAddMoneyEcPay\IInAddMoneyEcPayRepository;
 use Illuminate\Validation\ValidationException;
@@ -177,9 +171,7 @@ class ECPayService implements IECPayService
         if($jsondecode['resultCode'] != "0") throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
         $result = $this->createOrUpdateTransaction($jsondecode, $data, $user, $data["referenceno"]);
-
         $res = $this->returnResponseBodyFormat($user, $result);
-
         return $res;
     }
 
@@ -200,8 +192,7 @@ class ECPayService implements IECPayService
             $logStringResult = 'Successfully added money from EcPay with amount of ' . number_format($amount, 2);
             $resultData = json_decode($data["result"]);
 
-            \Log::info('///// - ECPAY Create or Update Payment - //////');
-            \Log::info(json_encode($data));
+            Log::info('///// - ECPAY Create or Update Payment - //////', [ 'data' => $resultData ]);
             if(!$resultData) throw ValidationException::withMessages(['Message' => 'Add money Failed']);
 
             $this->addMoneyEcPayRepository->update($isDataExisting, [
@@ -211,9 +202,9 @@ class ECPayService implements IECPayService
             $remainingBalance = ($resultData[0]->PaymentStatus == 0) ? $this->handlePostBackService->addAmountToUserBalance($user->id, $amount) : '';
             if($resultData[0]->PaymentStatus == 0) {
                 $this->sendNotification($this->getUserBalance(request()->user()->id), $refNo, $isDataExisting->transaction_date);
-
                 $this->logHistoryService->logUserHistoryUnauthenticated($user->id, $refNo, SquidPayModuleTypes::AddMoneyViaOTCECPay, __METHOD__, Carbon::now(), $logStringResult);
 
+                Log::info('ECPay Transaction: ', [ 'data' => $isDataExisting->toArray() ]);
                 $this->userTransactionHistoryRepository->log(
                     $user->id,
                     $transCategoryId->id,
@@ -373,9 +364,11 @@ class ECPayService implements IECPayService
     private function sendNotification(float $newBalance, string $referenceNumber, Carbon $transactionDate): void {
         if(request()->user() && request()->user()->is_login_email == 0) {
             // SMS USER FOR NOTIFICATION
+            Log::info('Sending ECPay SMS Notif:', [ 'referenceNumber' => $referenceNumber ]);
             $this->smsService->sendEcPaySuccessPaymentNotification(request()->user()->mobile_number, request()->user()->profile, $newBalance, $referenceNumber, $transactionDate);
         }else {
             // EMAIL USER FOR NOTIFICATION
+            Log::info('Sending ECPay Email Notif:', [ 'referenceNumber' => $referenceNumber ]);
             $this->emailService->sendEcPaySuccessPaymentNotification(request()->user()->email, request()->user()->profile, $newBalance, $referenceNumber, $transactionDate);
         }
 
