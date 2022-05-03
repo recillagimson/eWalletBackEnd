@@ -10,7 +10,6 @@ use App\Http\Requests\Auth\GenerateTransOtpRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\MobileLoginRequest;
 use App\Http\Requests\Auth\MobileLoginValidateRequest;
-use App\Http\Requests\Auth\OnBorderLoginRequest;
 use App\Http\Requests\Auth\PartnersLoginRequest;
 use App\Http\Requests\Auth\PartnersVerifyLoginRequest;
 use App\Http\Requests\Auth\PasswordConfirmationRequest;
@@ -244,19 +243,5 @@ class AuthController extends Controller
     {
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
     }
-
-    /**
-     * Authenticates a mobile app on border user
-     *
-     * @param MobileLoginRequest $request
-     * @return JsonResponse
-     */
-    public function onBorderLogin(OnBorderLoginRequest $request): JsonResponse
-    {
-        $login = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $loginResponse = $this->authService->onBorderLogin($usernameField, $login);
-
-        return $this->responseService->successResponse($loginResponse, SuccessMessages::loginSuccessful);
-    }
 }
+
