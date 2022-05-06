@@ -48,7 +48,7 @@ class Kernel extends HttpKernel
         ValidatePostSize::class,
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
-
+        \App\Http\Middleware\Cors::class,
         //Custom Middlewares
     ];
 
@@ -96,5 +96,6 @@ class Kernel extends HttpKernel
         'rba' => RBPMiddleware::class,
         'require.user.token' => RequireUserTokenMiddleware::class,
         'whitelist.request' => WhiteListMiddleware::class,
+        'cors' => \App\Http\Middleware\Cors::class,
     ];
 }
