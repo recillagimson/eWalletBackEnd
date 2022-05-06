@@ -96,6 +96,5 @@ class Kernel extends HttpKernel
         'rba' => RBPMiddleware::class,
         'require.user.token' => RequireUserTokenMiddleware::class,
         'whitelist.request' => WhiteListMiddleware::class,
-        'cors' => \App\Http\Middleware\Cors::class, 
     ];
 }
