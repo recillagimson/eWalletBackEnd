@@ -101,23 +101,37 @@ class Send2BankService implements ISend2BankService
     public function getBanks(): array
     {
         if ($this->provider === TpaProviders::secBankInstapay) {
-            $response = $this->secBankService->getBanks($this->provider);
-            if (!$response->successful()) $this->tpaErrorOccured($this->getSend2BankProviderCaption($this->provider));
 
-            $xmlService = new XmlService();
-            $xmlBody = $xmlService->toArray($response->body());
-            $xmlResponse = $xmlBody['getListOfBanksResponse'];
+            $bankCollection = $this->providerBanks->getPesonetBanks();
 
-            $banksColl = collect(array_values($xmlResponse));
-            $banks = $banksColl->map(function ($item) {
-                $bank = Str::of($item)->explode('-', 2);
+            $banks = $bankCollection->map(function ($item) {
                 return [
-                    'code' => $bank[0],
-                    'bank' => $bank[1]
+                    'code' => $item->code,
+                    'bank' => $item->name,
                 ];
             });
 
             return $banks->sortBy('bank')->all();
+
+            // get bank instapay security bank
+
+            // $response = $this->secBankService->getBanks($this->provider);
+            // if (!$response->successful()) $this->tpaErrorOccured($this->getSend2BankProviderCaption($this->provider));
+
+            // $xmlService = new XmlService();
+            // $xmlBody = $xmlService->toArray($response->body());
+            // $xmlResponse = $xmlBody['getListOfBanksResponse'];
+
+            // $banksColl = collect(array_values($xmlResponse));
+            // $banks = $banksColl->map(function ($item) {
+            //     $bank = Str::of($item)->explode('-', 2);
+            //     return [
+            //         'code' => $bank[0],
+            //         'bank' => $bank[1]
+            //     ];
+            // });
+
+            // return $banks->sortBy('bank')->all();
         }
 
         if ($this->provider === TpaProviders::secBankPesonet) {
