@@ -25,7 +25,7 @@ trait WithTpaErrors
 
     public function tpaErrorOccured(string $provider)
     {
-        $this->validationErrorMessage(ErrorCodes::tpaErrorOccured, 'TPA:' . $provider . ' Error Occured. Please Try Again.');
+        $this->validationErrorMessage(ErrorCodes::tpaErrorOccured, 'TPA:' . $provider . ' Error Occured. Please wag mo na itry error lang yan.');
     }
 
     public function tpaInvalidProvider()
