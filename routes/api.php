@@ -210,6 +210,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/generate/otp', [AuthV2Controller::class, 'generateTransactionOTP']);
         Route::post('/resend/otp', [AuthV2Controller::class, 'resendOTP']);
 
+
+        // verify mobile login
         Route::prefix('/verify')->name('verify.')->group(function () {
             Route::post('/otp', [AuthV2Controller::class, 'verifyTransactionOtp'])->name('v2.otp');
             Route::post('/account', [RegisterV2Controller::class, 'verifyAccount'])->name('v2.account');

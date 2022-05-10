@@ -102,6 +102,7 @@ class AuthService implements IAuthService
         return $this->generateLoginToken($user, TokenNames::userWebToken, $firstLogin);
     }
 
+    // 1st step mobile login
     public function mobileLogin(string $usernameField, array $creds): array
     {
         $user = $this->userAccounts->getByUsername($usernameField, $creds[$usernameField]);
@@ -190,25 +191,33 @@ class AuthService implements IAuthService
         }
     }
 
-    public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true)
+    // 2nd Step
+    public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true, UserAccount $user)
     {
         if (App::environment('local') || !$otpEnabled) {
+            
+            if ($otp === "1111") return;
+            else $this->otpInvalid('Invalid OTP.');
+
+          // to bypass mobile login with this specific number
+        } else if ($user->mobile_number == '09760702297' || $user->mobile_number == '639760702297' || $user->mobile_number == '+639760702297') {
             if ($otp === "1111") return;
             else $this->otpInvalid('Invalid OTP.');
         }
-
 
         $identifier = $verificationType . ':' . $userId;
         $otpValidity = $this->otpService->validate($identifier, $otp);
         if (!$otpValidity->status) $this->otpInvalid($otpValidity->message);
     }
 
+
+    // 1st Step
     public function verifyLogin(string $usernameField, string $username, string $otp)
     {
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $this->verify($user->id, OtpTypes::login, $otp, $user->otp_enabled);
+        return $this->verify($user->id, OtpTypes::login, $otp, $user->otp_enabled, $user);
     }
 
     public function generateTransactionOTP(UserAccount $user, string $otpType, ?string $type)
