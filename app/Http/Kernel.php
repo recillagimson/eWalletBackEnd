@@ -48,7 +48,6 @@ class Kernel extends HttpKernel
         ValidatePostSize::class,
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
-
         //Custom Middlewares
     ];
 
@@ -95,6 +94,6 @@ class Kernel extends HttpKernel
         'decrypt.request' => DecryptRequest::class,
         'rba' => RBPMiddleware::class,
         'require.user.token' => RequireUserTokenMiddleware::class,
-        'whitelist.request' => WhiteListMiddleware::class,
+        'whitelist.request' => WhiteListMiddleware::class
     ];
 }

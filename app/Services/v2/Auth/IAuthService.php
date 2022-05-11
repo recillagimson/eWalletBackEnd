@@ -88,7 +88,7 @@ interface IAuthService
      * @param string $otp
      * @param bool $otpEnabled
      */
-    public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true, string $username);
+    public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true, UserAccount $user);
 
     /**
      * Validate OTP and provides user token
