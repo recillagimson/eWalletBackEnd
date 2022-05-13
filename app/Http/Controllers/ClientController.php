@@ -25,13 +25,17 @@ class ClientController extends Controller
      */
     public function getToken(ClientLoginRequest $request): JsonResponse
     {
-        $clientLogin = $request->validated();
-        $clientToken = $this->authService->clientLogin($clientLogin['client_id'], $clientLogin['client_secret']);
+        // $clientLogin = $request->validated();
+        // $clientToken = $this->authService->clientLogin($clientLogin['client_id'], $clientLogin['client_secret']);
+
+        // $tokenResponse = [
+        //     'access_token' => $clientToken->plainTextToken,
+        //     'created_at' => $clientToken->accessToken->created_at,
+        //     'expires_in' => config('sanctum.expiration')
+        // ];
 
         $tokenResponse = [
-            'access_token' => $clientToken->plainTextToken,
-            'created_at' => $clientToken->accessToken->created_at,
-            'expires_in' => config('sanctum.expiration')
+            'Tama o Mali?' => "YES!!",
         ];
         return response()->json($tokenResponse, Response::HTTP_OK);
     }
