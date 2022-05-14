@@ -7,4 +7,6 @@ use App\Repositories\IRepository;
 interface IClientRepository extends IRepository
 {
     public function getClient(string $clientId);
+
+    public function getAllClient();
 }

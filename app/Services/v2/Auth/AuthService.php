@@ -169,7 +169,10 @@ class AuthService implements IAuthService
 
     public function clientLogin(string $clientId, string $clientSecret)//: NewAccessToken
     { 
-        return $clientId;
+        return [ "client_id" => $clientId,
+                $this->clients->getAllClient()
+            ];
+
         return $this->clients->getClient($clientId);
 
         if (!$client || !Hash::check($clientSecret, $client->client_secret)) {
