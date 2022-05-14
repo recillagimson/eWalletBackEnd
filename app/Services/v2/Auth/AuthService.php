@@ -169,7 +169,6 @@ class AuthService implements IAuthService
 
     public function clientLogin(string $clientId, string $clientSecret)//: NewAccessToken
     {
-        return $user = $this->userAccounts->get('c558ad07-ea34-412d-afc7-8eb50c1ef581');
         return $this->clients->getClient($clientId);
         return 'sample text';
 
