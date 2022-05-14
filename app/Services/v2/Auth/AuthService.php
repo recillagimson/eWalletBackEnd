@@ -168,16 +168,14 @@ class AuthService implements IAuthService
     }
 
     public function clientLogin(string $clientId, string $clientSecret)//: NewAccessToken
-    { 
-        return $this->clients->getAllClient();
+    {
+        return $this->clients->getClient($clientId);
 
-        // return $this->clients->getClient($clientId);
+        if (!$client || !Hash::check($clientSecret, $client->client_secret)) {
+            $this->invalidCredentials();
+        }
 
-        // if (!$client || !Hash::check($clientSecret, $client->client_secret)) {
-        //     $this->invalidCredentials();
-        // }
-
-        // return $client->createToken(TokenNames::clientToken);
+        return $client->createToken(TokenNames::clientToken);
     }
 
     public function confirmTransactions(string $userId, string $pinCode)
