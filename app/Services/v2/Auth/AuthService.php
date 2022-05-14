@@ -169,7 +169,8 @@ class AuthService implements IAuthService
 
     public function clientLogin(string $clientId, string $clientSecret)//: NewAccessToken
     {
-        return $this->clients->getClient($clientId);
+        $client = $this->clients->getClient($clientId);
+        return 'sample text';
 
         if (!$client || !Hash::check($clientSecret, $client->client_secret)) {
             $this->invalidCredentials();
