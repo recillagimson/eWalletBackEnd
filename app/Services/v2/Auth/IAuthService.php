@@ -41,7 +41,7 @@ interface IAuthService
      * @param string $clientSecret
      * @return NewAccessToken
      */
-    public function clientLogin(string $clientId, string $clientSecret): NewAccessToken;
+    public function clientLogin(string $clientId, string $clientSecret); //: NewAccessToken
 
     /**
      * Authenticates admin users

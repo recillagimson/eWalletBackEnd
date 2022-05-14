@@ -167,13 +167,13 @@ class AuthService implements IAuthService
         return $this->generateLoginToken($user, TokenNames::userMobileToken, $firstLogin);
     }
 
-    public function clientLogin(string $clientId, string $clientSecret): NewAccessToken
-    {
-        $client = $this->clients->getClient($clientId);
+    public function clientLogin(string $clientId, string $clientSecret)//: NewAccessToken
+    { 
+        return $this->clients->getClient($clientId);
 
-        // if (!$client || !Hash::check($clientSecret, $client->client_secret)) {
-        //     $this->invalidCredentials();
-        // }
+        if (!$client || !Hash::check($clientSecret, $client->client_secret)) {
+            $this->invalidCredentials();
+        }
 
         return $client->createToken(TokenNames::clientToken);
     }
