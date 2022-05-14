@@ -25,7 +25,7 @@ class ClientController extends Controller
      */
     public function getToken(ClientLoginRequest $request)//: JsonResponse
     {
-        $clientLogin = $request->validated();
+        return $request->validated();
         return $this->authService->clientLogin($clientLogin['client_id'], $clientLogin['client_secret']);
     
         // $tokenResponse = [
