@@ -163,9 +163,9 @@ class AuthService implements IAuthService
     {
         $client = $this->clients->getClient($clientId);
 
-        // if (!$client || !Hash::check($clientSecret, $client->client_secret)) {
-        //     $this->invalidCredentials();
-        // }
+        if (!$client || !Hash::check($clientSecret, $client->client_secret)) {
+            $this->invalidCredentials();
+        }
 
         return $client->createToken(TokenNames::clientToken);
     }
