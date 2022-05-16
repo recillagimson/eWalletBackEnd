@@ -94,7 +94,6 @@ class Kernel extends HttpKernel
         'decrypt.request' => DecryptRequest::class,
         'rba' => RBPMiddleware::class,
         'require.user.token' => RequireUserTokenMiddleware::class,
-        'whitelist.request' => WhiteListMiddleware::class,
-        'cors' => \App\Http\Middleware\Cors::class, 
+        'whitelist.request' => WhiteListMiddleware::class
     ];
 }

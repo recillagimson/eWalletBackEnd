@@ -119,7 +119,7 @@ class OtpService implements IOtpService
             $otp = $this->otps->create($data);
             Log::debug('OTP Generated: ', $data);
         }
-        if ($otp == null) {
+        else if ($otp == null) {
             $data = [
                 'identifier' => $identifier,
                 'token' => $this->createPin(),
