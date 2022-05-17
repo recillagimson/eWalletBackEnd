@@ -16,4 +16,11 @@ class ClientRepository extends Repository implements IClientRepository
     {
         return $this->model->where('client_id', '=', $clientId)->first();
     }
+
+    public function getAllClient()
+    {
+        return $this->model->get();
+    }
 }
+
+

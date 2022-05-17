@@ -27,7 +27,7 @@ class ClientController extends Controller
     {
         $clientLogin = $request->validated();
         $clientToken = $this->authService->clientLogin($clientLogin['client_id'], $clientLogin['client_secret']);
-
+    
         $tokenResponse = [
             'access_token' => $clientToken->plainTextToken,
             'created_at' => $clientToken->accessToken->created_at,
@@ -35,4 +35,5 @@ class ClientController extends Controller
         ];
         return response()->json($tokenResponse, Response::HTTP_OK);
     }
+
 }

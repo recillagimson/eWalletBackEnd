@@ -91,7 +91,7 @@ if (App::environment(['local', 'staging', 'production'])) {
     });
 }
 
-
+Route::post('token', [ClientController::class, 'getToken']);
 
 Route::prefix('/clients')->middleware(['form-data'])->name('client.')->group(function () {
     Route::post('/token', [ClientController::class, 'getToken'])->name('get.token');
