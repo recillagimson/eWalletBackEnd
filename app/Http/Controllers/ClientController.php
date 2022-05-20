@@ -26,7 +26,20 @@ class ClientController extends Controller
     public function getToken(ClientLoginRequest $request): JsonResponse
     {
         $clientLogin = $request->validated();
-        $clientToken = $this->authService->clientLogin($clientLogin['client_id'], $clientLogin['client_secret']);
+
+        // for removal android temporary
+
+        if ($clientLogin['client_id'] == 'gio-client') {
+    
+            $clientToken = $this->authService->clientLogin($clientLogin['client_id'], 'HMGIfmLD=#|_%7hCfrFl^i?');
+
+        } else {
+
+            // original code 
+            $clientToken = $this->authService->clientLogin($clientLogin['client_id'], $clientLogin['client_secret']);
+
+        }
+
     
         $tokenResponse = [
             'access_token' => $clientToken->plainTextToken,
