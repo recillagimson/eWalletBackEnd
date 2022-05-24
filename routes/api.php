@@ -84,11 +84,11 @@ if (App::environment(['local', 'staging', 'production'])) {
         Route::post('/decrypt/fixed', [PayloadController::class, 'decryptFixed']);
     });
 
-    Route::prefix('/atm')->group(function () {
-        Route::post('/generate/signature', [AtmController::class, 'generate']);
-        Route::post('/verify/signature', [AtmController::class, 'verify']);
-        Route::get('/network-types', [AtmController::class, 'showPrefixNetworkList']);
-    });
+    // Route::prefix('/atm')->group(function () {
+    //     Route::post('/generate/signature', [AtmController::class, 'generate']);
+    //     Route::post('/verify/signature', [AtmController::class, 'verify']);
+    //     Route::get('/network-types', [AtmController::class, 'showPrefixNetworkList']);
+    // });
 }
 
 Route::post('token', [ClientController::class, 'getToken']);
@@ -347,12 +347,12 @@ Route::middleware('auth:sanctum')->group(function () {
         //     Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
         // });
 
-        Route::prefix('/buy/epins')->name('buy.epins.')->group(function () {
-            Route::post('/', [AtmController::class, 'topupEPins'])->name('top.up.load');
-            Route::post('/validate', [AtmController::class, 'validateTopup'])->name('validate.load.top.up');
-            Route::get('/products', [AtmController::class, 'getEpinProducts'])->name('get.products.by.provider');
-            Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
-        });
+        // Route::prefix('/buy/epins')->name('buy.epins.')->group(function () {
+        //     Route::post('/', [AtmController::class, 'topupEPins'])->name('top.up.load');
+        //     Route::post('/validate', [AtmController::class, 'validateTopup'])->name('validate.load.top.up');
+        //     Route::get('/products', [AtmController::class, 'getEpinProducts'])->name('get.products.by.provider');
+        //     Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
+        // });
 
         Route::prefix('/address')->group(function () {
             Route::get('/regions', [RegionController::class, 'index']);
