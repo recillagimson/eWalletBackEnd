@@ -340,12 +340,12 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
 
-        Route::prefix('/buy/load')->name('buy.load.')->group(function () {
-            Route::post('/', [AtmController::class, 'topupLoad'])->name('top.up.load');
-            Route::post('/validate', [AtmController::class, 'validateTopup'])->name('validate.load.top.up');
-            Route::post('/products', [AtmController::class, 'getProductsByProvider'])->name('get.products.by.provider');
-            Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
-        });
+        // Route::prefix('/buy/load')->name('buy.load.')->group(function () {
+        //     Route::post('/', [AtmController::class, 'topupLoad'])->name('top.up.load');
+        //     Route::post('/validate', [AtmController::class, 'validateTopup'])->name('validate.load.top.up');
+        //     Route::post('/products', [AtmController::class, 'getProductsByProvider'])->name('get.products.by.provider');
+        //     Route::get('/process/pending', [AtmController::class, 'processPending'])->name('process.pending');
+        // });
 
         Route::prefix('/buy/epins')->name('buy.epins.')->group(function () {
             Route::post('/', [AtmController::class, 'topupEPins'])->name('top.up.load');
