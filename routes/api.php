@@ -266,10 +266,10 @@ Route::middleware('auth:sanctum')->group(function () {
        Route::post('/{provider}/transaction/update', [Send2BankController::class, 'updateTransaction'])->name('provider.transaction.update');
     });
 
-    Route::prefix('/load')->middleware(['decrypt.request'])->name('load.')->group(function () {
-        Route::post('/{network_type}', [PrepaidLoadController::class, 'load'])->name('load');
-        Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos'])->name('show.promos');
-    });
+    // Route::prefix('/load')->middleware(['decrypt.request'])->name('load.')->group(function () {
+    //     Route::post('/{network_type}', [PrepaidLoadController::class, 'load'])->name('load');
+    //     Route::get('/promos/{network_type}', [PrepaidLoadController::class, 'showPromos'])->name('show.promos');
+    // });
 
     Route::prefix('/id')->middleware(['decrypt.request'])->name('id.')->group(function () {
         Route::apiResources([
