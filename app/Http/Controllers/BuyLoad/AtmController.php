@@ -82,42 +82,47 @@ class AtmController extends Controller
         return $this->responseService->successResponse($responseData);
     }
 
-    // public function getProductsByProvider(GetProductsByProviderRequest $request): JsonResponse
-    // {
-    //     $data = $request->validated();
-    //     $mobileNumber = $data['mobile_number'];
-    //     $responseData = $this->buyLoadService->getProductsByProvider($mobileNumber);
-    //     return $this->responseService->successResponse($responseData);
-    // }
+    public function getProductsByProvider(GetProductsByProviderRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $mobileNumber = $data['mobile_number'];
+        $responseData = $this->buyLoadService->getProductsByProvider($mobileNumber);
+        return $this->responseService->successResponse($responseData);
+    }
 
     private function getUsernameField(Request $request): string
     {
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
     }
 
-    // public function validateTopup(TopupLoadRequest $request): JsonResponse
-    // {
-    //     $userId = $request->user()->id;
-    //     $data = $request->validated();
+    public function validateTopup(TopupLoadRequest $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+        $data = $request->validated();
+        
+        $data['amount'] = (int)filter_var($data['product_name'], FILTER_SANITIZE_NUMBER_INT);
+        
+        $this->buyLoadService->validateTopup($userId, $data['mobile_number'], $data['product_code'],
+            $data['product_name'], $data['amount']);
 
-    //     $this->buyLoadService->validateTopup($userId, $data['mobile_number'], $data['product_code'],
-    //         $data['product_name'], $data['amount']);
+        return $this->responseService->successResponse($data,
+            SuccessMessages::transactionValidationSuccessful);
+    }
 
-    //     return $this->responseService->successResponse($data,
-    //         SuccessMessages::transactionValidationSuccessful);
-    // }
+    public function topupLoad(TopupLoadRequest $request): JsonResponse
+    {
+        $userId = $request->user()->id;
+        $data = $request->validated();
 
-    // public function topupLoad(TopupLoadRequest $request): JsonResponse
-    // {
-    //     $userId = $request->user()->id;
-    //     $data = $request->validated();
-    //     $disabledNetwork = $this->buyLoadService->executeDisabledNetwork($data['mobile_number']);
+        $data['amount'] = (int)filter_var($data['product_name'], FILTER_SANITIZE_NUMBER_INT);
 
-    //     $response = $this->buyLoadService->topup($userId, $data['mobile_number'], $data['product_code'],
-    //         $data['product_name'], $data['amount'], TopupTypes::load);
+        $disabledNetwork = $this->buyLoadService->executeDisabledNetwork($data['mobile_number']);
 
-    //     return $this->responseService->successResponse($response);
-    // }
+        $response = $this->buyLoadService->topup($userId, $data['mobile_number'], $data['product_code'],
+            $data['product_name'], $data['amount'], TopupTypes::load);
+
+        return $this->responseService->successResponse($response);
+    }
 
     public function topupEPins(TopupLoadRequest $request): JsonResponse
     {
