@@ -95,14 +95,13 @@ class AtmController extends Controller
         return $request->has(UsernameTypes::Email) ? UsernameTypes::Email : UsernameTypes::MobileNumber;
     }
 
-    public function validateTopup(TopupLoadRequest $request)//: JsonResponse
+    public function validateTopup(TopupLoadRequest $request): JsonResponse
     {
         $userId = $request->user()->id;
         $data = $request->validated();
         
         $data['amount'] = (int)filter_var($data['product_name'], FILTER_SANITIZE_NUMBER_INT);
-        return $data['amount'];
-
+        
         $this->buyLoadService->validateTopup($userId, $data['mobile_number'], $data['product_code'],
             $data['product_name'], $data['amount']);
 
@@ -110,13 +109,12 @@ class AtmController extends Controller
             SuccessMessages::transactionValidationSuccessful);
     }
 
-    public function topupLoad(TopupLoadRequest $request)//: JsonResponse
+    public function topupLoad(TopupLoadRequest $request): JsonResponse
     {
         $userId = $request->user()->id;
         $data = $request->validated();
 
         $data['amount'] = (int)filter_var($data['product_name'], FILTER_SANITIZE_NUMBER_INT);
-        return $data['amount'];
 
         $disabledNetwork = $this->buyLoadService->executeDisabledNetwork($data['mobile_number']);
 
