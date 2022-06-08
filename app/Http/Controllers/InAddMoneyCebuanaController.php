@@ -22,18 +22,18 @@ class InAddMoneyCebuanaController extends Controller
         $this->responseService = $responseService;
     }
 
-    public function addMoney(AddMoneyCebuanaRequest $request)
-    {
+    // public function addMoney(AddMoneyCebuanaRequest $request)
+    // {
         
-        //alternative getting user account id
-        $data = $request->all();
-        $userId = $data['user_account_id'];
+    //     //alternative getting user account id
+    //     $data = $request->all();
+    //     $userId = $data['user_account_id'];
 
-        // $data = $request->validated();
-        // $userId = $request->user()->id; //cant get this auth user
-        $response = $this->addMoneyCebuanaService->addMoney($userId, $data);
-        return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
-    }
+    //     // $data = $request->validated();
+    //     // $userId = $request->user()->id; //cant get this auth user
+    //     $response = $this->addMoneyCebuanaService->addMoney($userId, $data);
+    //     return $this->responseService->successResponse($response->toArray(), SuccessMessages::success);
+    // }
 
     public function generate() {
         $response = $this->addMoneyCebuanaService->generate(request()->user()->id, request()->user()->tier_id);

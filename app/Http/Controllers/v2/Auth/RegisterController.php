@@ -28,20 +28,20 @@ class RegisterController extends Controller
         $this->responseService = $responseService;
     }
 
-    /**
-     * Registers a user
-     *
-     * @param RegisterUserRequest $request
-     * @return JsonResponse
-     */
-    public function register(RegisterUserRequest $request): JsonResponse
-    {
-        $newUser = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $user = $this->registrationService->register($newUser, $usernameField);
+    // /**
+    //  * Registers a user
+    //  *
+    //  * @param RegisterUserRequest $request
+    //  * @return JsonResponse
+    //  */
+    // public function register(RegisterUserRequest $request): JsonResponse
+    // {
+    //     $newUser = $request->validated();
+    //     $usernameField = $this->getUsernameField($request);
+    //     $user = $this->registrationService->register($newUser, $usernameField);
 
-        return $this->responseService->createdResponse($user->toArray(), SuccessMessages::accountRegistered);
-    }
+    //     return $this->responseService->createdResponse($user->toArray(), SuccessMessages::accountRegistered);
+    // }
 
     /**
      * Validates User Registration Inputs

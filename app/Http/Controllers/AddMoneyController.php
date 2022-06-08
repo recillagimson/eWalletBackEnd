@@ -55,14 +55,14 @@ class AddMoneyController extends Controller
         $this->inAddMoneyEcPayRepository = $inAddMoneyEcPayRepository;
     }
 
-    public function addMoney(AddMoneyRequest $request): JsonResponse
-    {
-        $requestParams = $request->validated();
-        $user = $request->user();
+    // public function addMoney(AddMoneyRequest $request): JsonResponse
+    // {
+    //     $requestParams = $request->validated();
+    //     $user = $request->user();
 
-        $addMoney = $this->addMoneyServiceV2->generateUrl($user->id, $requestParams);
-        return $this->responseService->successResponse($addMoney, SuccessMessages::URLGenerated);
-    }
+    //     $addMoney = $this->addMoneyServiceV2->generateUrl($user->id, $requestParams);
+    //     return $this->responseService->successResponse($addMoney, SuccessMessages::URLGenerated);
+    // }
 
     public function postBack(DragonPayPostBackRequest $request)
     {

@@ -20,12 +20,12 @@ class UBPAddmoneyController extends Controller
         $this->responseService = $responseService;
     }
 
-    public function addMoney(UbpAddMoneyRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $addMoney = $this->addMoneyService->addMoney($request->user()->id, $data['amount']);
-        return $this->responseService->successResponse($addMoney->toArray());
-    }
+    // public function addMoney(UbpAddMoneyRequest $request): JsonResponse
+    // {
+    //     $data = $request->validated();
+    //     $addMoney = $this->addMoneyService->addMoney($request->user()->id, $data['amount']);
+    //     return $this->responseService->successResponse($addMoney->toArray());
+    // }
 
     public function processPending(Request $request): JsonResponse
     {
