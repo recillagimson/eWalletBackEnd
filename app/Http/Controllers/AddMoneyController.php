@@ -64,74 +64,74 @@ class AddMoneyController extends Controller
     //     return $this->responseService->successResponse($addMoney, SuccessMessages::URLGenerated);
     // }
 
-    public function postBack(DragonPayPostBackRequest $request)
-    {
-        $postBackData = $request->validated();
-        $this->addMoneyServiceV2->handlePostBack($postBackData);
+    // public function postBack(DragonPayPostBackRequest $request)
+    // {
+    //     $postBackData = $request->validated();
+    //     $this->addMoneyServiceV2->handlePostBack($postBackData);
 
-        return response('', 200, [
-            'Content-type' => 'text/plain'
-        ]);
-    }
+    //     return response('', 200, [
+    //         'Content-type' => 'text/plain'
+    //     ]);
+    // }
 
-    public function cancel(AddMoneyCancelRequest $request): JsonResponse
-    {
-        $referenceNumber = $request->validated();
-        $user = $request->user();
+    // public function cancel(AddMoneyCancelRequest $request): JsonResponse
+    // {
+    //     $referenceNumber = $request->validated();
+    //     $user = $request->user();
 
-        $this->addMoneyService->cancelAddMoney($user, $referenceNumber);
-        return $this->responseService->successResponse(null, SuccessMessages::addMoneyCancel);
-    }
+    //     $this->addMoneyService->cancelAddMoney($user, $referenceNumber);
+    //     return $this->responseService->successResponse(null, SuccessMessages::addMoneyCancel);
+    // }
 
-    public function getStatus(AddMoneyStatusRequest $request): JsonResponse
-    {
-        $user = $request->user();
-        $requestParams = $request->validated();
+    // public function getStatus(AddMoneyStatusRequest $request): JsonResponse
+    // {
+    //     $user = $request->user();
+    //     $requestParams = $request->validated();
 
-        $status = $this->addMoneyService->getStatus($user, $requestParams);
+    //     $status = $this->addMoneyService->getStatus($user, $requestParams);
 
-        return $this->responseService->successResponse($status, SuccessMessages::addMoneyStatusAcquired);
-    }
+    //     return $this->responseService->successResponse($status, SuccessMessages::addMoneyStatusAcquired);
+    // }
 
-    public function getLatestPendingTrans(Request $request): JsonResponse
-    {
-        $user = $request->user();
+    // public function getLatestPendingTrans(Request $request): JsonResponse
+    // {
+    //     $user = $request->user();
 
-        $transaction = $this->addMoneys->getLatestPendingByUserAccountID($user->id);
+    //     $transaction = $this->addMoneys->getLatestPendingByUserAccountID($user->id);
 
-        return $this->responseService->successResponse($transaction->toArray(), SuccessMessages::success);
-    }
+    //     return $this->responseService->successResponse($transaction->toArray(), SuccessMessages::success);
+    // }
 
-    public function updateUserTrans(Request $request): JsonResponse
-    {
-        $user = $request->user();
-        $updatedTransactions = $this->addMoneyServiceV2->processPending($user->id);
-        return $this->responseService->successResponse($updatedTransactions, SuccessMessages::success);
-    }
+    // public function updateUserTrans(Request $request): JsonResponse
+    // {
+    //     $user = $request->user();
+    //     $updatedTransactions = $this->addMoneyServiceV2->processPending($user->id);
+    //     return $this->responseService->successResponse($updatedTransactions, SuccessMessages::success);
+    // }
 
-    public function commitPayment(CommitPaymentRequest $request): JsonResponse {
+    // public function commitPayment(CommitPaymentRequest $request): JsonResponse {
 
-        $data = $request->validated();
-        $serviceFeeAmount = $this->ecpayService->amountWithServiceFee((float)$data["amount"]);
-        $this->transactionValidationService->checkUserMonthlyTransactionLimit($request->user(), $serviceFeeAmount, TransactionCategoryIds::sendMoneyToSquidPayAccount);
-        return $this->ecpayService->commitPayment($data, $request->user());
-    }
+    //     $data = $request->validated();
+    //     $serviceFeeAmount = $this->ecpayService->amountWithServiceFee((float)$data["amount"]);
+    //     $this->transactionValidationService->checkUserMonthlyTransactionLimit($request->user(), $serviceFeeAmount, TransactionCategoryIds::sendMoneyToSquidPayAccount);
+    //     return $this->ecpayService->commitPayment($data, $request->user());
+    // }
 
-    public function confirmPayment(ConfirmPaymentRequest $request): JsonResponse {
+    // public function confirmPayment(ConfirmPaymentRequest $request): JsonResponse {
 
-        $data = $request->validated();
-        return $this->ecpayService->confirmPayment($data, $request->user());
-    }
+    //     $data = $request->validated();
+    //     return $this->ecpayService->confirmPayment($data, $request->user());
+    // }
 
-    public function batchConfirmPayment(Request $request): JsonResponse {
+    // public function batchConfirmPayment(Request $request): JsonResponse {
 
-        $data = $this->inAddMoneyEcPayRepository->getRefNoInPendingStatusFromUser(request()->user()->id);
-        $arr = [];
-        foreach($data as $refno) {
-            $ref = ["referenceno" => $refno->reference_number];
-            array_push($arr, $this->ecpayService->batchConfirmPayment($ref, $request->user()));
-        }
+    //     $data = $this->inAddMoneyEcPayRepository->getRefNoInPendingStatusFromUser(request()->user()->id);
+    //     $arr = [];
+    //     foreach($data as $refno) {
+    //         $ref = ["referenceno" => $refno->reference_number];
+    //         array_push($arr, $this->ecpayService->batchConfirmPayment($ref, $request->user()));
+    //     }
 
-        return $this->responseService->successResponse($arr, SuccessMessages::success);
-    }
+    //     return $this->responseService->successResponse($arr, SuccessMessages::success);
+    // }
 }
