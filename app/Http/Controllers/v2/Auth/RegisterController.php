@@ -43,52 +43,52 @@ class RegisterController extends Controller
     //     return $this->responseService->createdResponse($user->toArray(), SuccessMessages::accountRegistered);
     // }
 
-    /**
-     * Validates User Registration Inputs
-     *
-     * @param ValidateNewUserRequest $request
-     * @return JsonResponse
-     * @throws ValidationException
-     */
-    public function registerPin(ValidatePinRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $token = $this->registrationService->registerPin($data, $usernameField);
+    // /**
+    //  * Validates User Registration Inputs
+    //  *
+    //  * @param ValidateNewUserRequest $request
+    //  * @return JsonResponse
+    //  * @throws ValidationException
+    //  */
+    // public function registerPin(ValidatePinRequest $request): JsonResponse
+    // {
+    //     $data = $request->validated();
+    //     $usernameField = $this->getUsernameField($request);
+    //     $token = $this->registrationService->registerPin($data, $usernameField);
 
-        return $this->responseService->createdResponse($token, SuccessMessages::pinValidationPassed);
-    }
+    //     return $this->responseService->createdResponse($token, SuccessMessages::pinValidationPassed);
+    // }
 
-    /**
-     * Validates User Registration Inputs
-     *
-     * @param ValidateNewUserRequest $request
-     * @return JsonResponse
-     * @throws ValidationException
-     */
-    public function registerValidate(ValidateNewUserRequest $request): JsonResponse
-    {
-        $newUser = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->registrationService->validateAccount($usernameField, $newUser[$usernameField]);
+    // /**
+    //  * Validates User Registration Inputs
+    //  *
+    //  * @param ValidateNewUserRequest $request
+    //  * @return JsonResponse
+    //  * @throws ValidationException
+    //  */
+    // public function registerValidate(ValidateNewUserRequest $request): JsonResponse
+    // {
+    //     $newUser = $request->validated();
+    //     $usernameField = $this->getUsernameField($request);
+    //     $this->registrationService->validateAccount($usernameField, $newUser[$usernameField]);
 
-        return $this->responseService->successResponse([
-            $usernameField => $newUser[$usernameField]
-        ], SuccessMessages::accountValidationPassed);
-    }
+    //     return $this->responseService->successResponse([
+    //         $usernameField => $newUser[$usernameField]
+    //     ], SuccessMessages::accountValidationPassed);
+    // }
 
-    /**
-     * Validates the registration otp and verifies the account
-     *
-     * @param VerifyAccountRequest $request
-     * @return JsonResponse
-     */
-    public function verifyAccount(VerifyAccountRequest $request): JsonResponse
-    {
-        $data = $request->validated();
-        $usernameField = $this->getUsernameField($request);
-        $this->registrationService->verifyAccount($usernameField, $data[$usernameField], $data['code']);
+    // /**
+    //  * Validates the registration otp and verifies the account
+    //  *
+    //  * @param VerifyAccountRequest $request
+    //  * @return JsonResponse
+    //  */
+    // public function verifyAccount(VerifyAccountRequest $request): JsonResponse
+    // {
+    //     $data = $request->validated();
+    //     $usernameField = $this->getUsernameField($request);
+    //     $this->registrationService->verifyAccount($usernameField, $data[$usernameField], $data['code']);
 
-        return $this->responseService->successResponse([$usernameField => $data[$usernameField]], SuccessMessages::accountVerification);
-    }
+    //     return $this->responseService->successResponse([$usernameField => $data[$usernameField]], SuccessMessages::accountVerification);
+    // }
 }
