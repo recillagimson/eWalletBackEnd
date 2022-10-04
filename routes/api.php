@@ -221,6 +221,38 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+    Route::prefix('/auth/v3')->middleware(['decrypt.request'])->group(function () {
+        Route::get('/user', [AuthV2Controller::class, 'getUser'])->name('v2.user.show');
+
+        Route::post('/register/validate', [RegisterV2Controller::class, 'registerValidate']);
+        Route::post('/register', [RegisterV2Controller::class, 'register']);
+        Route::post('/register/pin', [RegisterV2Controller::class, 'registerPin']);
+
+        Route::post('/login', [AuthV2Controller::class, 'login']);
+        Route::post('/mobile/login', [AuthV2Controller::class, 'mobileLogin']);
+        Route::post('/admin/login', [AuthV2Controller::class, 'adminLogin']);
+        Route::post('/partners/login', [AuthV2Controller::class, 'partnersLogin']);
+
+        Route::post('/mobile/login/validate', [AuthV2Controller::class, 'mobileLoginValidate']);
+        Route::post('/confirmation', [AuthV2Controller::class, 'confirmTransactions']);
+        Route::post('/confirmation/password', [AuthV2Controller::class, 'passwordConfirmation']);
+
+        Route::post('/forgot/{keyType}', [ForgotKeyController::class, 'forgotKey']);
+        Route::post('/reset/{keyType}', [ForgotKeyController::class, 'resetKey']);
+
+        Route::post('/generate/otp', [AuthV2Controller::class, 'generateTransactionOTP']);
+        Route::post('/resend/otp', [AuthV2Controller::class, 'resendOTP']);
+
+
+        // verify mobile login
+        Route::prefix('/verify')->name('verify.')->group(function () {
+            Route::post('/otp', [AuthV2Controller::class, 'verifyTransactionOtp'])->name('v2.otp');
+            Route::post('/account', [RegisterV2Controller::class, 'verifyAccount'])->name('v2.account');
+            Route::post('/mobile/login', [AuthV2Controller::class, 'verifyMobileLogin'])->name('v2.mobile.login');
+            Route::post('/partners/login', [AuthV2Controller::class, 'verifyPartnersLogin'])->name('v2.partners.login');
+            Route::post('/{keyType}', [ForgotKeyController::class, 'verifyKey'])->name('v2.key.type');
+        });
+    });
 
     Route::prefix('/admin')->middleware(['decrypt.request'])->group(function () {
         Route::prefix('/users')->group(function () {
